@@ -1,0 +1,4139 @@
+{
+  "formatVersion": 1,
+  "name": "Gravity Well",
+  "entrySceneId": "s-space",
+  "scenes": [
+    {
+      "formatVersion": 1,
+      "id": "s-space",
+      "name": "Space",
+      "entities": [
+        {
+          "id": "ring-1",
+          "name": "Orbit guide",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "ring-1-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 480,
+                "y": 270,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "ring-1-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "ellipse",
+                "width": 600,
+                "height": 600,
+                "color": "#070b1a",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#1f2747",
+                "strokeWidth": 2
+              }
+            }
+          ]
+        },
+        {
+          "id": "ring-2",
+          "name": "Orbit guide",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "ring-2-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 480,
+                "y": 270,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "ring-2-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "ellipse",
+                "width": 260,
+                "height": 260,
+                "color": "#070b1a",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#1f2747",
+                "strokeWidth": 2
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-0",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-0-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -239.8760303109307,
+                "y": 223.28578922584921,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-0-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.8162637669203168,
+                "kind": "ellipse",
+                "width": 2.9349756324360965,
+                "height": 2.1354543534738264,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-1",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-1-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 348.3135114369511,
+                "y": 285.39188495622574,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-1-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.4689731132094623,
+                "kind": "ellipse",
+                "width": 3.4025356566545253,
+                "height": 3.416781392608202,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-2",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-2-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 74.67290743937383,
+                "y": 457.95048161780016,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-2-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.6528467912938664,
+                "kind": "ellipse",
+                "width": 2.4218564217080623,
+                "height": 3.1408796474062277,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-3",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-3-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 950.4510624289751,
+                "y": 166.72603786770537,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-3-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.7411587676225038,
+                "kind": "ellipse",
+                "width": 2.254040144967865,
+                "height": 2.6527164749115317,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-4",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-4-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 612.9778354116612,
+                "y": 317.9598556496016,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-4-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.4847014773565817,
+                "kind": "ellipse",
+                "width": 3.4362292142753628,
+                "height": 2.7044043260181345,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-5",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-5-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 906.5518369649312,
+                "y": -159.77985746682614,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-5-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.7278579233343982,
+                "kind": "ellipse",
+                "width": 2.579325755862205,
+                "height": 3.7279787760823866,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-6",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-6-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -220.51804504381403,
+                "y": 168.07702415533225,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-6-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.35814043826336994,
+                "kind": "ellipse",
+                "width": 4.660948790917615,
+                "height": 3.5663289523526696,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-7",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-7-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 639.2301419001212,
+                "y": 673.9413371514256,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-7-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.31123522678913323,
+                "kind": "ellipse",
+                "width": 2.9615460363968955,
+                "height": 4.704233722623547,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-8",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-8-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 793.0959479106104,
+                "y": 541.0867705527166,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-8-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.40002259337344326,
+                "kind": "ellipse",
+                "width": 4.847793225593769,
+                "height": 2.86074255446938,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-9",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-9-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 911.3443859067488,
+                "y": 664.2240712205992,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-9-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.7803152772971965,
+                "kind": "ellipse",
+                "width": 4.195335242988232,
+                "height": 4.999428903218093,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-10",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-10-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 381.2772815587358,
+                "y": 54.443485245315145,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-10-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.8711488634213567,
+                "kind": "ellipse",
+                "width": 3.8465563114017978,
+                "height": 2.071925730012323,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-11",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-11-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 957.4740545812408,
+                "y": 139.48826755838854,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-11-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.6997245618140905,
+                "kind": "ellipse",
+                "width": 4.6226574562595495,
+                "height": 2.0038673542457945,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-12",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-12-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 1129.7049826056254,
+                "y": 313.781621122631,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-12-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.811837939318194,
+                "kind": "ellipse",
+                "width": 4.037634800205769,
+                "height": 3.5280870583504846,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-13",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-13-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 384.59069012878024,
+                "y": 646.2788299174415,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-13-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.7867438964018336,
+                "kind": "ellipse",
+                "width": 4.994185531043534,
+                "height": 3.2762202486750764,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-14",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-14-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 491.2003814853729,
+                "y": 28.495992849811927,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-14-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.796332798384285,
+                "kind": "ellipse",
+                "width": 2.143699409507075,
+                "height": 2.15597558541036,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-15",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-15-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -83.17813277392563,
+                "y": 138.68595305303393,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-15-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.5833500085786683,
+                "kind": "ellipse",
+                "width": 3.6527714625246688,
+                "height": 3.1299706521117923,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-16",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-16-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -87.37396397039944,
+                "y": 163.53683580343466,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-16-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.6304310695875581,
+                "kind": "ellipse",
+                "width": 2.523634142020547,
+                "height": 3.719024939331703,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-17",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-17-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 1091.967739412546,
+                "y": -83.34670148480065,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-17-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.7645766101146939,
+                "kind": "ellipse",
+                "width": 4.938595948712246,
+                "height": 4.982110006726398,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-18",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-18-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 573.8068743859449,
+                "y": 155.19532501939466,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-18-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.6013496446895179,
+                "kind": "ellipse",
+                "width": 4.583503185111798,
+                "height": 3.9380321739884243,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-19",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-19-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 200.34791214407795,
+                "y": 298.9418589272265,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-19-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.6416044627975692,
+                "kind": "ellipse",
+                "width": 2.769851101920871,
+                "height": 4.887469984072945,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-20",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-20-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 1070.894972994409,
+                "y": -40.559872924610914,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-20-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.7145518487387112,
+                "kind": "ellipse",
+                "width": 2.478008259310391,
+                "height": 4.8848142297402095,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-21",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-21-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 175.01220364822643,
+                "y": 557.2874373976548,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-21-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.5899687856854725,
+                "kind": "ellipse",
+                "width": 3.0907738944938288,
+                "height": 4.636844757775238,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-22",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-22-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 492.91443776940673,
+                "y": 33.472860811032774,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-22-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.8240053228680069,
+                "kind": "ellipse",
+                "width": 2.3012669921392885,
+                "height": 4.39433688502495,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-23",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-23-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 137.90746222152728,
+                "y": 496.54961829378715,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-23-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.560819928376386,
+                "kind": "ellipse",
+                "width": 3.0207999898217617,
+                "height": 4.585428934351276,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-24",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-24-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -238.71306739687597,
+                "y": -151.98672956879562,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-24-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.4773835193260496,
+                "kind": "ellipse",
+                "width": 2.09898683153977,
+                "height": 3.6716776889151324,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-25",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-25-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 923.5423509979353,
+                "y": 108.84585807046199,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-25-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.5957609411774952,
+                "kind": "ellipse",
+                "width": 3.917056557683766,
+                "height": 4.9695649910576485,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-26",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-26-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 849.9320883908924,
+                "y": -18.071919832412107,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-26-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.4463770445186538,
+                "kind": "ellipse",
+                "width": 3.9610569658507857,
+                "height": 3.4844250541573505,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-27",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-27-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 141.56934003418752,
+                "y": 267.49319447087737,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-27-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.48079935246184435,
+                "kind": "ellipse",
+                "width": 3.868589109214297,
+                "height": 3.37715856469104,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-28",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-28-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 467.32038292443394,
+                "y": 278.3574400322314,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-28-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.7898136407555145,
+                "kind": "ellipse",
+                "width": 2.352822574019815,
+                "height": 3.889001551032533,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-29",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-29-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 474.8644270351457,
+                "y": 322.8153875902367,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-29-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.524196025554182,
+                "kind": "ellipse",
+                "width": 2.6416564628675845,
+                "height": 4.320171415489247,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-30",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-30-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -89.75642607070338,
+                "y": 333.400962587167,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-30-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.6070478477082437,
+                "kind": "ellipse",
+                "width": 3.1590165994870554,
+                "height": 2.5919875789396407,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-31",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-31-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 1087.623437888745,
+                "y": 176.5736976389651,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-31-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.8002817728092344,
+                "kind": "ellipse",
+                "width": 2.4913734707475514,
+                "height": 4.5139228541003185,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-32",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-32-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 805.8134515238057,
+                "y": 41.85985370160074,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-32-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.48727619712579817,
+                "kind": "ellipse",
+                "width": 2.847367600466762,
+                "height": 2.7072610448614047,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-33",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-33-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 1082.5082238961515,
+                "y": 438.4949582668463,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-33-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.6080660346467355,
+                "kind": "ellipse",
+                "width": 3.6866940598407267,
+                "height": 3.267063743093546,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-34",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-34-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 398.026338442241,
+                "y": 483.07623256606814,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-34-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.7690195298143754,
+                "kind": "ellipse",
+                "width": 2.0417297883153567,
+                "height": 4.352552216198553,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-35",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-35-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -213.02978350456328,
+                "y": 519.5952792696634,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-35-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.305028075168388,
+                "kind": "ellipse",
+                "width": 3.458609154195808,
+                "height": 3.8440545689519747,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-36",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-36-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 976.462452233053,
+                "y": 688.2656383413196,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-36-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.4008639637850523,
+                "kind": "ellipse",
+                "width": 4.69517137235737,
+                "height": 2.745255210318256,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-37",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-37-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 289.5344048969142,
+                "y": 248.45411815608577,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-37-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.5816749170802882,
+                "kind": "ellipse",
+                "width": 4.994422213637467,
+                "height": 4.2541446049018505,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-38",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-38-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 24.79528417102773,
+                "y": 327.65287150519566,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-38-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.4885673122427274,
+                "kind": "ellipse",
+                "width": 3.8129933675811594,
+                "height": 4.979528936547939,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-39",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-39-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -118.03952755315207,
+                "y": 239.2369197724559,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-39-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.3430027532591497,
+                "kind": "ellipse",
+                "width": 4.880377098862257,
+                "height": 4.497900577959558,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-40",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-40-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 593.4576636708609,
+                "y": 467.36035987611876,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-40-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.518379811206078,
+                "kind": "ellipse",
+                "width": 4.575801492936817,
+                "height": 3.4956917890793138,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-41",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-41-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 22.768657329850214,
+                "y": 632.2811761509073,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-41-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.6325879889226462,
+                "kind": "ellipse",
+                "width": 3.9763439828419798,
+                "height": 2.4133196251528894,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-42",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-42-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 255.19157499782347,
+                "y": 395.1561595896055,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-42-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.6371406699238069,
+                "kind": "ellipse",
+                "width": 4.521275758520362,
+                "height": 2.0816734517373487,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-43",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-43-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 1015.7745826131547,
+                "y": 540.9727651211306,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-43-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.4260098652569623,
+                "kind": "ellipse",
+                "width": 4.315670650599371,
+                "height": 2.476624623628624,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-44",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-44-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 834.7328970370502,
+                "y": 511.87808437360366,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-44-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.8085873162879549,
+                "kind": "ellipse",
+                "width": 2.289650228940719,
+                "height": 4.151397806662786,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-45",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-45-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 304.859643981261,
+                "y": 133.13335131068402,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-45-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.3497837106929085,
+                "kind": "ellipse",
+                "width": 3.507620950000184,
+                "height": 2.585306653094155,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-46",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-46-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 515.5814777107823,
+                "y": 525.3808186833658,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-46-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.8722930798178041,
+                "kind": "ellipse",
+                "width": 4.950294129527311,
+                "height": 3.593434965514315,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-47",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-47-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 1031.5019947995906,
+                "y": 156.3495868846539,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-47-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.6967524202525394,
+                "kind": "ellipse",
+                "width": 4.71877308083641,
+                "height": 3.4191696175463355,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-48",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-48-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 763.0252426318011,
+                "y": 566.5434466379431,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-48-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.31004319778179895,
+                "kind": "ellipse",
+                "width": 2.428548786057415,
+                "height": 4.619447266971435,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-49",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-49-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 230.46028486940094,
+                "y": 701.4492111240743,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-49-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.7679124131183663,
+                "kind": "ellipse",
+                "width": 4.0689478260786025,
+                "height": 4.806112903080002,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-50",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-50-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -230.57452708043834,
+                "y": -161.49128056666407,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-50-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.6065720816639122,
+                "kind": "ellipse",
+                "width": 3.5206165320801626,
+                "height": 2.0020546712922185,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-51",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-51-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 616.7436608936375,
+                "y": 276.54416850141445,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-51-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.4203712069989979,
+                "kind": "ellipse",
+                "width": 3.4585454657015138,
+                "height": 2.773642045340334,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-52",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-52-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 909.3024771797016,
+                "y": -68.10702490532167,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-52-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.5424320327315628,
+                "kind": "ellipse",
+                "width": 2.120110509973071,
+                "height": 4.697341117401301,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-53",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-53-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 1092.417886505098,
+                "y": 140.0890779449088,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-53-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.46623337025113093,
+                "kind": "ellipse",
+                "width": 3.0470443866434715,
+                "height": 4.675006316823422,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-54",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-54-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 442.2091458189343,
+                "y": 202.23619817394587,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-54-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.6683152633571603,
+                "kind": "ellipse",
+                "width": 2.865168327868529,
+                "height": 4.884086486363824,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-55",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-55-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -60.8850148976245,
+                "y": 310.06115399303906,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-55-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.36222884425065893,
+                "kind": "ellipse",
+                "width": 3.867551685249224,
+                "height": 3.941173983710433,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-56",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-56-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -47.55523002126964,
+                "y": -60.458924570334574,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-56-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.7107580289294748,
+                "kind": "ellipse",
+                "width": 2.330186635409569,
+                "height": 4.446781328621684,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-57",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-57-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -215.53867756181336,
+                "y": 270.88380025740884,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-57-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.8674104326252874,
+                "kind": "ellipse",
+                "width": 3.1387417941068962,
+                "height": 3.8333335546000553,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-58",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-58-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -78.86128030664347,
+                "y": 476.8378193708313,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-58-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.6417546740461861,
+                "kind": "ellipse",
+                "width": 4.601921018958986,
+                "height": 4.4865656436824075,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-59",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-59-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -70.0639338000044,
+                "y": 193.895047588225,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-59-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.745480764119644,
+                "kind": "ellipse",
+                "width": 4.945675506696885,
+                "height": 3.9682410545499254,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-60",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-60-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 708.486141259077,
+                "y": 78.46319746620173,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-60-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.6725083732849491,
+                "kind": "ellipse",
+                "width": 3.094181185632097,
+                "height": 4.903186918656894,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-61",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-61-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 595.7515203374213,
+                "y": 267.4347456346428,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-61-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.47508377264024865,
+                "kind": "ellipse",
+                "width": 3.5196700503675595,
+                "height": 4.094536527569655,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-62",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-62-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 319.1202351819352,
+                "y": 522.8733183689757,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-62-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.6757981632723464,
+                "kind": "ellipse",
+                "width": 2.2790744115035397,
+                "height": 3.4036341399902637,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-63",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-63-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 815.352283984121,
+                "y": 334.67811846392135,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-63-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.5774895908671849,
+                "kind": "ellipse",
+                "width": 4.3356943970246675,
+                "height": 3.0157307935951887,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-64",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-64-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 1122.1288914615889,
+                "y": -59.8296253242668,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-64-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.5931926232265274,
+                "kind": "ellipse",
+                "width": 2.386888096754853,
+                "height": 3.4282421588097893,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-65",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-65-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 932.2045637910276,
+                "y": 197.95222187785072,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-65-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.7435954282263273,
+                "kind": "ellipse",
+                "width": 3.4079310262612674,
+                "height": 4.096758373126741,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-66",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-66-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 980.0692797173137,
+                "y": -106.20965012172687,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-66-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.44091507622083415,
+                "kind": "ellipse",
+                "width": 2.9695809231929395,
+                "height": 4.746576103729464,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-67",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-67-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 143.24650454486095,
+                "y": -106.44329220822235,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-67-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.7758870574999075,
+                "kind": "ellipse",
+                "width": 4.5826858741150645,
+                "height": 2.2014862518764504,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-68",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-68-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 321.0609622677141,
+                "y": 215.97339823188884,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-68-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.8570676128180081,
+                "kind": "ellipse",
+                "width": 3.9599002841673325,
+                "height": 2.0440760003608074,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-69",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-69-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 324.88471742946876,
+                "y": -110.44976622818493,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-69-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.3388655416848443,
+                "kind": "ellipse",
+                "width": 3.0253829644179824,
+                "height": 3.611482973029596,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-70",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-70-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 751.5818332282741,
+                "y": 71.92120798021611,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-70-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.8109176295394624,
+                "kind": "ellipse",
+                "width": 3.2604858755415704,
+                "height": 3.9861102271760394,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-71",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-71-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 702.2392073936012,
+                "y": 156.55251704461523,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-71-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.7505309082802993,
+                "kind": "ellipse",
+                "width": 4.345979439255772,
+                "height": 4.876435571758279,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-72",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-72-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -64.85887921641529,
+                "y": -25.278494067154128,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-72-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.3045015645234387,
+                "kind": "ellipse",
+                "width": 2.048921181843114,
+                "height": 2.218303237212032,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-73",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-73-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -101.29213095702795,
+                "y": 650.8169476412316,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-73-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.47023743417590735,
+                "kind": "ellipse",
+                "width": 4.012860248336969,
+                "height": 4.142193799438976,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-74",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-74-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 673.3348667404312,
+                "y": -158.32453496210488,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-74-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.7609428136893281,
+                "kind": "ellipse",
+                "width": 4.964343949670132,
+                "height": 2.728762105912325,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-75",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-75-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 878.0872236928378,
+                "y": 521.7585922646144,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-75-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.46128661379278013,
+                "kind": "ellipse",
+                "width": 4.409068834227076,
+                "height": 3.2198968544695044,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-76",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-76-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 1065.8832366140016,
+                "y": 404.17419370923847,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-76-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.8297809291303999,
+                "kind": "ellipse",
+                "width": 2.2238875153585744,
+                "height": 2.8774706315609957,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-77",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-77-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -172.61785287997586,
+                "y": 228.28961715022547,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-77-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.8617878114626685,
+                "kind": "ellipse",
+                "width": 4.637257194908921,
+                "height": 4.381674834239146,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-78",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-78-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 642.5934073713578,
+                "y": 17.85414413914745,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-78-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.5595955231504494,
+                "kind": "ellipse",
+                "width": 4.40204731812796,
+                "height": 2.2092757766178233,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-79",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-79-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 772.6982150472226,
+                "y": 477.1057380768963,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-79-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.5244508882167055,
+                "kind": "ellipse",
+                "width": 4.952749517258606,
+                "height": 2.8611365653859155,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-80",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-80-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 110.58781960540813,
+                "y": 618.0180660579438,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-80-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.8551645092457367,
+                "kind": "ellipse",
+                "width": 2.7487598949804717,
+                "height": 4.4075549367850435,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-81",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-81-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -120.22345656539474,
+                "y": 688.2233644175452,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-81-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.5471149933743826,
+                "kind": "ellipse",
+                "width": 2.2730196557347755,
+                "height": 3.6413539343706116,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-82",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-82-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -91.93525620360637,
+                "y": -45.242286340912,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-82-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.5565219753685045,
+                "kind": "ellipse",
+                "width": 4.1916822782678915,
+                "height": 3.604050848448673,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-83",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-83-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 635.6160442883224,
+                "y": 513.7455495650626,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-83-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.4603459259310485,
+                "kind": "ellipse",
+                "width": 4.289039340936132,
+                "height": 4.884203113561591,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-84",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-84-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 561.5450955189508,
+                "y": 55.145792060133886,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-84-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.8468312046243023,
+                "kind": "ellipse",
+                "width": 2.0863425727404388,
+                "height": 4.159620048552575,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-85",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-85-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 700.9346895576151,
+                "y": -42.077703155613364,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-85-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.5133215734797165,
+                "kind": "ellipse",
+                "width": 2.5115104441118943,
+                "height": 3.956034188603998,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-86",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-86-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 469.64513662720344,
+                "y": 395.77356819332283,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-86-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.8797947842533675,
+                "kind": "ellipse",
+                "width": 3.896683949463388,
+                "height": 4.567138631160901,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-87",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-87-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -213.74652876227466,
+                "y": 197.9445564970116,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-87-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.5317012400513986,
+                "kind": "ellipse",
+                "width": 2.9687308361608213,
+                "height": 2.459163354923559,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-88",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-88-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 246.57970525630736,
+                "y": -56.87951831467427,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-88-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.5348788329562539,
+                "kind": "ellipse",
+                "width": 3.417962563418766,
+                "height": 4.696803379197048,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "star-89",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "star-89-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 260.50918982387947,
+                "y": 452.08261496484397,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-89-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.7532284307541457,
+                "kind": "ellipse",
+                "width": 2.213101298181853,
+                "height": 4.5935185424022,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "sun",
+          "name": "Sun",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "sun-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 480,
+                "y": 270,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "sun-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "ellipse",
+                "width": 90,
+                "height": 90,
+                "color": "#ffbe0b",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            },
+            {
+              "id": "sun-fx",
+              "type": "pixi.effects",
+              "version": 1,
+              "data": {
+                "blendMode": "normal",
+                "blur": 0,
+                "brightness": 1,
+                "contrast": 1,
+                "saturation": 1,
+                "hue": 0,
+                "noise": 0,
+                "shadowAlpha": 0,
+                "shadowColor": "#000000",
+                "shadowX": 4,
+                "shadowY": 4,
+                "shadowBlur": 2,
+                "glowStrength": 5,
+                "glowColor": "#ff8800",
+                "glowDistance": 40,
+                "outlineWidth": 0,
+                "outlineColor": "#ffffff",
+                "pixelate": 0
+              }
+            },
+            {
+              "id": "sun-rb",
+              "type": "physics.rigidBody2d",
+              "version": 1,
+              "data": {
+                "bodyType": "static",
+                "density": 0.001,
+                "friction": 0.3,
+                "restitution": 0,
+                "airFriction": 0.01,
+                "lockRotation": false,
+                "velocityX": 0,
+                "velocityY": 0,
+                "angularVelocity": 0,
+                "frictionStatic": 0.5,
+                "gravityScale": 1,
+                "mass": 0,
+                "layer": 0,
+                "mask": 65535,
+                "group": 0,
+                "draggable": false,
+                "bullet": false
+              }
+            },
+            {
+              "id": "sun-cc",
+              "type": "physics.circleCollider2d",
+              "version": 1,
+              "data": {
+                "radius": 45,
+                "offsetX": 0,
+                "offsetY": 0,
+                "sensor": false
+              }
+            },
+            {
+              "id": "sun-tw",
+              "type": "tween.player",
+              "version": 1,
+              "data": {
+                "duration": 1.6,
+                "delay": 0,
+                "ease": "sine.inOut",
+                "repeat": 100,
+                "yoyo": true,
+                "autoplay": true,
+                "tracks": [
+                  {
+                    "id": "sun-k0",
+                    "entityId": "sun",
+                    "componentId": "sun-t",
+                    "property": "scaleX",
+                    "from": 1,
+                    "to": 1.06
+                  },
+                  {
+                    "id": "sun-k1",
+                    "entityId": "sun",
+                    "componentId": "sun-t",
+                    "property": "scaleY",
+                    "from": 1,
+                    "to": 1.06
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "planet-0",
+          "name": "Planet",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "planet-0-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 610,
+                "y": 270,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "planet-0-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "ellipse",
+                "width": 20,
+                "height": 20,
+                "color": "#7cc6fe",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            },
+            {
+              "id": "planet-0-fx",
+              "type": "pixi.effects",
+              "version": 1,
+              "data": {
+                "blendMode": "normal",
+                "blur": 0,
+                "brightness": 1,
+                "contrast": 1,
+                "saturation": 1,
+                "hue": 0,
+                "noise": 0,
+                "shadowAlpha": 0,
+                "shadowColor": "#000000",
+                "shadowX": 4,
+                "shadowY": 4,
+                "shadowBlur": 2,
+                "glowStrength": 1.5,
+                "glowColor": "#7cc6fe",
+                "glowDistance": 10,
+                "outlineWidth": 0,
+                "outlineColor": "#ffffff",
+                "pixelate": 0
+              }
+            },
+            {
+              "id": "planet-0-rb",
+              "type": "physics.rigidBody2d",
+              "version": 1,
+              "data": {
+                "bodyType": "dynamic",
+                "density": 0.002,
+                "friction": 0,
+                "restitution": 0.9,
+                "airFriction": 0,
+                "lockRotation": false,
+                "velocityX": 0,
+                "velocityY": 200,
+                "angularVelocity": 0,
+                "frictionStatic": 0,
+                "gravityScale": 1,
+                "mass": 0,
+                "layer": 0,
+                "mask": 65535,
+                "group": 0,
+                "draggable": true,
+                "bullet": false
+              }
+            },
+            {
+              "id": "planet-0-cc",
+              "type": "physics.circleCollider2d",
+              "version": 1,
+              "data": {
+                "radius": 10,
+                "offsetX": 0,
+                "offsetY": 0,
+                "sensor": false
+              }
+            },
+            {
+              "id": "planet-0-b",
+              "type": "scripts.behaviour",
+              "version": 1,
+              "data": {
+                "scriptId": "s-planet",
+                "params": {},
+                "refs": {}
+              }
+            }
+          ]
+        },
+        {
+          "id": "planet-1",
+          "name": "Planet",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "planet-1-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 452.9426561979398,
+                "y": 478.24961019501836,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "planet-1-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "ellipse",
+                "width": 32,
+                "height": 32,
+                "color": "#f4a259",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            },
+            {
+              "id": "planet-1-fx",
+              "type": "pixi.effects",
+              "version": 1,
+              "data": {
+                "blendMode": "normal",
+                "blur": 0,
+                "brightness": 1,
+                "contrast": 1,
+                "saturation": 1,
+                "hue": 0,
+                "noise": 0,
+                "shadowAlpha": 0,
+                "shadowColor": "#000000",
+                "shadowX": 4,
+                "shadowY": 4,
+                "shadowBlur": 2,
+                "glowStrength": 1.5,
+                "glowColor": "#f4a259",
+                "glowDistance": 10,
+                "outlineWidth": 0,
+                "outlineColor": "#ffffff",
+                "pixelate": 0
+              }
+            },
+            {
+              "id": "planet-1-rb",
+              "type": "physics.rigidBody2d",
+              "version": 1,
+              "data": {
+                "bodyType": "dynamic",
+                "density": 0.003,
+                "friction": 0,
+                "restitution": 0.9,
+                "airFriction": 0,
+                "lockRotation": false,
+                "velocityX": -156,
+                "velocityY": -20,
+                "angularVelocity": 0,
+                "frictionStatic": 0,
+                "gravityScale": 1,
+                "mass": 0,
+                "layer": 0,
+                "mask": 65535,
+                "group": 0,
+                "draggable": true,
+                "bullet": false
+              }
+            },
+            {
+              "id": "planet-1-cc",
+              "type": "physics.circleCollider2d",
+              "version": 1,
+              "data": {
+                "radius": 16,
+                "offsetX": 0,
+                "offsetY": 0,
+                "sensor": false
+              }
+            },
+            {
+              "id": "planet-1-b",
+              "type": "scripts.behaviour",
+              "version": 1,
+              "data": {
+                "scriptId": "s-planet",
+                "params": {},
+                "refs": {}
+              }
+            }
+          ]
+        },
+        {
+          "id": "planet-2",
+          "name": "Planet",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "planet-2-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 189.9605422261617,
+                "y": 193.3376693919506,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "planet-2-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "ellipse",
+                "width": 44,
+                "height": 44,
+                "color": "#8ac926",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            },
+            {
+              "id": "planet-2-fx",
+              "type": "pixi.effects",
+              "version": 1,
+              "data": {
+                "blendMode": "normal",
+                "blur": 0,
+                "brightness": 1,
+                "contrast": 1,
+                "saturation": 1,
+                "hue": 0,
+                "noise": 0,
+                "shadowAlpha": 0,
+                "shadowColor": "#000000",
+                "shadowX": 4,
+                "shadowY": 4,
+                "shadowBlur": 2,
+                "glowStrength": 1.5,
+                "glowColor": "#8ac926",
+                "glowDistance": 10,
+                "outlineWidth": 0,
+                "outlineColor": "#ffffff",
+                "pixelate": 0
+              }
+            },
+            {
+              "id": "planet-2-rb",
+              "type": "physics.rigidBody2d",
+              "version": 1,
+              "data": {
+                "bodyType": "dynamic",
+                "density": 0.004,
+                "friction": 0,
+                "restitution": 0.9,
+                "airFriction": 0,
+                "lockRotation": false,
+                "velocityX": 34,
+                "velocityY": -127,
+                "angularVelocity": 0,
+                "frictionStatic": 0,
+                "gravityScale": 1,
+                "mass": 0,
+                "layer": 0,
+                "mask": 65535,
+                "group": 0,
+                "draggable": true,
+                "bullet": false
+              }
+            },
+            {
+              "id": "planet-2-cc",
+              "type": "physics.circleCollider2d",
+              "version": 1,
+              "data": {
+                "radius": 22,
+                "offsetX": 0,
+                "offsetY": 0,
+                "sensor": false
+              }
+            },
+            {
+              "id": "planet-2-b",
+              "type": "scripts.behaviour",
+              "version": 1,
+              "data": {
+                "scriptId": "s-planet",
+                "params": {},
+                "refs": {}
+              }
+            }
+          ]
+        },
+        {
+          "id": "planet-3",
+          "name": "Planet",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "planet-3-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 631.191097085192,
+                "y": -100.32587293109299,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "planet-3-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "ellipse",
+                "width": 26,
+                "height": 26,
+                "color": "#c77dff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            },
+            {
+              "id": "planet-3-fx",
+              "type": "pixi.effects",
+              "version": 1,
+              "data": {
+                "blendMode": "normal",
+                "blur": 0,
+                "brightness": 1,
+                "contrast": 1,
+                "saturation": 1,
+                "hue": 0,
+                "noise": 0,
+                "shadowAlpha": 0,
+                "shadowColor": "#000000",
+                "shadowX": 4,
+                "shadowY": 4,
+                "shadowBlur": 2,
+                "glowStrength": 1.5,
+                "glowColor": "#c77dff",
+                "glowDistance": 10,
+                "outlineWidth": 0,
+                "outlineColor": "#ffffff",
+                "pixelate": 0
+              }
+            },
+            {
+              "id": "planet-3-rb",
+              "type": "physics.rigidBody2d",
+              "version": 1,
+              "data": {
+                "bodyType": "dynamic",
+                "density": 0.002,
+                "friction": 0,
+                "restitution": 0.9,
+                "airFriction": 0,
+                "lockRotation": false,
+                "velocityX": 106,
+                "velocityY": 43,
+                "angularVelocity": 0,
+                "frictionStatic": 0,
+                "gravityScale": 1,
+                "mass": 0,
+                "layer": 0,
+                "mask": 65535,
+                "group": 0,
+                "draggable": true,
+                "bullet": false
+              }
+            },
+            {
+              "id": "planet-3-cc",
+              "type": "physics.circleCollider2d",
+              "version": 1,
+              "data": {
+                "radius": 13,
+                "offsetX": 0,
+                "offsetY": 0,
+                "sensor": false
+              }
+            },
+            {
+              "id": "planet-3-b",
+              "type": "scripts.behaviour",
+              "version": 1,
+              "data": {
+                "scriptId": "s-planet",
+                "params": {},
+                "refs": {}
+              }
+            }
+          ]
+        },
+        {
+          "id": "camera",
+          "name": "Camera",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "camera-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 480,
+                "y": 270,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "camera-cam",
+              "type": "pixi.camera2d",
+              "version": 1,
+              "data": {
+                "zoom": 0.75,
+                "rotate": false,
+                "target": "",
+                "offsetX": 0,
+                "offsetY": 0,
+                "smoothing": 0,
+                "deadzoneWidth": 0,
+                "deadzoneHeight": 0,
+                "limit": false,
+                "limitLeft": 0,
+                "limitTop": 0,
+                "limitRight": 1920,
+                "limitBottom": 1080
+              }
+            }
+          ]
+        },
+        {
+          "id": "help",
+          "name": "Help",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "help-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 480,
+                "y": 512,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "help-x",
+              "type": "pixi.text",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "text": "Drag a planet and let go to change its orbit",
+                "fontSize": 18,
+                "color": "#8892b0",
+                "font": "",
+                "fontWeight": "normal",
+                "fontStyle": "normal",
+                "align": "center",
+                "letterSpacing": 0,
+                "strokeColor": "#000000",
+                "strokeWidth": 0
+              }
+            },
+            {
+              "id": "help-hud",
+              "type": "pixi.screenSpace",
+              "version": 1,
+              "data": {
+                "anchor": "bottom"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "modules": {
+    "settings": "1.0.0",
+    "project": "1.0.0",
+    "scene": "1.0.0",
+    "assets": "1.0.0",
+    "pixi": "1.0.0",
+    "layout": "1.0.0",
+    "ai-comfy": "1.0.0",
+    "ai-lm": "1.0.0",
+    "assetpack": "1.0.0",
+    "audio": "1.0.0",
+    "howler": "1.0.0",
+    "tween": "1.0.0",
+    "gsap": "1.0.0",
+    "tween-pixi": "1.0.0",
+    "animation": "1.0.0",
+    "physics": "1.0.0",
+    "matter": "1.0.0",
+    "spine": "1.0.0",
+    "spine-audio": "1.0.0",
+    "interactions": "1.0.0",
+    "interaction-media": "1.0.0",
+    "scripts": "1.0.0",
+    "input": "1.0.0",
+    "build": "1.0.0",
+    "html-export": "1.0.0",
+    "prefabs": "1.0.0",
+    "project-ui": "1.0.0",
+    "recovery": "1.0.0",
+    "studio": "1.0.0"
+  },
+  "providers": {
+    "audio": "howler",
+    "tween": "gsap",
+    "physics": "matter",
+    "render": "pixi"
+  },
+  "extensions": {
+    "pixi.render": {
+      "version": 1,
+      "background": "#070b1a"
+    },
+    "physics.world": {
+      "gravityX": 0,
+      "gravityY": 0,
+      "timeScale": 1,
+      "sleeping": false,
+      "positionIterations": 8,
+      "velocityIterations": 6,
+      "walls": false,
+      "layers": [
+        "Default"
+      ]
+    },
+    "scripts.library": {
+      "version": 1,
+      "items": [
+        {
+          "id": "s-orbit",
+          "name": "Gravity",
+          "source": "export const params = { pull: param.number(5200000, { label: 'Sun pull (GM)' }) };\nexport function update(self: SceneSelf, dt: number) {\n  const sun = game.find('Sun'), planets = game.findAll('Planet');\n  for (const p of planets) {\n    let ax = 0, ay = 0;\n    const add = (o: GameObject, gm: number) => { const dx = o.x - p.x, dy = o.y - p.y, d2 = Math.max(400, dx * dx + dy * dy), d = Math.sqrt(d2); ax += gm * dx / (d2 * d); ay += gm * dy / (d2 * d); };\n    add(sun, self.params.pull);\n    for (const q of planets) if (q !== p) add(q, self.params.pull * 0.004 * q.body.mass / p.body.mass);\n    p.body.push(ax * dt, ay * dt);\n  }\n}",
+          "code": "\"use strict\";Object.defineProperty(exports, \"__esModule\", {value: true}); const params = { pull: param.number(5200000, { label: 'Sun pull (GM)' }) }; exports.params = params;\n function update(self, dt) {\n  const sun = game.find('Sun'), planets = game.findAll('Planet');\n  for (const p of planets) {\n    let ax = 0, ay = 0;\n    const add = (o, gm) => { const dx = o.x - p.x, dy = o.y - p.y, d2 = Math.max(400, dx * dx + dy * dy), d = Math.sqrt(d2); ax += gm * dx / (d2 * d); ay += gm * dy / (d2 * d); };\n    add(sun, self.params.pull);\n    for (const q of planets) if (q !== p) add(q, self.params.pull * 0.004 * q.body.mass / p.body.mass);\n    p.body.push(ax * dt, ay * dt);\n  }\n} exports.update = update;"
+        },
+        {
+          "id": "s-planet",
+          "name": "Planet",
+          "source": "export function onCollision(self: GameObject, other: GameObject) {\n  if (other.name !== 'Sun') return;\n  const r = 180 + Math.random() * 200, a = Math.random() * Math.PI * 2, v = Math.sqrt(5200000 / r);\n  self.body.teleport(480 + Math.cos(a) * r, 270 + Math.sin(a) * r);\n  self.body.velocity = { x: -Math.sin(a) * v, y: Math.cos(a) * v };\n  game.camera.shake(8, 0.25);\n}",
+          "code": "\"use strict\";Object.defineProperty(exports, \"__esModule\", {value: true}); function onCollision(self, other) {\n  if (other.name !== 'Sun') return;\n  const r = 180 + Math.random() * 200, a = Math.random() * Math.PI * 2, v = Math.sqrt(5200000 / r);\n  self.body.teleport(480 + Math.cos(a) * r, 270 + Math.sin(a) * r);\n  self.body.velocity = { x: -Math.sin(a) * v, y: Math.cos(a) * v };\n  game.camera.shake(8, 0.25);\n} exports.onCollision = onCollision;"
+        }
+      ],
+      "scenes": {
+        "s-space": {
+          "scriptId": "s-orbit",
+          "params": {},
+          "refs": {}
+        }
+      }
+    }
+  }
+}

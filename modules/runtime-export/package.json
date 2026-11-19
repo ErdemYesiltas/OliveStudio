@@ -1,0 +1,16 @@
+{
+  "name": "@rewrite/runtime-export",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@rewrite/sdk": "workspace:*",
+    "@rewrite/assets": "workspace:*",
+    "@rewrite/scene": "workspace:*",
+    "@rewrite/project": "workspace:*",
+    "@rewrite/interactions": "workspace:*"
+  }
+}

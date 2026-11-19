@@ -1,0 +1,163 @@
+{
+ "version": 1,
+ "examples": [
+  {
+   "id": "platformer",
+   "title": "Sky Hopper",
+   "description": "A side-scrolling platformer: run and jump with the keyboard, collect coins, reach the flag. Camera follow with limits, a HUD layer, physics, input map and a hero script.",
+   "tags": [
+    "Platformer",
+    "Camera",
+    "Physics",
+    "Input",
+    "Scripts"
+   ],
+   "file": "platformer/Sky Hopper.pixieditor",
+   "thumbnail": "platformer/thumbnail.png"
+  },
+  {
+   "id": "breakout",
+   "title": "Brick Breaker",
+   "description": "Keep the ball in play and clear 50 bricks. Bouncing physics with no gravity, a kinematic paddle, score and lives globals, win and game-over scenes.",
+   "tags": [
+    "Arcade",
+    "Physics",
+    "Globals",
+    "Scenes"
+   ],
+   "file": "breakout/Brick Breaker.pixieditor",
+   "thumbnail": "breakout/thumbnail.png"
+  },
+  {
+   "id": "clicker",
+   "title": "Tap Tycoon",
+   "description": "An idle clicker: tap the coin, buy stronger taps and helpers that earn every second. Live text from globals, tweens, burst particles, a saved game and a scene script.",
+   "tags": [
+    "UI",
+    "Globals",
+    "Tween",
+    "Particles",
+    "Save"
+   ],
+   "file": "clicker/Tap Tycoon.pixieditor",
+   "thumbnail": "clicker/thumbnail.png"
+  },
+  {
+   "id": "physics",
+   "title": "Physics Playground",
+   "description": "Drag anything with the mouse: a crate pyramid, bouncy balls, a chain with a wrecking ball and a seesaw. Buttons push, change gravity and restart the scene.",
+   "tags": [
+    "Physics",
+    "Joints",
+    "Drag",
+    "Rules"
+   ],
+   "file": "physics/Physics Playground.pixieditor",
+   "thumbnail": "physics/thumbnail.png"
+  },
+  {
+   "id": "interactive",
+   "title": "Interactive Demo",
+   "description": "The end-to-end sample with imported art and sound: sprites, a tween and an animation, a click sound, Matter physics, a Spine skeleton and a scene change.",
+   "tags": [
+    "Sprites",
+    "Audio",
+    "Spine",
+    "Animation"
+   ],
+   "file": "end-to-end/Interactive demo.pixieditor",
+   "thumbnail": "end-to-end/thumbnail.png"
+  },
+  {
+   "id": "effects",
+   "title": "Neon Garden",
+   "description": "A glowing visual toy: blur, glow and additive blending, looping tweens, a particle fountain and a breathing camera. Click the star for a burst and a shake.",
+   "tags": [
+    "Visuals",
+    "Effects",
+    "Particles",
+    "Tween"
+   ],
+   "file": "effects/Neon Garden.pixieditor",
+   "thumbnail": "effects/thumbnail.png"
+  },
+  {
+   "id": "snake",
+   "title": "Grid Snake",
+   "description": "The classic on a 32 × 17 grid: steer with the arrows or WASD, eat, grow and speed up. A fixed-step scene script, onInput, a pool of 120 segments and a saved best score. No physics at all.",
+   "tags": [
+    "Arcade",
+    "Grid",
+    "Scene script",
+    "Save"
+   ],
+   "file": "snake/Grid Snake.pixieditor",
+   "thumbnail": "snake/thumbnail.png"
+  },
+  {
+   "id": "runner",
+   "title": "Desert Dash",
+   "description": "An endless runner that gets faster: jump the cacti with Space, a click or a tap. Motion and collisions are written by hand in one scene script (no physics engine), with parallax dunes and clouds and a saved best distance.",
+   "tags": [
+    "Runner",
+    "Touch",
+    "Scene script",
+    "Parallax"
+   ],
+   "file": "runner/Desert Dash.pixieditor",
+   "thumbnail": "runner/thumbnail.png"
+  },
+  {
+   "id": "memory",
+   "title": "Pair Up",
+   "description": "A memory puzzle: flip two cards, keep the pairs, clear the board in as few moves as you can. Cards shuffle every game; card scripts send messages to a scene script that runs the rules, the timer and the move counter.",
+   "tags": [
+    "Puzzle",
+    "Messages",
+    "Tween",
+    "Mouse"
+   ],
+   "file": "memory/Pair Up.pixieditor",
+   "thumbnail": "memory/thumbnail.png"
+  },
+  {
+   "id": "orbits",
+   "title": "Gravity Well",
+   "description": "Planets orbit a sun under a gravity force written in a scene script (and pull on each other a little). Drag a planet and let go to fling it into a new orbit. Physics with world gravity off, a zoomed-out camera and glow.",
+   "tags": [
+    "Simulation",
+    "Forces",
+    "Drag",
+    "Camera"
+   ],
+   "file": "orbits/Gravity Well.pixieditor",
+   "thumbnail": "orbits/thumbnail.png"
+  },
+  {
+   "id": "story",
+   "title": "The Lighthouse",
+   "description": "A short branching story with two endings. A state machine shows each passage and its choices; every line is localized in English and Turkish, switchable in the game. Ambient tweens animate the sea and the beam.",
+   "tags": [
+    "Story",
+    "State machine",
+    "Localization",
+    "UI"
+   ],
+   "file": "story/The Lighthouse.pixieditor",
+   "thumbnail": "story/thumbnail.png"
+  },
+  {
+   "id": "maze",
+   "title": "Maze Escape",
+   "description": "A top-down maze: move in any direction with the arrows or WASD, pick up keys to open matching doors, dodge patrolling guards and reach the green exit. Two input axes, sensors, kinematic patrols and a zoomed camera that follows you.",
+   "tags": [
+    "Top-down",
+    "Input",
+    "Physics",
+    "Camera"
+   ],
+   "file": "maze/Maze Escape.pixieditor",
+   "thumbnail": "maze/thumbnail.png"
+  }
+ ]
+}

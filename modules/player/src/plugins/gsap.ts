@@ -1,0 +1,6 @@
+import {TweenSession} from '@rewrite/tween';
+import {AnimationSession} from '@rewrite/animation';
+import {gsapProvider} from '@rewrite/tween-gsap';
+import {gameChannels} from '../contracts';
+import type {PlayerPlugin} from '../plugin';
+export default{id:'gsap',create(c){let tween:TweenSession|undefined,animation:AnimationSession|undefined;return{systems(){tween=new TweenSession(c.entities,gameChannels,gsapProvider);animation=new AnimationSession(c.entities,gameChannels,gsapProvider,{event:e=>{if(e.kind==='complete')c.emit({type:'animation.complete',sourceId:e.playerId,silent:e.silent});if(e.kind==='marker'){c.emit({type:'animation.marker',sourceId:e.playerId,event:e.name,silent:e.silent});if(e.action)try{c.invoke(e.action.service,e.action.method,e.action.targetId);}catch(error){c.report(String(error));}if(e.cue)c.act?.(e.cue,e.silent,e.ownerId);if(e.message)c.publish({type:'script.message',value:{message:e.message,data:{marker:e.name}}});}}});c.controllers.set('tween',tween);c.controllers.set('animation',animation);return[tween.system,animation.system];},errors:()=>[...tween?.errors??[],...animation?.errors??[]],clear(){tween=undefined;animation=undefined;},dispose(){}};}}satisfies PlayerPlugin;

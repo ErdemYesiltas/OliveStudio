@@ -1,0 +1,2087 @@
+{
+  "formatVersion": 1,
+  "name": "Sky Hopper",
+  "entrySceneId": "s-level",
+  "scenes": [
+    {
+      "formatVersion": 1,
+      "id": "s-level",
+      "name": "Level 1",
+      "entities": [
+        {
+          "id": "hill-0",
+          "name": "Hill",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "hill-0-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 200,
+                "y": 470,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "hill-0-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.55,
+                "kind": "ellipse",
+                "width": 520,
+                "height": 220,
+                "color": "#9fd77a",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "hill-1",
+          "name": "Hill",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "hill-1-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 900,
+                "y": 480,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "hill-1-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.55,
+                "kind": "ellipse",
+                "width": 640,
+                "height": 200,
+                "color": "#9fd77a",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "hill-2",
+          "name": "Hill",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "hill-2-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 1700,
+                "y": 470,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "hill-2-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.55,
+                "kind": "ellipse",
+                "width": 600,
+                "height": 240,
+                "color": "#9fd77a",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "hill-3",
+          "name": "Hill",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "hill-3-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 2300,
+                "y": 480,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "hill-3-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.55,
+                "kind": "ellipse",
+                "width": 520,
+                "height": 200,
+                "color": "#9fd77a",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "cloud-0",
+          "name": "Cloud",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "cloud-0-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 260,
+                "y": 110,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "cloud-0-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.85,
+                "kind": "ellipse",
+                "width": 150,
+                "height": 52,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "cloud-1",
+          "name": "Cloud",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "cloud-1-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 780,
+                "y": 80,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "cloud-1-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.85,
+                "kind": "ellipse",
+                "width": 150,
+                "height": 52,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "cloud-2",
+          "name": "Cloud",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "cloud-2-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 1300,
+                "y": 130,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "cloud-2-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.85,
+                "kind": "ellipse",
+                "width": 150,
+                "height": 52,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "cloud-3",
+          "name": "Cloud",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "cloud-3-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 1850,
+                "y": 90,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "cloud-3-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.85,
+                "kind": "ellipse",
+                "width": 150,
+                "height": 52,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "cloud-4",
+          "name": "Cloud",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "cloud-4-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 2300,
+                "y": 120,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "cloud-4-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.85,
+                "kind": "ellipse",
+                "width": 150,
+                "height": 52,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "ground-0",
+          "name": "Ground",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "ground-0-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 300,
+                "y": 520,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "ground-0-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 600,
+                "height": 40,
+                "color": "#4d8b31",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#2f5a1c",
+                "strokeWidth": 4
+              }
+            },
+            {
+              "id": "ground-0-box",
+              "type": "physics.boxCollider2d",
+              "version": 1,
+              "data": {
+                "width": 600,
+                "height": 40,
+                "offsetX": 0,
+                "offsetY": 0,
+                "sensor": false,
+                "chamfer": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "ground-1",
+          "name": "Ground",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "ground-1-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 1000,
+                "y": 520,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "ground-1-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 500,
+                "height": 40,
+                "color": "#4d8b31",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#2f5a1c",
+                "strokeWidth": 4
+              }
+            },
+            {
+              "id": "ground-1-box",
+              "type": "physics.boxCollider2d",
+              "version": 1,
+              "data": {
+                "width": 500,
+                "height": 40,
+                "offsetX": 0,
+                "offsetY": 0,
+                "sensor": false,
+                "chamfer": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "ground-2",
+          "name": "Ground",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "ground-2-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 1650,
+                "y": 520,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "ground-2-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 600,
+                "height": 40,
+                "color": "#4d8b31",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#2f5a1c",
+                "strokeWidth": 4
+              }
+            },
+            {
+              "id": "ground-2-box",
+              "type": "physics.boxCollider2d",
+              "version": 1,
+              "data": {
+                "width": 600,
+                "height": 40,
+                "offsetX": 0,
+                "offsetY": 0,
+                "sensor": false,
+                "chamfer": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "ground-3",
+          "name": "Ground",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "ground-3-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 2250,
+                "y": 520,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "ground-3-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 300,
+                "height": 40,
+                "color": "#4d8b31",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#2f5a1c",
+                "strokeWidth": 4
+              }
+            },
+            {
+              "id": "ground-3-box",
+              "type": "physics.boxCollider2d",
+              "version": 1,
+              "data": {
+                "width": 300,
+                "height": 40,
+                "offsetX": 0,
+                "offsetY": 0,
+                "sensor": false,
+                "chamfer": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "ledge-0",
+          "name": "Ledge",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "ledge-0-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 650,
+                "y": 410,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "ledge-0-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 160,
+                "height": 22,
+                "color": "#a0703c",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#6b4521",
+                "strokeWidth": 3
+              }
+            },
+            {
+              "id": "ledge-0-box",
+              "type": "physics.boxCollider2d",
+              "version": 1,
+              "data": {
+                "width": 160,
+                "height": 22,
+                "offsetX": 0,
+                "offsetY": 0,
+                "sensor": false,
+                "chamfer": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "ledge-1",
+          "name": "Ledge",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "ledge-1-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 860,
+                "y": 330,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "ledge-1-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 140,
+                "height": 22,
+                "color": "#a0703c",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#6b4521",
+                "strokeWidth": 3
+              }
+            },
+            {
+              "id": "ledge-1-box",
+              "type": "physics.boxCollider2d",
+              "version": 1,
+              "data": {
+                "width": 140,
+                "height": 22,
+                "offsetX": 0,
+                "offsetY": 0,
+                "sensor": false,
+                "chamfer": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "ledge-2",
+          "name": "Ledge",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "ledge-2-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 1350,
+                "y": 380,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "ledge-2-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 160,
+                "height": 22,
+                "color": "#a0703c",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#6b4521",
+                "strokeWidth": 3
+              }
+            },
+            {
+              "id": "ledge-2-box",
+              "type": "physics.boxCollider2d",
+              "version": 1,
+              "data": {
+                "width": 160,
+                "height": 22,
+                "offsetX": 0,
+                "offsetY": 0,
+                "sensor": false,
+                "chamfer": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "ledge-3",
+          "name": "Ledge",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "ledge-3-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 1560,
+                "y": 290,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "ledge-3-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 120,
+                "height": 22,
+                "color": "#a0703c",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#6b4521",
+                "strokeWidth": 3
+              }
+            },
+            {
+              "id": "ledge-3-box",
+              "type": "physics.boxCollider2d",
+              "version": 1,
+              "data": {
+                "width": 120,
+                "height": 22,
+                "offsetX": 0,
+                "offsetY": 0,
+                "sensor": false,
+                "chamfer": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "ledge-4",
+          "name": "Ledge",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "ledge-4-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 1950,
+                "y": 350,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "ledge-4-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 180,
+                "height": 22,
+                "color": "#a0703c",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#6b4521",
+                "strokeWidth": 3
+              }
+            },
+            {
+              "id": "ledge-4-box",
+              "type": "physics.boxCollider2d",
+              "version": 1,
+              "data": {
+                "width": 180,
+                "height": 22,
+                "offsetX": 0,
+                "offsetY": 0,
+                "sensor": false,
+                "chamfer": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "coin-0",
+          "name": "Coin",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "coin-0-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 420,
+                "y": 440,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "coin-0-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "ellipse",
+                "width": 24,
+                "height": 24,
+                "color": "#ffd54a",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#c79a00",
+                "strokeWidth": 3
+              }
+            },
+            {
+              "id": "coin-0-cc",
+              "type": "physics.circleCollider2d",
+              "version": 1,
+              "data": {
+                "radius": 12,
+                "offsetX": 0,
+                "offsetY": 0,
+                "sensor": true
+              }
+            },
+            {
+              "id": "coin-0-tw",
+              "type": "tween.player",
+              "version": 1,
+              "data": {
+                "duration": 0.6,
+                "delay": 0,
+                "ease": "sine.inOut",
+                "repeat": 100,
+                "yoyo": true,
+                "autoplay": true,
+                "tracks": [
+                  {
+                    "id": "coin-0-k0",
+                    "entityId": "coin-0",
+                    "componentId": "coin-0-t",
+                    "property": "y",
+                    "from": 440,
+                    "to": 432
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "coin-1",
+          "name": "Coin",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "coin-1-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 650,
+                "y": 360,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "coin-1-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "ellipse",
+                "width": 24,
+                "height": 24,
+                "color": "#ffd54a",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#c79a00",
+                "strokeWidth": 3
+              }
+            },
+            {
+              "id": "coin-1-cc",
+              "type": "physics.circleCollider2d",
+              "version": 1,
+              "data": {
+                "radius": 12,
+                "offsetX": 0,
+                "offsetY": 0,
+                "sensor": true
+              }
+            },
+            {
+              "id": "coin-1-tw",
+              "type": "tween.player",
+              "version": 1,
+              "data": {
+                "duration": 0.6,
+                "delay": 0.07,
+                "ease": "sine.inOut",
+                "repeat": 100,
+                "yoyo": true,
+                "autoplay": true,
+                "tracks": [
+                  {
+                    "id": "coin-1-k0",
+                    "entityId": "coin-1",
+                    "componentId": "coin-1-t",
+                    "property": "y",
+                    "from": 360,
+                    "to": 352
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "coin-2",
+          "name": "Coin",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "coin-2-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 860,
+                "y": 280,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "coin-2-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "ellipse",
+                "width": 24,
+                "height": 24,
+                "color": "#ffd54a",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#c79a00",
+                "strokeWidth": 3
+              }
+            },
+            {
+              "id": "coin-2-cc",
+              "type": "physics.circleCollider2d",
+              "version": 1,
+              "data": {
+                "radius": 12,
+                "offsetX": 0,
+                "offsetY": 0,
+                "sensor": true
+              }
+            },
+            {
+              "id": "coin-2-tw",
+              "type": "tween.player",
+              "version": 1,
+              "data": {
+                "duration": 0.6,
+                "delay": 0.14,
+                "ease": "sine.inOut",
+                "repeat": 100,
+                "yoyo": true,
+                "autoplay": true,
+                "tracks": [
+                  {
+                    "id": "coin-2-k0",
+                    "entityId": "coin-2",
+                    "componentId": "coin-2-t",
+                    "property": "y",
+                    "from": 280,
+                    "to": 272
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "coin-3",
+          "name": "Coin",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "coin-3-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 1000,
+                "y": 440,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "coin-3-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "ellipse",
+                "width": 24,
+                "height": 24,
+                "color": "#ffd54a",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#c79a00",
+                "strokeWidth": 3
+              }
+            },
+            {
+              "id": "coin-3-cc",
+              "type": "physics.circleCollider2d",
+              "version": 1,
+              "data": {
+                "radius": 12,
+                "offsetX": 0,
+                "offsetY": 0,
+                "sensor": true
+              }
+            },
+            {
+              "id": "coin-3-tw",
+              "type": "tween.player",
+              "version": 1,
+              "data": {
+                "duration": 0.6,
+                "delay": 0.21000000000000002,
+                "ease": "sine.inOut",
+                "repeat": 100,
+                "yoyo": true,
+                "autoplay": true,
+                "tracks": [
+                  {
+                    "id": "coin-3-k0",
+                    "entityId": "coin-3",
+                    "componentId": "coin-3-t",
+                    "property": "y",
+                    "from": 440,
+                    "to": 432
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "coin-4",
+          "name": "Coin",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "coin-4-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 1350,
+                "y": 330,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "coin-4-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "ellipse",
+                "width": 24,
+                "height": 24,
+                "color": "#ffd54a",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#c79a00",
+                "strokeWidth": 3
+              }
+            },
+            {
+              "id": "coin-4-cc",
+              "type": "physics.circleCollider2d",
+              "version": 1,
+              "data": {
+                "radius": 12,
+                "offsetX": 0,
+                "offsetY": 0,
+                "sensor": true
+              }
+            },
+            {
+              "id": "coin-4-tw",
+              "type": "tween.player",
+              "version": 1,
+              "data": {
+                "duration": 0.6,
+                "delay": 0.28,
+                "ease": "sine.inOut",
+                "repeat": 100,
+                "yoyo": true,
+                "autoplay": true,
+                "tracks": [
+                  {
+                    "id": "coin-4-k0",
+                    "entityId": "coin-4",
+                    "componentId": "coin-4-t",
+                    "property": "y",
+                    "from": 330,
+                    "to": 322
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "coin-5",
+          "name": "Coin",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "coin-5-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 1560,
+                "y": 240,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "coin-5-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "ellipse",
+                "width": 24,
+                "height": 24,
+                "color": "#ffd54a",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#c79a00",
+                "strokeWidth": 3
+              }
+            },
+            {
+              "id": "coin-5-cc",
+              "type": "physics.circleCollider2d",
+              "version": 1,
+              "data": {
+                "radius": 12,
+                "offsetX": 0,
+                "offsetY": 0,
+                "sensor": true
+              }
+            },
+            {
+              "id": "coin-5-tw",
+              "type": "tween.player",
+              "version": 1,
+              "data": {
+                "duration": 0.6,
+                "delay": 0.35000000000000003,
+                "ease": "sine.inOut",
+                "repeat": 100,
+                "yoyo": true,
+                "autoplay": true,
+                "tracks": [
+                  {
+                    "id": "coin-5-k0",
+                    "entityId": "coin-5",
+                    "componentId": "coin-5-t",
+                    "property": "y",
+                    "from": 240,
+                    "to": 232
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "coin-6",
+          "name": "Coin",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "coin-6-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 1700,
+                "y": 440,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "coin-6-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "ellipse",
+                "width": 24,
+                "height": 24,
+                "color": "#ffd54a",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#c79a00",
+                "strokeWidth": 3
+              }
+            },
+            {
+              "id": "coin-6-cc",
+              "type": "physics.circleCollider2d",
+              "version": 1,
+              "data": {
+                "radius": 12,
+                "offsetX": 0,
+                "offsetY": 0,
+                "sensor": true
+              }
+            },
+            {
+              "id": "coin-6-tw",
+              "type": "tween.player",
+              "version": 1,
+              "data": {
+                "duration": 0.6,
+                "delay": 0.42000000000000004,
+                "ease": "sine.inOut",
+                "repeat": 100,
+                "yoyo": true,
+                "autoplay": true,
+                "tracks": [
+                  {
+                    "id": "coin-6-k0",
+                    "entityId": "coin-6",
+                    "componentId": "coin-6-t",
+                    "property": "y",
+                    "from": 440,
+                    "to": 432
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "coin-7",
+          "name": "Coin",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "coin-7-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 1950,
+                "y": 300,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "coin-7-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "ellipse",
+                "width": 24,
+                "height": 24,
+                "color": "#ffd54a",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#c79a00",
+                "strokeWidth": 3
+              }
+            },
+            {
+              "id": "coin-7-cc",
+              "type": "physics.circleCollider2d",
+              "version": 1,
+              "data": {
+                "radius": 12,
+                "offsetX": 0,
+                "offsetY": 0,
+                "sensor": true
+              }
+            },
+            {
+              "id": "coin-7-tw",
+              "type": "tween.player",
+              "version": 1,
+              "data": {
+                "duration": 0.6,
+                "delay": 0.49000000000000005,
+                "ease": "sine.inOut",
+                "repeat": 100,
+                "yoyo": true,
+                "autoplay": true,
+                "tracks": [
+                  {
+                    "id": "coin-7-k0",
+                    "entityId": "coin-7",
+                    "componentId": "coin-7-t",
+                    "property": "y",
+                    "from": 300,
+                    "to": 292
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "coin-8",
+          "name": "Coin",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "coin-8-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 2150,
+                "y": 440,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "coin-8-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "ellipse",
+                "width": 24,
+                "height": 24,
+                "color": "#ffd54a",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#c79a00",
+                "strokeWidth": 3
+              }
+            },
+            {
+              "id": "coin-8-cc",
+              "type": "physics.circleCollider2d",
+              "version": 1,
+              "data": {
+                "radius": 12,
+                "offsetX": 0,
+                "offsetY": 0,
+                "sensor": true
+              }
+            },
+            {
+              "id": "coin-8-tw",
+              "type": "tween.player",
+              "version": 1,
+              "data": {
+                "duration": 0.6,
+                "delay": 0.56,
+                "ease": "sine.inOut",
+                "repeat": 100,
+                "yoyo": true,
+                "autoplay": true,
+                "tracks": [
+                  {
+                    "id": "coin-8-k0",
+                    "entityId": "coin-8",
+                    "componentId": "coin-8-t",
+                    "property": "y",
+                    "from": 440,
+                    "to": 432
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "goal",
+          "name": "Goal",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "goal-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 2330,
+                "y": 440,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "goal-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 14,
+                "height": 120,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#444444",
+                "strokeWidth": 2
+              }
+            },
+            {
+              "id": "goal-box",
+              "type": "physics.boxCollider2d",
+              "version": 1,
+              "data": {
+                "width": 30,
+                "height": 120,
+                "offsetX": 0,
+                "offsetY": 0,
+                "sensor": true,
+                "chamfer": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "flag",
+          "name": "Flag",
+          "parentId": "goal",
+          "active": true,
+          "components": [
+            {
+              "id": "flag-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 28,
+                "y": -38,
+                "rotation": 90,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "flag-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "triangle",
+                "width": 44,
+                "height": 34,
+                "color": "#ff4a6b",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "hero",
+          "name": "Hero",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "hero-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 120,
+                "y": 420,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "hero-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 34,
+                "height": 46,
+                "color": "#ff6b4a",
+                "rounded": 8,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#9c2f17",
+                "strokeWidth": 3
+              }
+            },
+            {
+              "id": "hero-rb",
+              "type": "physics.rigidBody2d",
+              "version": 1,
+              "data": {
+                "bodyType": "dynamic",
+                "density": 0.001,
+                "friction": 0,
+                "restitution": 0,
+                "airFriction": 0.01,
+                "lockRotation": true,
+                "velocityX": 0,
+                "velocityY": 0,
+                "angularVelocity": 0,
+                "frictionStatic": 0,
+                "gravityScale": 1,
+                "mass": 0,
+                "layer": 0,
+                "mask": 65535,
+                "group": 0,
+                "draggable": false,
+                "bullet": false
+              }
+            },
+            {
+              "id": "hero-box",
+              "type": "physics.boxCollider2d",
+              "version": 1,
+              "data": {
+                "width": 34,
+                "height": 46,
+                "offsetX": 0,
+                "offsetY": 0,
+                "sensor": false,
+                "chamfer": 0
+              }
+            },
+            {
+              "id": "hero-b",
+              "type": "scripts.behaviour",
+              "version": 1,
+              "data": {
+                "scriptId": "s-hero",
+                "params": {},
+                "refs": {}
+              }
+            }
+          ]
+        },
+        {
+          "id": "camera",
+          "name": "Camera",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "camera-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 480,
+                "y": 270,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "camera-cam",
+              "type": "pixi.camera2d",
+              "version": 1,
+              "data": {
+                "zoom": 1,
+                "rotate": false,
+                "target": "hero",
+                "offsetX": 0,
+                "offsetY": 0,
+                "smoothing": 8,
+                "deadzoneWidth": 160,
+                "deadzoneHeight": 120,
+                "limit": true,
+                "limitLeft": 0,
+                "limitTop": 0,
+                "limitRight": 2400,
+                "limitBottom": 540
+              }
+            }
+          ]
+        },
+        {
+          "id": "hud",
+          "name": "Coins label",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "hud-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 90,
+                "y": 32,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "hud-x",
+              "type": "pixi.text",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "text": "Coins: {coins}",
+                "fontSize": 26,
+                "color": "#ffffff",
+                "font": "",
+                "fontWeight": "bold",
+                "fontStyle": "normal",
+                "align": "center",
+                "letterSpacing": 0,
+                "strokeColor": "#1b3a57",
+                "strokeWidth": 5
+              }
+            },
+            {
+              "id": "hud-hud",
+              "type": "pixi.screenSpace",
+              "version": 1,
+              "data": {
+                "anchor": "top-left"
+              }
+            }
+          ]
+        },
+        {
+          "id": "hint",
+          "name": "Controls hint",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "hint-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 480,
+                "y": 512,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "hint-x",
+              "type": "pixi.text",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "text": "← → or A D to run · Space to jump",
+                "fontSize": 18,
+                "color": "#1b3a57",
+                "font": "",
+                "fontWeight": "normal",
+                "fontStyle": "normal",
+                "align": "center",
+                "letterSpacing": 0,
+                "strokeColor": "#000000",
+                "strokeWidth": 0
+              }
+            },
+            {
+              "id": "hint-hud",
+              "type": "pixi.screenSpace",
+              "version": 1,
+              "data": {
+                "anchor": "bottom"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "formatVersion": 1,
+      "id": "s-win",
+      "name": "You win",
+      "entities": [
+        {
+          "id": "s-win-title",
+          "name": "Title",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "s-win-title-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 480,
+                "y": 200,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "s-win-title-x",
+              "type": "pixi.text",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "text": "You win!",
+                "fontSize": 64,
+                "color": "#ffd54a",
+                "font": "",
+                "fontWeight": "bold",
+                "fontStyle": "normal",
+                "align": "center",
+                "letterSpacing": 0,
+                "strokeColor": "#000000",
+                "strokeWidth": 6
+              }
+            }
+          ]
+        },
+        {
+          "id": "s-win-line",
+          "name": "Result",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "s-win-line-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 480,
+                "y": 280,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "s-win-line-x",
+              "type": "pixi.text",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "text": "Coins collected: {coins}",
+                "fontSize": 26,
+                "color": "#e8ecf4",
+                "font": "",
+                "fontWeight": "normal",
+                "fontStyle": "normal",
+                "align": "center",
+                "letterSpacing": 0,
+                "strokeColor": "#000000",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "s-win-again",
+          "name": "Play again",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "s-win-again-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 480,
+                "y": 370,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "s-win-again-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 220,
+                "height": 46,
+                "color": "#7cf3ff",
+                "rounded": 12,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            },
+            {
+              "id": "s-win-again-r",
+              "type": "interactions.bindings",
+              "version": 1,
+              "data": {
+                "rules": [
+                  {
+                    "id": "s-win-again-go",
+                    "trigger": {
+                      "event": "",
+                      "type": "pointer.click",
+                      "sourceId": "s-win-again"
+                    },
+                    "actions": [
+                      {
+                        "id": "s-win-again-go-0",
+                        "value": true,
+                        "type": "global.set",
+                        "targetId": "g-coins",
+                        "to": 0
+                      },
+                      {
+                        "id": "s-win-again-go-1",
+                        "value": true,
+                        "type": "scene.change",
+                        "targetId": "s-level"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "s-win-again-label",
+          "name": "Play again label",
+          "parentId": "s-win-again",
+          "active": true,
+          "components": [
+            {
+              "id": "s-win-again-label-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "s-win-again-label-x",
+              "type": "pixi.text",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "text": "Play again",
+                "fontSize": 18,
+                "color": "#10131a",
+                "font": "",
+                "fontWeight": "bold",
+                "fontStyle": "normal",
+                "align": "center",
+                "letterSpacing": 0,
+                "strokeColor": "#000000",
+                "strokeWidth": 0
+              }
+            },
+            {
+              "id": "s-win-again-label-r",
+              "type": "interactions.bindings",
+              "version": 1,
+              "data": {
+                "rules": [
+                  {
+                    "id": "s-win-again-label-go",
+                    "trigger": {
+                      "event": "",
+                      "type": "pointer.click",
+                      "sourceId": "s-win-again-label"
+                    },
+                    "actions": [
+                      {
+                        "id": "s-win-again-label-go-0",
+                        "value": true,
+                        "type": "global.set",
+                        "targetId": "g-coins",
+                        "to": 0
+                      },
+                      {
+                        "id": "s-win-again-label-go-1",
+                        "value": true,
+                        "type": "scene.change",
+                        "targetId": "s-level"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "modules": {
+    "settings": "1.0.0",
+    "project": "1.0.0",
+    "scene": "1.0.0",
+    "assets": "1.0.0",
+    "pixi": "1.0.0",
+    "layout": "1.0.0",
+    "ai-comfy": "1.0.0",
+    "ai-lm": "1.0.0",
+    "assetpack": "1.0.0",
+    "audio": "1.0.0",
+    "howler": "1.0.0",
+    "tween": "1.0.0",
+    "gsap": "1.0.0",
+    "tween-pixi": "1.0.0",
+    "animation": "1.0.0",
+    "physics": "1.0.0",
+    "matter": "1.0.0",
+    "spine": "1.0.0",
+    "spine-audio": "1.0.0",
+    "interactions": "1.0.0",
+    "interaction-media": "1.0.0",
+    "scripts": "1.0.0",
+    "input": "1.0.0",
+    "build": "1.0.0",
+    "html-export": "1.0.0",
+    "prefabs": "1.0.0",
+    "project-ui": "1.0.0",
+    "recovery": "1.0.0",
+    "studio": "1.0.0"
+  },
+  "providers": {
+    "audio": "howler",
+    "tween": "gsap",
+    "physics": "matter",
+    "render": "pixi"
+  },
+  "extensions": {
+    "pixi.render": {
+      "version": 1,
+      "background": "#8fd3ff"
+    },
+    "physics.world": {
+      "gravityX": 0,
+      "gravityY": 1400,
+      "timeScale": 1,
+      "sleeping": false,
+      "positionIterations": 8,
+      "velocityIterations": 6,
+      "walls": false,
+      "layers": [
+        "Default"
+      ]
+    },
+    "interactions.globals": {
+      "version": 1,
+      "items": [
+        {
+          "id": "g-move",
+          "name": "move",
+          "type": "number",
+          "initial": 0
+        },
+        {
+          "id": "g-coins",
+          "name": "coins",
+          "type": "number",
+          "initial": 0
+        }
+      ]
+    },
+    "input.map": {
+      "version": 1,
+      "deadzone": 0.2,
+      "actions": [
+        {
+          "id": "a-move",
+          "name": "Move",
+          "kind": "axis",
+          "bindings": [
+            {
+              "type": "keyAxis",
+              "negative": "ArrowLeft",
+              "positive": "ArrowRight"
+            },
+            {
+              "type": "keyAxis",
+              "negative": "KeyA",
+              "positive": "KeyD"
+            }
+          ],
+          "globalId": "g-move"
+        },
+        {
+          "id": "a-jump",
+          "name": "Jump",
+          "kind": "button",
+          "bindings": [
+            {
+              "type": "key",
+              "code": "Space"
+            },
+            {
+              "type": "key",
+              "code": "ArrowUp"
+            },
+            {
+              "type": "key",
+              "code": "KeyW"
+            }
+          ]
+        }
+      ]
+    },
+    "scripts.library": {
+      "version": 1,
+      "items": [
+        {
+          "id": "s-hero",
+          "name": "Hero",
+          "source": "export const params = { speed: param.number(280), jump: param.number(640) };\nexport function start(self: GameObject) { self.state.spawn = { x: self.x, y: self.y }; }\nexport function update(self: GameObject) {\n  const feet = (dx: number) => game.physics.raycast(self.x + dx, self.y + 24, self.x + dx, self.y + 32) !== null;\n  const grounded = feet(-14) || feet(14);\n  const jump = game.isDown('Jump');\n  let vy = self.body.velocity.y;\n  if (grounded && jump && !self.state.held) vy = -self.params.jump;\n  self.state.held = jump;\n  self.body.velocity = { x: globals.move * self.params.speed, y: vy };\n  if (self.y > 720) { self.body.teleport(self.state.spawn.x, self.state.spawn.y); self.body.velocity = { x: 0, y: 0 }; game.camera.shake(12, 0.3); }\n}\nexport function onCollision(self: GameObject, other: GameObject) {\n  if (other.name === 'Coin' && other.active) { other.active = false; globals.coins += 1; }\n  if (other.name === 'Goal') game.changeScene('You win');\n}",
+          "code": "\"use strict\";Object.defineProperty(exports, \"__esModule\", {value: true}); const params = { speed: param.number(280), jump: param.number(640) }; exports.params = params;\n function start(self) { self.state.spawn = { x: self.x, y: self.y }; } exports.start = start;\n function update(self) {\n  const feet = (dx) => game.physics.raycast(self.x + dx, self.y + 24, self.x + dx, self.y + 32) !== null;\n  const grounded = feet(-14) || feet(14);\n  const jump = game.isDown('Jump');\n  let vy = self.body.velocity.y;\n  if (grounded && jump && !self.state.held) vy = -self.params.jump;\n  self.state.held = jump;\n  self.body.velocity = { x: globals.move * self.params.speed, y: vy };\n  if (self.y > 720) { self.body.teleport(self.state.spawn.x, self.state.spawn.y); self.body.velocity = { x: 0, y: 0 }; game.camera.shake(12, 0.3); }\n} exports.update = update;\n function onCollision(self, other) {\n  if (other.name === 'Coin' && other.active) { other.active = false; globals.coins += 1; }\n  if (other.name === 'Goal') game.changeScene('You win');\n} exports.onCollision = onCollision;"
+        }
+      ]
+    }
+  }
+}

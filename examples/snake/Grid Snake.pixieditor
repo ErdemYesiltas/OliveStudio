@@ -1,0 +1,4993 @@
+{
+  "formatVersion": 1,
+  "name": "Grid Snake",
+  "entrySceneId": "s-snake",
+  "scenes": [
+    {
+      "formatVersion": 1,
+      "id": "s-snake",
+      "name": "Snake",
+      "entities": [
+        {
+          "id": "board",
+          "name": "Board",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "board-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 480,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "board-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 960,
+                "height": 510,
+                "color": "#101c17",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-0",
+          "name": "Segment",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "seg-0-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 255,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-0-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#36e270",
+                "rounded": 9,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-1",
+          "name": "Segment",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "seg-1-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 225,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-1-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#36e275",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-2",
+          "name": "Segment",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "seg-2-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 195,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-2-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#36e27b",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-3",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-3-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 165,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-3-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#36e281",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-4",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-4-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 135,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-4-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#36e287",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-5",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-5-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 105,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-5-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#36e28c",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-6",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-6-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 75,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-6-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#36e292",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-7",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-7-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 45,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-7-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#36e298",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-8",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-8-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 15,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-8-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#36e29d",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-9",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-9-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -15,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-9-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#36e2a3",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-10",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-10-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -45,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-10-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#36e2a9",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-11",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-11-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -75,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-11-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#36e2af",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-12",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-12-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -105,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-12-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#36e2b4",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-13",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-13-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -135,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-13-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#36e2ba",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-14",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-14-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -165,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-14-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#36e2c0",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-15",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-15-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -195,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-15-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#36e2c6",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-16",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-16-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -225,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-16-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#36e2cb",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-17",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-17-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -255,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-17-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#36e2d1",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-18",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-18-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -285,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-18-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#36e2d7",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-19",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-19-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -315,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-19-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#36e2dd",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-20",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-20-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -345,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-20-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#36e2e2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-21",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-21-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -375,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-21-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#36dde2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-22",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-22-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -405,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-22-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#36d7e2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-23",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-23-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -435,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-23-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#36d1e2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-24",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-24-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -465,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-24-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#36cbe2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-25",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-25-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -495,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-25-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#36c6e2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-26",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-26-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -525,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-26-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#36c0e2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-27",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-27-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -555,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-27-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#36bae2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-28",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-28-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -585,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-28-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#36b4e2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-29",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-29-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -615,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-29-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#36afe2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-30",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-30-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -645,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-30-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#36a9e2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-31",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-31-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -675,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-31-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#36a3e2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-32",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-32-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -705,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-32-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#369de2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-33",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-33-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -735,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-33-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#3698e2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-34",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-34-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -765,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-34-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#3692e2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-35",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-35-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -795,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-35-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#368ce2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-36",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-36-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -825,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-36-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#3687e2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-37",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-37-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -855,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-37-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#3681e2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-38",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-38-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -885,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-38-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#367be2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-39",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-39-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -915,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-39-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#3675e2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-40",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-40-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -945,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-40-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#3670e2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-41",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-41-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -975,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-41-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#366ae2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-42",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-42-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -1005,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-42-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#3664e2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-43",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-43-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -1035,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-43-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#365ee2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-44",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-44-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -1065,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-44-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#3659e2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-45",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-45-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -1095,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-45-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#3653e2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-46",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-46-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -1125,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-46-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#364de2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-47",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-47-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -1155,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-47-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#3647e2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-48",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-48-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -1185,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-48-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#3642e2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-49",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-49-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -1215,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-49-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#363ce2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-50",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-50-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -1245,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-50-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#3636e2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-51",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-51-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -1275,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-51-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#3c36e2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-52",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-52-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -1305,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-52-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#4236e2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-53",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-53-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -1335,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-53-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#4736e2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-54",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-54-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -1365,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-54-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#4d36e2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-55",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-55-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -1395,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-55-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#5336e2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-56",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-56-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -1425,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-56-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#5936e2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-57",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-57-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -1455,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-57-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#5e36e2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-58",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-58-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -1485,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-58-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#6436e2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-59",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-59-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -1515,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-59-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#6a36e2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-60",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-60-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -1545,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-60-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#7036e2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-61",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-61-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -1575,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-61-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#7536e2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-62",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-62-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -1605,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-62-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#7b36e2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-63",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-63-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -1635,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-63-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#8136e2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-64",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-64-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -1665,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-64-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#8736e2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-65",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-65-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -1695,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-65-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#8c36e2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-66",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-66-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -1725,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-66-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#9236e2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-67",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-67-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -1755,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-67-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#9836e2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-68",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-68-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -1785,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-68-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#9d36e2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-69",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-69-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -1815,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-69-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#a336e2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-70",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-70-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -1845,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-70-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#a936e2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-71",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-71-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -1875,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-71-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#af36e2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-72",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-72-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -1905,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-72-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#b436e2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-73",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-73-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -1935,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-73-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#ba36e2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-74",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-74-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -1965,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-74-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#c036e2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-75",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-75-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -1995,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-75-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#c636e2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-76",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-76-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -2025,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-76-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#cb36e2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-77",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-77-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -2055,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-77-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#d136e2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-78",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-78-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -2085,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-78-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#d736e2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-79",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-79-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -2115,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-79-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#dd36e2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-80",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-80-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -2145,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-80-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#e236e2",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-81",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-81-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -2175,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-81-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#e236dd",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-82",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-82-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -2205,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-82-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#e236d7",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-83",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-83-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -2235,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-83-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#e236d1",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-84",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-84-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -2265,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-84-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#e236cb",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-85",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-85-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -2295,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-85-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#e236c6",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-86",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-86-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -2325,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-86-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#e236c0",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-87",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-87-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -2355,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-87-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#e236ba",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-88",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-88-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -2385,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-88-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#e236b4",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-89",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-89-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -2415,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-89-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#e236af",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-90",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-90-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -2445,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-90-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#e236a9",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-91",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-91-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -2475,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-91-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#e236a3",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-92",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-92-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -2505,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-92-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#e2369d",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-93",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-93-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -2535,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-93-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#e23698",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-94",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-94-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -2565,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-94-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#e23692",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-95",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-95-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -2595,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-95-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#e2368c",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-96",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-96-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -2625,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-96-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#e23687",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-97",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-97-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -2655,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-97-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#e23681",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-98",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-98-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -2685,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-98-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#e2367b",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-99",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-99-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -2715,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-99-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#e23675",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-100",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-100-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -2745,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-100-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#e23670",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-101",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-101-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -2775,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-101-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#e2366a",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-102",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-102-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -2805,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-102-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#e23664",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-103",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-103-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -2835,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-103-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#e2365e",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-104",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-104-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -2865,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-104-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#e23659",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-105",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-105-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -2895,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-105-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#e23653",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-106",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-106-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -2925,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-106-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#e2364d",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-107",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-107-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -2955,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-107-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#e23647",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-108",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-108-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -2985,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-108-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#e23642",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-109",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-109-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -3015,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-109-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#e2363c",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-110",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-110-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -3045,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-110-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#e23636",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-111",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-111-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -3075,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-111-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#e23c36",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-112",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-112-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -3105,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-112-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#e24236",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-113",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-113-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -3135,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-113-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#e24736",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-114",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-114-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -3165,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-114-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#e24d36",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-115",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-115-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -3195,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-115-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#e25336",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-116",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-116-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -3225,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-116-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#e25936",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-117",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-117-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -3255,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-117-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#e25e36",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-118",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-118-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -3285,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-118-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#e26436",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "seg-119",
+          "name": "Segment",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "seg-119-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -3315,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "seg-119-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 26,
+                "height": 26,
+                "color": "#e26a36",
+                "rounded": 6,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "food",
+          "name": "Food",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "food-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 495,
+                "y": 285,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "food-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "ellipse",
+                "width": 22,
+                "height": 22,
+                "color": "#ff4d6d",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            },
+            {
+              "id": "food-fx",
+              "type": "pixi.effects",
+              "version": 1,
+              "data": {
+                "blendMode": "normal",
+                "blur": 0,
+                "brightness": 1,
+                "contrast": 1,
+                "saturation": 1,
+                "hue": 0,
+                "noise": 0,
+                "shadowAlpha": 0,
+                "shadowColor": "#000000",
+                "shadowX": 4,
+                "shadowY": 4,
+                "shadowBlur": 2,
+                "glowStrength": 3,
+                "glowColor": "#ff4d6d",
+                "glowDistance": 12,
+                "outlineWidth": 0,
+                "outlineColor": "#ffffff",
+                "pixelate": 0
+              }
+            },
+            {
+              "id": "food-tw",
+              "type": "tween.player",
+              "version": 1,
+              "data": {
+                "duration": 0.4,
+                "delay": 0,
+                "ease": "sine.inOut",
+                "repeat": 100,
+                "yoyo": true,
+                "autoplay": true,
+                "tracks": [
+                  {
+                    "id": "food-k0",
+                    "entityId": "food",
+                    "componentId": "food-t",
+                    "property": "scaleX",
+                    "from": 0.8,
+                    "to": 1.15
+                  },
+                  {
+                    "id": "food-k1",
+                    "entityId": "food",
+                    "componentId": "food-t",
+                    "property": "scaleY",
+                    "from": 0.8,
+                    "to": 1.15
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "bar",
+          "name": "Top bar",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "bar-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 480,
+                "y": 15,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "bar-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 960,
+                "height": 30,
+                "color": "#0b1410",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "score",
+          "name": "Score",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "score-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 70,
+                "y": 15,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "score-x",
+              "type": "pixi.text",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "text": "Score {score}",
+                "fontSize": 18,
+                "color": "#b4f07a",
+                "font": "",
+                "fontWeight": "bold",
+                "fontStyle": "normal",
+                "align": "center",
+                "letterSpacing": 0,
+                "strokeColor": "#000000",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "best",
+          "name": "Best",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "best-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 890,
+                "y": 15,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "best-x",
+              "type": "pixi.text",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "text": "Best {best}",
+                "fontSize": 18,
+                "color": "#7f9c8a",
+                "font": "",
+                "fontWeight": "normal",
+                "fontStyle": "normal",
+                "align": "center",
+                "letterSpacing": 0,
+                "strokeColor": "#000000",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "help",
+          "name": "Help",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "help-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 480,
+                "y": 15,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "help-x",
+              "type": "pixi.text",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "text": "Arrows / WASD to steer · Space to restart",
+                "fontSize": 14,
+                "color": "#5f7a6a",
+                "font": "",
+                "fontWeight": "normal",
+                "fontStyle": "normal",
+                "align": "center",
+                "letterSpacing": 0,
+                "strokeColor": "#000000",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "over",
+          "name": "Game over",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "over-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 480,
+                "y": 280,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "over-x",
+              "type": "pixi.text",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "text": "Game over · Space to play again",
+                "fontSize": 34,
+                "color": "#ffffff",
+                "font": "",
+                "fontWeight": "bold",
+                "fontStyle": "normal",
+                "align": "center",
+                "letterSpacing": 0,
+                "strokeColor": "#101c17",
+                "strokeWidth": 8
+              }
+            }
+          ]
+        },
+        {
+          "id": "saver",
+          "name": "Best score",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "saver-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 20,
+                "y": 520,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "saver-r",
+              "type": "interactions.bindings",
+              "version": 1,
+              "data": {
+                "rules": [
+                  {
+                    "id": "load",
+                    "trigger": {
+                      "event": "",
+                      "type": "scene.start",
+                      "sourceId": "s-snake"
+                    },
+                    "actions": [
+                      {
+                        "id": "load-0",
+                        "value": true,
+                        "type": "save.read",
+                        "targetId": "save"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "store",
+                    "trigger": {
+                      "event": "",
+                      "type": "global.change",
+                      "sourceId": "g-best"
+                    },
+                    "actions": [
+                      {
+                        "id": "store-0",
+                        "value": true,
+                        "type": "save.write",
+                        "targetId": "save"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "modules": {
+    "settings": "1.0.0",
+    "project": "1.0.0",
+    "scene": "1.0.0",
+    "assets": "1.0.0",
+    "pixi": "1.0.0",
+    "layout": "1.0.0",
+    "ai-comfy": "1.0.0",
+    "ai-lm": "1.0.0",
+    "assetpack": "1.0.0",
+    "audio": "1.0.0",
+    "howler": "1.0.0",
+    "tween": "1.0.0",
+    "gsap": "1.0.0",
+    "tween-pixi": "1.0.0",
+    "animation": "1.0.0",
+    "physics": "1.0.0",
+    "matter": "1.0.0",
+    "spine": "1.0.0",
+    "spine-audio": "1.0.0",
+    "interactions": "1.0.0",
+    "interaction-media": "1.0.0",
+    "scripts": "1.0.0",
+    "input": "1.0.0",
+    "build": "1.0.0",
+    "html-export": "1.0.0",
+    "prefabs": "1.0.0",
+    "project-ui": "1.0.0",
+    "recovery": "1.0.0",
+    "studio": "1.0.0"
+  },
+  "providers": {
+    "audio": "howler",
+    "tween": "gsap",
+    "physics": "matter",
+    "render": "pixi"
+  },
+  "extensions": {
+    "pixi.render": {
+      "version": 1,
+      "background": "#0b1410"
+    },
+    "interactions.globals": {
+      "version": 1,
+      "items": [
+        {
+          "id": "g-score",
+          "name": "score",
+          "type": "number",
+          "initial": 0
+        },
+        {
+          "id": "g-best",
+          "name": "best",
+          "type": "number",
+          "initial": 0
+        }
+      ]
+    },
+    "input.map": {
+      "version": 1,
+      "deadzone": 0.2,
+      "actions": [
+        {
+          "id": "a-up",
+          "name": "Up",
+          "kind": "button",
+          "bindings": [
+            {
+              "type": "key",
+              "code": "ArrowUp"
+            },
+            {
+              "type": "key",
+              "code": "KeyW"
+            }
+          ]
+        },
+        {
+          "id": "a-down",
+          "name": "Down",
+          "kind": "button",
+          "bindings": [
+            {
+              "type": "key",
+              "code": "ArrowDown"
+            },
+            {
+              "type": "key",
+              "code": "KeyS"
+            }
+          ]
+        },
+        {
+          "id": "a-left",
+          "name": "Left",
+          "kind": "button",
+          "bindings": [
+            {
+              "type": "key",
+              "code": "ArrowLeft"
+            },
+            {
+              "type": "key",
+              "code": "KeyA"
+            }
+          ]
+        },
+        {
+          "id": "a-right",
+          "name": "Right",
+          "kind": "button",
+          "bindings": [
+            {
+              "type": "key",
+              "code": "ArrowRight"
+            },
+            {
+              "type": "key",
+              "code": "KeyD"
+            }
+          ]
+        },
+        {
+          "id": "a-restart",
+          "name": "Restart",
+          "kind": "button",
+          "bindings": [
+            {
+              "type": "key",
+              "code": "Space"
+            },
+            {
+              "type": "key",
+              "code": "Enter"
+            }
+          ]
+        }
+      ]
+    },
+    "scripts.library": {
+      "version": 1,
+      "items": [
+        {
+          "id": "s-snake",
+          "name": "SnakeGame",
+          "source": "export const params = { step: param.number(0.12, { label: 'Seconds per step' }) };\nconst CELL = 30, COLS = 32, ROWS = 17, TOP = 30;\nconst at = (c: number, r: number) => ({ x: c * CELL + CELL / 2, y: TOP + r * CELL + CELL / 2 });\nconst turns: Record<string, { c: number; r: number }> = { Up: { c: 0, r: -1 }, Down: { c: 0, r: 1 }, Left: { c: -1, r: 0 }, Right: { c: 1, r: 0 } };\nexport function start(self: SceneSelf) { reset(self); }\nfunction reset(self: SceneSelf) {\n  self.state.body = [{ c: 8, r: 8 }, { c: 7, r: 8 }, { c: 6, r: 8 }];\n  self.state.dir = self.state.next = { c: 1, r: 0 };\n  self.state.t = 0; self.state.dead = false; globals.score = 0;\n  game.find('Game over').active = false;\n  food(self); draw(self);\n}\nfunction food(self: SceneSelf) {\n  let c = 0, r = 0;\n  do { c = Math.floor(Math.random() * COLS); r = Math.floor(Math.random() * ROWS); } while (self.state.body.some((p: any) => p.c === c && p.r === r));\n  self.state.food = { c, r };\n  const f = game.find('Food'), p = at(c, r); f.x = p.x; f.y = p.y;\n}\nfunction draw(self: SceneSelf) {\n  game.findAll('Segment').forEach((s, i) => { const b = self.state.body[i]; s.active = !!b; if (b) { const p = at(b.c, b.r); s.x = p.x; s.y = p.y; } });\n}\nexport function onInput(self: SceneSelf, action: string, phase: string) {\n  if (phase !== 'pressed') return;\n  if (action === 'Restart' && self.state.dead) return reset(self);\n  const d = turns[action];\n  if (d && (d.c !== -self.state.dir.c || d.r !== -self.state.dir.r)) self.state.next = d;\n}\nexport function update(self: SceneSelf, dt: number) {\n  if (self.state.dead) return;\n  self.state.t += dt;\n  const step = Math.max(0.05, self.params.step - globals.score * 0.002);\n  while (self.state.t >= step && !self.state.dead) { self.state.t -= step; tick(self); }\n}\nfunction tick(self: SceneSelf) {\n  self.state.dir = self.state.next;\n  const head = self.state.body[0], n = { c: head.c + self.state.dir.c, r: head.r + self.state.dir.r };\n  if (n.c < 0 || n.r < 0 || n.c >= COLS || n.r >= ROWS || self.state.body.some((p: any) => p.c === n.c && p.r === n.r)) {\n    self.state.dead = true;\n    if (globals.score > globals.best) globals.best = globals.score;\n    game.find('Game over').active = true; game.camera.shake(10, 0.3);\n    return;\n  }\n  self.state.body.unshift(n);\n  if (n.c === self.state.food.c && n.r === self.state.food.r) { globals.score += 1; if (self.state.body.length > 120) self.state.body.pop(); food(self); }\n  else self.state.body.pop();\n  draw(self);\n}",
+          "code": "\"use strict\";Object.defineProperty(exports, \"__esModule\", {value: true}); const params = { step: param.number(0.12, { label: 'Seconds per step' }) }; exports.params = params;\nconst CELL = 30, COLS = 32, ROWS = 17, TOP = 30;\nconst at = (c, r) => ({ x: c * CELL + CELL / 2, y: TOP + r * CELL + CELL / 2 });\nconst turns = { Up: { c: 0, r: -1 }, Down: { c: 0, r: 1 }, Left: { c: -1, r: 0 }, Right: { c: 1, r: 0 } };\n function start(self) { reset(self); } exports.start = start;\nfunction reset(self) {\n  self.state.body = [{ c: 8, r: 8 }, { c: 7, r: 8 }, { c: 6, r: 8 }];\n  self.state.dir = self.state.next = { c: 1, r: 0 };\n  self.state.t = 0; self.state.dead = false; globals.score = 0;\n  game.find('Game over').active = false;\n  food(self); draw(self);\n}\nfunction food(self) {\n  let c = 0, r = 0;\n  do { c = Math.floor(Math.random() * COLS); r = Math.floor(Math.random() * ROWS); } while (self.state.body.some((p) => p.c === c && p.r === r));\n  self.state.food = { c, r };\n  const f = game.find('Food'), p = at(c, r); f.x = p.x; f.y = p.y;\n}\nfunction draw(self) {\n  game.findAll('Segment').forEach((s, i) => { const b = self.state.body[i]; s.active = !!b; if (b) { const p = at(b.c, b.r); s.x = p.x; s.y = p.y; } });\n}\n function onInput(self, action, phase) {\n  if (phase !== 'pressed') return;\n  if (action === 'Restart' && self.state.dead) return reset(self);\n  const d = turns[action];\n  if (d && (d.c !== -self.state.dir.c || d.r !== -self.state.dir.r)) self.state.next = d;\n} exports.onInput = onInput;\n function update(self, dt) {\n  if (self.state.dead) return;\n  self.state.t += dt;\n  const step = Math.max(0.05, self.params.step - globals.score * 0.002);\n  while (self.state.t >= step && !self.state.dead) { self.state.t -= step; tick(self); }\n} exports.update = update;\nfunction tick(self) {\n  self.state.dir = self.state.next;\n  const head = self.state.body[0], n = { c: head.c + self.state.dir.c, r: head.r + self.state.dir.r };\n  if (n.c < 0 || n.r < 0 || n.c >= COLS || n.r >= ROWS || self.state.body.some((p) => p.c === n.c && p.r === n.r)) {\n    self.state.dead = true;\n    if (globals.score > globals.best) globals.best = globals.score;\n    game.find('Game over').active = true; game.camera.shake(10, 0.3);\n    return;\n  }\n  self.state.body.unshift(n);\n  if (n.c === self.state.food.c && n.r === self.state.food.r) { globals.score += 1; if (self.state.body.length > 120) self.state.body.pop(); food(self); }\n  else self.state.body.pop();\n  draw(self);\n}"
+        }
+      ],
+      "scenes": {
+        "s-snake": {
+          "scriptId": "s-snake",
+          "params": {},
+          "refs": {}
+        }
+      }
+    }
+  }
+}

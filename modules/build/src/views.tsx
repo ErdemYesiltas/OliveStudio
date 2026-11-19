@@ -1,0 +1,12 @@
+import {useSyncExternalStore} from 'react';
+import type {BuildService,BuildStatus} from './index';
+const kb=(bytes:number)=>bytes>=1048576?`${(bytes/1048576).toFixed(2)} MB`:`${Math.max(1,Math.round(bytes/1024))} KB`;
+/** What the finished build is made of: a bar per group (engine and runtimes, game assets, …) and the largest files. */
+function SizeReport({report,text}:{report:NonNullable<BuildStatus['report']>;text(key:string):string}){
+ return <section className="build-report" data-testid="build-report" data-total={report.total} aria-label={text('build.size')}>
+  <h4>{text('build.size')} · {kb(report.total)}</h4>
+  {report.groups.map(g=><div className="build-report-row" key={g.label} data-group={g.label} data-bytes={g.bytes}><span>{g.label}</span><div className="build-report-bar"><div style={{width:`${Math.max(1,g.bytes/Math.max(1,report.total)*100)}%`}}/></div><output>{kb(g.bytes)} · {Math.round(g.bytes/Math.max(1,report.total)*100)}%</output></div>)}
+  <details><summary>{text('build.largest')}</summary><ol>{report.largest.map(f=><li key={f.path}><code>{f.path}</code> {kb(f.bytes)}</li>)}</ol></details>
+ </section>;
+}
+export function createBuildPanel(bridge:{service:BuildService;targets():readonly {id:string;titleKey:string}[];start(id:string):Promise<void>;useEditable():boolean;text(key:string):string;report(e:unknown):void}){return function Panel(){const state=useSyncExternalStore(bridge.service.subscribe,()=>bridge.service.state),editable=bridge.useEditable();return <div className="panel-body"><p>{bridge.text('build.description')}</p>{bridge.targets().map(t=><button key={t.id} disabled={!editable||bridge.service.busy} onClick={()=>void bridge.start(t.id).catch(bridge.report)}>{bridge.text(t.titleKey)}</button>)}{bridge.service.busy&&<button onClick={()=>void bridge.service.cancel().catch(bridge.report)}>{bridge.text('build.cancel')}</button>}<p role="status" data-testid="build-status" data-phase={state.phase}>{state.message}</p>{state.output&&<p className="build-output" data-testid="build-output">{state.output}</p>}{state.phase==='complete'&&state.report&&<SizeReport report={state.report} text={bridge.text}/>}{state.phase==='complete'&&<div className="panel-actions"><button disabled={bridge.service.busy} onClick={()=>void bridge.service.zip().catch(bridge.report)}>{bridge.text('build.zip')}</button></div>}{state.zip&&<p className="build-output" data-testid="build-zip">{state.zip}</p>}<small>{bridge.text('build.serve')}</small></div>;};}

@@ -1,0 +1,2516 @@
+{
+  "formatVersion": 1,
+  "name": "Physics Playground",
+  "entrySceneId": "s-play",
+  "scenes": [
+    {
+      "formatVersion": 1,
+      "id": "s-play",
+      "name": "Playground",
+      "entities": [
+        {
+          "id": "floor",
+          "name": "Floor",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "floor-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 480,
+                "y": 525,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "floor-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 960,
+                "height": 30,
+                "color": "#3b4b59",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            },
+            {
+              "id": "floor-box",
+              "type": "physics.boxCollider2d",
+              "version": 1,
+              "data": {
+                "width": 960,
+                "height": 30,
+                "offsetX": 0,
+                "offsetY": 0,
+                "sensor": false,
+                "chamfer": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "crate-0-0",
+          "name": "Crate",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "crate-0-0-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 556,
+                "y": 488,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "crate-0-0-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 40,
+                "height": 40,
+                "color": "#ff6b6b",
+                "rounded": 4,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#1e2a33",
+                "strokeWidth": 2
+              }
+            },
+            {
+              "id": "crate-0-0-rb",
+              "type": "physics.rigidBody2d",
+              "version": 1,
+              "data": {
+                "bodyType": "dynamic",
+                "density": 0.001,
+                "friction": 0.5,
+                "restitution": 0,
+                "airFriction": 0.01,
+                "lockRotation": false,
+                "velocityX": 0,
+                "velocityY": 0,
+                "angularVelocity": 0,
+                "frictionStatic": 0.5,
+                "gravityScale": 1,
+                "mass": 0,
+                "layer": 0,
+                "mask": 65535,
+                "group": 0,
+                "draggable": true,
+                "bullet": false
+              }
+            },
+            {
+              "id": "crate-0-0-box",
+              "type": "physics.boxCollider2d",
+              "version": 1,
+              "data": {
+                "width": 40,
+                "height": 40,
+                "offsetX": 0,
+                "offsetY": 0,
+                "sensor": false,
+                "chamfer": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "crate-0-1",
+          "name": "Crate",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "crate-0-1-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 598,
+                "y": 488,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "crate-0-1-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 40,
+                "height": 40,
+                "color": "#feca57",
+                "rounded": 4,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#1e2a33",
+                "strokeWidth": 2
+              }
+            },
+            {
+              "id": "crate-0-1-rb",
+              "type": "physics.rigidBody2d",
+              "version": 1,
+              "data": {
+                "bodyType": "dynamic",
+                "density": 0.001,
+                "friction": 0.5,
+                "restitution": 0,
+                "airFriction": 0.01,
+                "lockRotation": false,
+                "velocityX": 0,
+                "velocityY": 0,
+                "angularVelocity": 0,
+                "frictionStatic": 0.5,
+                "gravityScale": 1,
+                "mass": 0,
+                "layer": 0,
+                "mask": 65535,
+                "group": 0,
+                "draggable": true,
+                "bullet": false
+              }
+            },
+            {
+              "id": "crate-0-1-box",
+              "type": "physics.boxCollider2d",
+              "version": 1,
+              "data": {
+                "width": 40,
+                "height": 40,
+                "offsetX": 0,
+                "offsetY": 0,
+                "sensor": false,
+                "chamfer": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "crate-0-2",
+          "name": "Crate",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "crate-0-2-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 640,
+                "y": 488,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "crate-0-2-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 40,
+                "height": 40,
+                "color": "#48dbfb",
+                "rounded": 4,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#1e2a33",
+                "strokeWidth": 2
+              }
+            },
+            {
+              "id": "crate-0-2-rb",
+              "type": "physics.rigidBody2d",
+              "version": 1,
+              "data": {
+                "bodyType": "dynamic",
+                "density": 0.001,
+                "friction": 0.5,
+                "restitution": 0,
+                "airFriction": 0.01,
+                "lockRotation": false,
+                "velocityX": 0,
+                "velocityY": 0,
+                "angularVelocity": 0,
+                "frictionStatic": 0.5,
+                "gravityScale": 1,
+                "mass": 0,
+                "layer": 0,
+                "mask": 65535,
+                "group": 0,
+                "draggable": true,
+                "bullet": false
+              }
+            },
+            {
+              "id": "crate-0-2-box",
+              "type": "physics.boxCollider2d",
+              "version": 1,
+              "data": {
+                "width": 40,
+                "height": 40,
+                "offsetX": 0,
+                "offsetY": 0,
+                "sensor": false,
+                "chamfer": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "crate-0-3",
+          "name": "Crate",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "crate-0-3-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 682,
+                "y": 488,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "crate-0-3-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 40,
+                "height": 40,
+                "color": "#1dd1a1",
+                "rounded": 4,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#1e2a33",
+                "strokeWidth": 2
+              }
+            },
+            {
+              "id": "crate-0-3-rb",
+              "type": "physics.rigidBody2d",
+              "version": 1,
+              "data": {
+                "bodyType": "dynamic",
+                "density": 0.001,
+                "friction": 0.5,
+                "restitution": 0,
+                "airFriction": 0.01,
+                "lockRotation": false,
+                "velocityX": 0,
+                "velocityY": 0,
+                "angularVelocity": 0,
+                "frictionStatic": 0.5,
+                "gravityScale": 1,
+                "mass": 0,
+                "layer": 0,
+                "mask": 65535,
+                "group": 0,
+                "draggable": true,
+                "bullet": false
+              }
+            },
+            {
+              "id": "crate-0-3-box",
+              "type": "physics.boxCollider2d",
+              "version": 1,
+              "data": {
+                "width": 40,
+                "height": 40,
+                "offsetX": 0,
+                "offsetY": 0,
+                "sensor": false,
+                "chamfer": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "crate-0-4",
+          "name": "Crate",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "crate-0-4-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 724,
+                "y": 488,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "crate-0-4-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 40,
+                "height": 40,
+                "color": "#ff9ff3",
+                "rounded": 4,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#1e2a33",
+                "strokeWidth": 2
+              }
+            },
+            {
+              "id": "crate-0-4-rb",
+              "type": "physics.rigidBody2d",
+              "version": 1,
+              "data": {
+                "bodyType": "dynamic",
+                "density": 0.001,
+                "friction": 0.5,
+                "restitution": 0,
+                "airFriction": 0.01,
+                "lockRotation": false,
+                "velocityX": 0,
+                "velocityY": 0,
+                "angularVelocity": 0,
+                "frictionStatic": 0.5,
+                "gravityScale": 1,
+                "mass": 0,
+                "layer": 0,
+                "mask": 65535,
+                "group": 0,
+                "draggable": true,
+                "bullet": false
+              }
+            },
+            {
+              "id": "crate-0-4-box",
+              "type": "physics.boxCollider2d",
+              "version": 1,
+              "data": {
+                "width": 40,
+                "height": 40,
+                "offsetX": 0,
+                "offsetY": 0,
+                "sensor": false,
+                "chamfer": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "crate-1-0",
+          "name": "Crate",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "crate-1-0-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 577,
+                "y": 446,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "crate-1-0-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 40,
+                "height": 40,
+                "color": "#feca57",
+                "rounded": 4,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#1e2a33",
+                "strokeWidth": 2
+              }
+            },
+            {
+              "id": "crate-1-0-rb",
+              "type": "physics.rigidBody2d",
+              "version": 1,
+              "data": {
+                "bodyType": "dynamic",
+                "density": 0.001,
+                "friction": 0.5,
+                "restitution": 0,
+                "airFriction": 0.01,
+                "lockRotation": false,
+                "velocityX": 0,
+                "velocityY": 0,
+                "angularVelocity": 0,
+                "frictionStatic": 0.5,
+                "gravityScale": 1,
+                "mass": 0,
+                "layer": 0,
+                "mask": 65535,
+                "group": 0,
+                "draggable": true,
+                "bullet": false
+              }
+            },
+            {
+              "id": "crate-1-0-box",
+              "type": "physics.boxCollider2d",
+              "version": 1,
+              "data": {
+                "width": 40,
+                "height": 40,
+                "offsetX": 0,
+                "offsetY": 0,
+                "sensor": false,
+                "chamfer": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "crate-1-1",
+          "name": "Crate",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "crate-1-1-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 619,
+                "y": 446,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "crate-1-1-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 40,
+                "height": 40,
+                "color": "#48dbfb",
+                "rounded": 4,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#1e2a33",
+                "strokeWidth": 2
+              }
+            },
+            {
+              "id": "crate-1-1-rb",
+              "type": "physics.rigidBody2d",
+              "version": 1,
+              "data": {
+                "bodyType": "dynamic",
+                "density": 0.001,
+                "friction": 0.5,
+                "restitution": 0,
+                "airFriction": 0.01,
+                "lockRotation": false,
+                "velocityX": 0,
+                "velocityY": 0,
+                "angularVelocity": 0,
+                "frictionStatic": 0.5,
+                "gravityScale": 1,
+                "mass": 0,
+                "layer": 0,
+                "mask": 65535,
+                "group": 0,
+                "draggable": true,
+                "bullet": false
+              }
+            },
+            {
+              "id": "crate-1-1-box",
+              "type": "physics.boxCollider2d",
+              "version": 1,
+              "data": {
+                "width": 40,
+                "height": 40,
+                "offsetX": 0,
+                "offsetY": 0,
+                "sensor": false,
+                "chamfer": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "crate-1-2",
+          "name": "Crate",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "crate-1-2-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 661,
+                "y": 446,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "crate-1-2-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 40,
+                "height": 40,
+                "color": "#1dd1a1",
+                "rounded": 4,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#1e2a33",
+                "strokeWidth": 2
+              }
+            },
+            {
+              "id": "crate-1-2-rb",
+              "type": "physics.rigidBody2d",
+              "version": 1,
+              "data": {
+                "bodyType": "dynamic",
+                "density": 0.001,
+                "friction": 0.5,
+                "restitution": 0,
+                "airFriction": 0.01,
+                "lockRotation": false,
+                "velocityX": 0,
+                "velocityY": 0,
+                "angularVelocity": 0,
+                "frictionStatic": 0.5,
+                "gravityScale": 1,
+                "mass": 0,
+                "layer": 0,
+                "mask": 65535,
+                "group": 0,
+                "draggable": true,
+                "bullet": false
+              }
+            },
+            {
+              "id": "crate-1-2-box",
+              "type": "physics.boxCollider2d",
+              "version": 1,
+              "data": {
+                "width": 40,
+                "height": 40,
+                "offsetX": 0,
+                "offsetY": 0,
+                "sensor": false,
+                "chamfer": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "crate-1-3",
+          "name": "Crate",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "crate-1-3-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 703,
+                "y": 446,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "crate-1-3-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 40,
+                "height": 40,
+                "color": "#ff9ff3",
+                "rounded": 4,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#1e2a33",
+                "strokeWidth": 2
+              }
+            },
+            {
+              "id": "crate-1-3-rb",
+              "type": "physics.rigidBody2d",
+              "version": 1,
+              "data": {
+                "bodyType": "dynamic",
+                "density": 0.001,
+                "friction": 0.5,
+                "restitution": 0,
+                "airFriction": 0.01,
+                "lockRotation": false,
+                "velocityX": 0,
+                "velocityY": 0,
+                "angularVelocity": 0,
+                "frictionStatic": 0.5,
+                "gravityScale": 1,
+                "mass": 0,
+                "layer": 0,
+                "mask": 65535,
+                "group": 0,
+                "draggable": true,
+                "bullet": false
+              }
+            },
+            {
+              "id": "crate-1-3-box",
+              "type": "physics.boxCollider2d",
+              "version": 1,
+              "data": {
+                "width": 40,
+                "height": 40,
+                "offsetX": 0,
+                "offsetY": 0,
+                "sensor": false,
+                "chamfer": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "crate-2-0",
+          "name": "Crate",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "crate-2-0-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 598,
+                "y": 404,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "crate-2-0-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 40,
+                "height": 40,
+                "color": "#48dbfb",
+                "rounded": 4,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#1e2a33",
+                "strokeWidth": 2
+              }
+            },
+            {
+              "id": "crate-2-0-rb",
+              "type": "physics.rigidBody2d",
+              "version": 1,
+              "data": {
+                "bodyType": "dynamic",
+                "density": 0.001,
+                "friction": 0.5,
+                "restitution": 0,
+                "airFriction": 0.01,
+                "lockRotation": false,
+                "velocityX": 0,
+                "velocityY": 0,
+                "angularVelocity": 0,
+                "frictionStatic": 0.5,
+                "gravityScale": 1,
+                "mass": 0,
+                "layer": 0,
+                "mask": 65535,
+                "group": 0,
+                "draggable": true,
+                "bullet": false
+              }
+            },
+            {
+              "id": "crate-2-0-box",
+              "type": "physics.boxCollider2d",
+              "version": 1,
+              "data": {
+                "width": 40,
+                "height": 40,
+                "offsetX": 0,
+                "offsetY": 0,
+                "sensor": false,
+                "chamfer": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "crate-2-1",
+          "name": "Crate",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "crate-2-1-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 640,
+                "y": 404,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "crate-2-1-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 40,
+                "height": 40,
+                "color": "#1dd1a1",
+                "rounded": 4,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#1e2a33",
+                "strokeWidth": 2
+              }
+            },
+            {
+              "id": "crate-2-1-rb",
+              "type": "physics.rigidBody2d",
+              "version": 1,
+              "data": {
+                "bodyType": "dynamic",
+                "density": 0.001,
+                "friction": 0.5,
+                "restitution": 0,
+                "airFriction": 0.01,
+                "lockRotation": false,
+                "velocityX": 0,
+                "velocityY": 0,
+                "angularVelocity": 0,
+                "frictionStatic": 0.5,
+                "gravityScale": 1,
+                "mass": 0,
+                "layer": 0,
+                "mask": 65535,
+                "group": 0,
+                "draggable": true,
+                "bullet": false
+              }
+            },
+            {
+              "id": "crate-2-1-box",
+              "type": "physics.boxCollider2d",
+              "version": 1,
+              "data": {
+                "width": 40,
+                "height": 40,
+                "offsetX": 0,
+                "offsetY": 0,
+                "sensor": false,
+                "chamfer": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "crate-2-2",
+          "name": "Crate",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "crate-2-2-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 682,
+                "y": 404,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "crate-2-2-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 40,
+                "height": 40,
+                "color": "#ff9ff3",
+                "rounded": 4,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#1e2a33",
+                "strokeWidth": 2
+              }
+            },
+            {
+              "id": "crate-2-2-rb",
+              "type": "physics.rigidBody2d",
+              "version": 1,
+              "data": {
+                "bodyType": "dynamic",
+                "density": 0.001,
+                "friction": 0.5,
+                "restitution": 0,
+                "airFriction": 0.01,
+                "lockRotation": false,
+                "velocityX": 0,
+                "velocityY": 0,
+                "angularVelocity": 0,
+                "frictionStatic": 0.5,
+                "gravityScale": 1,
+                "mass": 0,
+                "layer": 0,
+                "mask": 65535,
+                "group": 0,
+                "draggable": true,
+                "bullet": false
+              }
+            },
+            {
+              "id": "crate-2-2-box",
+              "type": "physics.boxCollider2d",
+              "version": 1,
+              "data": {
+                "width": 40,
+                "height": 40,
+                "offsetX": 0,
+                "offsetY": 0,
+                "sensor": false,
+                "chamfer": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "crate-3-0",
+          "name": "Crate",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "crate-3-0-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 619,
+                "y": 362,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "crate-3-0-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 40,
+                "height": 40,
+                "color": "#1dd1a1",
+                "rounded": 4,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#1e2a33",
+                "strokeWidth": 2
+              }
+            },
+            {
+              "id": "crate-3-0-rb",
+              "type": "physics.rigidBody2d",
+              "version": 1,
+              "data": {
+                "bodyType": "dynamic",
+                "density": 0.001,
+                "friction": 0.5,
+                "restitution": 0,
+                "airFriction": 0.01,
+                "lockRotation": false,
+                "velocityX": 0,
+                "velocityY": 0,
+                "angularVelocity": 0,
+                "frictionStatic": 0.5,
+                "gravityScale": 1,
+                "mass": 0,
+                "layer": 0,
+                "mask": 65535,
+                "group": 0,
+                "draggable": true,
+                "bullet": false
+              }
+            },
+            {
+              "id": "crate-3-0-box",
+              "type": "physics.boxCollider2d",
+              "version": 1,
+              "data": {
+                "width": 40,
+                "height": 40,
+                "offsetX": 0,
+                "offsetY": 0,
+                "sensor": false,
+                "chamfer": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "crate-3-1",
+          "name": "Crate",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "crate-3-1-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 661,
+                "y": 362,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "crate-3-1-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 40,
+                "height": 40,
+                "color": "#ff9ff3",
+                "rounded": 4,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#1e2a33",
+                "strokeWidth": 2
+              }
+            },
+            {
+              "id": "crate-3-1-rb",
+              "type": "physics.rigidBody2d",
+              "version": 1,
+              "data": {
+                "bodyType": "dynamic",
+                "density": 0.001,
+                "friction": 0.5,
+                "restitution": 0,
+                "airFriction": 0.01,
+                "lockRotation": false,
+                "velocityX": 0,
+                "velocityY": 0,
+                "angularVelocity": 0,
+                "frictionStatic": 0.5,
+                "gravityScale": 1,
+                "mass": 0,
+                "layer": 0,
+                "mask": 65535,
+                "group": 0,
+                "draggable": true,
+                "bullet": false
+              }
+            },
+            {
+              "id": "crate-3-1-box",
+              "type": "physics.boxCollider2d",
+              "version": 1,
+              "data": {
+                "width": 40,
+                "height": 40,
+                "offsetX": 0,
+                "offsetY": 0,
+                "sensor": false,
+                "chamfer": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "crate-4-0",
+          "name": "Crate",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "crate-4-0-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 640,
+                "y": 320,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "crate-4-0-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 40,
+                "height": 40,
+                "color": "#ff9ff3",
+                "rounded": 4,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#1e2a33",
+                "strokeWidth": 2
+              }
+            },
+            {
+              "id": "crate-4-0-rb",
+              "type": "physics.rigidBody2d",
+              "version": 1,
+              "data": {
+                "bodyType": "dynamic",
+                "density": 0.001,
+                "friction": 0.5,
+                "restitution": 0,
+                "airFriction": 0.01,
+                "lockRotation": false,
+                "velocityX": 0,
+                "velocityY": 0,
+                "angularVelocity": 0,
+                "frictionStatic": 0.5,
+                "gravityScale": 1,
+                "mass": 0,
+                "layer": 0,
+                "mask": 65535,
+                "group": 0,
+                "draggable": true,
+                "bullet": false
+              }
+            },
+            {
+              "id": "crate-4-0-box",
+              "type": "physics.boxCollider2d",
+              "version": 1,
+              "data": {
+                "width": 40,
+                "height": 40,
+                "offsetX": 0,
+                "offsetY": 0,
+                "sensor": false,
+                "chamfer": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "ball-0",
+          "name": "Ball",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "ball-0-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 140,
+                "y": 120,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "ball-0-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "ellipse",
+                "width": 44,
+                "height": 44,
+                "color": "#ff9f43",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            },
+            {
+              "id": "ball-0-rb",
+              "type": "physics.rigidBody2d",
+              "version": 1,
+              "data": {
+                "bodyType": "dynamic",
+                "density": 0.001,
+                "friction": 0.3,
+                "restitution": 0.65,
+                "airFriction": 0.01,
+                "lockRotation": false,
+                "velocityX": 0,
+                "velocityY": 0,
+                "angularVelocity": 0,
+                "frictionStatic": 0.5,
+                "gravityScale": 1,
+                "mass": 0,
+                "layer": 0,
+                "mask": 65535,
+                "group": 0,
+                "draggable": true,
+                "bullet": false
+              }
+            },
+            {
+              "id": "ball-0-cc",
+              "type": "physics.circleCollider2d",
+              "version": 1,
+              "data": {
+                "radius": 22,
+                "offsetX": 0,
+                "offsetY": 0,
+                "sensor": false
+              }
+            }
+          ]
+        },
+        {
+          "id": "ball-1",
+          "name": "Ball",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "ball-1-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 200,
+                "y": 60,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "ball-1-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "ellipse",
+                "width": 32,
+                "height": 32,
+                "color": "#54a0ff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            },
+            {
+              "id": "ball-1-rb",
+              "type": "physics.rigidBody2d",
+              "version": 1,
+              "data": {
+                "bodyType": "dynamic",
+                "density": 0.001,
+                "friction": 0.3,
+                "restitution": 0.65,
+                "airFriction": 0.01,
+                "lockRotation": false,
+                "velocityX": 0,
+                "velocityY": 0,
+                "angularVelocity": 0,
+                "frictionStatic": 0.5,
+                "gravityScale": 1,
+                "mass": 0,
+                "layer": 0,
+                "mask": 65535,
+                "group": 0,
+                "draggable": true,
+                "bullet": false
+              }
+            },
+            {
+              "id": "ball-1-cc",
+              "type": "physics.circleCollider2d",
+              "version": 1,
+              "data": {
+                "radius": 16,
+                "offsetX": 0,
+                "offsetY": 0,
+                "sensor": false
+              }
+            }
+          ]
+        },
+        {
+          "id": "ball-2",
+          "name": "Ball",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "ball-2-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 250,
+                "y": 150,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "ball-2-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "ellipse",
+                "width": 56,
+                "height": 56,
+                "color": "#5f27cd",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            },
+            {
+              "id": "ball-2-rb",
+              "type": "physics.rigidBody2d",
+              "version": 1,
+              "data": {
+                "bodyType": "dynamic",
+                "density": 0.001,
+                "friction": 0.3,
+                "restitution": 0.65,
+                "airFriction": 0.01,
+                "lockRotation": false,
+                "velocityX": 0,
+                "velocityY": 0,
+                "angularVelocity": 0,
+                "frictionStatic": 0.5,
+                "gravityScale": 1,
+                "mass": 0,
+                "layer": 0,
+                "mask": 65535,
+                "group": 0,
+                "draggable": true,
+                "bullet": false
+              }
+            },
+            {
+              "id": "ball-2-cc",
+              "type": "physics.circleCollider2d",
+              "version": 1,
+              "data": {
+                "radius": 28,
+                "offsetX": 0,
+                "offsetY": 0,
+                "sensor": false
+              }
+            }
+          ]
+        },
+        {
+          "id": "anchor",
+          "name": "Anchor",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "anchor-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 360,
+                "y": 50,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "anchor-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "ellipse",
+                "width": 12,
+                "height": 12,
+                "color": "#576574",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "link-0",
+          "name": "Chain link",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "link-0-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 360,
+                "y": 100,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "link-0-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "ellipse",
+                "width": 16,
+                "height": 16,
+                "color": "#c8d6e5",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            },
+            {
+              "id": "link-0-rb",
+              "type": "physics.rigidBody2d",
+              "version": 1,
+              "data": {
+                "bodyType": "dynamic",
+                "density": 0.001,
+                "friction": 0.3,
+                "restitution": 0,
+                "airFriction": 0.01,
+                "lockRotation": false,
+                "velocityX": 0,
+                "velocityY": 0,
+                "angularVelocity": 0,
+                "frictionStatic": 0.5,
+                "gravityScale": 1,
+                "mass": 0,
+                "layer": 0,
+                "mask": 65535,
+                "group": 0,
+                "draggable": true,
+                "bullet": false
+              }
+            },
+            {
+              "id": "link-0-cc",
+              "type": "physics.circleCollider2d",
+              "version": 1,
+              "data": {
+                "radius": 8,
+                "offsetX": 0,
+                "offsetY": 0,
+                "sensor": false
+              }
+            },
+            {
+              "id": "link-0-j",
+              "type": "physics.joint2d",
+              "version": 1,
+              "data": {
+                "kind": "distance",
+                "target": "",
+                "anchorX": 0,
+                "anchorY": 0,
+                "targetAnchorX": 360,
+                "targetAnchorY": 50,
+                "length": 0,
+                "stiffness": 1,
+                "damping": 0,
+                "collideConnected": false
+              }
+            }
+          ]
+        },
+        {
+          "id": "link-1",
+          "name": "Chain link",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "link-1-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 360,
+                "y": 145,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "link-1-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "ellipse",
+                "width": 16,
+                "height": 16,
+                "color": "#c8d6e5",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            },
+            {
+              "id": "link-1-rb",
+              "type": "physics.rigidBody2d",
+              "version": 1,
+              "data": {
+                "bodyType": "dynamic",
+                "density": 0.001,
+                "friction": 0.3,
+                "restitution": 0,
+                "airFriction": 0.01,
+                "lockRotation": false,
+                "velocityX": 0,
+                "velocityY": 0,
+                "angularVelocity": 0,
+                "frictionStatic": 0.5,
+                "gravityScale": 1,
+                "mass": 0,
+                "layer": 0,
+                "mask": 65535,
+                "group": 0,
+                "draggable": true,
+                "bullet": false
+              }
+            },
+            {
+              "id": "link-1-cc",
+              "type": "physics.circleCollider2d",
+              "version": 1,
+              "data": {
+                "radius": 8,
+                "offsetX": 0,
+                "offsetY": 0,
+                "sensor": false
+              }
+            },
+            {
+              "id": "link-1-j",
+              "type": "physics.joint2d",
+              "version": 1,
+              "data": {
+                "kind": "distance",
+                "target": "link-0",
+                "anchorX": 0,
+                "anchorY": 0,
+                "targetAnchorX": 0,
+                "targetAnchorY": 0,
+                "length": 0,
+                "stiffness": 1,
+                "damping": 0,
+                "collideConnected": false
+              }
+            }
+          ]
+        },
+        {
+          "id": "link-2",
+          "name": "Chain link",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "link-2-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 360,
+                "y": 190,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "link-2-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "ellipse",
+                "width": 16,
+                "height": 16,
+                "color": "#c8d6e5",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            },
+            {
+              "id": "link-2-rb",
+              "type": "physics.rigidBody2d",
+              "version": 1,
+              "data": {
+                "bodyType": "dynamic",
+                "density": 0.001,
+                "friction": 0.3,
+                "restitution": 0,
+                "airFriction": 0.01,
+                "lockRotation": false,
+                "velocityX": 0,
+                "velocityY": 0,
+                "angularVelocity": 0,
+                "frictionStatic": 0.5,
+                "gravityScale": 1,
+                "mass": 0,
+                "layer": 0,
+                "mask": 65535,
+                "group": 0,
+                "draggable": true,
+                "bullet": false
+              }
+            },
+            {
+              "id": "link-2-cc",
+              "type": "physics.circleCollider2d",
+              "version": 1,
+              "data": {
+                "radius": 8,
+                "offsetX": 0,
+                "offsetY": 0,
+                "sensor": false
+              }
+            },
+            {
+              "id": "link-2-j",
+              "type": "physics.joint2d",
+              "version": 1,
+              "data": {
+                "kind": "distance",
+                "target": "link-1",
+                "anchorX": 0,
+                "anchorY": 0,
+                "targetAnchorX": 0,
+                "targetAnchorY": 0,
+                "length": 0,
+                "stiffness": 1,
+                "damping": 0,
+                "collideConnected": false
+              }
+            }
+          ]
+        },
+        {
+          "id": "bob",
+          "name": "Wrecking ball",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "bob-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 360,
+                "y": 270,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "bob-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "ellipse",
+                "width": 56,
+                "height": 56,
+                "color": "#222f3e",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#c8d6e5",
+                "strokeWidth": 3
+              }
+            },
+            {
+              "id": "bob-rb",
+              "type": "physics.rigidBody2d",
+              "version": 1,
+              "data": {
+                "bodyType": "dynamic",
+                "density": 0.004,
+                "friction": 0.3,
+                "restitution": 0,
+                "airFriction": 0.01,
+                "lockRotation": false,
+                "velocityX": 0,
+                "velocityY": 0,
+                "angularVelocity": 0,
+                "frictionStatic": 0.5,
+                "gravityScale": 1,
+                "mass": 0,
+                "layer": 0,
+                "mask": 65535,
+                "group": 0,
+                "draggable": true,
+                "bullet": false
+              }
+            },
+            {
+              "id": "bob-cc",
+              "type": "physics.circleCollider2d",
+              "version": 1,
+              "data": {
+                "radius": 28,
+                "offsetX": 0,
+                "offsetY": 0,
+                "sensor": false
+              }
+            },
+            {
+              "id": "bob-j",
+              "type": "physics.joint2d",
+              "version": 1,
+              "data": {
+                "kind": "distance",
+                "target": "link-2",
+                "anchorX": 0,
+                "anchorY": 0,
+                "targetAnchorX": 0,
+                "targetAnchorY": 0,
+                "length": 0,
+                "stiffness": 1,
+                "damping": 0,
+                "collideConnected": false
+              }
+            }
+          ]
+        },
+        {
+          "id": "fulcrum",
+          "name": "Fulcrum",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "fulcrum-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 180,
+                "y": 470,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "fulcrum-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "triangle",
+                "width": 50,
+                "height": 64,
+                "color": "#576574",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "plank",
+          "name": "Seesaw",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "plank-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 180,
+                "y": 430,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "plank-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 240,
+                "height": 14,
+                "color": "#c8a165",
+                "rounded": 4,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            },
+            {
+              "id": "plank-rb",
+              "type": "physics.rigidBody2d",
+              "version": 1,
+              "data": {
+                "bodyType": "dynamic",
+                "density": 0.001,
+                "friction": 0.3,
+                "restitution": 0,
+                "airFriction": 0.01,
+                "lockRotation": false,
+                "velocityX": 0,
+                "velocityY": 0,
+                "angularVelocity": 0,
+                "frictionStatic": 0.5,
+                "gravityScale": 1,
+                "mass": 0,
+                "layer": 0,
+                "mask": 65535,
+                "group": 0,
+                "draggable": true,
+                "bullet": false
+              }
+            },
+            {
+              "id": "plank-box",
+              "type": "physics.boxCollider2d",
+              "version": 1,
+              "data": {
+                "width": 240,
+                "height": 14,
+                "offsetX": 0,
+                "offsetY": 0,
+                "sensor": false,
+                "chamfer": 0
+              }
+            },
+            {
+              "id": "plank-j",
+              "type": "physics.joint2d",
+              "version": 1,
+              "data": {
+                "kind": "pin",
+                "target": "",
+                "anchorX": 0,
+                "anchorY": 0,
+                "targetAnchorX": 180,
+                "targetAnchorY": 430,
+                "length": 0,
+                "stiffness": 1,
+                "damping": 0,
+                "collideConnected": false
+              }
+            }
+          ]
+        },
+        {
+          "id": "help",
+          "name": "Help",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "help-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 600,
+                "y": 110,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "help-x",
+              "type": "pixi.text",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "text": "Drag anything · the buttons push, change gravity and restart",
+                "fontSize": 16,
+                "color": "#a4b0be",
+                "font": "",
+                "fontWeight": "normal",
+                "fontStyle": "normal",
+                "align": "center",
+                "letterSpacing": 0,
+                "strokeColor": "#000000",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "btn-kick",
+          "name": "Kick",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "btn-kick-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 470,
+                "y": 46,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "btn-kick-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 110,
+                "height": 46,
+                "color": "#feca57",
+                "rounded": 12,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            },
+            {
+              "id": "btn-kick-r",
+              "type": "interactions.bindings",
+              "version": 1,
+              "data": {
+                "rules": [
+                  {
+                    "id": "btn-kick-do",
+                    "trigger": {
+                      "event": "",
+                      "type": "pointer.click",
+                      "sourceId": "btn-kick"
+                    },
+                    "actions": [
+                      {
+                        "id": "btn-kick-do-0",
+                        "value": true,
+                        "type": "physics.push",
+                        "targetId": "bob",
+                        "x": 900,
+                        "y": -300
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "btn-kick-label",
+          "name": "Kick label",
+          "parentId": "btn-kick",
+          "active": true,
+          "components": [
+            {
+              "id": "btn-kick-label-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "btn-kick-label-x",
+              "type": "pixi.text",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "text": "Kick",
+                "fontSize": 18,
+                "color": "#10131a",
+                "font": "",
+                "fontWeight": "bold",
+                "fontStyle": "normal",
+                "align": "center",
+                "letterSpacing": 0,
+                "strokeColor": "#000000",
+                "strokeWidth": 0
+              }
+            },
+            {
+              "id": "btn-kick-label-r",
+              "type": "interactions.bindings",
+              "version": 1,
+              "data": {
+                "rules": [
+                  {
+                    "id": "btn-kick-label-do",
+                    "trigger": {
+                      "event": "",
+                      "type": "pointer.click",
+                      "sourceId": "btn-kick-label"
+                    },
+                    "actions": [
+                      {
+                        "id": "btn-kick-label-do-0",
+                        "value": true,
+                        "type": "physics.push",
+                        "targetId": "bob",
+                        "x": 900,
+                        "y": -300
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "btn-low",
+          "name": "Moon gravity",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "btn-low-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 620,
+                "y": 46,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "btn-low-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 160,
+                "height": 46,
+                "color": "#48dbfb",
+                "rounded": 12,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            },
+            {
+              "id": "btn-low-r",
+              "type": "interactions.bindings",
+              "version": 1,
+              "data": {
+                "rules": [
+                  {
+                    "id": "btn-low-do",
+                    "trigger": {
+                      "event": "",
+                      "type": "pointer.click",
+                      "sourceId": "btn-low"
+                    },
+                    "actions": [
+                      {
+                        "id": "btn-low-do-0",
+                        "value": true,
+                        "type": "physics.gravity",
+                        "targetId": "physics",
+                        "x": 0,
+                        "y": 160
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "btn-low-label",
+          "name": "Moon gravity label",
+          "parentId": "btn-low",
+          "active": true,
+          "components": [
+            {
+              "id": "btn-low-label-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "btn-low-label-x",
+              "type": "pixi.text",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "text": "Moon gravity",
+                "fontSize": 18,
+                "color": "#10131a",
+                "font": "",
+                "fontWeight": "bold",
+                "fontStyle": "normal",
+                "align": "center",
+                "letterSpacing": 0,
+                "strokeColor": "#000000",
+                "strokeWidth": 0
+              }
+            },
+            {
+              "id": "btn-low-label-r",
+              "type": "interactions.bindings",
+              "version": 1,
+              "data": {
+                "rules": [
+                  {
+                    "id": "btn-low-label-do",
+                    "trigger": {
+                      "event": "",
+                      "type": "pointer.click",
+                      "sourceId": "btn-low-label"
+                    },
+                    "actions": [
+                      {
+                        "id": "btn-low-label-do-0",
+                        "value": true,
+                        "type": "physics.gravity",
+                        "targetId": "physics",
+                        "x": 0,
+                        "y": 160
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "btn-normal",
+          "name": "Earth gravity",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "btn-normal-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 800,
+                "y": 46,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "btn-normal-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 160,
+                "height": 46,
+                "color": "#1dd1a1",
+                "rounded": 12,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            },
+            {
+              "id": "btn-normal-r",
+              "type": "interactions.bindings",
+              "version": 1,
+              "data": {
+                "rules": [
+                  {
+                    "id": "btn-normal-do",
+                    "trigger": {
+                      "event": "",
+                      "type": "pointer.click",
+                      "sourceId": "btn-normal"
+                    },
+                    "actions": [
+                      {
+                        "id": "btn-normal-do-0",
+                        "value": true,
+                        "type": "physics.gravity",
+                        "targetId": "physics",
+                        "x": 0,
+                        "y": 980
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "btn-normal-label",
+          "name": "Earth gravity label",
+          "parentId": "btn-normal",
+          "active": true,
+          "components": [
+            {
+              "id": "btn-normal-label-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "btn-normal-label-x",
+              "type": "pixi.text",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "text": "Earth gravity",
+                "fontSize": 18,
+                "color": "#10131a",
+                "font": "",
+                "fontWeight": "bold",
+                "fontStyle": "normal",
+                "align": "center",
+                "letterSpacing": 0,
+                "strokeColor": "#000000",
+                "strokeWidth": 0
+              }
+            },
+            {
+              "id": "btn-normal-label-r",
+              "type": "interactions.bindings",
+              "version": 1,
+              "data": {
+                "rules": [
+                  {
+                    "id": "btn-normal-label-do",
+                    "trigger": {
+                      "event": "",
+                      "type": "pointer.click",
+                      "sourceId": "btn-normal-label"
+                    },
+                    "actions": [
+                      {
+                        "id": "btn-normal-label-do-0",
+                        "value": true,
+                        "type": "physics.gravity",
+                        "targetId": "physics",
+                        "x": 0,
+                        "y": 980
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "btn-reset",
+          "name": "Restart",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "btn-reset-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 920,
+                "y": 100,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "btn-reset-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 80,
+                "height": 46,
+                "color": "#ff9ff3",
+                "rounded": 12,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            },
+            {
+              "id": "btn-reset-r",
+              "type": "interactions.bindings",
+              "version": 1,
+              "data": {
+                "rules": [
+                  {
+                    "id": "btn-reset-do",
+                    "trigger": {
+                      "event": "",
+                      "type": "pointer.click",
+                      "sourceId": "btn-reset"
+                    },
+                    "actions": [
+                      {
+                        "id": "btn-reset-do-0",
+                        "value": true,
+                        "type": "scene.change",
+                        "targetId": "s-play"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "btn-reset-label",
+          "name": "Restart label",
+          "parentId": "btn-reset",
+          "active": true,
+          "components": [
+            {
+              "id": "btn-reset-label-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "btn-reset-label-x",
+              "type": "pixi.text",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "text": "Restart",
+                "fontSize": 18,
+                "color": "#10131a",
+                "font": "",
+                "fontWeight": "bold",
+                "fontStyle": "normal",
+                "align": "center",
+                "letterSpacing": 0,
+                "strokeColor": "#000000",
+                "strokeWidth": 0
+              }
+            },
+            {
+              "id": "btn-reset-label-r",
+              "type": "interactions.bindings",
+              "version": 1,
+              "data": {
+                "rules": [
+                  {
+                    "id": "btn-reset-label-do",
+                    "trigger": {
+                      "event": "",
+                      "type": "pointer.click",
+                      "sourceId": "btn-reset-label"
+                    },
+                    "actions": [
+                      {
+                        "id": "btn-reset-label-do-0",
+                        "value": true,
+                        "type": "scene.change",
+                        "targetId": "s-play"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "modules": {
+    "settings": "1.0.0",
+    "project": "1.0.0",
+    "scene": "1.0.0",
+    "assets": "1.0.0",
+    "pixi": "1.0.0",
+    "layout": "1.0.0",
+    "ai-comfy": "1.0.0",
+    "ai-lm": "1.0.0",
+    "assetpack": "1.0.0",
+    "audio": "1.0.0",
+    "howler": "1.0.0",
+    "tween": "1.0.0",
+    "gsap": "1.0.0",
+    "tween-pixi": "1.0.0",
+    "animation": "1.0.0",
+    "physics": "1.0.0",
+    "matter": "1.0.0",
+    "spine": "1.0.0",
+    "spine-audio": "1.0.0",
+    "interactions": "1.0.0",
+    "interaction-media": "1.0.0",
+    "scripts": "1.0.0",
+    "input": "1.0.0",
+    "build": "1.0.0",
+    "html-export": "1.0.0",
+    "prefabs": "1.0.0",
+    "project-ui": "1.0.0",
+    "recovery": "1.0.0",
+    "studio": "1.0.0"
+  },
+  "providers": {
+    "audio": "howler",
+    "tween": "gsap",
+    "physics": "matter",
+    "render": "pixi"
+  },
+  "extensions": {
+    "pixi.render": {
+      "version": 1,
+      "background": "#1e2a33"
+    },
+    "physics.world": {
+      "gravityX": 0,
+      "gravityY": 980,
+      "timeScale": 1,
+      "sleeping": true,
+      "positionIterations": 8,
+      "velocityIterations": 6,
+      "walls": true,
+      "layers": [
+        "Default"
+      ]
+    }
+  }
+}

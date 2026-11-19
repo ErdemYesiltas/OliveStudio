@@ -1,0 +1,17 @@
+import {useState,useSyncExternalStore} from 'react';
+import {Dialog} from 'radix-ui';
+import type {RecoveryController} from './index';
+export function createRecoveryViews(controller:RecoveryController,bridge:{text(key:string):string;restore(id:string):Promise<void>;remove(id:string):Promise<void>;reopen():Promise<void>;enabled(value:boolean):void;report(error:unknown):void;
+ /** False when another start screen (the Hub) offers recent projects: only recovery copies open the startup dialog. */startupRecent?:boolean}){
+ const t=bridge.text;let startupDismissed=false;const initial=controller.state.listing.copies.length>0||(bridge.startupRecent!==false&&controller.state.listing.recent!==null);
+ function Content({done}:{done?():void}){const state=useSyncExternalStore(controller.subscribe,()=>controller.state);const [busy,setBusy]=useState(false),[confirm,setConfirm]=useState<string|null>(null);const run=(work:()=>Promise<void>,close=false)=>{setBusy(true);void work().then(()=>{if(close)done?.();}).catch(bridge.report).finally(()=>setBusy(false));};return <div className="recovery-content" data-testid="recovery-panel" aria-busy={busy}>
+  <p>{t('recovery.explanation')}</p><label><input type="checkbox" checked={state.enabled} disabled={busy} onChange={e=>{controller.setEnabled(e.target.checked);bridge.enabled(e.target.checked);}}/>{t('recovery.enabled')}</label>
+  <p role="status">{t('recovery.status.'+state.status)}{state.createdAt&&<> · {new Date(state.createdAt).toLocaleTimeString()}</>}</p>{state.error&&<p role="alert">{state.error}</p>}{state.warnings.map((w,i)=><p key={i} role="alert">{w}</p>)}
+  <div className="recovery-actions"><button disabled={busy||state.status==='saving'} onClick={()=>run(()=>controller.checkpoint())}>{t('recovery.now')}</button><button disabled={busy} onClick={()=>run(()=>controller.refresh())}>{t('recovery.refresh')}</button></div>
+  {state.listing.copies.length===0&&<p>{t('recovery.empty')}</p>}{state.listing.copies.map(copy=><section className="recovery-copy" key={copy.id}><strong>{copy.name}</strong><small>{new Date(copy.createdAt).toLocaleString()}</small>{copy.warnings.map((w,i)=><small key={i}>{w}</small>)}<div className="recovery-actions"><button disabled={busy} onClick={()=>run(()=>bridge.restore(copy.id),true)}>{t('recovery.restore')}</button><button disabled={busy} onClick={()=>setConfirm(copy.id)}>{t('recovery.delete')}</button></div>{confirm===copy.id&&<div role="alert"><p>{t('recovery.deleteConfirm')}</p><button disabled={busy} onClick={()=>run(async()=>{await bridge.remove(copy.id);setConfirm(null);await controller.refresh();})}>{t('recovery.confirmDelete')}</button><button onClick={()=>setConfirm(null)}>{t('recovery.cancel')}</button></div>}</section>)}
+  {state.listing.recent&&<button disabled={busy} onClick={()=>run(()=>bridge.reopen(),true)}>{t('recovery.reopen')} · {state.listing.recent.name}</button>}
+ </div>;}
+ function Panel(){return <Content/>;}
+ function Startup(){const [opened,setOpened]=useState(initial&&!startupDismissed);return <Dialog.Root open={opened} onOpenChange={v=>{setOpened(v);if(!v)startupDismissed=true;}}><Dialog.Portal><Dialog.Overlay className="recovery-overlay"/><Dialog.Content className="recovery-dialog"><Dialog.Title>{t('recovery.welcome')}</Dialog.Title><Dialog.Description>{t('recovery.description')}</Dialog.Description><Content done={()=>{startupDismissed=true;setOpened(false);}}/><Dialog.Close asChild><button>{t('recovery.later')}</button></Dialog.Close></Dialog.Content></Dialog.Portal></Dialog.Root>;}
+ return {Panel,Startup};
+}

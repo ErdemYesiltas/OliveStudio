@@ -1,0 +1,808 @@
+{
+  "formatVersion": 1,
+  "name": "Tap Tycoon",
+  "entrySceneId": "s-shop",
+  "scenes": [
+    {
+      "formatVersion": 1,
+      "id": "s-shop",
+      "name": "Shop",
+      "entities": [
+        {
+          "id": "glow",
+          "name": "Glow",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "glow-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 480,
+                "y": 290,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "glow-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.18,
+                "kind": "ellipse",
+                "width": 300,
+                "height": 300,
+                "color": "#ffb703",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            },
+            {
+              "id": "glow-fx",
+              "type": "pixi.effects",
+              "version": 1,
+              "data": {
+                "blendMode": "normal",
+                "blur": 24,
+                "brightness": 1,
+                "contrast": 1,
+                "saturation": 1,
+                "hue": 0,
+                "noise": 0,
+                "shadowAlpha": 0,
+                "shadowColor": "#000000",
+                "shadowX": 4,
+                "shadowY": 4,
+                "shadowBlur": 2,
+                "glowStrength": 0,
+                "glowColor": "#ffd27a",
+                "glowDistance": 12,
+                "outlineWidth": 0,
+                "outlineColor": "#ffffff",
+                "pixelate": 0
+              }
+            },
+            {
+              "id": "glow-tw",
+              "type": "tween.player",
+              "version": 1,
+              "data": {
+                "duration": 1.4,
+                "delay": 0,
+                "ease": "sine.inOut",
+                "repeat": 100,
+                "yoyo": true,
+                "autoplay": true,
+                "tracks": [
+                  {
+                    "id": "glow-k0",
+                    "entityId": "glow",
+                    "componentId": "glow-t",
+                    "property": "scaleX",
+                    "from": 1,
+                    "to": 1.08
+                  },
+                  {
+                    "id": "glow-k1",
+                    "entityId": "glow",
+                    "componentId": "glow-t",
+                    "property": "scaleY",
+                    "from": 1,
+                    "to": 1.08
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "title",
+          "name": "Title",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "title-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 480,
+                "y": 52,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "title-x",
+              "type": "pixi.text",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "text": "Tap Tycoon",
+                "fontSize": 42,
+                "color": "#ffd166",
+                "font": "",
+                "fontWeight": "bold",
+                "fontStyle": "normal",
+                "align": "center",
+                "letterSpacing": 0,
+                "strokeColor": "#5a3b00",
+                "strokeWidth": 6
+              }
+            }
+          ]
+        },
+        {
+          "id": "counter",
+          "name": "Coins",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "counter-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 480,
+                "y": 112,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "counter-x",
+              "type": "pixi.text",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "text": "{coins} coins",
+                "fontSize": 34,
+                "color": "#ffffff",
+                "font": "",
+                "fontWeight": "bold",
+                "fontStyle": "normal",
+                "align": "center",
+                "letterSpacing": 0,
+                "strokeColor": "#000000",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "rate",
+          "name": "Rate",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "rate-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 480,
+                "y": 150,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "rate-x",
+              "type": "pixi.text",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "text": "+{perTap} per tap · +{perSecond} per second",
+                "fontSize": 18,
+                "color": "#b8b3d6",
+                "font": "",
+                "fontWeight": "normal",
+                "fontStyle": "normal",
+                "align": "center",
+                "letterSpacing": 0,
+                "strokeColor": "#000000",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "coin",
+          "name": "Coin",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "coin-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 480,
+                "y": 290,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "coin-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "ellipse",
+                "width": 180,
+                "height": 180,
+                "color": "#ffc53d",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#b07800",
+                "strokeWidth": 10
+              }
+            },
+            {
+              "id": "coin-b",
+              "type": "scripts.behaviour",
+              "version": 1,
+              "data": {
+                "scriptId": "s-coin",
+                "params": {},
+                "refs": {}
+              }
+            },
+            {
+              "id": "coin-tw",
+              "type": "tween.player",
+              "version": 1,
+              "data": {
+                "duration": 0.07,
+                "delay": 0,
+                "ease": "quad.out",
+                "repeat": 1,
+                "yoyo": true,
+                "autoplay": false,
+                "tracks": [
+                  {
+                    "id": "coin-k0",
+                    "entityId": "coin",
+                    "componentId": "coin-t",
+                    "property": "scaleX",
+                    "from": 1,
+                    "to": 1.12
+                  },
+                  {
+                    "id": "coin-k1",
+                    "entityId": "coin",
+                    "componentId": "coin-t",
+                    "property": "scaleY",
+                    "from": 1,
+                    "to": 1.12
+                  }
+                ]
+              }
+            },
+            {
+              "id": "coin-r",
+              "type": "interactions.bindings",
+              "version": 1,
+              "data": {
+                "rules": [
+                  {
+                    "id": "coin-burst",
+                    "trigger": {
+                      "event": "",
+                      "type": "pointer.click",
+                      "sourceId": "coin"
+                    },
+                    "actions": [
+                      {
+                        "id": "coin-burst-0",
+                        "value": true,
+                        "type": "particles.play",
+                        "targetId": "sparkle-p"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "star",
+          "name": "Shine",
+          "parentId": "coin",
+          "active": true,
+          "components": [
+            {
+              "id": "star-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -40,
+                "y": -40,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "star-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "star",
+                "width": 34,
+                "height": 34,
+                "color": "#fff3c4",
+                "rounded": 0,
+                "sides": 4,
+                "innerRadius": 0.35,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "sparkle",
+          "name": "Sparkle",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "sparkle-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 480,
+                "y": 290,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "sparkle-p",
+              "type": "pixi.particles",
+              "version": 1,
+              "data": {
+                "assetId": "",
+                "alpha": 1,
+                "tint": "#ffe680",
+                "count": 28,
+                "lifetime": 0.8,
+                "speed": 300,
+                "direction": -90,
+                "spread": 360,
+                "gravity": 500,
+                "size": 10,
+                "endScale": 0.2,
+                "endAlpha": 0,
+                "seed": 7,
+                "emission": "burst",
+                "autoplay": false
+              }
+            }
+          ]
+        },
+        {
+          "id": "hint",
+          "name": "Hint",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "hint-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 480,
+                "y": 405,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "hint-x",
+              "type": "pixi.text",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "text": "Tap the coin!",
+                "fontSize": 18,
+                "color": "#8f88b8",
+                "font": "",
+                "fontWeight": "normal",
+                "fontStyle": "normal",
+                "align": "center",
+                "letterSpacing": 0,
+                "strokeColor": "#000000",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "buy-tap",
+          "name": "Stronger taps · {tapCost}",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "buy-tap-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 290,
+                "y": 470,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "buy-tap-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 300,
+                "height": 46,
+                "color": "#7cf3ff",
+                "rounded": 12,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            },
+            {
+              "id": "buy-tap-b",
+              "type": "scripts.behaviour",
+              "version": 1,
+              "data": {
+                "scriptId": "s-shop",
+                "params": {
+                  "kind": "tap"
+                },
+                "refs": {}
+              }
+            }
+          ]
+        },
+        {
+          "id": "buy-tap-label",
+          "name": "Stronger taps · {tapCost} label",
+          "parentId": "buy-tap",
+          "active": true,
+          "components": [
+            {
+              "id": "buy-tap-label-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "buy-tap-label-x",
+              "type": "pixi.text",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "text": "Stronger taps · {tapCost}",
+                "fontSize": 18,
+                "color": "#10131a",
+                "font": "",
+                "fontWeight": "bold",
+                "fontStyle": "normal",
+                "align": "center",
+                "letterSpacing": 0,
+                "strokeColor": "#000000",
+                "strokeWidth": 0
+              }
+            },
+            {
+              "id": "buy-tap-label-b",
+              "type": "scripts.behaviour",
+              "version": 1,
+              "data": {
+                "scriptId": "s-shop",
+                "params": {
+                  "kind": "tap"
+                },
+                "refs": {}
+              }
+            }
+          ]
+        },
+        {
+          "id": "buy-helper",
+          "name": "Hire helper · {helperCost}",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "buy-helper-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 670,
+                "y": 470,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "buy-helper-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 300,
+                "height": 46,
+                "color": "#b4f07a",
+                "rounded": 12,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            },
+            {
+              "id": "buy-helper-b",
+              "type": "scripts.behaviour",
+              "version": 1,
+              "data": {
+                "scriptId": "s-shop",
+                "params": {
+                  "kind": "helper"
+                },
+                "refs": {}
+              }
+            }
+          ]
+        },
+        {
+          "id": "buy-helper-label",
+          "name": "Hire helper · {helperCost} label",
+          "parentId": "buy-helper",
+          "active": true,
+          "components": [
+            {
+              "id": "buy-helper-label-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "buy-helper-label-x",
+              "type": "pixi.text",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "text": "Hire helper · {helperCost}",
+                "fontSize": 18,
+                "color": "#10131a",
+                "font": "",
+                "fontWeight": "bold",
+                "fontStyle": "normal",
+                "align": "center",
+                "letterSpacing": 0,
+                "strokeColor": "#000000",
+                "strokeWidth": 0
+              }
+            },
+            {
+              "id": "buy-helper-label-b",
+              "type": "scripts.behaviour",
+              "version": 1,
+              "data": {
+                "scriptId": "s-shop",
+                "params": {
+                  "kind": "helper"
+                },
+                "refs": {}
+              }
+            }
+          ]
+        },
+        {
+          "id": "saver",
+          "name": "Save game",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "saver-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 40,
+                "y": 520,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "saver-r",
+              "type": "interactions.bindings",
+              "version": 1,
+              "data": {
+                "rules": [
+                  {
+                    "id": "load",
+                    "trigger": {
+                      "event": "",
+                      "type": "scene.start",
+                      "sourceId": "s-shop"
+                    },
+                    "actions": [
+                      {
+                        "id": "load-0",
+                        "value": true,
+                        "type": "save.read",
+                        "targetId": "save"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "store",
+                    "trigger": {
+                      "event": "",
+                      "type": "global.change",
+                      "sourceId": "g-coins"
+                    },
+                    "actions": [
+                      {
+                        "id": "store-0",
+                        "value": true,
+                        "type": "save.write",
+                        "targetId": "save"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "modules": {
+    "settings": "1.0.0",
+    "project": "1.0.0",
+    "scene": "1.0.0",
+    "assets": "1.0.0",
+    "pixi": "1.0.0",
+    "layout": "1.0.0",
+    "ai-comfy": "1.0.0",
+    "ai-lm": "1.0.0",
+    "assetpack": "1.0.0",
+    "audio": "1.0.0",
+    "howler": "1.0.0",
+    "tween": "1.0.0",
+    "gsap": "1.0.0",
+    "tween-pixi": "1.0.0",
+    "animation": "1.0.0",
+    "physics": "1.0.0",
+    "matter": "1.0.0",
+    "spine": "1.0.0",
+    "spine-audio": "1.0.0",
+    "interactions": "1.0.0",
+    "interaction-media": "1.0.0",
+    "scripts": "1.0.0",
+    "input": "1.0.0",
+    "build": "1.0.0",
+    "html-export": "1.0.0",
+    "prefabs": "1.0.0",
+    "project-ui": "1.0.0",
+    "recovery": "1.0.0",
+    "studio": "1.0.0"
+  },
+  "providers": {
+    "audio": "howler",
+    "tween": "gsap",
+    "physics": "matter",
+    "render": "pixi"
+  },
+  "extensions": {
+    "pixi.render": {
+      "version": 1,
+      "background": "#1d1a2f"
+    },
+    "interactions.globals": {
+      "version": 1,
+      "items": [
+        {
+          "id": "g-coins",
+          "name": "coins",
+          "type": "number",
+          "initial": 0
+        },
+        {
+          "id": "g-pertap",
+          "name": "perTap",
+          "type": "number",
+          "initial": 1
+        },
+        {
+          "id": "g-persec",
+          "name": "perSecond",
+          "type": "number",
+          "initial": 0
+        },
+        {
+          "id": "g-tapcost",
+          "name": "tapCost",
+          "type": "number",
+          "initial": 10
+        },
+        {
+          "id": "g-helpercost",
+          "name": "helperCost",
+          "type": "number",
+          "initial": 25
+        }
+      ]
+    },
+    "scripts.library": {
+      "version": 1,
+      "items": [
+        {
+          "id": "s-coin",
+          "name": "CoinTap",
+          "source": "export function onClick(self: GameObject) {\n  globals.coins += globals.perTap;\n  self.play('tween');\n}",
+          "code": "\"use strict\";Object.defineProperty(exports, \"__esModule\", {value: true}); function onClick(self) {\n  globals.coins += globals.perTap;\n  self.play('tween');\n} exports.onClick = onClick;"
+        },
+        {
+          "id": "s-shop",
+          "name": "ShopButton",
+          "source": "export const params = { kind: param.choice(['tap', 'helper'] as const) };\nconst cost = (kind: string) => kind === 'tap' ? globals.tapCost : globals.helperCost;\nexport function update(self: GameObject) { self.alpha = globals.coins >= cost(self.params.kind) ? 1 : 0.5; }\nexport function onClick(self: GameObject) {\n  const kind = self.params.kind, price = cost(kind);\n  if (globals.coins < price) { game.camera.shake(6, 0.2); return; }\n  globals.coins -= price;\n  if (kind === 'tap') { globals.perTap += 1; globals.tapCost = Math.round(price * 1.6); }\n  else { globals.perSecond += 1; globals.helperCost = Math.round(price * 1.5); }\n}",
+          "code": "\"use strict\";Object.defineProperty(exports, \"__esModule\", {value: true}); const params = { kind: param.choice(['tap', 'helper'] ) }; exports.params = params;\nconst cost = (kind) => kind === 'tap' ? globals.tapCost : globals.helperCost;\n function update(self) { self.alpha = globals.coins >= cost(self.params.kind) ? 1 : 0.5; } exports.update = update;\n function onClick(self) {\n  const kind = self.params.kind, price = cost(kind);\n  if (globals.coins < price) { game.camera.shake(6, 0.2); return; }\n  globals.coins -= price;\n  if (kind === 'tap') { globals.perTap += 1; globals.tapCost = Math.round(price * 1.6); }\n  else { globals.perSecond += 1; globals.helperCost = Math.round(price * 1.5); }\n} exports.onClick = onClick;"
+        },
+        {
+          "id": "s-income",
+          "name": "Income",
+          "source": "export function update(self: SceneSelf, dt: number) {\n  self.state.t = (self.state.t ?? 0) + dt;\n  while (self.state.t >= 1) { self.state.t -= 1; globals.coins += globals.perSecond; }\n}",
+          "code": "\"use strict\";Object.defineProperty(exports, \"__esModule\", {value: true}); function update(self, dt) {\n  self.state.t = (self.state.t ?? 0) + dt;\n  while (self.state.t >= 1) { self.state.t -= 1; globals.coins += globals.perSecond; }\n} exports.update = update;"
+        }
+      ],
+      "scenes": {
+        "s-shop": {
+          "scriptId": "s-income",
+          "params": {},
+          "refs": {}
+        }
+      }
+    }
+  }
+}

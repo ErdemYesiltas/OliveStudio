@@ -1,0 +1,18 @@
+{
+  "name": "@rewrite/lighting",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./decorator": "./src/decorator.ts"
+  },
+  "dependencies": {
+    "@rewrite/sdk": "workspace:*",
+    "@rewrite/scene": "workspace:*",
+    "@rewrite/physics": "workspace:*",
+    "@rewrite/render-pixi": "workspace:*",
+    "pixi.js": "8.23.0",
+    "zod": "4.6.7"
+  }
+}

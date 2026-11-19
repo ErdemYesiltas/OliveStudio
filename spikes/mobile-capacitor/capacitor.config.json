@@ -1,0 +1,6 @@
+{
+  "appId": "dev.pixieditor.spike",
+  "appName": "Pixi Spike",
+  "webDir": "www",
+  "loggingBehavior": "debug"
+}

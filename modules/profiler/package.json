@@ -1,0 +1,13 @@
+{
+  "name": "@rewrite/profiler",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./views": "./src/views.tsx"
+  },
+  "dependencies": {
+    "react": "19.3.1"
+  }
+}

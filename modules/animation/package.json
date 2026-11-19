@@ -1,0 +1,24 @@
+{
+  "name": "@rewrite/animation",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./views": "./src/views.tsx"
+  },
+  "dependencies": {
+    "@rewrite/sdk": "workspace:*",
+    "@rewrite/scene": "workspace:*",
+    "@rewrite/tween": "workspace:*",
+    "react": "19.3.1",
+    "zod": "4.6.7",
+    "@rewrite/ui": "workspace:*",
+    "rxjs": "7.8.2"
+  },
+  "devDependencies": {
+    "@rewrite/tween-gsap": "workspace:*",
+    "@rewrite/runtime": "workspace:*",
+    "@rewrite/kernel": "workspace:*"
+  }
+}

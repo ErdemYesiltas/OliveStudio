@@ -1,0 +1,27 @@
+{
+  "name": "@rewrite/prefabs",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./contracts": "./src/contracts.ts",
+    "./views": "./src/views.tsx"
+  },
+  "dependencies": {
+    "@rewrite/sdk": "workspace:*",
+    "@rewrite/scene": "workspace:*",
+    "@rewrite/project": "workspace:*",
+    "react": "19.3.1",
+    "zod": "4.6.7",
+    "@rewrite/ui": "workspace:*",
+    "lucide-react": "1.72.0"
+  },
+  "devDependencies": {
+    "@rewrite/kernel": "workspace:*",
+    "@rewrite/render-pixi": "workspace:*",
+    "@rewrite/tween": "workspace:*",
+    "@rewrite/animation": "workspace:*",
+    "@rewrite/interactions": "workspace:*"
+  }
+}

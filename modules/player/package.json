@@ -1,0 +1,39 @@
+{
+  "name": "@rewrite/player",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./contracts": "./src/contracts.ts",
+    "./plugin": "./src/plugin.ts"
+  },
+  "dependencies": {
+    "@rewrite/sdk": "workspace:*",
+    "@rewrite/runtime": "workspace:*",
+    "@rewrite/scene": "workspace:*",
+    "@rewrite/project": "workspace:*",
+    "@rewrite/assets": "workspace:*",
+    "@rewrite/render-pixi": "workspace:*",
+    "@rewrite/audio": "workspace:*",
+    "@rewrite/audio-howler": "workspace:*",
+    "@rewrite/tween": "workspace:*",
+    "@rewrite/tween-gsap": "workspace:*",
+    "@rewrite/animation": "workspace:*",
+    "@rewrite/physics": "workspace:*",
+    "@rewrite/physics-matter": "workspace:*",
+    "@rewrite/spine": "workspace:*",
+    "@rewrite/spine-audio": "workspace:*",
+    "@rewrite/interactions": "workspace:*",
+    "pixi.js": "8.23.0",
+    "howler": "2.2.4",
+    "@rewrite/input": "workspace:*",
+    "@rewrite/layout": "workspace:*",
+    "@rewrite/scripts": "workspace:*",
+    "quickjs-emscripten-core": "0.32.0",
+    "@rewrite/navigation": "workspace:*",
+    "@rewrite/lighting": "workspace:*",
+    "@rewrite/dialogue": "workspace:*",
+    "@rewrite/achievements": "workspace:*"
+  }
+}

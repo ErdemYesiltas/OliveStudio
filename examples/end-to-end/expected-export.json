@@ -1,0 +1,20 @@
+{
+  "projectJsonSha256": "85e4a271f2a93242f21b2f9d73ab4dec37a0b3043655c9bf3c0caec4107436d2",
+  "runtimes": [
+    "gsap",
+    "howler",
+    "matter",
+    "spine"
+  ],
+  "scenes": [
+    "first",
+    "second"
+  ],
+  "assetFiles": {
+    "./game-assets/441438db-dcf5-4bfe-8228-cc0dc9b04682/95b0cbb579750dc743ab5955a6042313e8cf23817b2956626f2457fa52a1182c/image.webp": "f83b4f330bbd336c58918b5ba8b1ae28863bb992954bee7c90e7765672eae591",
+    "./game-assets/8dd6993d-75ae-4db7-ba09-cea80f6fe02f/d6d0e9fd94d9f7a1a6d6d0877efaefa4f974ecbe95df4a4a1a53bf7c14fffbeb/skeleton.json": "1c87288a93629f94bf641a8a377713c518434870fa30120f7507b08848776db8",
+    "./game-assets/8dd6993d-75ae-4db7-ba09-cea80f6fe02f/d6d0e9fd94d9f7a1a6d6d0877efaefa4f974ecbe95df4a4a1a53bf7c14fffbeb/skeleton.atlas": "8a7d647e7666fd980d8704d1aaa311ba8df3d181599598148c574b04811f1986",
+    "./game-assets/8dd6993d-75ae-4db7-ba09-cea80f6fe02f/d6d0e9fd94d9f7a1a6d6d0877efaefa4f974ecbe95df4a4a1a53bf7c14fffbeb/page-0.png": "a1af59b38386808e06884ca40c9e911870d9fc6889f20a143f567a6407d094f6",
+    "./game-assets/ee75e2e3-bcbb-43aa-adad-b2b292c614ee/547c93572905867c6dc1e153f9db8cc50338b587a25de110360aa69825019295/audio.mp3": "547c93572905867c6dc1e153f9db8cc50338b587a25de110360aa69825019295"
+  }
+}

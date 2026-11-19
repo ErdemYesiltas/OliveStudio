@@ -1,0 +1,1 @@
+{"name":"@rewrite/tween-gsap","version":"0.1.0","private":true,"type":"module","exports":{".":"./src/index.ts"},"dependencies":{"@rewrite/tween":"workspace:*","@rewrite/sdk":"workspace:*","gsap":"3.15.1"},"devDependencies":{"@rewrite/kernel":"workspace:*","@rewrite/runtime":"workspace:*","@rewrite/scene":"workspace:*"}}

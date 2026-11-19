@@ -1,0 +1,1 @@
+{"name": "@rewrite/layout", "version": "0.1.0", "private": true, "type": "module", "exports": {".": "./src/index.ts", "./contracts": "./src/contracts.ts", "./apply": "./src/apply.ts"}, "dependencies": {"@rewrite/sdk": "workspace:*", "@pixi/layout": "3.2.1", "yoga-layout": "3.2.1", "pixi.js": "8.23.0", "zod": "4.6.7", "@rewrite/render-pixi": "workspace:*"}}

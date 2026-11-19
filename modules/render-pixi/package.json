@@ -1,0 +1,36 @@
+{
+  "name": "@rewrite/render-pixi",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./contracts": "./src/contracts.ts",
+    "./visuals": "./src/visuals.ts",
+    "./flipbook": "./src/flipbook.ts",
+    "./font.node": "./src/font.node.ts",
+    "./fonts": "./src/fonts.ts",
+    "./display": "./src/display.ts",
+    "./objects": "./src/objects.ts",
+    "./shaders": "./src/shaders.ts",
+    "./effects": "./src/effects.ts",
+    "./guides": "./src/guides.ts",
+    "./tilemap": "./src/tilemap.ts",
+    "./runtime-camera": "./src/runtime-camera.ts",
+    "./screen": "./src/screen.ts",
+    "./overlay": "./src/overlay.ts",
+    "./click": "./src/click.ts",
+    "./device-frame": "./src/device-frame.ts"
+  },
+  "dependencies": {
+    "@rewrite/sdk": "workspace:*",
+    "@rewrite/scene": "workspace:*",
+    "@rewrite/project": "workspace:*",
+    "@rewrite/runtime": "workspace:*",
+    "pixi.js": "8.23.0",
+    "zod": "4.6.7",
+    "@rewrite/assets": "workspace:*",
+    "pixi-filters": "6.1.5",
+    "rxjs": "7.8.2"
+  }
+}

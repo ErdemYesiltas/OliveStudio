@@ -1,0 +1,4 @@
+import {auditColors} from '@rewrite/ui/contrast';
+import type {Theme} from './themes';
+import {t} from './strings';
+export function ContrastReport({theme}:{theme:Theme}){const checks=auditColors(theme.colors),failed=checks.filter(c=>!c.passes);return <section className="contrast-report" data-testid="contrast-report" data-failures={failed.length}><p role="status">{failed.length?`${t('theme.contrastFailures')}: ${failed.length}`:t('theme.contrastPassed')}</p><details><summary>{t('theme.contrastPairs')}</summary><table><thead><tr><th>{t('theme.contrastPair')}</th><th>{t('theme.contrastRatio')}</th><th>{t('theme.contrastMinimum')}</th></tr></thead><tbody>{checks.map(c=><tr key={c.foreground+c.background} data-passes={c.passes}><td>{c.foreground} / {c.background}</td><td>{c.ratio.toFixed(2)}:1</td><td>{c.minimum}:1</td></tr>)}</tbody></table></details></section>;}

@@ -1,0 +1,7 @@
+{
+  "id": "hello-panel",
+  "name": "Hello panel",
+  "version": "1.0.0",
+  "description": "Example plugin: a panel that lists the scene's objects, an Add menu item and a command.",
+  "main": "main.js"
+}

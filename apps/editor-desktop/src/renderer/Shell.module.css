@@ -1,0 +1,56 @@
+.shell{height:100%;display:flex;flex-direction:column;background:var(--bg);color:var(--text)}.toolbar{height:58px;flex:none;display:flex;align-items:center;padding:0 15px 0 0;gap:10px;-webkit-app-region:drag;user-select:none}.toolbar button,.toolbar input{-webkit-app-region:no-drag}.trafficSpace{width:95px;flex:none}.projectButton{color:var(--muted);font-size:12px}.divider{width:1px;height:20px;background:var(--border);margin:0 5px}.projectTitle{font-size:13px;font-weight:500;display:flex;gap:8px;align-items:center;max-width:220px;overflow:hidden;white-space:nowrap}.dirty{width:6px;height:6px;background:var(--accent);border-radius:100%;display:inline-block;flex:none}.tools,.playback{display:flex;gap:3px;margin-left:15px}.playback{margin-right:auto;border-left:1px solid var(--border);padding-left:16px}.panelButtons{display:flex;gap:7px;flex:1 1 0;min-width:0;justify-content:safe flex-end;overflow:hidden}.panelButtons button{flex:none}.compact button span{display:none}.panelButtons button{font-size:12px}.active{background:var(--raised);color:var(--accent)}.workspace{flex:1;min-height:0;position:relative}.footer{height:27px;display:flex;justify-content:space-between;align-items:center;padding:0 22px;font-size:10px;color:var(--muted);flex:none}.popover{width:310px;max-height:calc(100vh - 100px);overflow:hidden;border:1px solid var(--border);border-radius:13px;background:var(--surface);box-shadow:0 15px 50px #0004;z-index:20}.panelHeader{height:49px;display:flex;align-items:center;gap:5px;padding:0 13px;border-bottom:1px solid var(--border)}.panelHeader strong{font-weight:500;margin-right:auto}.menu{min-width:200px;padding:6px;border:1px solid var(--border);border-radius:11px;background:var(--surface);color:var(--text);box-shadow:0 12px 35px #0004;z-index:50}.menuItem{padding:9px 12px;border-radius:6px;outline:none;cursor:pointer;display:flex;gap:10px;align-items:center;font-size:12px}.menuItem[data-highlighted]{background:var(--raised)}.menuItem svg:last-child:not(:first-child){margin-left:auto}.menuLabel{font-size:10px;color:var(--muted);padding:9px 12px;text-transform:uppercase;letter-spacing:1px}.separator{height:1px;background:var(--border);margin:5px}.tooltip{background:var(--raised);color:var(--text);font-size:11px;padding:7px 9px;border:1px solid var(--border);border-radius:6px;z-index:70}.overlay{position:fixed;inset:0;background:#0007;z-index:40}.dialog{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:500px;max-width:90vw;max-height:85vh;overflow:auto;background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:16px;padding:28px;z-index:41;box-shadow:0 20px 90px #0005}.dialog h2{font-size:20px;font-weight:500;margin-bottom:10px}.dialog p{font-size:12px;color:var(--muted);line-height:1.6}.closeDialog{position:absolute;top:12px;right:12px}.moduleRow{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--border)}.moduleRow span:last-child{margin-left:auto;color:var(--muted);font-size:11px}.notice{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);display:flex;gap:15px;align-items:center;max-width:80vw;background:var(--surface);border:1px solid var(--border);padding:10px 14px;border-radius:10px;box-shadow:0 10px 35px #0004;z-index:80;font-size:12px}.dialog textarea{width:100%;height:240px;font-family:monospace;font-size:11px;margin-bottom:14px}.empty{height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;color:var(--muted);background:var(--viewport)}.empty h1{font-size:22px;color:var(--text);font-weight:400;margin-top:20px}.empty p{font-size:12px}@media(max-width:1150px){.panelButtons button span{display:none}.projectTitle{max-width:150px}.tools{margin-left:5px}.toolbar{gap:7px}}
+
+.themeError{color:var(--danger)!important}
+
+.finderSearch{display:flex;align-items:center;gap:10px;margin:18px 0;color:var(--muted)}.finderSearch input{width:100%}.finderResults{max-height:300px;overflow:auto;display:flex;flex-direction:column;gap:4px}.finderResults button{flex-shrink:0;text-align:left;padding:10px}.finderResults button[aria-selected=true]{background:var(--raised);color:var(--accent)}.menuItem kbd{font-size:10px;margin-left:auto;color:var(--muted)}
+
+.panelButtons{min-width:0;overflow-x:auto;scrollbar-width:none;flex-shrink:1}.panelButtons>button{flex-shrink:0}.toolbar>button{flex-shrink:0}
+.addButton{display:flex;align-items:center;gap:6px;font-size:12px;padding:0 10px 0 8px}.addButton[data-state=open]{background:var(--raised);color:var(--accent)}.menuItem svg:first-child{flex:none;color:var(--muted)}
+.settingRange{display:flex;align-items:center;gap:8px}.settingRange output{min-width:42px;text-align:right;font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}.finderResults button{display:flex;align-items:center;gap:10px}.finderResults kbd{margin-left:auto;font-size:10px;color:var(--muted)}
+/* Settings: VS Code layout (search header, section tree, one scrolling list). */
+.settingsDialog{width:min(1040px,94vw);height:min(760px,90vh);max-width:none;max-height:none;padding:0;overflow:hidden;display:grid;grid-template-rows:auto 1fr auto}
+.settingsHeader{display:flex;flex-direction:column;gap:10px;padding:20px 56px 14px 24px;border-bottom:1px solid var(--border)}
+.settingsHeader h2{margin:0 0 2px}
+.settingsHeader p{margin:0}
+.settingsSearch{display:flex;align-items:center;gap:8px;padding:0 6px 0 10px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--muted)}
+.settingsSearch:focus-within{border-color:var(--accent)}
+.settingsSearch input{flex:1;border:0;background:none;padding:8px 0;outline:none}
+.settingsSearch button{padding:5px}
+.settingsSearch button[aria-pressed=true]{color:var(--accent);background:var(--raised)}
+.settingsFound{font-size:11px;white-space:nowrap}
+.settingsBody{display:grid;grid-template-columns:220px 1fr;min-height:0}
+.settingsNav{display:flex;flex-direction:column;gap:1px;padding:14px 10px;border-right:1px solid var(--border);overflow:auto}
+.settingsNav h4{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin:10px 8px 4px}
+.settingsNav h4:first-child{margin-top:0}
+.settingsNavItem{justify-content:space-between;text-align:left;padding:5px 8px;border-radius:6px;font-size:12px;color:var(--muted)}
+.settingsNavItem span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.settingsNavItem small{font-size:10px;padding:0 6px;border-radius:999px;background:var(--raised)}
+.settingsNavItem[aria-current=true]{color:var(--text);background:var(--raised);box-shadow:inset 2px 0 0 var(--accent)}
+.settingsList{overflow:auto;padding:6px 28px 40px;min-height:0;scroll-behavior:smooth}
+.settingsList>section{padding-top:14px}
+.settingsList h3{font-size:18px;font-weight:600;color:var(--text);margin:8px 0 6px}
+.settingsEmpty{padding:30px 0}
+.settingsFooter{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 24px;border-top:1px solid var(--border);font-size:11px;color:var(--muted)}
+.settingRow{position:relative;display:flex;flex-direction:column;gap:5px;padding:12px 14px;margin:0 -14px;border-radius:6px;font-size:12px}
+.settingRow:hover,.settingRow:focus-within{background:color-mix(in srgb,var(--raised) 55%,transparent)}
+.settingRow[data-modified=true]::before{content:'';position:absolute;left:2px;top:12px;bottom:12px;width:2px;border-radius:2px;background:var(--accent)}
+.settingTitle{display:flex;align-items:center;gap:6px;font-weight:600}
+.settingTitle small{font-weight:400;color:var(--muted)}
+.settingHelp{font-size:12px;color:var(--muted);line-height:1.5;max-width:720px}
+.settingControl{display:flex}
+.settingControl>select,.settingControl>input{width:min(340px,100%)}
+.settingCheck{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--muted);line-height:1.5;cursor:pointer}
+.settingCheck input{margin-top:2px}
+.settingReset{padding:3px;opacity:0;color:var(--muted)}
+.settingRow:hover .settingReset:not(:disabled),.settingRow:focus-within .settingReset:not(:disabled),.settingRow[data-modified=true] .settingReset{opacity:1}
+.settingRange input{width:min(260px,60vw)}
+@media (max-width:640px){.settingsBody{grid-template-columns:1fr}.settingsNav{display:none}}
+.settingsSearch input:focus-visible{outline:none}
+.settingsList::after{content:'';display:block;height:calc(100% - 140px)}
+.settingCheck small{font-size:12px;color:var(--muted)}
+.settingRow .settingReset:disabled{opacity:0}
+
+/* Studio chrome: compact tools, clear grouping, quiet panel launchers. */
+.toolbar{height:54px;gap:8px;padding-right:12px;border-bottom:1px solid var(--border)}
+.projectTitle{font-weight:600;max-width:180px;text-overflow:ellipsis}.tools,.playback{gap:2px;margin-left:4px}.toolbar button{height:32px;justify-content:center}.playback{border:1px solid var(--border);border-radius:9px;padding:2px;background:var(--surface);margin-right:6px}.panelButtons{gap:2px;justify-content:flex-start;scrollbar-width:thin}.panelButtons button{padding:7px;flex:none}.panelButtons button svg{width:16px;height:16px}.workspacePicker{flex:none;gap:6px;font-size:11px;border:1px solid var(--border);background:var(--surface)}.workspacePicker span{max-width:78px;overflow:hidden;text-overflow:ellipsis}.popover{border-radius:12px;box-shadow:0 16px 60px #0005}.panelHeader{height:42px}.panelHeader button{padding:6px}.footer{height:24px;font-variant-numeric:tabular-nums}.settingsHeader h2{font-size:18px}.settingsList>section{border-bottom:1px solid var(--border);padding:18px 0 22px}.settingsList h3{font-size:15px}.settingsNav{background:var(--bg)}
+@media(max-width:1000px){.workspacePicker span{display:none}.projectTitle{max-width:110px}.trafficSpace{width:80px}}

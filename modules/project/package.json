@@ -1,0 +1,19 @@
+{
+  "name": "@rewrite/project",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./views": "./src/views.tsx"
+  },
+  "dependencies": {
+    "@rewrite/sdk": "workspace:*",
+    "@rewrite/documents": "workspace:*",
+    "@rewrite/scene": "workspace:*",
+    "zod": "4.6.7",
+    "react": "19.3.1",
+    "radix-ui": "1.8.1",
+    "@rewrite/ui": "workspace:*"
+  }
+}

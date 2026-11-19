@@ -1,0 +1,854 @@
+{
+  "formatVersion": 1,
+  "name": "Interactive demo",
+  "entrySceneId": "first",
+  "scenes": [
+    {
+      "formatVersion": 1,
+      "id": "first",
+      "name": "Interactive demo",
+      "entities": [
+        {
+          "id": "button",
+          "name": "Button",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "button-transform",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 180,
+                "y": 180,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "button-shape",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "width": 120,
+                "height": 70,
+                "color": "#d9976e",
+                "rounded": 12,
+                "alpha": 1
+              }
+            },
+            {
+              "id": "move",
+              "type": "tween.player",
+              "version": 1,
+              "data": {
+                "duration": 0.4,
+                "delay": 0,
+                "ease": "linear",
+                "repeat": 0,
+                "yoyo": false,
+                "autoplay": false,
+                "tracks": [
+                  {
+                    "id": "move-track",
+                    "entityId": "button",
+                    "componentId": "button-transform",
+                    "property": "x",
+                    "from": 180,
+                    "to": 380
+                  }
+                ]
+              }
+            },
+            {
+              "id": "clip",
+              "type": "animation.player",
+              "version": 1,
+              "data": {
+                "activeClipId": "fade",
+                "autoplay": false,
+                "clips": [
+                  {
+                    "id": "fade",
+                    "name": "Fade",
+                    "duration": 0.3,
+                    "repeat": 0,
+                    "yoyo": false,
+                    "tracks": [
+                      {
+                        "id": "opacity-track",
+                        "entityId": "button",
+                        "componentId": "button-shape",
+                        "property": "alpha",
+                        "keys": [
+                          {
+                            "id": "k0",
+                            "time": 0,
+                            "value": 1,
+                            "ease": "linear"
+                          },
+                          {
+                            "id": "k1",
+                            "time": 0.3,
+                            "value": 0.4,
+                            "ease": "linear"
+                          }
+                        ]
+                      }
+                    ],
+                    "markers": []
+                  }
+                ]
+              }
+            },
+            {
+              "id": "button-bindings",
+              "type": "interactions.bindings",
+              "version": 1,
+              "data": {
+                "rules": [
+                  {
+                    "id": "ef3b664a-52fc-4e8a-9cd3-9e127816cc0b",
+                    "trigger": {
+                      "type": "pointer.click",
+                      "sourceId": "button",
+                      "event": ""
+                    },
+                    "actions": [
+                      {
+                        "id": "2057db4c-aeff-46dc-ba05-01d0c790cbb4",
+                        "type": "tween.play",
+                        "targetId": "move",
+                        "value": true
+                      },
+                      {
+                        "id": "d4c02788-9afa-4c5b-9565-32a32dcbba6e",
+                        "type": "animation.play",
+                        "targetId": "clip",
+                        "value": true
+                      },
+                      {
+                        "id": "c7e4572d-510c-4bb3-9f0c-edb30828f4f8",
+                        "type": "audio.play",
+                        "targetId": "voice",
+                        "value": true
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "next",
+          "name": "Next scene",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "next-transform",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 800,
+                "y": 440,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "next-shape",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "width": 120,
+                "height": 70,
+                "color": "#4c776b",
+                "rounded": 12,
+                "alpha": 1
+              }
+            },
+            {
+              "id": "next-bindings",
+              "type": "interactions.bindings",
+              "version": 1,
+              "data": {
+                "rules": [
+                  {
+                    "id": "next-rule",
+                    "trigger": {
+                      "type": "pointer.click",
+                      "sourceId": "next",
+                      "event": ""
+                    },
+                    "actions": [
+                      {
+                        "id": "next-action",
+                        "type": "scene.change",
+                        "targetId": "second",
+                        "value": true
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "sound",
+          "name": "Sound",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "sound-transform",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 800,
+                "y": 300,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "voice",
+              "type": "audio.source",
+              "version": 1,
+              "data": {
+                "assetId": "ee75e2e3-bcbb-43aa-adad-b2b292c614ee",
+                "volume": 0.1,
+                "rate": 1,
+                "loop": false,
+                "autoplay": false
+              }
+            }
+          ]
+        },
+        {
+          "id": "rig",
+          "name": "Spine",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "rig-transform",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 620,
+                "y": 220,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "skeleton",
+              "type": "spine.renderer",
+              "version": 1,
+              "data": {
+                "assetId": "8dd6993d-75ae-4db7-ba09-cea80f6fe02f",
+                "skin": "warm",
+                "animation": "sway",
+                "loop": true,
+                "timeScale": 1,
+                "alpha": 1
+              }
+            },
+            {
+              "id": "rig-bindings",
+              "type": "interactions.bindings",
+              "version": 1,
+              "data": {
+                "rules": [
+                  {
+                    "id": "spine-rule",
+                    "trigger": {
+                      "type": "spine.event",
+                      "sourceId": "skeleton",
+                      "event": "ping"
+                    },
+                    "actions": [
+                      {
+                        "id": "spine-active",
+                        "type": "entity.active",
+                        "targetId": "spine-flag",
+                        "value": true
+                      },
+                      {
+                        "id": "spine-sound",
+                        "type": "audio.play",
+                        "targetId": "voice",
+                        "value": true
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "box",
+          "name": "Box",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "box-transform",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 500,
+                "y": 60,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "box-shape",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "width": 40,
+                "height": 40,
+                "color": "#79a7d5",
+                "rounded": 12,
+                "alpha": 1
+              }
+            },
+            {
+              "id": "body",
+              "type": "physics.rigidBody2d",
+              "version": 1,
+              "data": {
+                "bodyType": "dynamic",
+                "density": 0.001,
+                "friction": 0.1,
+                "restitution": 0,
+                "airFriction": 0,
+                "lockRotation": true,
+                "velocityX": 0,
+                "velocityY": 0,
+                "angularVelocity": 0
+              }
+            },
+            {
+              "id": "collider",
+              "type": "physics.boxCollider2d",
+              "version": 1,
+              "data": {
+                "width": 40,
+                "height": 40,
+                "offsetX": 0,
+                "offsetY": 0,
+                "sensor": false
+              }
+            },
+            {
+              "id": "box-bindings",
+              "type": "interactions.bindings",
+              "version": 1,
+              "data": {
+                "rules": [
+                  {
+                    "id": "collision-rule",
+                    "trigger": {
+                      "type": "physics.enter",
+                      "sourceId": "box",
+                      "event": ""
+                    },
+                    "actions": [
+                      {
+                        "id": "collision-active",
+                        "type": "entity.active",
+                        "targetId": "physics-flag",
+                        "value": true
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "floor",
+          "name": "Floor",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "floor-transform",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 480,
+                "y": 500,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "floor-shape",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "width": 900,
+                "height": 20,
+                "color": "#4c776b",
+                "rounded": 12,
+                "alpha": 1
+              }
+            },
+            {
+              "id": "floor-collider",
+              "type": "physics.boxCollider2d",
+              "version": 1,
+              "data": {
+                "width": 900,
+                "height": 20,
+                "offsetX": 0,
+                "offsetY": 0,
+                "sensor": false
+              }
+            }
+          ]
+        },
+        {
+          "id": "start-flag",
+          "name": "Start flag",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "start-flag-transform",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 60,
+                "y": 40,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "start-shape",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "width": 35,
+                "height": 35,
+                "color": "#bada88",
+                "rounded": 12,
+                "alpha": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "spine-flag",
+          "name": "Spine flag",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "spine-flag-transform",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 110,
+                "y": 40,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "spine-flag-shape",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "width": 35,
+                "height": 35,
+                "color": "#ffd078",
+                "rounded": 12,
+                "alpha": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "physics-flag",
+          "name": "Physics flag",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "physics-flag-transform",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 160,
+                "y": 40,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "physics-flag-shape",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "width": 35,
+                "height": 35,
+                "color": "#78cad4",
+                "rounded": 12,
+                "alpha": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "control",
+          "name": "Control",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "control-transform",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 480,
+                "y": 270,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "control-bindings",
+              "type": "interactions.bindings",
+              "version": 1,
+              "data": {
+                "rules": [
+                  {
+                    "id": "start-rule",
+                    "trigger": {
+                      "type": "scene.start",
+                      "sourceId": "first",
+                      "event": ""
+                    },
+                    "actions": [
+                      {
+                        "id": "start-action",
+                        "type": "entity.active",
+                        "targetId": "start-flag",
+                        "value": false
+                      }
+                    ]
+                  },
+                  {
+                    "id": "complete-rule",
+                    "trigger": {
+                      "type": "animation.complete",
+                      "sourceId": "clip",
+                      "event": ""
+                    },
+                    "actions": [
+                      {
+                        "id": "complete-action",
+                        "type": "entity.active",
+                        "targetId": "start-flag",
+                        "value": true
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "sprite",
+          "name": "Image",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "sprite-transform",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 820,
+                "y": 80,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "sprite-view",
+              "type": "pixi.sprite",
+              "version": 1,
+              "data": {
+                "assetId": "441438db-dcf5-4bfe-8228-cc0dc9b04682",
+                "width": 80,
+                "height": 60,
+                "anchorX": 0.5,
+                "anchorY": 0.5,
+                "alpha": 1,
+                "tint": "#ffffff"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "formatVersion": 1,
+      "id": "second",
+      "name": "Second scene",
+      "entities": [
+        {
+          "id": "back",
+          "name": "Back",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "back-transform",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 480,
+                "y": 270,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "back-shape",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "width": 220,
+                "height": 100,
+                "color": "#9bb6cf",
+                "rounded": 12,
+                "alpha": 1
+              }
+            },
+            {
+              "id": "back-bindings",
+              "type": "interactions.bindings",
+              "version": 1,
+              "data": {
+                "rules": [
+                  {
+                    "id": "back-rule",
+                    "trigger": {
+                      "type": "pointer.click",
+                      "sourceId": "back",
+                      "event": ""
+                    },
+                    "actions": [
+                      {
+                        "id": "back-action",
+                        "type": "scene.change",
+                        "targetId": "first",
+                        "value": true
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "second-sound",
+          "name": "Second sound",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "second-sound-transform",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 100,
+                "y": 100,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "second-voice",
+              "type": "audio.source",
+              "version": 1,
+              "data": {
+                "assetId": "ee75e2e3-bcbb-43aa-adad-b2b292c614ee",
+                "volume": 0.1,
+                "rate": 1,
+                "loop": false,
+                "autoplay": true
+              }
+            },
+            {
+              "id": "second-start-bindings",
+              "type": "interactions.bindings",
+              "version": 1,
+              "data": {
+                "rules": [
+                  {
+                    "id": "second-start-rule",
+                    "trigger": {
+                      "type": "scene.start",
+                      "sourceId": "second",
+                      "event": ""
+                    },
+                    "actions": [
+                      {
+                        "id": "second-start-action",
+                        "type": "audio.play",
+                        "targetId": "second-voice",
+                        "value": true
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "modules": {
+    "project": "1.0.0",
+    "scene": "1.0.0",
+    "assets": "1.0.0",
+    "pixi": "1.0.0",
+    "assetpack": "1.0.0",
+    "audio": "1.0.0",
+    "howler": "1.0.0",
+    "tween": "1.0.0",
+    "gsap": "1.0.0",
+    "tween-pixi": "1.0.0",
+    "animation": "1.0.0",
+    "physics": "1.0.0",
+    "matter": "1.0.0",
+    "spine": "1.0.0",
+    "spine-audio": "1.0.0",
+    "interactions": "1.0.0",
+    "interaction-media": "1.0.0",
+    "build": "1.0.0",
+    "html-export": "1.0.0",
+    "prefabs": "1.0.0",
+    "project-ui": "1.0.0",
+    "recovery": "1.0.0",
+    "studio": "1.0.0"
+  },
+  "providers": {
+    "audio": "howler",
+    "tween": "gsap",
+    "physics": "matter",
+    "render": "pixi"
+  },
+  "extensions": {
+    "assets.registry": {
+      "version": 1,
+      "items": [
+        {
+          "id": "441438db-dcf5-4bfe-8228-cc0dc9b04682",
+          "name": "image",
+          "type": "pixi.texture",
+          "revision": "95b0cbb579750dc743ab5955a6042313e8cf23817b2956626f2457fa52a1182c",
+          "source": {
+            "extension": "png",
+            "bytes": 282
+          },
+          "metadata": {
+            "width": 80,
+            "height": 60,
+            "processedBytes": 44,
+            "pipeline": "assetpack-1.7.0/sharp-0.34.5/lossless-webp-v1"
+          }
+        },
+        {
+          "id": "ee75e2e3-bcbb-43aa-adad-b2b292c614ee",
+          "name": "tone",
+          "type": "audio.clip",
+          "revision": "547c93572905867c6dc1e153f9db8cc50338b587a25de110360aa69825019295",
+          "source": {
+            "extension": "mp3",
+            "bytes": 8568
+          },
+          "metadata": {
+            "format": "mp3",
+            "duration": 1.0710204081632653,
+            "sampleRate": 22050,
+            "channels": 1,
+            "codec": "MPEG 2 Layer 3",
+            "processedBytes": 8568,
+            "pipeline": "audio-original-v1/music-metadata-12.5.0"
+          }
+        },
+        {
+          "id": "8dd6993d-75ae-4db7-ba09-cea80f6fe02f",
+          "name": "rig",
+          "type": "spine.skeleton",
+          "revision": "d6d0e9fd94d9f7a1a6d6d0877efaefa4f974ecbe95df4a4a1a53bf7c14fffbeb",
+          "source": {
+            "extension": "spinepack",
+            "bytes": 1485
+          },
+          "metadata": {
+            "version": "4.2.00",
+            "animations": [
+              {
+                "name": "sway",
+                "duration": 1
+              },
+              {
+                "name": "still",
+                "duration": 1
+              }
+            ],
+            "skins": [
+              "default",
+              "warm"
+            ],
+            "events": [
+              "ping"
+            ],
+            "pages": [
+              {
+                "name": "rig.png",
+                "file": "page-0.png",
+                "width": 64,
+                "height": 64
+              }
+            ],
+            "bones": 2,
+            "pipeline": "spine-4.2.120-v1"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "name": "@rewrite/assets",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./node": "./src/session.node.ts",
+    "./views": "./src/views.tsx"
+  },
+  "dependencies": {
+    "@dnd-kit/core": "6.3.1",
+    "lucide-react": "1.72.0",
+    "@rewrite/project": "workspace:*",
+    "@rewrite/sdk": "workspace:*",
+    "react": "19.3.1",
+    "zod": "4.6.7",
+    "@rewrite/ui": "workspace:*"
+  },
+  "devDependencies": {
+    "@rewrite/scene": "workspace:*",
+    "@rewrite/kernel": "workspace:*"
+  }
+}

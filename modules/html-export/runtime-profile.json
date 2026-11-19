@@ -1,0 +1,67 @@
+{
+  "runtimes": {
+    "howler": {
+      "id": "howler",
+      "entry": "modules/player/src/plugins/howler.ts"
+    },
+    "gsap": {
+      "id": "gsap",
+      "entry": "modules/player/src/plugins/gsap.ts"
+    },
+    "matter": {
+      "id": "matter",
+      "entry": "modules/player/src/plugins/matter.ts"
+    },
+    "spine": {
+      "id": "spine",
+      "entry": "modules/player/src/plugins/spine.ts"
+    },
+    "spine-audio": {
+      "id": "spine-audio",
+      "entry": "modules/player/src/plugins/spine-audio.ts",
+      "requires": [
+        "spine"
+      ]
+    },
+    "flipbook": {
+      "id": "flipbook",
+      "entry": "modules/player/src/plugins/flipbook.ts"
+    },
+    "input": {
+      "id": "input",
+      "entry": "modules/player/src/plugins/input.ts"
+    },
+    "objects": {
+      "id": "objects",
+      "entry": "modules/player/src/plugins/objects.ts"
+    },
+    "layout": {
+      "id": "layout",
+      "entry": "modules/player/src/plugins/layout.ts"
+    },
+    "effects": {
+      "id": "effects",
+      "entry": "modules/player/src/plugins/effects.ts"
+    },
+    "scripts": {
+      "id": "scripts",
+      "entry": "modules/player/src/plugins/scripts.ts"
+    },
+    "navigation": {
+      "id": "navigation",
+      "entry": "modules/player/src/plugins/navigation.ts"
+    },
+    "lighting": {
+      "id": "lighting",
+      "entry": "modules/player/src/plugins/lighting.ts"
+    },
+    "dialogue": {
+      "id": "dialogue",
+      "entry": "modules/player/src/plugins/dialogue.ts"
+    },
+    "achievements": {
+      "id": "achievements",
+      "entry": "modules/player/src/plugins/achievements.ts"
+    }
+  }
+}

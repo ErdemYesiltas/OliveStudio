@@ -1,0 +1,17 @@
+{
+  "name": "@rewrite/achievements",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./toast": "./src/toast.ts",
+    "./views": "./src/views.tsx"
+  },
+  "dependencies": {
+    "@rewrite/sdk": "workspace:*",
+    "@rewrite/interactions": "workspace:*",
+    "react": "19.3.1",
+    "zod": "4.6.7"
+  }
+}

@@ -1,0 +1,1696 @@
+{
+  "formatVersion": 1,
+  "name": "Pair Up",
+  "entrySceneId": "s-pairs",
+  "scenes": [
+    {
+      "formatVersion": 1,
+      "id": "s-pairs",
+      "name": "Table",
+      "entities": [
+        {
+          "id": "felt",
+          "name": "Felt",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "felt-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 480,
+                "y": 300,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "felt-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 780,
+                "height": 470,
+                "color": "#1b4332",
+                "rounded": 24,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#0f2a1f",
+                "strokeWidth": 6
+              }
+            }
+          ]
+        },
+        {
+          "id": "card-0",
+          "name": "Card",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "card-0-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 210,
+                "y": 150,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "card-0-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 140,
+                "height": 120,
+                "color": "#2b2d42",
+                "rounded": 14,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#8d99ae",
+                "strokeWidth": 3
+              }
+            },
+            {
+              "id": "card-0-b",
+              "type": "scripts.behaviour",
+              "version": 1,
+              "data": {
+                "scriptId": "s-card",
+                "params": {},
+                "refs": {}
+              }
+            },
+            {
+              "id": "card-0-tw",
+              "type": "tween.player",
+              "version": 1,
+              "data": {
+                "duration": 0.09,
+                "delay": 0,
+                "ease": "quad.out",
+                "repeat": 1,
+                "yoyo": true,
+                "autoplay": false,
+                "tracks": [
+                  {
+                    "id": "card-0-k0",
+                    "entityId": "card-0",
+                    "componentId": "card-0-t",
+                    "property": "scaleX",
+                    "from": 1,
+                    "to": 0.82
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "card-0-face",
+          "name": "star face",
+          "parentId": "card-0",
+          "active": false,
+          "components": [
+            {
+              "id": "card-0-face-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "card-0-face-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "star",
+                "width": 64,
+                "height": 64,
+                "color": "#ffd166",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.45,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "card-1",
+          "name": "Card",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "card-1-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 390,
+                "y": 150,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "card-1-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 140,
+                "height": 120,
+                "color": "#2b2d42",
+                "rounded": 14,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#8d99ae",
+                "strokeWidth": 3
+              }
+            },
+            {
+              "id": "card-1-b",
+              "type": "scripts.behaviour",
+              "version": 1,
+              "data": {
+                "scriptId": "s-card",
+                "params": {},
+                "refs": {}
+              }
+            },
+            {
+              "id": "card-1-tw",
+              "type": "tween.player",
+              "version": 1,
+              "data": {
+                "duration": 0.09,
+                "delay": 0,
+                "ease": "quad.out",
+                "repeat": 1,
+                "yoyo": true,
+                "autoplay": false,
+                "tracks": [
+                  {
+                    "id": "card-1-k0",
+                    "entityId": "card-1",
+                    "componentId": "card-1-t",
+                    "property": "scaleX",
+                    "from": 1,
+                    "to": 0.82
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "card-1-face",
+          "name": "star face",
+          "parentId": "card-1",
+          "active": false,
+          "components": [
+            {
+              "id": "card-1-face-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "card-1-face-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "star",
+                "width": 64,
+                "height": 64,
+                "color": "#ffd166",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.45,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "card-2",
+          "name": "Card",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "card-2-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 570,
+                "y": 150,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "card-2-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 140,
+                "height": 120,
+                "color": "#2b2d42",
+                "rounded": 14,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#8d99ae",
+                "strokeWidth": 3
+              }
+            },
+            {
+              "id": "card-2-b",
+              "type": "scripts.behaviour",
+              "version": 1,
+              "data": {
+                "scriptId": "s-card",
+                "params": {},
+                "refs": {}
+              }
+            },
+            {
+              "id": "card-2-tw",
+              "type": "tween.player",
+              "version": 1,
+              "data": {
+                "duration": 0.09,
+                "delay": 0,
+                "ease": "quad.out",
+                "repeat": 1,
+                "yoyo": true,
+                "autoplay": false,
+                "tracks": [
+                  {
+                    "id": "card-2-k0",
+                    "entityId": "card-2",
+                    "componentId": "card-2-t",
+                    "property": "scaleX",
+                    "from": 1,
+                    "to": 0.82
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "card-2-face",
+          "name": "circle face",
+          "parentId": "card-2",
+          "active": false,
+          "components": [
+            {
+              "id": "card-2-face-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "card-2-face-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "ellipse",
+                "width": 60,
+                "height": 60,
+                "color": "#06d6a0",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "card-3",
+          "name": "Card",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "card-3-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 750,
+                "y": 150,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "card-3-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 140,
+                "height": 120,
+                "color": "#2b2d42",
+                "rounded": 14,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#8d99ae",
+                "strokeWidth": 3
+              }
+            },
+            {
+              "id": "card-3-b",
+              "type": "scripts.behaviour",
+              "version": 1,
+              "data": {
+                "scriptId": "s-card",
+                "params": {},
+                "refs": {}
+              }
+            },
+            {
+              "id": "card-3-tw",
+              "type": "tween.player",
+              "version": 1,
+              "data": {
+                "duration": 0.09,
+                "delay": 0,
+                "ease": "quad.out",
+                "repeat": 1,
+                "yoyo": true,
+                "autoplay": false,
+                "tracks": [
+                  {
+                    "id": "card-3-k0",
+                    "entityId": "card-3",
+                    "componentId": "card-3-t",
+                    "property": "scaleX",
+                    "from": 1,
+                    "to": 0.82
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "card-3-face",
+          "name": "circle face",
+          "parentId": "card-3",
+          "active": false,
+          "components": [
+            {
+              "id": "card-3-face-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "card-3-face-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "ellipse",
+                "width": 60,
+                "height": 60,
+                "color": "#06d6a0",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "card-4",
+          "name": "Card",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "card-4-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 210,
+                "y": 300,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "card-4-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 140,
+                "height": 120,
+                "color": "#2b2d42",
+                "rounded": 14,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#8d99ae",
+                "strokeWidth": 3
+              }
+            },
+            {
+              "id": "card-4-b",
+              "type": "scripts.behaviour",
+              "version": 1,
+              "data": {
+                "scriptId": "s-card",
+                "params": {},
+                "refs": {}
+              }
+            },
+            {
+              "id": "card-4-tw",
+              "type": "tween.player",
+              "version": 1,
+              "data": {
+                "duration": 0.09,
+                "delay": 0,
+                "ease": "quad.out",
+                "repeat": 1,
+                "yoyo": true,
+                "autoplay": false,
+                "tracks": [
+                  {
+                    "id": "card-4-k0",
+                    "entityId": "card-4",
+                    "componentId": "card-4-t",
+                    "property": "scaleX",
+                    "from": 1,
+                    "to": 0.82
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "card-4-face",
+          "name": "triangle face",
+          "parentId": "card-4",
+          "active": false,
+          "components": [
+            {
+              "id": "card-4-face-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "card-4-face-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "triangle",
+                "width": 64,
+                "height": 58,
+                "color": "#ef476f",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "card-5",
+          "name": "Card",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "card-5-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 390,
+                "y": 300,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "card-5-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 140,
+                "height": 120,
+                "color": "#2b2d42",
+                "rounded": 14,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#8d99ae",
+                "strokeWidth": 3
+              }
+            },
+            {
+              "id": "card-5-b",
+              "type": "scripts.behaviour",
+              "version": 1,
+              "data": {
+                "scriptId": "s-card",
+                "params": {},
+                "refs": {}
+              }
+            },
+            {
+              "id": "card-5-tw",
+              "type": "tween.player",
+              "version": 1,
+              "data": {
+                "duration": 0.09,
+                "delay": 0,
+                "ease": "quad.out",
+                "repeat": 1,
+                "yoyo": true,
+                "autoplay": false,
+                "tracks": [
+                  {
+                    "id": "card-5-k0",
+                    "entityId": "card-5",
+                    "componentId": "card-5-t",
+                    "property": "scaleX",
+                    "from": 1,
+                    "to": 0.82
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "card-5-face",
+          "name": "triangle face",
+          "parentId": "card-5",
+          "active": false,
+          "components": [
+            {
+              "id": "card-5-face-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "card-5-face-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "triangle",
+                "width": 64,
+                "height": 58,
+                "color": "#ef476f",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "card-6",
+          "name": "Card",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "card-6-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 570,
+                "y": 300,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "card-6-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 140,
+                "height": 120,
+                "color": "#2b2d42",
+                "rounded": 14,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#8d99ae",
+                "strokeWidth": 3
+              }
+            },
+            {
+              "id": "card-6-b",
+              "type": "scripts.behaviour",
+              "version": 1,
+              "data": {
+                "scriptId": "s-card",
+                "params": {},
+                "refs": {}
+              }
+            },
+            {
+              "id": "card-6-tw",
+              "type": "tween.player",
+              "version": 1,
+              "data": {
+                "duration": 0.09,
+                "delay": 0,
+                "ease": "quad.out",
+                "repeat": 1,
+                "yoyo": true,
+                "autoplay": false,
+                "tracks": [
+                  {
+                    "id": "card-6-k0",
+                    "entityId": "card-6",
+                    "componentId": "card-6-t",
+                    "property": "scaleX",
+                    "from": 1,
+                    "to": 0.82
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "card-6-face",
+          "name": "hexagon face",
+          "parentId": "card-6",
+          "active": false,
+          "components": [
+            {
+              "id": "card-6-face-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "card-6-face-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "polygon",
+                "width": 64,
+                "height": 64,
+                "color": "#118ab2",
+                "rounded": 0,
+                "sides": 6,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "card-7",
+          "name": "Card",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "card-7-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 750,
+                "y": 300,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "card-7-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 140,
+                "height": 120,
+                "color": "#2b2d42",
+                "rounded": 14,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#8d99ae",
+                "strokeWidth": 3
+              }
+            },
+            {
+              "id": "card-7-b",
+              "type": "scripts.behaviour",
+              "version": 1,
+              "data": {
+                "scriptId": "s-card",
+                "params": {},
+                "refs": {}
+              }
+            },
+            {
+              "id": "card-7-tw",
+              "type": "tween.player",
+              "version": 1,
+              "data": {
+                "duration": 0.09,
+                "delay": 0,
+                "ease": "quad.out",
+                "repeat": 1,
+                "yoyo": true,
+                "autoplay": false,
+                "tracks": [
+                  {
+                    "id": "card-7-k0",
+                    "entityId": "card-7",
+                    "componentId": "card-7-t",
+                    "property": "scaleX",
+                    "from": 1,
+                    "to": 0.82
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "card-7-face",
+          "name": "hexagon face",
+          "parentId": "card-7",
+          "active": false,
+          "components": [
+            {
+              "id": "card-7-face-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "card-7-face-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "polygon",
+                "width": 64,
+                "height": 64,
+                "color": "#118ab2",
+                "rounded": 0,
+                "sides": 6,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "card-8",
+          "name": "Card",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "card-8-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 210,
+                "y": 450,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "card-8-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 140,
+                "height": 120,
+                "color": "#2b2d42",
+                "rounded": 14,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#8d99ae",
+                "strokeWidth": 3
+              }
+            },
+            {
+              "id": "card-8-b",
+              "type": "scripts.behaviour",
+              "version": 1,
+              "data": {
+                "scriptId": "s-card",
+                "params": {},
+                "refs": {}
+              }
+            },
+            {
+              "id": "card-8-tw",
+              "type": "tween.player",
+              "version": 1,
+              "data": {
+                "duration": 0.09,
+                "delay": 0,
+                "ease": "quad.out",
+                "repeat": 1,
+                "yoyo": true,
+                "autoplay": false,
+                "tracks": [
+                  {
+                    "id": "card-8-k0",
+                    "entityId": "card-8",
+                    "componentId": "card-8-t",
+                    "property": "scaleX",
+                    "from": 1,
+                    "to": 0.82
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "card-8-face",
+          "name": "diamond face",
+          "parentId": "card-8",
+          "active": false,
+          "components": [
+            {
+              "id": "card-8-face-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "card-8-face-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "polygon",
+                "width": 50,
+                "height": 70,
+                "color": "#c77dff",
+                "rounded": 0,
+                "sides": 4,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "card-9",
+          "name": "Card",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "card-9-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 390,
+                "y": 450,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "card-9-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 140,
+                "height": 120,
+                "color": "#2b2d42",
+                "rounded": 14,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#8d99ae",
+                "strokeWidth": 3
+              }
+            },
+            {
+              "id": "card-9-b",
+              "type": "scripts.behaviour",
+              "version": 1,
+              "data": {
+                "scriptId": "s-card",
+                "params": {},
+                "refs": {}
+              }
+            },
+            {
+              "id": "card-9-tw",
+              "type": "tween.player",
+              "version": 1,
+              "data": {
+                "duration": 0.09,
+                "delay": 0,
+                "ease": "quad.out",
+                "repeat": 1,
+                "yoyo": true,
+                "autoplay": false,
+                "tracks": [
+                  {
+                    "id": "card-9-k0",
+                    "entityId": "card-9",
+                    "componentId": "card-9-t",
+                    "property": "scaleX",
+                    "from": 1,
+                    "to": 0.82
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "card-9-face",
+          "name": "diamond face",
+          "parentId": "card-9",
+          "active": false,
+          "components": [
+            {
+              "id": "card-9-face-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "card-9-face-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "polygon",
+                "width": 50,
+                "height": 70,
+                "color": "#c77dff",
+                "rounded": 0,
+                "sides": 4,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "card-10",
+          "name": "Card",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "card-10-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 570,
+                "y": 450,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "card-10-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 140,
+                "height": 120,
+                "color": "#2b2d42",
+                "rounded": 14,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#8d99ae",
+                "strokeWidth": 3
+              }
+            },
+            {
+              "id": "card-10-b",
+              "type": "scripts.behaviour",
+              "version": 1,
+              "data": {
+                "scriptId": "s-card",
+                "params": {},
+                "refs": {}
+              }
+            },
+            {
+              "id": "card-10-tw",
+              "type": "tween.player",
+              "version": 1,
+              "data": {
+                "duration": 0.09,
+                "delay": 0,
+                "ease": "quad.out",
+                "repeat": 1,
+                "yoyo": true,
+                "autoplay": false,
+                "tracks": [
+                  {
+                    "id": "card-10-k0",
+                    "entityId": "card-10",
+                    "componentId": "card-10-t",
+                    "property": "scaleX",
+                    "from": 1,
+                    "to": 0.82
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "card-10-face",
+          "name": "heart face",
+          "parentId": "card-10",
+          "active": false,
+          "components": [
+            {
+              "id": "card-10-face-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "card-10-face-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "star",
+                "width": 66,
+                "height": 66,
+                "color": "#ff8fab",
+                "rounded": 0,
+                "sides": 8,
+                "innerRadius": 0.7,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "card-11",
+          "name": "Card",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "card-11-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 750,
+                "y": 450,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "card-11-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 140,
+                "height": 120,
+                "color": "#2b2d42",
+                "rounded": 14,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#8d99ae",
+                "strokeWidth": 3
+              }
+            },
+            {
+              "id": "card-11-b",
+              "type": "scripts.behaviour",
+              "version": 1,
+              "data": {
+                "scriptId": "s-card",
+                "params": {},
+                "refs": {}
+              }
+            },
+            {
+              "id": "card-11-tw",
+              "type": "tween.player",
+              "version": 1,
+              "data": {
+                "duration": 0.09,
+                "delay": 0,
+                "ease": "quad.out",
+                "repeat": 1,
+                "yoyo": true,
+                "autoplay": false,
+                "tracks": [
+                  {
+                    "id": "card-11-k0",
+                    "entityId": "card-11",
+                    "componentId": "card-11-t",
+                    "property": "scaleX",
+                    "from": 1,
+                    "to": 0.82
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "card-11-face",
+          "name": "heart face",
+          "parentId": "card-11",
+          "active": false,
+          "components": [
+            {
+              "id": "card-11-face-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "card-11-face-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "star",
+                "width": 66,
+                "height": 66,
+                "color": "#ff8fab",
+                "rounded": 0,
+                "sides": 8,
+                "innerRadius": 0.7,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "title",
+          "name": "Title",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "title-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 480,
+                "y": 34,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "title-x",
+              "type": "pixi.text",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "text": "Pair Up",
+                "fontSize": 30,
+                "color": "#edf2f4",
+                "font": "",
+                "fontWeight": "bold",
+                "fontStyle": "normal",
+                "align": "center",
+                "letterSpacing": 0,
+                "strokeColor": "#000000",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "moves",
+          "name": "Moves",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "moves-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 140,
+                "y": 34,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "moves-x",
+              "type": "pixi.text",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "text": "Moves {moves}",
+                "fontSize": 20,
+                "color": "#8d99ae",
+                "font": "",
+                "fontWeight": "normal",
+                "fontStyle": "normal",
+                "align": "center",
+                "letterSpacing": 0,
+                "strokeColor": "#000000",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "time",
+          "name": "Time",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "time-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 690,
+                "y": 34,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "time-x",
+              "type": "pixi.text",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "text": "{seconds} s",
+                "fontSize": 20,
+                "color": "#8d99ae",
+                "font": "",
+                "fontWeight": "normal",
+                "fontStyle": "normal",
+                "align": "center",
+                "letterSpacing": 0,
+                "strokeColor": "#000000",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "solved",
+          "name": "Solved",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "solved-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 480,
+                "y": 300,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "solved-x",
+              "type": "pixi.text",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "text": "Solved in {moves} moves!",
+                "fontSize": 42,
+                "color": "#ffd166",
+                "font": "",
+                "fontWeight": "bold",
+                "fontStyle": "normal",
+                "align": "center",
+                "letterSpacing": 0,
+                "strokeColor": "#1b1b2f",
+                "strokeWidth": 8
+              }
+            }
+          ]
+        },
+        {
+          "id": "again",
+          "name": "Shuffle",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "again-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 860,
+                "y": 34,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "again-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 120,
+                "height": 46,
+                "color": "#edf2f4",
+                "rounded": 12,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            },
+            {
+              "id": "again-r",
+              "type": "interactions.bindings",
+              "version": 1,
+              "data": {
+                "rules": [
+                  {
+                    "id": "again-go",
+                    "trigger": {
+                      "event": "",
+                      "type": "pointer.click",
+                      "sourceId": "again"
+                    },
+                    "actions": [
+                      {
+                        "id": "again-go-0",
+                        "value": true,
+                        "type": "scene.change",
+                        "targetId": "s-pairs"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "again-label",
+          "name": "Shuffle label",
+          "parentId": "again",
+          "active": true,
+          "components": [
+            {
+              "id": "again-label-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "again-label-x",
+              "type": "pixi.text",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "text": "Shuffle",
+                "fontSize": 18,
+                "color": "#10131a",
+                "font": "",
+                "fontWeight": "bold",
+                "fontStyle": "normal",
+                "align": "center",
+                "letterSpacing": 0,
+                "strokeColor": "#000000",
+                "strokeWidth": 0
+              }
+            },
+            {
+              "id": "again-label-r",
+              "type": "interactions.bindings",
+              "version": 1,
+              "data": {
+                "rules": [
+                  {
+                    "id": "again-label-go",
+                    "trigger": {
+                      "event": "",
+                      "type": "pointer.click",
+                      "sourceId": "again-label"
+                    },
+                    "actions": [
+                      {
+                        "id": "again-label-go-0",
+                        "value": true,
+                        "type": "scene.change",
+                        "targetId": "s-pairs"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "modules": {
+    "settings": "1.0.0",
+    "project": "1.0.0",
+    "scene": "1.0.0",
+    "assets": "1.0.0",
+    "pixi": "1.0.0",
+    "layout": "1.0.0",
+    "ai-comfy": "1.0.0",
+    "ai-lm": "1.0.0",
+    "assetpack": "1.0.0",
+    "audio": "1.0.0",
+    "howler": "1.0.0",
+    "tween": "1.0.0",
+    "gsap": "1.0.0",
+    "tween-pixi": "1.0.0",
+    "animation": "1.0.0",
+    "physics": "1.0.0",
+    "matter": "1.0.0",
+    "spine": "1.0.0",
+    "spine-audio": "1.0.0",
+    "interactions": "1.0.0",
+    "interaction-media": "1.0.0",
+    "scripts": "1.0.0",
+    "input": "1.0.0",
+    "build": "1.0.0",
+    "html-export": "1.0.0",
+    "prefabs": "1.0.0",
+    "project-ui": "1.0.0",
+    "recovery": "1.0.0",
+    "studio": "1.0.0"
+  },
+  "providers": {
+    "audio": "howler",
+    "tween": "gsap",
+    "physics": "matter",
+    "render": "pixi"
+  },
+  "extensions": {
+    "pixi.render": {
+      "version": 1,
+      "background": "#1b1b2f"
+    },
+    "interactions.globals": {
+      "version": 1,
+      "items": [
+        {
+          "id": "g-moves",
+          "name": "moves",
+          "type": "number",
+          "initial": 0
+        },
+        {
+          "id": "g-seconds",
+          "name": "seconds",
+          "type": "number",
+          "initial": 0
+        }
+      ]
+    },
+    "scripts.library": {
+      "version": 1,
+      "items": [
+        {
+          "id": "s-card",
+          "name": "Card",
+          "source": "export function onClick(self: GameObject) { game.send('pick', self.id); }",
+          "code": "\"use strict\";Object.defineProperty(exports, \"__esModule\", {value: true}); function onClick(self) { game.send('pick', self.id); } exports.onClick = onClick;"
+        },
+        {
+          "id": "s-memory",
+          "name": "Pairs",
+          "source": "export function start(self: SceneSelf) {\n  const cards = game.findAll('Card'), spots = cards.map(c => ({ x: c.x, y: c.y }));\n  for (let i = spots.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [spots[i], spots[j]] = [spots[j], spots[i]]; }\n  cards.forEach((c, i) => { c.x = spots[i].x; c.y = spots[i].y; c.children[0].active = false; });\n  self.state.open = []; self.state.matched = []; self.state.wait = 0; self.state.time = 0; self.state.done = false;\n  globals.moves = 0; globals.seconds = 0;\n}\nexport function update(self: SceneSelf, dt: number) {\n  if (!self.state.done) { self.state.time += dt; globals.seconds = Math.floor(self.state.time); }\n  if (self.state.wait > 0) {\n    self.state.wait -= dt;\n    if (self.state.wait <= 0) { for (const id of self.state.open) flip(id, false); self.state.open = []; }\n  }\n}\nfunction card(id: string) { return game.findAll('Card').find(c => c.id === id)!; }\nfunction flip(id: string, face: boolean) { const c = card(id); c.children[0].active = face; c.play('tween'); }\nexport function onMessage(self: SceneSelf, message: string, id: string) {\n  if (message !== 'pick' || self.state.wait > 0 || self.state.done) return;\n  if (self.state.open.includes(id) || self.state.matched.includes(id)) return;\n  flip(id, true); self.state.open.push(id);\n  if (self.state.open.length < 2) return;\n  globals.moves += 1;\n  const [a, b] = self.state.open.map(card);\n  if (a.children[0].name === b.children[0].name) {\n    self.state.matched.push(a.id, b.id); self.state.open = [];\n    for (const c of [a, b]) c.alpha = 0.55;\n    if (self.state.matched.length === game.findAll('Card').length) { self.state.done = true; game.find('Solved').active = true; }\n  } else self.state.wait = 0.8;\n}",
+          "code": "\"use strict\";Object.defineProperty(exports, \"__esModule\", {value: true}); function start(self) {\n  const cards = game.findAll('Card'), spots = cards.map(c => ({ x: c.x, y: c.y }));\n  for (let i = spots.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [spots[i], spots[j]] = [spots[j], spots[i]]; }\n  cards.forEach((c, i) => { c.x = spots[i].x; c.y = spots[i].y; c.children[0].active = false; });\n  self.state.open = []; self.state.matched = []; self.state.wait = 0; self.state.time = 0; self.state.done = false;\n  globals.moves = 0; globals.seconds = 0;\n} exports.start = start;\n function update(self, dt) {\n  if (!self.state.done) { self.state.time += dt; globals.seconds = Math.floor(self.state.time); }\n  if (self.state.wait > 0) {\n    self.state.wait -= dt;\n    if (self.state.wait <= 0) { for (const id of self.state.open) flip(id, false); self.state.open = []; }\n  }\n} exports.update = update;\nfunction card(id) { return game.findAll('Card').find(c => c.id === id); }\nfunction flip(id, face) { const c = card(id); c.children[0].active = face; c.play('tween'); }\n function onMessage(self, message, id) {\n  if (message !== 'pick' || self.state.wait > 0 || self.state.done) return;\n  if (self.state.open.includes(id) || self.state.matched.includes(id)) return;\n  flip(id, true); self.state.open.push(id);\n  if (self.state.open.length < 2) return;\n  globals.moves += 1;\n  const [a, b] = self.state.open.map(card);\n  if (a.children[0].name === b.children[0].name) {\n    self.state.matched.push(a.id, b.id); self.state.open = [];\n    for (const c of [a, b]) c.alpha = 0.55;\n    if (self.state.matched.length === game.findAll('Card').length) { self.state.done = true; game.find('Solved').active = true; }\n  } else self.state.wait = 0.8;\n} exports.onMessage = onMessage;"
+        }
+      ],
+      "scenes": {
+        "s-pairs": {
+          "scriptId": "s-memory",
+          "params": {},
+          "refs": {}
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,1172 @@
+{
+  "formatVersion": 1,
+  "name": "Desert Dash",
+  "entrySceneId": "s-run",
+  "scenes": [
+    {
+      "formatVersion": 1,
+      "id": "s-run",
+      "name": "Run",
+      "entities": [
+        {
+          "id": "sun",
+          "name": "Sun",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "sun-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 780,
+                "y": 110,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "sun-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "ellipse",
+                "width": 120,
+                "height": 120,
+                "color": "#ffd166",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            },
+            {
+              "id": "sun-fx",
+              "type": "pixi.effects",
+              "version": 1,
+              "data": {
+                "blendMode": "normal",
+                "blur": 0,
+                "brightness": 1,
+                "contrast": 1,
+                "saturation": 1,
+                "hue": 0,
+                "noise": 0,
+                "shadowAlpha": 0,
+                "shadowColor": "#000000",
+                "shadowX": 4,
+                "shadowY": 4,
+                "shadowBlur": 2,
+                "glowStrength": 3,
+                "glowColor": "#ffb703",
+                "glowDistance": 30,
+                "outlineWidth": 0,
+                "outlineColor": "#ffffff",
+                "pixelate": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "cloud-0",
+          "name": "Cloud",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "cloud-0-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 80,
+                "y": 90,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "cloud-0-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.8,
+                "kind": "ellipse",
+                "width": 130,
+                "height": 40,
+                "color": "#fff6e5",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "cloud-1",
+          "name": "Cloud",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "cloud-1-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 410,
+                "y": 140,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "cloud-1-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.8,
+                "kind": "ellipse",
+                "width": 130,
+                "height": 40,
+                "color": "#fff6e5",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "cloud-2",
+          "name": "Cloud",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "cloud-2-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 740,
+                "y": 90,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "cloud-2-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.8,
+                "kind": "ellipse",
+                "width": 130,
+                "height": 40,
+                "color": "#fff6e5",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "cloud-3",
+          "name": "Cloud",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "cloud-3-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 1070,
+                "y": 140,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "cloud-3-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.8,
+                "kind": "ellipse",
+                "width": 130,
+                "height": 40,
+                "color": "#fff6e5",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "dune-0",
+          "name": "Dune",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "dune-0-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 100,
+                "y": 420,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "dune-0-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.8,
+                "kind": "ellipse",
+                "width": 520,
+                "height": 160,
+                "color": "#dda15e",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "dune-1",
+          "name": "Dune",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "dune-1-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 500,
+                "y": 420,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "dune-1-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.8,
+                "kind": "ellipse",
+                "width": 520,
+                "height": 160,
+                "color": "#e9b872",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "dune-2",
+          "name": "Dune",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "dune-2-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 900,
+                "y": 420,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "dune-2-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.8,
+                "kind": "ellipse",
+                "width": 520,
+                "height": 160,
+                "color": "#dda15e",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "dune-3",
+          "name": "Dune",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "dune-3-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 1300,
+                "y": 420,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "dune-3-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.8,
+                "kind": "ellipse",
+                "width": 520,
+                "height": 160,
+                "color": "#e9b872",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "ground",
+          "name": "Ground",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "ground-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 480,
+                "y": 485,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "ground-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 960,
+                "height": 110,
+                "color": "#bc6c25",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "ground-line",
+          "name": "Ground line",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "ground-line-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 480,
+                "y": 431,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "ground-line-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 960,
+                "height": 4,
+                "color": "#7f4f24",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "cactus-0",
+          "name": "Cactus",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "cactus-0-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 1100,
+                "y": 398,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "cactus-0-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 30,
+                "height": 64,
+                "color": "#2d6a4f",
+                "rounded": 12,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#1b4332",
+                "strokeWidth": 3
+              }
+            }
+          ]
+        },
+        {
+          "id": "cactus-1",
+          "name": "Cactus",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "cactus-1-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 1520,
+                "y": 398,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "cactus-1-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 30,
+                "height": 64,
+                "color": "#2d6a4f",
+                "rounded": 12,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#1b4332",
+                "strokeWidth": 3
+              }
+            }
+          ]
+        },
+        {
+          "id": "cactus-2",
+          "name": "Cactus",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "cactus-2-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 1940,
+                "y": 398,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "cactus-2-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 30,
+                "height": 64,
+                "color": "#2d6a4f",
+                "rounded": 12,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#1b4332",
+                "strokeWidth": 3
+              }
+            }
+          ]
+        },
+        {
+          "id": "arm-0-a",
+          "name": "Arm",
+          "parentId": "cactus-0",
+          "active": true,
+          "components": [
+            {
+              "id": "arm-0-a-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -20,
+                "y": -6,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "arm-0-a-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 14,
+                "height": 26,
+                "color": "#2d6a4f",
+                "rounded": 7,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "arm-0-b",
+          "name": "Arm",
+          "parentId": "cactus-0",
+          "active": true,
+          "components": [
+            {
+              "id": "arm-0-b-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 20,
+                "y": -16,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "arm-0-b-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 14,
+                "height": 22,
+                "color": "#2d6a4f",
+                "rounded": 7,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "arm-1-a",
+          "name": "Arm",
+          "parentId": "cactus-1",
+          "active": true,
+          "components": [
+            {
+              "id": "arm-1-a-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -20,
+                "y": -6,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "arm-1-a-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 14,
+                "height": 26,
+                "color": "#2d6a4f",
+                "rounded": 7,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "arm-1-b",
+          "name": "Arm",
+          "parentId": "cactus-1",
+          "active": true,
+          "components": [
+            {
+              "id": "arm-1-b-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 20,
+                "y": -16,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "arm-1-b-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 14,
+                "height": 22,
+                "color": "#2d6a4f",
+                "rounded": 7,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "arm-2-a",
+          "name": "Arm",
+          "parentId": "cactus-2",
+          "active": true,
+          "components": [
+            {
+              "id": "arm-2-a-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": -20,
+                "y": -6,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "arm-2-a-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 14,
+                "height": 26,
+                "color": "#2d6a4f",
+                "rounded": 7,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "arm-2-b",
+          "name": "Arm",
+          "parentId": "cactus-2",
+          "active": true,
+          "components": [
+            {
+              "id": "arm-2-b-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 20,
+                "y": -16,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "arm-2-b-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 14,
+                "height": 22,
+                "color": "#2d6a4f",
+                "rounded": 7,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "runner",
+          "name": "Runner",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "runner-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 160,
+                "y": 410,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "runner-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 40,
+                "height": 40,
+                "color": "#e63946",
+                "rounded": 10,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#9d0208",
+                "strokeWidth": 3
+              }
+            }
+          ]
+        },
+        {
+          "id": "eye",
+          "name": "Eye",
+          "parentId": "runner",
+          "active": true,
+          "components": [
+            {
+              "id": "eye-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 8,
+                "y": -6,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "eye-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "ellipse",
+                "width": 8,
+                "height": 8,
+                "color": "#ffffff",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "distance",
+          "name": "Distance",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "distance-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 480,
+                "y": 40,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "distance-x",
+              "type": "pixi.text",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "text": "{distance} m",
+                "fontSize": 30,
+                "color": "#5a3e1b",
+                "font": "",
+                "fontWeight": "bold",
+                "fontStyle": "normal",
+                "align": "center",
+                "letterSpacing": 0,
+                "strokeColor": "#000000",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "best",
+          "name": "Best",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "best-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 860,
+                "y": 40,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "best-x",
+              "type": "pixi.text",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "text": "Best {best} m",
+                "fontSize": 18,
+                "color": "#7f5539",
+                "font": "",
+                "fontWeight": "normal",
+                "fontStyle": "normal",
+                "align": "center",
+                "letterSpacing": 0,
+                "strokeColor": "#000000",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "help",
+          "name": "Help",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "help-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 160,
+                "y": 40,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "help-x",
+              "type": "pixi.text",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "text": "Space, click or tap to jump",
+                "fontSize": 16,
+                "color": "#7f5539",
+                "font": "",
+                "fontWeight": "normal",
+                "fontStyle": "normal",
+                "align": "center",
+                "letterSpacing": 0,
+                "strokeColor": "#000000",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "over",
+          "name": "Game over",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "over-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 480,
+                "y": 230,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "over-x",
+              "type": "pixi.text",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "text": "Ouch! Jump to run again",
+                "fontSize": 38,
+                "color": "#ffffff",
+                "font": "",
+                "fontWeight": "bold",
+                "fontStyle": "normal",
+                "align": "center",
+                "letterSpacing": 0,
+                "strokeColor": "#5a3e1b",
+                "strokeWidth": 8
+              }
+            }
+          ]
+        },
+        {
+          "id": "saver",
+          "name": "Best distance",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "saver-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 20,
+                "y": 520,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "saver-r",
+              "type": "interactions.bindings",
+              "version": 1,
+              "data": {
+                "rules": [
+                  {
+                    "id": "load",
+                    "trigger": {
+                      "event": "",
+                      "type": "scene.start",
+                      "sourceId": "s-run"
+                    },
+                    "actions": [
+                      {
+                        "id": "load-0",
+                        "value": true,
+                        "type": "save.read",
+                        "targetId": "save"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "store",
+                    "trigger": {
+                      "event": "",
+                      "type": "global.change",
+                      "sourceId": "g-best"
+                    },
+                    "actions": [
+                      {
+                        "id": "store-0",
+                        "value": true,
+                        "type": "save.write",
+                        "targetId": "save"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "modules": {
+    "settings": "1.0.0",
+    "project": "1.0.0",
+    "scene": "1.0.0",
+    "assets": "1.0.0",
+    "pixi": "1.0.0",
+    "layout": "1.0.0",
+    "ai-comfy": "1.0.0",
+    "ai-lm": "1.0.0",
+    "assetpack": "1.0.0",
+    "audio": "1.0.0",
+    "howler": "1.0.0",
+    "tween": "1.0.0",
+    "gsap": "1.0.0",
+    "tween-pixi": "1.0.0",
+    "animation": "1.0.0",
+    "physics": "1.0.0",
+    "matter": "1.0.0",
+    "spine": "1.0.0",
+    "spine-audio": "1.0.0",
+    "interactions": "1.0.0",
+    "interaction-media": "1.0.0",
+    "scripts": "1.0.0",
+    "input": "1.0.0",
+    "build": "1.0.0",
+    "html-export": "1.0.0",
+    "prefabs": "1.0.0",
+    "project-ui": "1.0.0",
+    "recovery": "1.0.0",
+    "studio": "1.0.0"
+  },
+  "providers": {
+    "audio": "howler",
+    "tween": "gsap",
+    "physics": "matter",
+    "render": "pixi"
+  },
+  "extensions": {
+    "pixi.render": {
+      "version": 1,
+      "background": "#f4d6a0"
+    },
+    "interactions.globals": {
+      "version": 1,
+      "items": [
+        {
+          "id": "g-distance",
+          "name": "distance",
+          "type": "number",
+          "initial": 0
+        },
+        {
+          "id": "g-best",
+          "name": "best",
+          "type": "number",
+          "initial": 0
+        }
+      ]
+    },
+    "input.map": {
+      "version": 1,
+      "deadzone": 0.2,
+      "actions": [
+        {
+          "id": "a-jump",
+          "name": "Jump",
+          "kind": "button",
+          "bindings": [
+            {
+              "type": "key",
+              "code": "Space"
+            },
+            {
+              "type": "key",
+              "code": "ArrowUp"
+            },
+            {
+              "type": "mouse",
+              "button": 0
+            },
+            {
+              "type": "touch"
+            }
+          ]
+        }
+      ]
+    },
+    "scripts.library": {
+      "version": 1,
+      "items": [
+        {
+          "id": "s-runner",
+          "name": "Runner",
+          "source": "export const params = { gravity: param.number(2400), jump: param.number(820) };\nconst GROUND = 430;\nexport function start(self: SceneSelf) { reset(self); }\nfunction reset(self: SceneSelf) {\n  self.state.vy = 0; self.state.speed = 360; self.state.distance = 0; self.state.dead = false; self.state.held = true;\n  const runner = game.find('Runner'); runner.y = GROUND - 20;\n  game.findAll('Cactus').forEach((c, i) => { c.x = 1100 + i * 420; });\n  game.find('Game over').active = false; globals.distance = 0;\n}\nconst hit = (a: GameObject, aw: number, ah: number, b: GameObject, bw: number, bh: number) => Math.abs(a.x - b.x) < (aw + bw) / 2 && Math.abs(a.y - b.y) < (ah + bh) / 2;\nexport function update(self: SceneSelf, dt: number) {\n  const runner = game.find('Runner'), jump = game.isDown('Jump');\n  if (self.state.dead) { if (jump && !self.state.held) reset(self); self.state.held = jump; return; }\n  const onGround = runner.y >= GROUND - 20;\n  if (onGround && jump && !self.state.held) self.state.vy = -self.params.jump;\n  self.state.held = jump;\n  self.state.vy += self.params.gravity * dt;\n  runner.y = Math.min(GROUND - 20, runner.y + self.state.vy * dt);\n  if (runner.y >= GROUND - 20) self.state.vy = 0;\n  runner.rotation = onGround ? 0 : runner.rotation + 360 * dt;\n  self.state.speed = Math.min(900, self.state.speed + 12 * dt);\n  self.state.distance += self.state.speed * dt;\n  globals.distance = Math.floor(self.state.distance / 10);\n  const cacti = game.findAll('Cactus');\n  for (const c of cacti) {\n    c.x -= self.state.speed * dt;\n    if (c.x < -60) c.x = Math.max(...cacti.map(o => o.x)) + 320 + Math.random() * 380;\n    if (hit(runner, 40, 40, c, 30, 64)) {\n      self.state.dead = true; game.find('Game over').active = true; game.camera.shake(14, 0.35);\n      if (globals.distance > globals.best) globals.best = globals.distance;\n    }\n  }\n  for (const layer of [['Dune', 0.3, 1200], ['Cloud', 0.1, 1200]] as const)\n    for (const o of game.findAll(layer[0])) { o.x -= self.state.speed * layer[1] * dt; if (o.x < -300) o.x += layer[2]; }\n}",
+          "code": "\"use strict\";Object.defineProperty(exports, \"__esModule\", {value: true}); const params = { gravity: param.number(2400), jump: param.number(820) }; exports.params = params;\nconst GROUND = 430;\n function start(self) { reset(self); } exports.start = start;\nfunction reset(self) {\n  self.state.vy = 0; self.state.speed = 360; self.state.distance = 0; self.state.dead = false; self.state.held = true;\n  const runner = game.find('Runner'); runner.y = GROUND - 20;\n  game.findAll('Cactus').forEach((c, i) => { c.x = 1100 + i * 420; });\n  game.find('Game over').active = false; globals.distance = 0;\n}\nconst hit = (a, aw, ah, b, bw, bh) => Math.abs(a.x - b.x) < (aw + bw) / 2 && Math.abs(a.y - b.y) < (ah + bh) / 2;\n function update(self, dt) {\n  const runner = game.find('Runner'), jump = game.isDown('Jump');\n  if (self.state.dead) { if (jump && !self.state.held) reset(self); self.state.held = jump; return; }\n  const onGround = runner.y >= GROUND - 20;\n  if (onGround && jump && !self.state.held) self.state.vy = -self.params.jump;\n  self.state.held = jump;\n  self.state.vy += self.params.gravity * dt;\n  runner.y = Math.min(GROUND - 20, runner.y + self.state.vy * dt);\n  if (runner.y >= GROUND - 20) self.state.vy = 0;\n  runner.rotation = onGround ? 0 : runner.rotation + 360 * dt;\n  self.state.speed = Math.min(900, self.state.speed + 12 * dt);\n  self.state.distance += self.state.speed * dt;\n  globals.distance = Math.floor(self.state.distance / 10);\n  const cacti = game.findAll('Cactus');\n  for (const c of cacti) {\n    c.x -= self.state.speed * dt;\n    if (c.x < -60) c.x = Math.max(...cacti.map(o => o.x)) + 320 + Math.random() * 380;\n    if (hit(runner, 40, 40, c, 30, 64)) {\n      self.state.dead = true; game.find('Game over').active = true; game.camera.shake(14, 0.35);\n      if (globals.distance > globals.best) globals.best = globals.distance;\n    }\n  }\n  for (const layer of [['Dune', 0.3, 1200], ['Cloud', 0.1, 1200]] )\n    for (const o of game.findAll(layer[0])) { o.x -= self.state.speed * layer[1] * dt; if (o.x < -300) o.x += layer[2]; }\n} exports.update = update;"
+        }
+      ],
+      "scenes": {
+        "s-run": {
+          "scriptId": "s-runner",
+          "params": {},
+          "refs": {}
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,1647 @@
+{
+  "formatVersion": 1,
+  "name": "Neon Garden",
+  "entrySceneId": "s-garden",
+  "scenes": [
+    {
+      "formatVersion": 1,
+      "id": "s-garden",
+      "name": "Garden",
+      "entities": [
+        {
+          "id": "orb-0",
+          "name": "Orb",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "orb-0-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 150,
+                "y": 130,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "orb-0-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.55,
+                "kind": "ellipse",
+                "width": 150,
+                "height": 150,
+                "color": "#5f27cd",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            },
+            {
+              "id": "orb-0-fx",
+              "type": "pixi.effects",
+              "version": 1,
+              "data": {
+                "blendMode": "add",
+                "blur": 30,
+                "brightness": 1,
+                "contrast": 1,
+                "saturation": 1,
+                "hue": 0,
+                "noise": 0,
+                "shadowAlpha": 0,
+                "shadowColor": "#000000",
+                "shadowX": 4,
+                "shadowY": 4,
+                "shadowBlur": 2,
+                "glowStrength": 0,
+                "glowColor": "#ffd27a",
+                "glowDistance": 12,
+                "outlineWidth": 0,
+                "outlineColor": "#ffffff",
+                "pixelate": 0
+              }
+            },
+            {
+              "id": "orb-0-tw",
+              "type": "tween.player",
+              "version": 1,
+              "data": {
+                "duration": 3,
+                "delay": 0,
+                "ease": "sine.inOut",
+                "repeat": 100,
+                "yoyo": true,
+                "autoplay": true,
+                "tracks": [
+                  {
+                    "id": "orb-0-k0",
+                    "entityId": "orb-0",
+                    "componentId": "orb-0-t",
+                    "property": "x",
+                    "from": 150,
+                    "to": 190
+                  },
+                  {
+                    "id": "orb-0-k1",
+                    "entityId": "orb-0",
+                    "componentId": "orb-0-t",
+                    "property": "y",
+                    "from": 130,
+                    "to": 160
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "orb-1",
+          "name": "Orb",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "orb-1-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 820,
+                "y": 120,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "orb-1-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.55,
+                "kind": "ellipse",
+                "width": 150,
+                "height": 150,
+                "color": "#00d2d3",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            },
+            {
+              "id": "orb-1-fx",
+              "type": "pixi.effects",
+              "version": 1,
+              "data": {
+                "blendMode": "add",
+                "blur": 30,
+                "brightness": 1,
+                "contrast": 1,
+                "saturation": 1,
+                "hue": 0,
+                "noise": 0,
+                "shadowAlpha": 0,
+                "shadowColor": "#000000",
+                "shadowX": 4,
+                "shadowY": 4,
+                "shadowBlur": 2,
+                "glowStrength": 0,
+                "glowColor": "#ffd27a",
+                "glowDistance": 12,
+                "outlineWidth": 0,
+                "outlineColor": "#ffffff",
+                "pixelate": 0
+              }
+            },
+            {
+              "id": "orb-1-tw",
+              "type": "tween.player",
+              "version": 1,
+              "data": {
+                "duration": 3.4,
+                "delay": 0,
+                "ease": "sine.inOut",
+                "repeat": 100,
+                "yoyo": true,
+                "autoplay": true,
+                "tracks": [
+                  {
+                    "id": "orb-1-k0",
+                    "entityId": "orb-1",
+                    "componentId": "orb-1-t",
+                    "property": "x",
+                    "from": 820,
+                    "to": 780
+                  },
+                  {
+                    "id": "orb-1-k1",
+                    "entityId": "orb-1",
+                    "componentId": "orb-1-t",
+                    "property": "y",
+                    "from": 120,
+                    "to": 150
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "orb-2",
+          "name": "Orb",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "orb-2-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 170,
+                "y": 430,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "orb-2-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.55,
+                "kind": "ellipse",
+                "width": 150,
+                "height": 150,
+                "color": "#ff4fd8",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            },
+            {
+              "id": "orb-2-fx",
+              "type": "pixi.effects",
+              "version": 1,
+              "data": {
+                "blendMode": "add",
+                "blur": 30,
+                "brightness": 1,
+                "contrast": 1,
+                "saturation": 1,
+                "hue": 0,
+                "noise": 0,
+                "shadowAlpha": 0,
+                "shadowColor": "#000000",
+                "shadowX": 4,
+                "shadowY": 4,
+                "shadowBlur": 2,
+                "glowStrength": 0,
+                "glowColor": "#ffd27a",
+                "glowDistance": 12,
+                "outlineWidth": 0,
+                "outlineColor": "#ffffff",
+                "pixelate": 0
+              }
+            },
+            {
+              "id": "orb-2-tw",
+              "type": "tween.player",
+              "version": 1,
+              "data": {
+                "duration": 3.8,
+                "delay": 0,
+                "ease": "sine.inOut",
+                "repeat": 100,
+                "yoyo": true,
+                "autoplay": true,
+                "tracks": [
+                  {
+                    "id": "orb-2-k0",
+                    "entityId": "orb-2",
+                    "componentId": "orb-2-t",
+                    "property": "x",
+                    "from": 170,
+                    "to": 210
+                  },
+                  {
+                    "id": "orb-2-k1",
+                    "entityId": "orb-2",
+                    "componentId": "orb-2-t",
+                    "property": "y",
+                    "from": 430,
+                    "to": 460
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "orb-3",
+          "name": "Orb",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "orb-3-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 800,
+                "y": 420,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "orb-3-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.55,
+                "kind": "ellipse",
+                "width": 150,
+                "height": 150,
+                "color": "#feca57",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            },
+            {
+              "id": "orb-3-fx",
+              "type": "pixi.effects",
+              "version": 1,
+              "data": {
+                "blendMode": "add",
+                "blur": 30,
+                "brightness": 1,
+                "contrast": 1,
+                "saturation": 1,
+                "hue": 0,
+                "noise": 0,
+                "shadowAlpha": 0,
+                "shadowColor": "#000000",
+                "shadowX": 4,
+                "shadowY": 4,
+                "shadowBlur": 2,
+                "glowStrength": 0,
+                "glowColor": "#ffd27a",
+                "glowDistance": 12,
+                "outlineWidth": 0,
+                "outlineColor": "#ffffff",
+                "pixelate": 0
+              }
+            },
+            {
+              "id": "orb-3-tw",
+              "type": "tween.player",
+              "version": 1,
+              "data": {
+                "duration": 4.2,
+                "delay": 0,
+                "ease": "sine.inOut",
+                "repeat": 100,
+                "yoyo": true,
+                "autoplay": true,
+                "tracks": [
+                  {
+                    "id": "orb-3-k0",
+                    "entityId": "orb-3",
+                    "componentId": "orb-3-t",
+                    "property": "x",
+                    "from": 800,
+                    "to": 760
+                  },
+                  {
+                    "id": "orb-3-k1",
+                    "entityId": "orb-3",
+                    "componentId": "orb-3-t",
+                    "property": "y",
+                    "from": 420,
+                    "to": 450
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "fountain",
+          "name": "Fountain",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "fountain-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 480,
+                "y": 520,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "fountain-p",
+              "type": "pixi.particles",
+              "version": 1,
+              "data": {
+                "assetId": "",
+                "alpha": 1,
+                "tint": "#7cf3ff",
+                "count": 220,
+                "lifetime": 2.2,
+                "speed": 300,
+                "direction": -90,
+                "spread": 28,
+                "gravity": 260,
+                "size": 9,
+                "endScale": 0.1,
+                "endAlpha": 0,
+                "seed": 7,
+                "emission": "continuous",
+                "autoplay": true
+              }
+            },
+            {
+              "id": "fountain-fx",
+              "type": "pixi.effects",
+              "version": 1,
+              "data": {
+                "blendMode": "add",
+                "blur": 0,
+                "brightness": 1,
+                "contrast": 1,
+                "saturation": 1,
+                "hue": 0,
+                "noise": 0,
+                "shadowAlpha": 0,
+                "shadowColor": "#000000",
+                "shadowX": 4,
+                "shadowY": 4,
+                "shadowBlur": 2,
+                "glowStrength": 0,
+                "glowColor": "#ffd27a",
+                "glowDistance": 12,
+                "outlineWidth": 0,
+                "outlineColor": "#ffffff",
+                "pixelate": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "hex-0",
+          "name": "Hexagon",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "hex-0-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 680,
+                "y": 270,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "hex-0-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.9,
+                "kind": "polygon",
+                "width": 54,
+                "height": 54,
+                "color": "#7cf3ff",
+                "rounded": 0,
+                "sides": 6,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            },
+            {
+              "id": "hex-0-fx",
+              "type": "pixi.effects",
+              "version": 1,
+              "data": {
+                "blendMode": "add",
+                "blur": 0,
+                "brightness": 1,
+                "contrast": 1,
+                "saturation": 1,
+                "hue": 0,
+                "noise": 0,
+                "shadowAlpha": 0,
+                "shadowColor": "#000000",
+                "shadowX": 4,
+                "shadowY": 4,
+                "shadowBlur": 2,
+                "glowStrength": 2.5,
+                "glowColor": "#7cf3ff",
+                "glowDistance": 14,
+                "outlineWidth": 0,
+                "outlineColor": "#ffffff",
+                "pixelate": 0
+              }
+            },
+            {
+              "id": "hex-0-tw",
+              "type": "tween.player",
+              "version": 1,
+              "data": {
+                "duration": 1.2,
+                "delay": 0,
+                "ease": "sine.inOut",
+                "repeat": 100,
+                "yoyo": true,
+                "autoplay": true,
+                "tracks": [
+                  {
+                    "id": "hex-0-k0",
+                    "entityId": "hex-0",
+                    "componentId": "hex-0-t",
+                    "property": "scaleX",
+                    "from": 0.7,
+                    "to": 1.15
+                  },
+                  {
+                    "id": "hex-0-k1",
+                    "entityId": "hex-0",
+                    "componentId": "hex-0-t",
+                    "property": "scaleY",
+                    "from": 0.7,
+                    "to": 1.15
+                  },
+                  {
+                    "id": "hex-0-k2",
+                    "entityId": "hex-0",
+                    "componentId": "hex-0-t",
+                    "property": "rotation",
+                    "from": 0,
+                    "to": 60
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "hex-1",
+          "name": "Hexagon",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "hex-1-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 621.4213562373095,
+                "y": 376.06601717798213,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "hex-1-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.9,
+                "kind": "polygon",
+                "width": 54,
+                "height": 54,
+                "color": "#ff4fd8",
+                "rounded": 0,
+                "sides": 6,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            },
+            {
+              "id": "hex-1-fx",
+              "type": "pixi.effects",
+              "version": 1,
+              "data": {
+                "blendMode": "add",
+                "blur": 0,
+                "brightness": 1,
+                "contrast": 1,
+                "saturation": 1,
+                "hue": 0,
+                "noise": 0,
+                "shadowAlpha": 0,
+                "shadowColor": "#000000",
+                "shadowX": 4,
+                "shadowY": 4,
+                "shadowBlur": 2,
+                "glowStrength": 2.5,
+                "glowColor": "#ff4fd8",
+                "glowDistance": 14,
+                "outlineWidth": 0,
+                "outlineColor": "#ffffff",
+                "pixelate": 0
+              }
+            },
+            {
+              "id": "hex-1-tw",
+              "type": "tween.player",
+              "version": 1,
+              "data": {
+                "duration": 1.2,
+                "delay": 0.15,
+                "ease": "sine.inOut",
+                "repeat": 100,
+                "yoyo": true,
+                "autoplay": true,
+                "tracks": [
+                  {
+                    "id": "hex-1-k0",
+                    "entityId": "hex-1",
+                    "componentId": "hex-1-t",
+                    "property": "scaleX",
+                    "from": 0.7,
+                    "to": 1.15
+                  },
+                  {
+                    "id": "hex-1-k1",
+                    "entityId": "hex-1",
+                    "componentId": "hex-1-t",
+                    "property": "scaleY",
+                    "from": 0.7,
+                    "to": 1.15
+                  },
+                  {
+                    "id": "hex-1-k2",
+                    "entityId": "hex-1",
+                    "componentId": "hex-1-t",
+                    "property": "rotation",
+                    "from": 0,
+                    "to": 60
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "hex-2",
+          "name": "Hexagon",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "hex-2-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 480,
+                "y": 420,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "hex-2-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.9,
+                "kind": "polygon",
+                "width": 54,
+                "height": 54,
+                "color": "#b4f07a",
+                "rounded": 0,
+                "sides": 6,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            },
+            {
+              "id": "hex-2-fx",
+              "type": "pixi.effects",
+              "version": 1,
+              "data": {
+                "blendMode": "add",
+                "blur": 0,
+                "brightness": 1,
+                "contrast": 1,
+                "saturation": 1,
+                "hue": 0,
+                "noise": 0,
+                "shadowAlpha": 0,
+                "shadowColor": "#000000",
+                "shadowX": 4,
+                "shadowY": 4,
+                "shadowBlur": 2,
+                "glowStrength": 2.5,
+                "glowColor": "#b4f07a",
+                "glowDistance": 14,
+                "outlineWidth": 0,
+                "outlineColor": "#ffffff",
+                "pixelate": 0
+              }
+            },
+            {
+              "id": "hex-2-tw",
+              "type": "tween.player",
+              "version": 1,
+              "data": {
+                "duration": 1.2,
+                "delay": 0.3,
+                "ease": "sine.inOut",
+                "repeat": 100,
+                "yoyo": true,
+                "autoplay": true,
+                "tracks": [
+                  {
+                    "id": "hex-2-k0",
+                    "entityId": "hex-2",
+                    "componentId": "hex-2-t",
+                    "property": "scaleX",
+                    "from": 0.7,
+                    "to": 1.15
+                  },
+                  {
+                    "id": "hex-2-k1",
+                    "entityId": "hex-2",
+                    "componentId": "hex-2-t",
+                    "property": "scaleY",
+                    "from": 0.7,
+                    "to": 1.15
+                  },
+                  {
+                    "id": "hex-2-k2",
+                    "entityId": "hex-2",
+                    "componentId": "hex-2-t",
+                    "property": "rotation",
+                    "from": 0,
+                    "to": 60
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "hex-3",
+          "name": "Hexagon",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "hex-3-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 338.5786437626905,
+                "y": 376.06601717798213,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "hex-3-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.9,
+                "kind": "polygon",
+                "width": 54,
+                "height": 54,
+                "color": "#ffd166",
+                "rounded": 0,
+                "sides": 6,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            },
+            {
+              "id": "hex-3-fx",
+              "type": "pixi.effects",
+              "version": 1,
+              "data": {
+                "blendMode": "add",
+                "blur": 0,
+                "brightness": 1,
+                "contrast": 1,
+                "saturation": 1,
+                "hue": 0,
+                "noise": 0,
+                "shadowAlpha": 0,
+                "shadowColor": "#000000",
+                "shadowX": 4,
+                "shadowY": 4,
+                "shadowBlur": 2,
+                "glowStrength": 2.5,
+                "glowColor": "#ffd166",
+                "glowDistance": 14,
+                "outlineWidth": 0,
+                "outlineColor": "#ffffff",
+                "pixelate": 0
+              }
+            },
+            {
+              "id": "hex-3-tw",
+              "type": "tween.player",
+              "version": 1,
+              "data": {
+                "duration": 1.2,
+                "delay": 0.44999999999999996,
+                "ease": "sine.inOut",
+                "repeat": 100,
+                "yoyo": true,
+                "autoplay": true,
+                "tracks": [
+                  {
+                    "id": "hex-3-k0",
+                    "entityId": "hex-3",
+                    "componentId": "hex-3-t",
+                    "property": "scaleX",
+                    "from": 0.7,
+                    "to": 1.15
+                  },
+                  {
+                    "id": "hex-3-k1",
+                    "entityId": "hex-3",
+                    "componentId": "hex-3-t",
+                    "property": "scaleY",
+                    "from": 0.7,
+                    "to": 1.15
+                  },
+                  {
+                    "id": "hex-3-k2",
+                    "entityId": "hex-3",
+                    "componentId": "hex-3-t",
+                    "property": "rotation",
+                    "from": 0,
+                    "to": 60
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "hex-4",
+          "name": "Hexagon",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "hex-4-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 280,
+                "y": 270,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "hex-4-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.9,
+                "kind": "polygon",
+                "width": 54,
+                "height": 54,
+                "color": "#7cf3ff",
+                "rounded": 0,
+                "sides": 6,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            },
+            {
+              "id": "hex-4-fx",
+              "type": "pixi.effects",
+              "version": 1,
+              "data": {
+                "blendMode": "add",
+                "blur": 0,
+                "brightness": 1,
+                "contrast": 1,
+                "saturation": 1,
+                "hue": 0,
+                "noise": 0,
+                "shadowAlpha": 0,
+                "shadowColor": "#000000",
+                "shadowX": 4,
+                "shadowY": 4,
+                "shadowBlur": 2,
+                "glowStrength": 2.5,
+                "glowColor": "#7cf3ff",
+                "glowDistance": 14,
+                "outlineWidth": 0,
+                "outlineColor": "#ffffff",
+                "pixelate": 0
+              }
+            },
+            {
+              "id": "hex-4-tw",
+              "type": "tween.player",
+              "version": 1,
+              "data": {
+                "duration": 1.2,
+                "delay": 0.6,
+                "ease": "sine.inOut",
+                "repeat": 100,
+                "yoyo": true,
+                "autoplay": true,
+                "tracks": [
+                  {
+                    "id": "hex-4-k0",
+                    "entityId": "hex-4",
+                    "componentId": "hex-4-t",
+                    "property": "scaleX",
+                    "from": 0.7,
+                    "to": 1.15
+                  },
+                  {
+                    "id": "hex-4-k1",
+                    "entityId": "hex-4",
+                    "componentId": "hex-4-t",
+                    "property": "scaleY",
+                    "from": 0.7,
+                    "to": 1.15
+                  },
+                  {
+                    "id": "hex-4-k2",
+                    "entityId": "hex-4",
+                    "componentId": "hex-4-t",
+                    "property": "rotation",
+                    "from": 0,
+                    "to": 60
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "hex-5",
+          "name": "Hexagon",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "hex-5-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 338.5786437626905,
+                "y": 163.93398282201787,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "hex-5-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.9,
+                "kind": "polygon",
+                "width": 54,
+                "height": 54,
+                "color": "#ff4fd8",
+                "rounded": 0,
+                "sides": 6,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            },
+            {
+              "id": "hex-5-fx",
+              "type": "pixi.effects",
+              "version": 1,
+              "data": {
+                "blendMode": "add",
+                "blur": 0,
+                "brightness": 1,
+                "contrast": 1,
+                "saturation": 1,
+                "hue": 0,
+                "noise": 0,
+                "shadowAlpha": 0,
+                "shadowColor": "#000000",
+                "shadowX": 4,
+                "shadowY": 4,
+                "shadowBlur": 2,
+                "glowStrength": 2.5,
+                "glowColor": "#ff4fd8",
+                "glowDistance": 14,
+                "outlineWidth": 0,
+                "outlineColor": "#ffffff",
+                "pixelate": 0
+              }
+            },
+            {
+              "id": "hex-5-tw",
+              "type": "tween.player",
+              "version": 1,
+              "data": {
+                "duration": 1.2,
+                "delay": 0.75,
+                "ease": "sine.inOut",
+                "repeat": 100,
+                "yoyo": true,
+                "autoplay": true,
+                "tracks": [
+                  {
+                    "id": "hex-5-k0",
+                    "entityId": "hex-5",
+                    "componentId": "hex-5-t",
+                    "property": "scaleX",
+                    "from": 0.7,
+                    "to": 1.15
+                  },
+                  {
+                    "id": "hex-5-k1",
+                    "entityId": "hex-5",
+                    "componentId": "hex-5-t",
+                    "property": "scaleY",
+                    "from": 0.7,
+                    "to": 1.15
+                  },
+                  {
+                    "id": "hex-5-k2",
+                    "entityId": "hex-5",
+                    "componentId": "hex-5-t",
+                    "property": "rotation",
+                    "from": 0,
+                    "to": 60
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "hex-6",
+          "name": "Hexagon",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "hex-6-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 479.99999999999994,
+                "y": 120,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "hex-6-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.9,
+                "kind": "polygon",
+                "width": 54,
+                "height": 54,
+                "color": "#b4f07a",
+                "rounded": 0,
+                "sides": 6,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            },
+            {
+              "id": "hex-6-fx",
+              "type": "pixi.effects",
+              "version": 1,
+              "data": {
+                "blendMode": "add",
+                "blur": 0,
+                "brightness": 1,
+                "contrast": 1,
+                "saturation": 1,
+                "hue": 0,
+                "noise": 0,
+                "shadowAlpha": 0,
+                "shadowColor": "#000000",
+                "shadowX": 4,
+                "shadowY": 4,
+                "shadowBlur": 2,
+                "glowStrength": 2.5,
+                "glowColor": "#b4f07a",
+                "glowDistance": 14,
+                "outlineWidth": 0,
+                "outlineColor": "#ffffff",
+                "pixelate": 0
+              }
+            },
+            {
+              "id": "hex-6-tw",
+              "type": "tween.player",
+              "version": 1,
+              "data": {
+                "duration": 1.2,
+                "delay": 0.8999999999999999,
+                "ease": "sine.inOut",
+                "repeat": 100,
+                "yoyo": true,
+                "autoplay": true,
+                "tracks": [
+                  {
+                    "id": "hex-6-k0",
+                    "entityId": "hex-6",
+                    "componentId": "hex-6-t",
+                    "property": "scaleX",
+                    "from": 0.7,
+                    "to": 1.15
+                  },
+                  {
+                    "id": "hex-6-k1",
+                    "entityId": "hex-6",
+                    "componentId": "hex-6-t",
+                    "property": "scaleY",
+                    "from": 0.7,
+                    "to": 1.15
+                  },
+                  {
+                    "id": "hex-6-k2",
+                    "entityId": "hex-6",
+                    "componentId": "hex-6-t",
+                    "property": "rotation",
+                    "from": 0,
+                    "to": 60
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "hex-7",
+          "name": "Hexagon",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "hex-7-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 621.4213562373095,
+                "y": 163.93398282201787,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "hex-7-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.9,
+                "kind": "polygon",
+                "width": 54,
+                "height": 54,
+                "color": "#ffd166",
+                "rounded": 0,
+                "sides": 6,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            },
+            {
+              "id": "hex-7-fx",
+              "type": "pixi.effects",
+              "version": 1,
+              "data": {
+                "blendMode": "add",
+                "blur": 0,
+                "brightness": 1,
+                "contrast": 1,
+                "saturation": 1,
+                "hue": 0,
+                "noise": 0,
+                "shadowAlpha": 0,
+                "shadowColor": "#000000",
+                "shadowX": 4,
+                "shadowY": 4,
+                "shadowBlur": 2,
+                "glowStrength": 2.5,
+                "glowColor": "#ffd166",
+                "glowDistance": 14,
+                "outlineWidth": 0,
+                "outlineColor": "#ffffff",
+                "pixelate": 0
+              }
+            },
+            {
+              "id": "hex-7-tw",
+              "type": "tween.player",
+              "version": 1,
+              "data": {
+                "duration": 1.2,
+                "delay": 1.05,
+                "ease": "sine.inOut",
+                "repeat": 100,
+                "yoyo": true,
+                "autoplay": true,
+                "tracks": [
+                  {
+                    "id": "hex-7-k0",
+                    "entityId": "hex-7",
+                    "componentId": "hex-7-t",
+                    "property": "scaleX",
+                    "from": 0.7,
+                    "to": 1.15
+                  },
+                  {
+                    "id": "hex-7-k1",
+                    "entityId": "hex-7",
+                    "componentId": "hex-7-t",
+                    "property": "scaleY",
+                    "from": 0.7,
+                    "to": 1.15
+                  },
+                  {
+                    "id": "hex-7-k2",
+                    "entityId": "hex-7",
+                    "componentId": "hex-7-t",
+                    "property": "rotation",
+                    "from": 0,
+                    "to": 60
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "core",
+          "name": "Star",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "core-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 480,
+                "y": 270,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "core-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "star",
+                "width": 150,
+                "height": 150,
+                "color": "#ff4fd8",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.45,
+                "strokeColor": "#ffd1f4",
+                "strokeWidth": 4
+              }
+            },
+            {
+              "id": "core-fx",
+              "type": "pixi.effects",
+              "version": 1,
+              "data": {
+                "blendMode": "normal",
+                "blur": 0,
+                "brightness": 1,
+                "contrast": 1,
+                "saturation": 1,
+                "hue": 0,
+                "noise": 0,
+                "shadowAlpha": 0,
+                "shadowColor": "#000000",
+                "shadowX": 4,
+                "shadowY": 4,
+                "shadowBlur": 2,
+                "glowStrength": 4,
+                "glowColor": "#ff4fd8",
+                "glowDistance": 24,
+                "outlineWidth": 0,
+                "outlineColor": "#ffffff",
+                "pixelate": 0
+              }
+            },
+            {
+              "id": "core-tw",
+              "type": "tween.player",
+              "version": 1,
+              "data": {
+                "duration": 8,
+                "delay": 0,
+                "ease": "linear",
+                "repeat": 100,
+                "yoyo": false,
+                "autoplay": true,
+                "tracks": [
+                  {
+                    "id": "core-k0",
+                    "entityId": "core",
+                    "componentId": "core-t",
+                    "property": "rotation",
+                    "from": 0,
+                    "to": 360
+                  }
+                ]
+              }
+            },
+            {
+              "id": "core-r",
+              "type": "interactions.bindings",
+              "version": 1,
+              "data": {
+                "rules": [
+                  {
+                    "id": "core-click",
+                    "trigger": {
+                      "event": "",
+                      "type": "pointer.click",
+                      "sourceId": "core"
+                    },
+                    "actions": [
+                      {
+                        "id": "core-click-0",
+                        "value": true,
+                        "type": "camera.shake",
+                        "targetId": "camera",
+                        "amount": 16
+                      },
+                      {
+                        "id": "core-click-1",
+                        "value": true,
+                        "type": "particles.play",
+                        "targetId": "burst-p"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "burst",
+          "name": "Burst",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "burst-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 480,
+                "y": 270,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "burst-p",
+              "type": "pixi.particles",
+              "version": 1,
+              "data": {
+                "assetId": "",
+                "alpha": 1,
+                "tint": "#ffd1f4",
+                "count": 80,
+                "lifetime": 1,
+                "speed": 420,
+                "direction": -90,
+                "spread": 360,
+                "gravity": 0,
+                "size": 8,
+                "endScale": 0.2,
+                "endAlpha": 0,
+                "seed": 7,
+                "emission": "burst",
+                "autoplay": false
+              }
+            },
+            {
+              "id": "burst-fx",
+              "type": "pixi.effects",
+              "version": 1,
+              "data": {
+                "blendMode": "add",
+                "blur": 0,
+                "brightness": 1,
+                "contrast": 1,
+                "saturation": 1,
+                "hue": 0,
+                "noise": 0,
+                "shadowAlpha": 0,
+                "shadowColor": "#000000",
+                "shadowX": 4,
+                "shadowY": 4,
+                "shadowBlur": 2,
+                "glowStrength": 0,
+                "glowColor": "#ffd27a",
+                "glowDistance": 12,
+                "outlineWidth": 0,
+                "outlineColor": "#ffffff",
+                "pixelate": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "title",
+          "name": "Title",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "title-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 480,
+                "y": 56,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "title-x",
+              "type": "pixi.text",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "text": "NEON GARDEN",
+                "fontSize": 44,
+                "color": "#e9fbff",
+                "font": "",
+                "fontWeight": "bold",
+                "fontStyle": "normal",
+                "align": "center",
+                "letterSpacing": 8,
+                "strokeColor": "#000000",
+                "strokeWidth": 0
+              }
+            },
+            {
+              "id": "title-fx",
+              "type": "pixi.effects",
+              "version": 1,
+              "data": {
+                "blendMode": "normal",
+                "blur": 0,
+                "brightness": 1,
+                "contrast": 1,
+                "saturation": 1,
+                "hue": 0,
+                "noise": 0,
+                "shadowAlpha": 0,
+                "shadowColor": "#000000",
+                "shadowX": 4,
+                "shadowY": 4,
+                "shadowBlur": 2,
+                "glowStrength": 3,
+                "glowColor": "#7cf3ff",
+                "glowDistance": 16,
+                "outlineWidth": 0,
+                "outlineColor": "#ffffff",
+                "pixelate": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "hint",
+          "name": "Hint",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "hint-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 480,
+                "y": 500,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "hint-x",
+              "type": "pixi.text",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "text": "click the star",
+                "fontSize": 16,
+                "color": "#7f8fa6",
+                "font": "",
+                "fontWeight": "normal",
+                "fontStyle": "normal",
+                "align": "center",
+                "letterSpacing": 3,
+                "strokeColor": "#000000",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "camera",
+          "name": "Camera",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "camera-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 480,
+                "y": 270,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "camera-cam",
+              "type": "pixi.camera2d",
+              "version": 1,
+              "data": {
+                "zoom": 1,
+                "rotate": false,
+                "target": "",
+                "offsetX": 0,
+                "offsetY": 0,
+                "smoothing": 0,
+                "deadzoneWidth": 0,
+                "deadzoneHeight": 0,
+                "limit": false,
+                "limitLeft": 0,
+                "limitTop": 0,
+                "limitRight": 1920,
+                "limitBottom": 1080
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "modules": {
+    "settings": "1.0.0",
+    "project": "1.0.0",
+    "scene": "1.0.0",
+    "assets": "1.0.0",
+    "pixi": "1.0.0",
+    "layout": "1.0.0",
+    "ai-comfy": "1.0.0",
+    "ai-lm": "1.0.0",
+    "assetpack": "1.0.0",
+    "audio": "1.0.0",
+    "howler": "1.0.0",
+    "tween": "1.0.0",
+    "gsap": "1.0.0",
+    "tween-pixi": "1.0.0",
+    "animation": "1.0.0",
+    "physics": "1.0.0",
+    "matter": "1.0.0",
+    "spine": "1.0.0",
+    "spine-audio": "1.0.0",
+    "interactions": "1.0.0",
+    "interaction-media": "1.0.0",
+    "scripts": "1.0.0",
+    "input": "1.0.0",
+    "build": "1.0.0",
+    "html-export": "1.0.0",
+    "prefabs": "1.0.0",
+    "project-ui": "1.0.0",
+    "recovery": "1.0.0",
+    "studio": "1.0.0"
+  },
+  "providers": {
+    "audio": "howler",
+    "tween": "gsap",
+    "physics": "matter",
+    "render": "pixi"
+  },
+  "extensions": {
+    "pixi.render": {
+      "version": 1,
+      "background": "#0b0e1a"
+    },
+    "scripts.library": {
+      "version": 1,
+      "items": [
+        {
+          "id": "s-breathe",
+          "name": "Breathe",
+          "source": "export function update() { game.camera.zoom = 1.03 + 0.03 * Math.sin(game.time * 0.7); }",
+          "code": "\"use strict\";Object.defineProperty(exports, \"__esModule\", {value: true}); function update() { game.camera.zoom = 1.03 + 0.03 * Math.sin(game.time * 0.7); } exports.update = update;"
+        }
+      ],
+      "scenes": {
+        "s-garden": {
+          "scriptId": "s-breathe",
+          "params": {},
+          "refs": {}
+        }
+      }
+    }
+  }
+}

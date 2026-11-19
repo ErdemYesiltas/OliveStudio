@@ -1,0 +1,9 @@
+import {it,expect,vi} from 'vitest';
+vi.mock('pixi.js/unsafe-eval',()=>({}));
+vi.mock('pixi.js',()=>({Application:class{},Container:class{removeChildren(){return[];}},Graphics:class{},Text:class{},Sprite:class{},Texture:class{}}));
+import {GamePlayer} from './index';
+import type {GameBundle,PlayerPlugin} from './plugin';
+const bundle:GameBundle={project:{formatVersion:1,name:'Test',entrySceneId:'scene',scenes:[{formatVersion:1,id:'scene',name:'Test',entities:[]}],modules:{},providers:{},extensions:{}},assets:[],files:{},runtimes:[]};
+it('rolls back all constructed plugins in reverse order even if a disposer fails',()=>{const calls:string[]=[],plugins:PlayerPlugin[]=[{id:'first',create:()=>({dispose(){calls.push('first');}})},{id:'second',create:()=>({dispose(){calls.push('second');throw Error('dispose failure');}})},{id:'failed',create(){throw Error('activation failure');}}];expect(()=>new GamePlayer({}as HTMLElement,bundle,vi.fn(),plugins)).toThrow('activation failed');expect(calls).toEqual(['second','first']);});
+it('disposes every scope after cleanup failures and is idempotent',()=>{const calls:string[]=[],report=vi.fn(),plugins:PlayerPlugin[]=[{id:'first',create:()=>({clear(){calls.push('clear first');throw Error('scene failed');},dispose(){calls.push('first');}})},{id:'second',create:()=>({dispose(){calls.push('second');throw Error('dispose failed');}})}];const player=new GamePlayer({}as HTMLElement,bundle,report,plugins);expect(()=>player.dispose()).not.toThrow();player.dispose();expect(calls).toEqual(['clear first','second','first']);expect(report).toHaveBeenCalledWith(expect.stringContaining('cleanup errors'));});
+it('rejects duplicate runtime identities before activating code',()=>{const create=vi.fn(()=>({dispose(){}}));expect(()=>new GamePlayer({}as HTMLElement,bundle,vi.fn(),[{id:'same',create},{id:'same',create}])).toThrow('Duplicate');expect(create).not.toHaveBeenCalled();});

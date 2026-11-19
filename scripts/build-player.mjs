@@ -1,0 +1,15 @@
+import {build} from 'vite';
+import {resolve} from 'node:path';
+import {readFile,mkdir,copyFile,writeFile} from 'node:fs/promises';
+import {pathToFileURL} from 'node:url';
+export async function buildPlayer({profileFile=resolve('modules/html-export/runtime-profile.json'),outDir=resolve('apps/editor-desktop/out/player')}={}){
+ const profile=JSON.parse(await readFile(profileFile,'utf8')),entries=profile.runtimes,paths=Object.fromEntries(Object.entries(entries).map(([id,e])=>[id,resolve(e.entry)]));
+ const virtual='\0runtime-profile';const result=await build({configFile:false,root:resolve('modules/html-export'),base:'./',plugins:[{name:'runtime-profile',resolveId:id=>id==='virtual:runtime-profile'?virtual:undefined,load(id){if(id!==virtual)return;return`const loaders={${Object.entries(paths).map(([id,path])=>`${JSON.stringify(id)}:()=>import(${JSON.stringify(path)})`).join(',')}};export async function loadRuntimePlugins(ids){const plugins=[];const seen=new Set();for(const id of ids){if(seen.has(id)||!Object.hasOwn(loaders,id))throw Error('Unknown/duplicate runtime plugin: '+id);seen.add(id);const module=await loaders[id]();if(module.default.id!==id)throw Error('Runtime plugin identity mismatch: '+id);plugins.push(module.default);}return plugins;}`;}},{name:'runtime-only',generateBundle(){const forbidden=[...this.getModuleIds()].filter(id=>/node_modules\/.*(?:\/react(?:-dom)?\/|\/dockview\/|\/electron\/)|\/apps\/editor-desktop\//.test(id));if(forbidden.length)this.error('Editor dependency in runtime: '+forbidden.join(', '));}}],build:{target:'es2022',outDir,emptyOutDir:true}});
+ const output=(Array.isArray(result)?result[0]:result).output,files={},runtimes={};
+ for(const f of output){if(f.type==='chunk'){const meta=f.viteMetadata;files[f.fileName]={imports:f.imports,dynamicImports:f.dynamicImports,assets:[...meta?.importedCss??[],...meta?.importedAssets??[]],bytes:Buffer.byteLength(f.code),vendors:['gsap','howler','matter-js','@esotericsoftware'].filter(name=>Object.keys(f.modules).some(id=>id.includes('/'+name+(name.startsWith('@')?'/':'/'))||id.includes('/'+name+'@')))};for(const[id,path]of Object.entries(paths))if(f.facadeModuleId===path||f.isDynamicEntry&&!f.facadeModuleId&&f.moduleIds.includes(path))runtimes[id]={...entries[id],file:f.fileName};}}
+ for(const id of Object.keys(entries))if(!runtimes[id])throw Error('Missing compiled runtime entry: '+id);
+ const entry=output.find(f=>f.type==='chunk'&&f.isEntry&&f.facadeModuleId?.endsWith('index.html'));if(!entry)throw Error('Missing browser bootstrap');
+ await mkdir(resolve(outDir,'licenses'),{recursive:true});await copyFile('third-party/SPINE-RUNTIMES-LICENSE.txt',resolve(outDir,'licenses/SPINE-RUNTIMES-LICENSE.txt'));
+ await writeFile(resolve(outDir,'runtime-manifest.json'),JSON.stringify({version:1,entry:entry.fileName,files,runtimes},null,2)+'\n');
+}
+if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href)await buildPlayer();

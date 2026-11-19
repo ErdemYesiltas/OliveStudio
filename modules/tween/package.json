@@ -1,0 +1,21 @@
+{
+  "name": "@rewrite/tween",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./contracts": "./src/contracts.ts",
+    "./views": "./src/views.tsx"
+  },
+  "dependencies": {
+    "@rewrite/sdk": "workspace:*",
+    "@rewrite/scene": "workspace:*",
+    "react": "19.3.1",
+    "zod": "4.6.7",
+    "@rewrite/ui": "workspace:*"
+  },
+  "devDependencies": {
+    "@rewrite/runtime": "workspace:*"
+  }
+}

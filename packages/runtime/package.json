@@ -1,0 +1,11 @@
+{
+  "name": "@rewrite/runtime",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": "./src/index.ts",
+  "dependencies": {
+    "@rewrite/sdk": "workspace:*",
+    "miniplex": "2.0.0"
+  }
+}

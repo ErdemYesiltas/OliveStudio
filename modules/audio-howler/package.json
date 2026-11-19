@@ -1,0 +1,17 @@
+{
+  "name": "@rewrite/audio-howler",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@rewrite/audio": "workspace:*",
+    "@rewrite/sdk": "workspace:*",
+    "howler": "2.2.4"
+  },
+  "devDependencies": {
+    "@rewrite/kernel": "workspace:*"
+  }
+}

@@ -1,0 +1,8 @@
+{
+ "skeleton":{"hash":"original-editor-fixture","spine":"4.2.00","x":-32,"y":-32,"width":128,"height":64},
+ "bones":[{"name":"root"},{"name":"arm","parent":"root","length":96}],
+ "slots":[{"name":"tile-slot","bone":"arm","attachment":"tile"}],
+ "skins":[{"name":"default","attachments":{"tile-slot":{"tile":{"type":"region","path":"tile","x":48,"width":96,"height":32}}}},{"name":"warm","attachments":{"tile-slot":{"tile":{"type":"region","path":"tile","x":48,"width":96,"height":32,"color":"ffb080ff"}}}}],
+ "events":{"ping":{"int":7,"string":"original fixture"}},
+ "animations":{"sway":{"bones":{"arm":{"rotate":[{"value":-30},{"time":1,"value":30}]}},"events":[{"time":0.5,"name":"ping"}]},"still":{"bones":{"arm":{"rotate":[{"value":10},{"time":1,"value":10}]}}}}
+}

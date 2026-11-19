@@ -1,0 +1,2431 @@
+{
+  "formatVersion": 1,
+  "name": "The Lighthouse",
+  "entrySceneId": "s-story",
+  "scenes": [
+    {
+      "formatVersion": 1,
+      "id": "s-story",
+      "name": "Story",
+      "entities": [
+        {
+          "id": "moon",
+          "name": "Moon",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "moon-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 160,
+                "y": 90,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "moon-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "ellipse",
+                "width": 70,
+                "height": 70,
+                "color": "#e2e8f0",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            },
+            {
+              "id": "moon-fx",
+              "type": "pixi.effects",
+              "version": 1,
+              "data": {
+                "blendMode": "normal",
+                "blur": 0,
+                "brightness": 1,
+                "contrast": 1,
+                "saturation": 1,
+                "hue": 0,
+                "noise": 0,
+                "shadowAlpha": 0,
+                "shadowColor": "#000000",
+                "shadowX": 4,
+                "shadowY": 4,
+                "shadowBlur": 2,
+                "glowStrength": 2,
+                "glowColor": "#cbd5e1",
+                "glowDistance": 20,
+                "outlineWidth": 0,
+                "outlineColor": "#ffffff",
+                "pixelate": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "tower",
+          "name": "Tower",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "tower-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 760,
+                "y": 190,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "tower-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "triangle",
+                "width": 90,
+                "height": 240,
+                "color": "#e2e8f0",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#94a3b8",
+                "strokeWidth": 3
+              }
+            }
+          ]
+        },
+        {
+          "id": "stripe",
+          "name": "Stripe",
+          "parentId": "tower",
+          "active": true,
+          "components": [
+            {
+              "id": "stripe-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 0,
+                "y": 30,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "stripe-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 52,
+                "height": 22,
+                "color": "#ef4444",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "lamp",
+          "name": "Lamp",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "lamp-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 760,
+                "y": 72,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "lamp-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "ellipse",
+                "width": 30,
+                "height": 30,
+                "color": "#fde68a",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            },
+            {
+              "id": "lamp-fx",
+              "type": "pixi.effects",
+              "version": 1,
+              "data": {
+                "blendMode": "normal",
+                "blur": 0,
+                "brightness": 1,
+                "contrast": 1,
+                "saturation": 1,
+                "hue": 0,
+                "noise": 0,
+                "shadowAlpha": 0,
+                "shadowColor": "#000000",
+                "shadowX": 4,
+                "shadowY": 4,
+                "shadowBlur": 2,
+                "glowStrength": 4,
+                "glowColor": "#fbbf24",
+                "glowDistance": 30,
+                "outlineWidth": 0,
+                "outlineColor": "#ffffff",
+                "pixelate": 0
+              }
+            },
+            {
+              "id": "lamp-tw",
+              "type": "tween.player",
+              "version": 1,
+              "data": {
+                "duration": 1.1,
+                "delay": 0,
+                "ease": "sine.inOut",
+                "repeat": 100,
+                "yoyo": true,
+                "autoplay": true,
+                "tracks": [
+                  {
+                    "id": "lamp-k0",
+                    "entityId": "lamp",
+                    "componentId": "lamp-t",
+                    "property": "scaleX",
+                    "from": 0.7,
+                    "to": 1.25
+                  },
+                  {
+                    "id": "lamp-k1",
+                    "entityId": "lamp",
+                    "componentId": "lamp-t",
+                    "property": "scaleY",
+                    "from": 0.7,
+                    "to": 1.25
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "beam",
+          "name": "Beam",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "beam-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 760,
+                "y": 72,
+                "rotation": -60,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "beam-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.18,
+                "kind": "triangle",
+                "width": 120,
+                "height": 520,
+                "color": "#fde68a",
+                "rounded": 0,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            },
+            {
+              "id": "beam-fx",
+              "type": "pixi.effects",
+              "version": 1,
+              "data": {
+                "blendMode": "add",
+                "blur": 6,
+                "brightness": 1,
+                "contrast": 1,
+                "saturation": 1,
+                "hue": 0,
+                "noise": 0,
+                "shadowAlpha": 0,
+                "shadowColor": "#000000",
+                "shadowX": 4,
+                "shadowY": 4,
+                "shadowBlur": 2,
+                "glowStrength": 0,
+                "glowColor": "#ffd27a",
+                "glowDistance": 12,
+                "outlineWidth": 0,
+                "outlineColor": "#ffffff",
+                "pixelate": 0
+              }
+            },
+            {
+              "id": "beam-tw",
+              "type": "tween.player",
+              "version": 1,
+              "data": {
+                "duration": 4,
+                "delay": 0,
+                "ease": "sine.inOut",
+                "repeat": 100,
+                "yoyo": true,
+                "autoplay": true,
+                "tracks": [
+                  {
+                    "id": "beam-k0",
+                    "entityId": "beam",
+                    "componentId": "beam-t",
+                    "property": "rotation",
+                    "from": -60,
+                    "to": 60
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "wave-0",
+          "name": "Wave",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "wave-0-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 480,
+                "y": 300,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "wave-0-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 1100,
+                "height": 60,
+                "color": "#1c3b5a",
+                "rounded": 30,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            },
+            {
+              "id": "wave-0-tw",
+              "type": "tween.player",
+              "version": 1,
+              "data": {
+                "duration": 2.4,
+                "delay": 0,
+                "ease": "sine.inOut",
+                "repeat": 100,
+                "yoyo": true,
+                "autoplay": true,
+                "tracks": [
+                  {
+                    "id": "wave-0-k0",
+                    "entityId": "wave-0",
+                    "componentId": "wave-0-t",
+                    "property": "x",
+                    "from": 470,
+                    "to": 500
+                  },
+                  {
+                    "id": "wave-0-k1",
+                    "entityId": "wave-0",
+                    "componentId": "wave-0-t",
+                    "property": "y",
+                    "from": 300,
+                    "to": 306
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "wave-1",
+          "name": "Wave",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "wave-1-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 510,
+                "y": 326,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "wave-1-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 1100,
+                "height": 60,
+                "color": "#16324e",
+                "rounded": 30,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            },
+            {
+              "id": "wave-1-tw",
+              "type": "tween.player",
+              "version": 1,
+              "data": {
+                "duration": 2.9,
+                "delay": 0,
+                "ease": "sine.inOut",
+                "repeat": 100,
+                "yoyo": true,
+                "autoplay": true,
+                "tracks": [
+                  {
+                    "id": "wave-1-k0",
+                    "entityId": "wave-1",
+                    "componentId": "wave-1-t",
+                    "property": "x",
+                    "from": 500,
+                    "to": 530
+                  },
+                  {
+                    "id": "wave-1-k1",
+                    "entityId": "wave-1",
+                    "componentId": "wave-1-t",
+                    "property": "y",
+                    "from": 326,
+                    "to": 332
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "wave-2",
+          "name": "Wave",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "wave-2-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 540,
+                "y": 352,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "wave-2-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 1100,
+                "height": 60,
+                "color": "#102841",
+                "rounded": 30,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            },
+            {
+              "id": "wave-2-tw",
+              "type": "tween.player",
+              "version": 1,
+              "data": {
+                "duration": 3.4,
+                "delay": 0,
+                "ease": "sine.inOut",
+                "repeat": 100,
+                "yoyo": true,
+                "autoplay": true,
+                "tracks": [
+                  {
+                    "id": "wave-2-k0",
+                    "entityId": "wave-2",
+                    "componentId": "wave-2-t",
+                    "property": "x",
+                    "from": 530,
+                    "to": 560
+                  },
+                  {
+                    "id": "wave-2-k1",
+                    "entityId": "wave-2",
+                    "componentId": "wave-2-t",
+                    "property": "y",
+                    "from": 352,
+                    "to": 358
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "panel",
+          "name": "Text panel",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "panel-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 480,
+                "y": 425,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "panel-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 0.82,
+                "kind": "rect",
+                "width": 900,
+                "height": 190,
+                "color": "#0b132b",
+                "rounded": 18,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "title",
+          "name": "Title",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "title-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 480,
+                "y": 30,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "title-x",
+              "type": "pixi.text",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "text": "{@story.title}",
+                "fontSize": 28,
+                "color": "#f8fafc",
+                "font": "",
+                "fontWeight": "bold",
+                "fontStyle": "normal",
+                "align": "center",
+                "letterSpacing": 2,
+                "strokeColor": "#000000",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "line-intro",
+          "name": "Line intro",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "line-intro-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 480,
+                "y": 392,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "line-intro-x",
+              "type": "pixi.text",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "text": "{@story.intro}",
+                "fontSize": 22,
+                "color": "#f1f5f9",
+                "font": "",
+                "fontWeight": "normal",
+                "fontStyle": "normal",
+                "align": "center",
+                "letterSpacing": 0,
+                "strokeColor": "#0b132b",
+                "strokeWidth": 5,
+                "wordWrap": true,
+                "wrapWidth": 760,
+                "lineHeight": 30
+              }
+            }
+          ]
+        },
+        {
+          "id": "line-stairs",
+          "name": "Line stairs",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "line-stairs-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 480,
+                "y": 392,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "line-stairs-x",
+              "type": "pixi.text",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "text": "{@story.stairs}",
+                "fontSize": 22,
+                "color": "#f1f5f9",
+                "font": "",
+                "fontWeight": "normal",
+                "fontStyle": "normal",
+                "align": "center",
+                "letterSpacing": 0,
+                "strokeColor": "#0b132b",
+                "strokeWidth": 5,
+                "wordWrap": true,
+                "wrapWidth": 760,
+                "lineHeight": 30
+              }
+            }
+          ]
+        },
+        {
+          "id": "line-shore",
+          "name": "Line shore",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "line-shore-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 480,
+                "y": 392,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "line-shore-x",
+              "type": "pixi.text",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "text": "{@story.shore}",
+                "fontSize": 22,
+                "color": "#f1f5f9",
+                "font": "",
+                "fontWeight": "normal",
+                "fontStyle": "normal",
+                "align": "center",
+                "letterSpacing": 0,
+                "strokeColor": "#0b132b",
+                "strokeWidth": 5,
+                "wordWrap": true,
+                "wrapWidth": 760,
+                "lineHeight": 30
+              }
+            }
+          ]
+        },
+        {
+          "id": "line-lit",
+          "name": "Line lit",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "line-lit-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 480,
+                "y": 392,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "line-lit-x",
+              "type": "pixi.text",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "text": "{@story.lit}",
+                "fontSize": 22,
+                "color": "#f1f5f9",
+                "font": "",
+                "fontWeight": "normal",
+                "fontStyle": "normal",
+                "align": "center",
+                "letterSpacing": 0,
+                "strokeColor": "#0b132b",
+                "strokeWidth": 5,
+                "wordWrap": true,
+                "wrapWidth": 760,
+                "lineHeight": 30
+              }
+            }
+          ]
+        },
+        {
+          "id": "line-rowed",
+          "name": "Line rowed",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "line-rowed-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 480,
+                "y": 392,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "line-rowed-x",
+              "type": "pixi.text",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "text": "{@story.rowed}",
+                "fontSize": 22,
+                "color": "#f1f5f9",
+                "font": "",
+                "fontWeight": "normal",
+                "fontStyle": "normal",
+                "align": "center",
+                "letterSpacing": 0,
+                "strokeColor": "#0b132b",
+                "strokeWidth": 5,
+                "wordWrap": true,
+                "wrapWidth": 760,
+                "lineHeight": 30
+              }
+            }
+          ]
+        },
+        {
+          "id": "btn-climb-intro",
+          "name": "{@story.climb}",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "btn-climb-intro-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 340,
+                "y": 470,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "btn-climb-intro-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 240,
+                "height": 46,
+                "color": "#ffd166",
+                "rounded": 12,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "btn-climb-intro-label",
+          "name": "{@story.climb} label",
+          "parentId": "btn-climb-intro",
+          "active": true,
+          "components": [
+            {
+              "id": "btn-climb-intro-label-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "btn-climb-intro-label-x",
+              "type": "pixi.text",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "text": "{@story.climb}",
+                "fontSize": 18,
+                "color": "#10131a",
+                "font": "",
+                "fontWeight": "bold",
+                "fontStyle": "normal",
+                "align": "center",
+                "letterSpacing": 0,
+                "strokeColor": "#000000",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "btn-walk-intro",
+          "name": "{@story.walk}",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "btn-walk-intro-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 620,
+                "y": 470,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "btn-walk-intro-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 240,
+                "height": 46,
+                "color": "#ffd166",
+                "rounded": 12,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "btn-walk-intro-label",
+          "name": "{@story.walk} label",
+          "parentId": "btn-walk-intro",
+          "active": true,
+          "components": [
+            {
+              "id": "btn-walk-intro-label-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "btn-walk-intro-label-x",
+              "type": "pixi.text",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "text": "{@story.walk}",
+                "fontSize": 18,
+                "color": "#10131a",
+                "font": "",
+                "fontWeight": "bold",
+                "fontStyle": "normal",
+                "align": "center",
+                "letterSpacing": 0,
+                "strokeColor": "#000000",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "btn-light-stairs",
+          "name": "{@story.light}",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "btn-light-stairs-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 340,
+                "y": 470,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "btn-light-stairs-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 240,
+                "height": 46,
+                "color": "#ffd166",
+                "rounded": 12,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "btn-light-stairs-label",
+          "name": "{@story.light} label",
+          "parentId": "btn-light-stairs",
+          "active": true,
+          "components": [
+            {
+              "id": "btn-light-stairs-label-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "btn-light-stairs-label-x",
+              "type": "pixi.text",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "text": "{@story.light}",
+                "fontSize": 18,
+                "color": "#10131a",
+                "font": "",
+                "fontWeight": "bold",
+                "fontStyle": "normal",
+                "align": "center",
+                "letterSpacing": 0,
+                "strokeColor": "#000000",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "btn-back-stairs",
+          "name": "{@story.back}",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "btn-back-stairs-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 620,
+                "y": 470,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "btn-back-stairs-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 240,
+                "height": 46,
+                "color": "#ffd166",
+                "rounded": 12,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "btn-back-stairs-label",
+          "name": "{@story.back} label",
+          "parentId": "btn-back-stairs",
+          "active": true,
+          "components": [
+            {
+              "id": "btn-back-stairs-label-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "btn-back-stairs-label-x",
+              "type": "pixi.text",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "text": "{@story.back}",
+                "fontSize": 18,
+                "color": "#10131a",
+                "font": "",
+                "fontWeight": "bold",
+                "fontStyle": "normal",
+                "align": "center",
+                "letterSpacing": 0,
+                "strokeColor": "#000000",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "btn-row-shore",
+          "name": "{@story.row}",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "btn-row-shore-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 340,
+                "y": 470,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "btn-row-shore-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 240,
+                "height": 46,
+                "color": "#ffd166",
+                "rounded": 12,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "btn-row-shore-label",
+          "name": "{@story.row} label",
+          "parentId": "btn-row-shore",
+          "active": true,
+          "components": [
+            {
+              "id": "btn-row-shore-label-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "btn-row-shore-label-x",
+              "type": "pixi.text",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "text": "{@story.row}",
+                "fontSize": 18,
+                "color": "#10131a",
+                "font": "",
+                "fontWeight": "bold",
+                "fontStyle": "normal",
+                "align": "center",
+                "letterSpacing": 0,
+                "strokeColor": "#000000",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "btn-back-shore",
+          "name": "{@story.back}",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "btn-back-shore-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 620,
+                "y": 470,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "btn-back-shore-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 240,
+                "height": 46,
+                "color": "#ffd166",
+                "rounded": 12,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "btn-back-shore-label",
+          "name": "{@story.back} label",
+          "parentId": "btn-back-shore",
+          "active": true,
+          "components": [
+            {
+              "id": "btn-back-shore-label-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "btn-back-shore-label-x",
+              "type": "pixi.text",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "text": "{@story.back}",
+                "fontSize": 18,
+                "color": "#10131a",
+                "font": "",
+                "fontWeight": "bold",
+                "fontStyle": "normal",
+                "align": "center",
+                "letterSpacing": 0,
+                "strokeColor": "#000000",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "btn-again-lit",
+          "name": "{@story.again}",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "btn-again-lit-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 480,
+                "y": 470,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "btn-again-lit-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 240,
+                "height": 46,
+                "color": "#ffd166",
+                "rounded": 12,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "btn-again-lit-label",
+          "name": "{@story.again} label",
+          "parentId": "btn-again-lit",
+          "active": true,
+          "components": [
+            {
+              "id": "btn-again-lit-label-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "btn-again-lit-label-x",
+              "type": "pixi.text",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "text": "{@story.again}",
+                "fontSize": 18,
+                "color": "#10131a",
+                "font": "",
+                "fontWeight": "bold",
+                "fontStyle": "normal",
+                "align": "center",
+                "letterSpacing": 0,
+                "strokeColor": "#000000",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "btn-again-rowed",
+          "name": "{@story.again}",
+          "parentId": null,
+          "active": false,
+          "components": [
+            {
+              "id": "btn-again-rowed-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 480,
+                "y": 470,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "btn-again-rowed-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 240,
+                "height": 46,
+                "color": "#ffd166",
+                "rounded": 12,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "btn-again-rowed-label",
+          "name": "{@story.again} label",
+          "parentId": "btn-again-rowed",
+          "active": true,
+          "components": [
+            {
+              "id": "btn-again-rowed-label-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "btn-again-rowed-label-x",
+              "type": "pixi.text",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "text": "{@story.again}",
+                "fontSize": 18,
+                "color": "#10131a",
+                "font": "",
+                "fontWeight": "bold",
+                "fontStyle": "normal",
+                "align": "center",
+                "letterSpacing": 0,
+                "strokeColor": "#000000",
+                "strokeWidth": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "lang-en",
+          "name": "EN",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "lang-en-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 830,
+                "y": 30,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "lang-en-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 56,
+                "height": 46,
+                "color": "#e2e8f0",
+                "rounded": 12,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            },
+            {
+              "id": "lang-en-r",
+              "type": "interactions.bindings",
+              "version": 1,
+              "data": {
+                "rules": [
+                  {
+                    "id": "lang-en-set",
+                    "trigger": {
+                      "event": "",
+                      "type": "pointer.click",
+                      "sourceId": "lang-en"
+                    },
+                    "actions": [
+                      {
+                        "id": "lang-en-set-0",
+                        "value": true,
+                        "type": "language.set",
+                        "targetId": "en"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "lang-en-label",
+          "name": "EN label",
+          "parentId": "lang-en",
+          "active": true,
+          "components": [
+            {
+              "id": "lang-en-label-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "lang-en-label-x",
+              "type": "pixi.text",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "text": "EN",
+                "fontSize": 18,
+                "color": "#10131a",
+                "font": "",
+                "fontWeight": "bold",
+                "fontStyle": "normal",
+                "align": "center",
+                "letterSpacing": 0,
+                "strokeColor": "#000000",
+                "strokeWidth": 0
+              }
+            },
+            {
+              "id": "lang-en-label-r",
+              "type": "interactions.bindings",
+              "version": 1,
+              "data": {
+                "rules": [
+                  {
+                    "id": "lang-en-label-set",
+                    "trigger": {
+                      "event": "",
+                      "type": "pointer.click",
+                      "sourceId": "lang-en-label"
+                    },
+                    "actions": [
+                      {
+                        "id": "lang-en-label-set-0",
+                        "value": true,
+                        "type": "language.set",
+                        "targetId": "en"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "lang-tr",
+          "name": "TR",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "lang-tr-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 900,
+                "y": 30,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "lang-tr-s",
+              "type": "pixi.shape",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "kind": "rect",
+                "width": 56,
+                "height": 46,
+                "color": "#e2e8f0",
+                "rounded": 12,
+                "sides": 5,
+                "innerRadius": 0.5,
+                "strokeColor": "#ffffff",
+                "strokeWidth": 0
+              }
+            },
+            {
+              "id": "lang-tr-r",
+              "type": "interactions.bindings",
+              "version": 1,
+              "data": {
+                "rules": [
+                  {
+                    "id": "lang-tr-set",
+                    "trigger": {
+                      "event": "",
+                      "type": "pointer.click",
+                      "sourceId": "lang-tr"
+                    },
+                    "actions": [
+                      {
+                        "id": "lang-tr-set-0",
+                        "value": true,
+                        "type": "language.set",
+                        "targetId": "tr"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "lang-tr-label",
+          "name": "TR label",
+          "parentId": "lang-tr",
+          "active": true,
+          "components": [
+            {
+              "id": "lang-tr-label-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 0,
+                "y": 0,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "lang-tr-label-x",
+              "type": "pixi.text",
+              "version": 1,
+              "data": {
+                "alpha": 1,
+                "text": "TR",
+                "fontSize": 18,
+                "color": "#10131a",
+                "font": "",
+                "fontWeight": "bold",
+                "fontStyle": "normal",
+                "align": "center",
+                "letterSpacing": 0,
+                "strokeColor": "#000000",
+                "strokeWidth": 0
+              }
+            },
+            {
+              "id": "lang-tr-label-r",
+              "type": "interactions.bindings",
+              "version": 1,
+              "data": {
+                "rules": [
+                  {
+                    "id": "lang-tr-label-set",
+                    "trigger": {
+                      "event": "",
+                      "type": "pointer.click",
+                      "sourceId": "lang-tr-label"
+                    },
+                    "actions": [
+                      {
+                        "id": "lang-tr-label-set-0",
+                        "value": true,
+                        "type": "language.set",
+                        "targetId": "tr"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "story",
+          "name": "Story",
+          "parentId": null,
+          "active": true,
+          "components": [
+            {
+              "id": "story-t",
+              "type": "scene.transform2d",
+              "version": 1,
+              "data": {
+                "x": 40,
+                "y": 40,
+                "rotation": 0,
+                "scaleX": 1,
+                "scaleY": 1
+              }
+            },
+            {
+              "id": "story-sm",
+              "type": "interactions.stateMachine",
+              "version": 1,
+              "data": {
+                "states": [
+                  {
+                    "id": "st-intro",
+                    "name": "Intro",
+                    "actions": [
+                      {
+                        "id": "st-intro-0",
+                        "type": "entity.active",
+                        "targetId": "line-intro",
+                        "value": true
+                      },
+                      {
+                        "id": "st-intro-1",
+                        "type": "entity.active",
+                        "targetId": "line-stairs",
+                        "value": false
+                      },
+                      {
+                        "id": "st-intro-2",
+                        "type": "entity.active",
+                        "targetId": "line-shore",
+                        "value": false
+                      },
+                      {
+                        "id": "st-intro-3",
+                        "type": "entity.active",
+                        "targetId": "line-lit",
+                        "value": false
+                      },
+                      {
+                        "id": "st-intro-4",
+                        "type": "entity.active",
+                        "targetId": "line-rowed",
+                        "value": false
+                      },
+                      {
+                        "id": "st-intro-5",
+                        "type": "entity.active",
+                        "targetId": "btn-climb-intro",
+                        "value": true
+                      },
+                      {
+                        "id": "st-intro-6",
+                        "type": "entity.active",
+                        "targetId": "btn-walk-intro",
+                        "value": true
+                      },
+                      {
+                        "id": "st-intro-7",
+                        "type": "entity.active",
+                        "targetId": "btn-light-stairs",
+                        "value": false
+                      },
+                      {
+                        "id": "st-intro-8",
+                        "type": "entity.active",
+                        "targetId": "btn-back-stairs",
+                        "value": false
+                      },
+                      {
+                        "id": "st-intro-9",
+                        "type": "entity.active",
+                        "targetId": "btn-row-shore",
+                        "value": false
+                      },
+                      {
+                        "id": "st-intro-10",
+                        "type": "entity.active",
+                        "targetId": "btn-back-shore",
+                        "value": false
+                      },
+                      {
+                        "id": "st-intro-11",
+                        "type": "entity.active",
+                        "targetId": "btn-again-lit",
+                        "value": false
+                      },
+                      {
+                        "id": "st-intro-12",
+                        "type": "entity.active",
+                        "targetId": "btn-again-rowed",
+                        "value": false
+                      }
+                    ]
+                  },
+                  {
+                    "id": "st-stairs",
+                    "name": "Stairs",
+                    "actions": [
+                      {
+                        "id": "st-stairs-0",
+                        "type": "entity.active",
+                        "targetId": "line-intro",
+                        "value": false
+                      },
+                      {
+                        "id": "st-stairs-1",
+                        "type": "entity.active",
+                        "targetId": "line-stairs",
+                        "value": true
+                      },
+                      {
+                        "id": "st-stairs-2",
+                        "type": "entity.active",
+                        "targetId": "line-shore",
+                        "value": false
+                      },
+                      {
+                        "id": "st-stairs-3",
+                        "type": "entity.active",
+                        "targetId": "line-lit",
+                        "value": false
+                      },
+                      {
+                        "id": "st-stairs-4",
+                        "type": "entity.active",
+                        "targetId": "line-rowed",
+                        "value": false
+                      },
+                      {
+                        "id": "st-stairs-5",
+                        "type": "entity.active",
+                        "targetId": "btn-climb-intro",
+                        "value": false
+                      },
+                      {
+                        "id": "st-stairs-6",
+                        "type": "entity.active",
+                        "targetId": "btn-walk-intro",
+                        "value": false
+                      },
+                      {
+                        "id": "st-stairs-7",
+                        "type": "entity.active",
+                        "targetId": "btn-light-stairs",
+                        "value": true
+                      },
+                      {
+                        "id": "st-stairs-8",
+                        "type": "entity.active",
+                        "targetId": "btn-back-stairs",
+                        "value": true
+                      },
+                      {
+                        "id": "st-stairs-9",
+                        "type": "entity.active",
+                        "targetId": "btn-row-shore",
+                        "value": false
+                      },
+                      {
+                        "id": "st-stairs-10",
+                        "type": "entity.active",
+                        "targetId": "btn-back-shore",
+                        "value": false
+                      },
+                      {
+                        "id": "st-stairs-11",
+                        "type": "entity.active",
+                        "targetId": "btn-again-lit",
+                        "value": false
+                      },
+                      {
+                        "id": "st-stairs-12",
+                        "type": "entity.active",
+                        "targetId": "btn-again-rowed",
+                        "value": false
+                      }
+                    ]
+                  },
+                  {
+                    "id": "st-shore",
+                    "name": "Shore",
+                    "actions": [
+                      {
+                        "id": "st-shore-0",
+                        "type": "entity.active",
+                        "targetId": "line-intro",
+                        "value": false
+                      },
+                      {
+                        "id": "st-shore-1",
+                        "type": "entity.active",
+                        "targetId": "line-stairs",
+                        "value": false
+                      },
+                      {
+                        "id": "st-shore-2",
+                        "type": "entity.active",
+                        "targetId": "line-shore",
+                        "value": true
+                      },
+                      {
+                        "id": "st-shore-3",
+                        "type": "entity.active",
+                        "targetId": "line-lit",
+                        "value": false
+                      },
+                      {
+                        "id": "st-shore-4",
+                        "type": "entity.active",
+                        "targetId": "line-rowed",
+                        "value": false
+                      },
+                      {
+                        "id": "st-shore-5",
+                        "type": "entity.active",
+                        "targetId": "btn-climb-intro",
+                        "value": false
+                      },
+                      {
+                        "id": "st-shore-6",
+                        "type": "entity.active",
+                        "targetId": "btn-walk-intro",
+                        "value": false
+                      },
+                      {
+                        "id": "st-shore-7",
+                        "type": "entity.active",
+                        "targetId": "btn-light-stairs",
+                        "value": false
+                      },
+                      {
+                        "id": "st-shore-8",
+                        "type": "entity.active",
+                        "targetId": "btn-back-stairs",
+                        "value": false
+                      },
+                      {
+                        "id": "st-shore-9",
+                        "type": "entity.active",
+                        "targetId": "btn-row-shore",
+                        "value": true
+                      },
+                      {
+                        "id": "st-shore-10",
+                        "type": "entity.active",
+                        "targetId": "btn-back-shore",
+                        "value": true
+                      },
+                      {
+                        "id": "st-shore-11",
+                        "type": "entity.active",
+                        "targetId": "btn-again-lit",
+                        "value": false
+                      },
+                      {
+                        "id": "st-shore-12",
+                        "type": "entity.active",
+                        "targetId": "btn-again-rowed",
+                        "value": false
+                      }
+                    ]
+                  },
+                  {
+                    "id": "st-lit",
+                    "name": "Lit",
+                    "actions": [
+                      {
+                        "id": "st-lit-0",
+                        "type": "entity.active",
+                        "targetId": "line-intro",
+                        "value": false
+                      },
+                      {
+                        "id": "st-lit-1",
+                        "type": "entity.active",
+                        "targetId": "line-stairs",
+                        "value": false
+                      },
+                      {
+                        "id": "st-lit-2",
+                        "type": "entity.active",
+                        "targetId": "line-shore",
+                        "value": false
+                      },
+                      {
+                        "id": "st-lit-3",
+                        "type": "entity.active",
+                        "targetId": "line-lit",
+                        "value": true
+                      },
+                      {
+                        "id": "st-lit-4",
+                        "type": "entity.active",
+                        "targetId": "line-rowed",
+                        "value": false
+                      },
+                      {
+                        "id": "st-lit-5",
+                        "type": "entity.active",
+                        "targetId": "btn-climb-intro",
+                        "value": false
+                      },
+                      {
+                        "id": "st-lit-6",
+                        "type": "entity.active",
+                        "targetId": "btn-walk-intro",
+                        "value": false
+                      },
+                      {
+                        "id": "st-lit-7",
+                        "type": "entity.active",
+                        "targetId": "btn-light-stairs",
+                        "value": false
+                      },
+                      {
+                        "id": "st-lit-8",
+                        "type": "entity.active",
+                        "targetId": "btn-back-stairs",
+                        "value": false
+                      },
+                      {
+                        "id": "st-lit-9",
+                        "type": "entity.active",
+                        "targetId": "btn-row-shore",
+                        "value": false
+                      },
+                      {
+                        "id": "st-lit-10",
+                        "type": "entity.active",
+                        "targetId": "btn-back-shore",
+                        "value": false
+                      },
+                      {
+                        "id": "st-lit-11",
+                        "type": "entity.active",
+                        "targetId": "btn-again-lit",
+                        "value": true
+                      },
+                      {
+                        "id": "st-lit-12",
+                        "type": "entity.active",
+                        "targetId": "btn-again-rowed",
+                        "value": false
+                      }
+                    ]
+                  },
+                  {
+                    "id": "st-rowed",
+                    "name": "Rowed",
+                    "actions": [
+                      {
+                        "id": "st-rowed-0",
+                        "type": "entity.active",
+                        "targetId": "line-intro",
+                        "value": false
+                      },
+                      {
+                        "id": "st-rowed-1",
+                        "type": "entity.active",
+                        "targetId": "line-stairs",
+                        "value": false
+                      },
+                      {
+                        "id": "st-rowed-2",
+                        "type": "entity.active",
+                        "targetId": "line-shore",
+                        "value": false
+                      },
+                      {
+                        "id": "st-rowed-3",
+                        "type": "entity.active",
+                        "targetId": "line-lit",
+                        "value": false
+                      },
+                      {
+                        "id": "st-rowed-4",
+                        "type": "entity.active",
+                        "targetId": "line-rowed",
+                        "value": true
+                      },
+                      {
+                        "id": "st-rowed-5",
+                        "type": "entity.active",
+                        "targetId": "btn-climb-intro",
+                        "value": false
+                      },
+                      {
+                        "id": "st-rowed-6",
+                        "type": "entity.active",
+                        "targetId": "btn-walk-intro",
+                        "value": false
+                      },
+                      {
+                        "id": "st-rowed-7",
+                        "type": "entity.active",
+                        "targetId": "btn-light-stairs",
+                        "value": false
+                      },
+                      {
+                        "id": "st-rowed-8",
+                        "type": "entity.active",
+                        "targetId": "btn-back-stairs",
+                        "value": false
+                      },
+                      {
+                        "id": "st-rowed-9",
+                        "type": "entity.active",
+                        "targetId": "btn-row-shore",
+                        "value": false
+                      },
+                      {
+                        "id": "st-rowed-10",
+                        "type": "entity.active",
+                        "targetId": "btn-back-shore",
+                        "value": false
+                      },
+                      {
+                        "id": "st-rowed-11",
+                        "type": "entity.active",
+                        "targetId": "btn-again-lit",
+                        "value": false
+                      },
+                      {
+                        "id": "st-rowed-12",
+                        "type": "entity.active",
+                        "targetId": "btn-again-rowed",
+                        "value": true
+                      }
+                    ]
+                  }
+                ],
+                "initial": "st-intro",
+                "transitions": [
+                  {
+                    "id": "tr-intro-climb-0",
+                    "from": "st-intro",
+                    "to": "st-stairs",
+                    "trigger": {
+                      "type": "pointer.click",
+                      "sourceId": "btn-climb-intro",
+                      "event": ""
+                    }
+                  },
+                  {
+                    "id": "tr-intro-climb-1",
+                    "from": "st-intro",
+                    "to": "st-stairs",
+                    "trigger": {
+                      "type": "pointer.click",
+                      "sourceId": "btn-climb-intro-label",
+                      "event": ""
+                    }
+                  },
+                  {
+                    "id": "tr-intro-walk-0",
+                    "from": "st-intro",
+                    "to": "st-shore",
+                    "trigger": {
+                      "type": "pointer.click",
+                      "sourceId": "btn-walk-intro",
+                      "event": ""
+                    }
+                  },
+                  {
+                    "id": "tr-intro-walk-1",
+                    "from": "st-intro",
+                    "to": "st-shore",
+                    "trigger": {
+                      "type": "pointer.click",
+                      "sourceId": "btn-walk-intro-label",
+                      "event": ""
+                    }
+                  },
+                  {
+                    "id": "tr-stairs-light-0",
+                    "from": "st-stairs",
+                    "to": "st-lit",
+                    "trigger": {
+                      "type": "pointer.click",
+                      "sourceId": "btn-light-stairs",
+                      "event": ""
+                    }
+                  },
+                  {
+                    "id": "tr-stairs-light-1",
+                    "from": "st-stairs",
+                    "to": "st-lit",
+                    "trigger": {
+                      "type": "pointer.click",
+                      "sourceId": "btn-light-stairs-label",
+                      "event": ""
+                    }
+                  },
+                  {
+                    "id": "tr-stairs-back-0",
+                    "from": "st-stairs",
+                    "to": "st-intro",
+                    "trigger": {
+                      "type": "pointer.click",
+                      "sourceId": "btn-back-stairs",
+                      "event": ""
+                    }
+                  },
+                  {
+                    "id": "tr-stairs-back-1",
+                    "from": "st-stairs",
+                    "to": "st-intro",
+                    "trigger": {
+                      "type": "pointer.click",
+                      "sourceId": "btn-back-stairs-label",
+                      "event": ""
+                    }
+                  },
+                  {
+                    "id": "tr-shore-row-0",
+                    "from": "st-shore",
+                    "to": "st-rowed",
+                    "trigger": {
+                      "type": "pointer.click",
+                      "sourceId": "btn-row-shore",
+                      "event": ""
+                    }
+                  },
+                  {
+                    "id": "tr-shore-row-1",
+                    "from": "st-shore",
+                    "to": "st-rowed",
+                    "trigger": {
+                      "type": "pointer.click",
+                      "sourceId": "btn-row-shore-label",
+                      "event": ""
+                    }
+                  },
+                  {
+                    "id": "tr-shore-back-0",
+                    "from": "st-shore",
+                    "to": "st-intro",
+                    "trigger": {
+                      "type": "pointer.click",
+                      "sourceId": "btn-back-shore",
+                      "event": ""
+                    }
+                  },
+                  {
+                    "id": "tr-shore-back-1",
+                    "from": "st-shore",
+                    "to": "st-intro",
+                    "trigger": {
+                      "type": "pointer.click",
+                      "sourceId": "btn-back-shore-label",
+                      "event": ""
+                    }
+                  },
+                  {
+                    "id": "tr-lit-again-0",
+                    "from": "st-lit",
+                    "to": "st-intro",
+                    "trigger": {
+                      "type": "pointer.click",
+                      "sourceId": "btn-again-lit",
+                      "event": ""
+                    }
+                  },
+                  {
+                    "id": "tr-lit-again-1",
+                    "from": "st-lit",
+                    "to": "st-intro",
+                    "trigger": {
+                      "type": "pointer.click",
+                      "sourceId": "btn-again-lit-label",
+                      "event": ""
+                    }
+                  },
+                  {
+                    "id": "tr-rowed-again-0",
+                    "from": "st-rowed",
+                    "to": "st-intro",
+                    "trigger": {
+                      "type": "pointer.click",
+                      "sourceId": "btn-again-rowed",
+                      "event": ""
+                    }
+                  },
+                  {
+                    "id": "tr-rowed-again-1",
+                    "from": "st-rowed",
+                    "to": "st-intro",
+                    "trigger": {
+                      "type": "pointer.click",
+                      "sourceId": "btn-again-rowed-label",
+                      "event": ""
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "modules": {
+    "settings": "1.0.0",
+    "project": "1.0.0",
+    "scene": "1.0.0",
+    "assets": "1.0.0",
+    "pixi": "1.0.0",
+    "layout": "1.0.0",
+    "ai-comfy": "1.0.0",
+    "ai-lm": "1.0.0",
+    "assetpack": "1.0.0",
+    "audio": "1.0.0",
+    "howler": "1.0.0",
+    "tween": "1.0.0",
+    "gsap": "1.0.0",
+    "tween-pixi": "1.0.0",
+    "animation": "1.0.0",
+    "physics": "1.0.0",
+    "matter": "1.0.0",
+    "spine": "1.0.0",
+    "spine-audio": "1.0.0",
+    "interactions": "1.0.0",
+    "interaction-media": "1.0.0",
+    "scripts": "1.0.0",
+    "input": "1.0.0",
+    "build": "1.0.0",
+    "html-export": "1.0.0",
+    "prefabs": "1.0.0",
+    "project-ui": "1.0.0",
+    "recovery": "1.0.0",
+    "studio": "1.0.0"
+  },
+  "providers": {
+    "audio": "howler",
+    "tween": "gsap",
+    "physics": "matter",
+    "render": "pixi"
+  },
+  "extensions": {
+    "pixi.render": {
+      "version": 1,
+      "background": "#0b1d33"
+    },
+    "interactions.strings": {
+      "version": 1,
+      "defaultLanguage": "en",
+      "languages": [
+        {
+          "id": "en",
+          "name": "English"
+        },
+        {
+          "id": "tr",
+          "name": "Türkçe"
+        }
+      ],
+      "entries": [
+        {
+          "key": "story.intro",
+          "values": {
+            "en": "A storm rolls in. The old lighthouse has been dark for years, and a boat is still out at sea.",
+            "tr": "Bir fırtına yaklaşıyor. Eski deniz feneri yıllardır karanlık ve denizde hâlâ bir tekne var."
+          }
+        },
+        {
+          "key": "story.stairs",
+          "values": {
+            "en": "You climb 117 rusty steps. At the top, the great lamp waits under a sheet of dust.",
+            "tr": "Paslı 117 basamağı tırmanıyorsun. Tepede büyük lamba bir toz örtüsünün altında bekliyor."
+          }
+        },
+        {
+          "key": "story.shore",
+          "values": {
+            "en": "On the shore you find a rowing boat and an oil lantern that still has a little fuel.",
+            "tr": "Kıyıda bir kayık ve içinde hâlâ biraz yağ olan bir fener buluyorsun."
+          }
+        },
+        {
+          "key": "story.lit",
+          "values": {
+            "en": "The lamp roars to life. Its beam sweeps the waves and the boat turns safely toward the harbour.",
+            "tr": "Lamba canlanıyor. Işığı dalgaları tarıyor ve tekne güvenle limana yöneliyor."
+          }
+        },
+        {
+          "key": "story.rowed",
+          "values": {
+            "en": "You row into the dark, lantern held high. The sailors see you and follow you home.",
+            "tr": "Feneri yukarıda tutarak karanlığa kürek çekiyorsun. Denizciler seni görüp eve kadar izliyor."
+          }
+        },
+        {
+          "key": "story.choose",
+          "values": {
+            "en": "What do you do?",
+            "tr": "Ne yapıyorsun?"
+          }
+        },
+        {
+          "key": "story.climb",
+          "values": {
+            "en": "Climb the tower",
+            "tr": "Kuleye tırman"
+          }
+        },
+        {
+          "key": "story.walk",
+          "values": {
+            "en": "Walk the shore",
+            "tr": "Kıyıda yürü"
+          }
+        },
+        {
+          "key": "story.light",
+          "values": {
+            "en": "Light the lamp",
+            "tr": "Lambayı yak"
+          }
+        },
+        {
+          "key": "story.row",
+          "values": {
+            "en": "Row out to sea",
+            "tr": "Denize açıl"
+          }
+        },
+        {
+          "key": "story.back",
+          "values": {
+            "en": "Go back",
+            "tr": "Geri dön"
+          }
+        },
+        {
+          "key": "story.again",
+          "values": {
+            "en": "Begin again",
+            "tr": "Baştan başla"
+          }
+        },
+        {
+          "key": "story.title",
+          "values": {
+            "en": "The Lighthouse",
+            "tr": "Deniz Feneri"
+          }
+        },
+        {
+          "key": "story.end",
+          "values": {
+            "en": "The end",
+            "tr": "Son"
+          }
+        }
+      ]
+    }
+  }
+}

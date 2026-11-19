@@ -1,0 +1,23 @@
+{
+  "name": "@rewrite/physics-matter",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@rewrite/sdk": "workspace:*",
+    "@rewrite/physics": "workspace:*",
+    "matter-js": "0.20.0"
+  },
+  "devDependencies": {
+    "@types/matter-js": "0.20.2",
+    "@rewrite/scene": "workspace:*",
+    "@rewrite/runtime": "workspace:*",
+    "@rewrite/tween": "workspace:*",
+    "@rewrite/animation": "workspace:*",
+    "@rewrite/kernel": "workspace:*",
+    "@rewrite/project": "workspace:*"
+  }
+}
