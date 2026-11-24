@@ -2,6 +2,7 @@ import {app, dialog, ipcMain, shell, type BrowserWindow, type IpcMainInvokeEvent
 import {cp, mkdir, readFile, rm, stat, writeFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {basename, extname, join, resolve, sep} from 'node:path';
+import {recentProjectMetadata} from './project-discovery';
 
 /** A project the Hub lists: where it is, what it is called and when it was last opened here. */
 interface Recent {path: string; name: string; openedAt: number; pinned?: boolean}
@@ -33,12 +34,12 @@ export function registerHub(options: {window(): BrowserWindow | null; sender(eve
   options.sender(event);
   // Pinned projects first, each group newest first (the stored order).
   const ordered = [...(await load())].sort((a, b) => Number(Boolean(b.pinned)) - Number(Boolean(a.pinned)));
-  return Promise.all(ordered.map(async (r): Promise<HubProject> => {
-   const info = await stat(r.path).catch(() => null);
-   if (!info) return {...r, modifiedAt: null, exists: false, scenes: 0, thumbnail: null};
-   const meta = info.size <= 10 * 1024 * 1024 ? readable(await readFile(r.path, 'utf8').catch(() => '')) : {name: '', scenes: 0};
-   return {...r, name: meta.name || r.name, modifiedAt: info.mtimeMs, exists: true, scenes: meta.scenes, thumbnail: await png(thumbFor(r.path))};
+  const rows = await Promise.all(ordered.map(async (r): Promise<HubProject|null> => {
+   const meta = await recentProjectMetadata(r.path);
+   if (!meta.visible) return null;
+   return {...r, name: meta.name || r.name, modifiedAt: meta.modifiedAt, exists: meta.exists, scenes: meta.scenes, thumbnail: meta.exists ? await png(thumbFor(r.path)) : null};
   }));
+  return rows.filter(row=>row!==null);
  });
  ipcMain.handle('hub:open', (event, candidate: unknown) => options.task(async () => { options.sender(event); const r = await listed(candidate); if (!await options.confirmDiscard()) return null; return options.stage(r.path); }));
  ipcMain.handle('hub:remove', async (event, candidate: unknown) => { options.sender(event); const r = await listed(candidate); recents = (await load()).filter(x => x !== r); await persist(); await rm(thumbFor(r.path), {force: true}); });

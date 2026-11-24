@@ -60,7 +60,7 @@ if(primary)app.whenReady().then(async () => {
  const stageProject=async(candidate:string)=>{const text=await readFile(candidate,'utf8');if(Buffer.byteLength(text)>10*1024*1024)throw Error('Project exceeds 10 MB');const warnings=await assets?.stageOpen(candidate,JSON.parse(text))??[];lastOpened=candidate;lastOpenedText=text;return {text,path:candidate,warnings};};
  const hub=registerHub({window:()=>window,sender,task,confirmDiscard,stage:stageProject,current:()=>path,resolveFolder:candidate=>automationScope.resolve(candidate),examplesDir:app.isPackaged?join(process.resourcesPath,'examples'):join(here,'../../../../examples'),showAtStartup:!app.commandLine.hasSwitch('no-hub')});
  ipcMain.handle('recovery:bootstrap',(event,nonce:unknown)=>task(async()=>{sender(event);return recovery!.bootstrap(nonce);}));
- ipcMain.handle('recovery:list',event=>{sender(event);return store.list();});
+ ipcMain.handle('recovery:list',event=>{sender(event);return recovery!.list();});
  ipcMain.handle('recovery:checkpoint',(event,text:unknown,scope:unknown)=>{sender(event);return recovery!.checkpoint(text,scope);});
  ipcMain.handle('recovery:prepare',(event,id:unknown)=>task(async()=>{sender(event);return recovery!.prepare(id);}));
  ipcMain.handle('recovery:accept',(event,ticket:unknown)=>task(async()=>{sender(event);return recovery!.accept(ticket);}));

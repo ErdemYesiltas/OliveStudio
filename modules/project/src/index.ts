@@ -16,8 +16,7 @@ const emptyShader3DLibrary=z.object({version:z.literal(1),items:z.tuple([])}).st
 const is3DType=(value:unknown)=>typeof value==='string'&&(value.startsWith('scene3d.')||value.startsWith('pixi3d.'));
 
 /** A saved 2D project may carry every installed editor module's lock. Inspect its content before dropping those locks. */
-export function assert2DProject(project:Project):void{
- const unsupported=()=>new Error('This project contains 3D content. Open it in the full OliveStudio editor.');
+export function has3DContent(project:Project):boolean{
  const contains3D=(value:Json|undefined)=>{
   const pending=[value];
   while(pending.length){
@@ -33,10 +32,13 @@ export function assert2DProject(project:Project):void{
  };
  for(const scene of project.scenes)for(const entity of scene.entities){
   if(is3DType(entity.spatial)||entity.components.some(component=>is3DType(component.type)
-   ||(component.type==='prefabs.instance'&&contains3D(component.data))))throw unsupported();
+   ||(component.type==='prefabs.instance'&&contains3D(component.data))))return true;
  }
- if(contains3D(project.extensions['prefabs.registry'])||contains3D(project.extensions['assets.registry']))throw unsupported();
- if(shader3DSection in project.extensions&&!emptyShader3DLibrary.safeParse(project.extensions[shader3DSection]).success)throw unsupported();
+ return contains3D(project.extensions['prefabs.registry'])||contains3D(project.extensions['assets.registry'])
+  ||(shader3DSection in project.extensions&&!emptyShader3DLibrary.safeParse(project.extensions[shader3DSection]).success);
+}
+export function assert2DProject(project:Project):void{
+ if(has3DContent(project))throw Error('This project contains 3D content. Open it in the full OliveStudio editor.');
 }
 export interface SceneReference {targetSceneId:string|null;sceneId?:string;label:string}
 export interface ReferenceScope {sceneId?:string;name:string;entities:readonly {name:string;components:readonly {type:string;version:number;data:Json}[]}[]}

@@ -1,3 +1,4 @@
+import {projectMetadata,recentProjectMetadata} from './project-discovery';
 import {RecoveryStore,textHash} from '@rewrite/recovery/node';
 import {readFile} from 'node:fs/promises';
 import {randomUUID} from 'node:crypto';
@@ -9,7 +10,14 @@ export class NativeRecovery {
  private savedHash:string|null=null;
  constructor(readonly store:RecoveryStore,private bridge:{assets():NativeAssets|null;path():string|null;setPath(value:string|null):void;dirty():boolean;resetDirty():void;confirm():Promise<boolean>;busy():boolean}){}
  async wait(){await this.checkpointWork?.catch(()=>{});}
- async bootstrap(nonce:unknown){if(typeof nonce!=='string'||nonce.length>100)throw Error('Invalid renderer boot');if(this.boot&&this.boot!==nonce){await this.wait();if(this.bridge.dirty()||this.interrupted)await this.store.detach();else await this.store.clear();await this.rejectPending();await this.bridge.assets()?.reset();this.bridge.setPath(null);this.savedHash=null;this.bridge.resetDirty();}this.boot=nonce;this.interrupted=false;return this.store.list();}
+ async bootstrap(nonce:unknown){if(typeof nonce!=='string'||nonce.length>100)throw Error('Invalid renderer boot');if(this.boot&&this.boot!==nonce){await this.wait();if(this.bridge.dirty()||this.interrupted)await this.store.detach();else await this.store.clear();await this.rejectPending();await this.bridge.assets()?.reset();this.bridge.setPath(null);this.savedHash=null;this.bridge.resetDirty();}this.boot=nonce;this.interrupted=false;return this.list();}
+ async list(){
+  const listing=await this.store.list(text=>projectMetadata(text).visible);
+  if(!listing.recent)return listing;
+  const path=await this.store.recentPath();
+  if(path&&!(await recentProjectMetadata(path)).visible)return {...listing,recent:null};
+  return listing;
+ }
  crash(){this.interrupted=true;}
  async checkpoint(text:unknown,scope:unknown){const assets=this.bridge.assets();if(!assets||this.bridge.busy()||this.checkpointWork)return {kind:'busy' as const};if(typeof text!=='string'||Buffer.byteLength(text)>10*1024*1024||scope!==assets.info().sessionId)throw Error('Stale recovery request');if(!this.bridge.dirty())return {kind:'busy' as const};const parsed=JSON.parse(text);if(!parsed||typeof parsed.name!=='string'||parsed.formatVersion!==1||!Array.isArray(parsed.scenes))throw Error('Invalid project');
   const work=this.store.checkpoint(text,{name:parsed.name,sourcePath:this.bridge.path(),savedHash:this.savedHash},(path,project)=>assets.persist(path,project));this.checkpointWork=work;try{return await work;}finally{if(this.checkpointWork===work)this.checkpointWork=null;}
