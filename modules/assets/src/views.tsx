@@ -22,7 +22,7 @@ export interface AssetUiBridge {
  details?(asset:AssetRecord):ReactNode;
  rebuild():Promise<void>;
 }
-const KINDS:readonly AssetKind[]=['image','audio','font','spine','model'];
+const KINDS:readonly AssetKind[]=['image','audio','font','spine'];
 type Ui={view:LibraryView;text:string;tags:string[];kinds:AssetKind[];usage:''|'used'|'unused';sort:NonNullable<LibraryQuery['sort']>;selected:string[];preview:string|null;confirm:string[]|null;renaming:string|null;mode:'grid'|'list'};
 
 /**

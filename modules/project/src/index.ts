@@ -10,6 +10,34 @@ export const defaultStage={width:960,height:540} as const;
 export function stageSize(project:{stage?:{width:number;height:number}}):{width:number;height:number}{return project.stage??defaultStage;}
 export const ProjectSchema=z.object({formatVersion:z.literal(1),name:z.string().trim().min(1).max(100),entrySceneId:z.string().min(1),scenes:z.array(SceneSchema).min(1).max(100),modules:z.record(z.string(),z.string()),providers:z.record(z.string(),z.string()),extensions:z.record(z.string(),z.json()).default({}),stage:StageSchema.optional()}).strict();
 export type Project=z.infer<typeof ProjectSchema>;
+const legacy3DModules=['scene3d','pixi3d-editor','pixi3d-lab'] as const;
+const shader3DSection='pixi3d.shaders';
+const emptyShader3DLibrary=z.object({version:z.literal(1),items:z.tuple([])}).strict();
+const is3DType=(value:unknown)=>typeof value==='string'&&(value.startsWith('scene3d.')||value.startsWith('pixi3d.'));
+
+/** A saved 2D project may carry every installed editor module's lock. Inspect its content before dropping those locks. */
+export function assert2DProject(project:Project):void{
+ const unsupported=()=>new Error('This project contains 3D content. Open it in the full OliveStudio editor.');
+ const contains3D=(value:Json|undefined)=>{
+  const pending=[value];
+  while(pending.length){
+   const current=pending.pop();
+   if(!current||typeof current!=='object')continue;
+   if(Array.isArray(current)){for(const child of current)pending.push(child);}
+   else{
+    if(is3DType(current.type)||is3DType(current.spatial))return true;
+    for(const child of Object.values(current))pending.push(child);
+   }
+  }
+  return false;
+ };
+ for(const scene of project.scenes)for(const entity of scene.entities){
+  if(is3DType(entity.spatial)||entity.components.some(component=>is3DType(component.type)
+   ||(component.type==='prefabs.instance'&&contains3D(component.data))))throw unsupported();
+ }
+ if(contains3D(project.extensions['prefabs.registry'])||contains3D(project.extensions['assets.registry']))throw unsupported();
+ if(shader3DSection in project.extensions&&!emptyShader3DLibrary.safeParse(project.extensions[shader3DSection]).success)throw unsupported();
+}
 export interface SceneReference {targetSceneId:string|null;sceneId?:string;label:string}
 export interface ReferenceScope {sceneId?:string;name:string;entities:readonly {name:string;components:readonly {type:string;version:number;data:Json}[]}[]}
 export function sceneReferencesIn(scope:ReferenceScope,definitions:ReadonlyMap<string,ComponentDefinition>):SceneReference[]{return scope.entities.flatMap(e=>e.components.flatMap((component):SceneReference[]=>{const def=definitions.get(component.type),label=`${scope.name} / ${e.name} · ${component.type}`;if(!def||def.version!==component.version)return[{targetSceneId:null,sceneId:scope.sceneId,label}];return (def.sceneReferences?.(component.data)??[]).filter(id=>id!=='').map(targetSceneId=>({targetSceneId,sceneId:scope.sceneId,label}));}));}
@@ -18,6 +46,9 @@ export const projectSections=slot<ProjectSection>('project.sections');
 export function newProject(scene=blankScene()):Project{return{formatVersion:1,name:scene.name,entrySceneId:scene.id,scenes:[scene],modules:{},providers:{render:'pixi'},extensions:{}};}
 export function parseProject(input:unknown,definitions:ReadonlyMap<string,ComponentDefinition>,sections:readonly ProjectSection[]=[]):Project{
  const p=ProjectSchema.parse(input);
+ assert2DProject(p);
+ for(const id of legacy3DModules)delete p.modules[id];
+ delete p.extensions[shader3DSection];
  if(new Set(p.scenes.map(s=>s.id)).size!==p.scenes.length)throw Error('Duplicate scene ID');
  if(!p.scenes.some(s=>s.id===p.entrySceneId))throw Error('Entry scene is missing');
  for(const scene of p.scenes)parseScene(scene,definitions);

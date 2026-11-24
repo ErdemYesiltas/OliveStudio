@@ -43,8 +43,6 @@
     "@rewrite/behavior": "workspace:*",
     "@rewrite/multiplayer": "workspace:*",
     "@rewrite/production-tools": "workspace:*",
-    "@rewrite/particles": "workspace:*",
-    "@rewrite/render-pixi3d": "workspace:*",
-    "@rewrite/scene3d": "workspace:*"
+    "@rewrite/particles": "workspace:*"
   }
 }

@@ -21,8 +21,8 @@ it('only sprite-only textures of a sane size are atlas candidates', () => {
  const tex = (id: string, size = 64) => ({id, type: 'pixi.texture', metadata: {width: size, height: size}});
  const got = atlasCandidates([scene([['pixi.sprite', 'a'], ['pixi.sprite', 'b'], ['pixi.tilingSprite', 'b'], ['pixi.sprite', 'big']])], [tex('a'), tex('b'), tex('big', 2048), tex('unused')]);
  expect(got.map(g => g.id)).toEqual(['a']);
- const lut = {entities: [{components: [{type: 'pixi.sprite', data: {assetId: 'lut'}}, {type: 'pixi.sprite', data: {assetId: 'a'}}, {type: 'pixi3d.viewport', data: {lutAssetId: 'lut'}}]}]};
- expect(atlasCandidates([lut], [tex('lut', 256), tex('a')]).map(g => g.id)).toEqual(['a']);
+ const shader = {entities: [{components: [{type: 'pixi.sprite', data: {assetId: 'source'}}, {type: 'pixi.sprite', data: {assetId: 'a'}}, {type: 'pixi.shader', data: {sourceTexture: 'source'}}]}]};
+ expect(atlasCandidates([shader], [tex('source', 256), tex('a')]).map(g => g.id)).toEqual(['a']);
 });
 
 it('smart guides snap the nearest edge or centre within the threshold', () => {

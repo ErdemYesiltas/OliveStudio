@@ -83,10 +83,6 @@
       "requires": [
         "input"
       ]
-    },
-    "pixi3d": {
-      "id": "pixi3d",
-      "entry": "modules/player/src/plugins/pixi3d.ts"
     }
   }
 }

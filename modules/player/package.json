@@ -39,8 +39,6 @@
     "@rewrite/behavior-xstate": "workspace:*",
     "@rewrite/multiplayer": "workspace:*",
     "@rewrite/multiplayer-colyseus": "workspace:*",
-    "@rewrite/production-tools": "workspace:*",
-    "@rewrite/render-pixi3d": "workspace:*",
-    "@rewrite/scene3d": "workspace:*"
+    "@rewrite/production-tools": "workspace:*"
   }
 }

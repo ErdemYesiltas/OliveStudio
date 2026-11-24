@@ -1,10 +1,6 @@
 import {newQuickJSWASMModuleFromVariant, shouldInterruptAfterDeadline, type QuickJSContext, type QuickJSHandle, type QuickJSRuntime, type QuickJSWASMModule} from 'quickjs-emscripten-core';
 import type {RuntimeSystem} from '@rewrite/sdk';
 import {transform, type Entity} from '@rewrite/scene';
-import {transform3dType, world3D, decompose3D, reparent3D, type Transform3D} from '@rewrite/scene3d';
-import {lookRotation} from '@rewrite/scene3d/look';
-import {quatFromEuler, eulerFromQuat} from '@rewrite/tween/quaternion';
-import {quat} from 'gl-matrix';
 import {isActive, typeOfGlobal, type ActionContext, type GlobalValue, type InteractionEvent} from '@rewrite/interactions';
 // The RxJS UMD bundle runs inside the sandbox (outside the package's exports map, so by path).
 import rxjsSource from '../node_modules/rxjs/dist/bundles/rxjs.umd.min.js?raw';
@@ -77,54 +73,8 @@ export interface ScriptHost extends Pick<ActionContext, 'setActive' | 'changeSce
  extensions?: readonly ScriptExtension[];
  /** Interaction events raised from inside the sandbox by providers (e.g. a state machine entering a state). */
  emit?(event: InteractionEvent): void;
- /** The 3D views, when the scene has any: picking under a world-pixel point and Model 3D load states. */
- space3d?: Script3D;
 }
-/** A 3D pick for scripts: the owning object, world point, and normal and UV on triangle meshes (null on simple shapes). */
-export interface ScriptHit3D {entityId: string; point: {x: number; y: number; z: number}; normal: {x: number; y: number; z: number} | null; uv: {u: number; v: number} | null; distance: number}
-/** What scripts can ask the 3D views (the 3D projection implements it; x and y in world pixels like game.pointer). */
-export interface Script3D {
- raycast(x: number, y: number): ScriptHit3D | null;
- model(entityId: string): {state: 'unloaded' | 'loading' | 'ready' | 'error'; error?: string};
- /** Shared model resources: files cached, objects using them, ready ones and unloads still waiting. */
- stats(): {resources: number; refs: number; loaded: number; pendingUnloads: number} | null;
- /** Mesh 3D: a script-made shape (validated here), which object shows it ('' = its stand-in) and morph weights. */
- defineGeometry?(id: string, data: ScriptGeometryData): void;
- setMeshGeometry?(entityId: string, id: string): void;
- setMorph?(entityId: string, weights: readonly number[]): void;
- /** Per-frame bulk data (copied by the host before returning): a script-driven Particles 3D, a Batch 3D's shapes and items. */
- writeParticles?(entityId: string, data: Float32Array, count: number): void;
- setBatchGeometries?(entityId: string, ids: readonly string[]): void;
- writeBatch?(entityId: string, data: Float32Array, count: number): void;
-}
-/** Vertex data a script handed over, checked and copied out of the sandbox (the shape `render-pixi3d/mesh3d` builds from). */
-export interface ScriptGeometryData {
- positions: Float32Array; normals: Float32Array; uvs?: Float32Array; colors?: Float32Array; colors1?: Float32Array; indices?: Uint32Array;
- morphTargets?: {positions: Float32Array; normals?: Float32Array}[];
- format: {positions: 'float32' | 'snorm16'; normals: 'float32' | 'snorm8'; colors: 'float32' | 'unorm8'};
- bytes: number;
-}
-/** What one play session may hand the host as geometry (the sandbox's own memory cap does not cover these copies). */
-export const geometryLimits = {vertices: 262144, indices: 3 * 1048576, geometries: 256, bytes: 128 * 1024 * 1024, morphTargets: 8};
-/** Smooth normals from triangles (indexed or not): each vertex gets the area-weighted sum of its faces' normals. */
-export function smoothNormals(p: Float32Array, indices?: Uint32Array): Float32Array {
- const n = new Float32Array(p.length), count = indices ? indices.length : p.length / 3;
- for (let t = 0; t + 2 < count; t += 3) {
-  const a = indices ? indices[t] : t, b = indices ? indices[t + 1] : t + 1, c = indices ? indices[t + 2] : t + 2;
-  const ux = p[b * 3] - p[a * 3], uy = p[b * 3 + 1] - p[a * 3 + 1], uz = p[b * 3 + 2] - p[a * 3 + 2], vx = p[c * 3] - p[a * 3], vy = p[c * 3 + 1] - p[a * 3 + 1], vz = p[c * 3 + 2] - p[a * 3 + 2];
-  const fx = uy * vz - uz * vy, fy = uz * vx - ux * vz, fz = ux * vy - uy * vx;
-  for (const v of [a, b, c]) { n[v * 3] += fx; n[v * 3 + 1] += fy; n[v * 3 + 2] += fz; }
- }
- for (let i = 0; i < n.length; i += 3) { const l = Math.hypot(n[i], n[i + 1], n[i + 2]); if (l > 1e-12) { n[i] /= l; n[i + 1] /= l; n[i + 2] /= l; } else n[i + 1] = 1; }
- return n;
-}
-/**
- * A library that runs inside the script sandbox for another module (a state-machine provider, for instance). Objects
- * with a `componentType` component — data shaped like the Script component (`scriptId`, `params`, `refs`) — get an
- * instance of the provider built from that script's exports instead of hook calls. `sources` run after the game API
- * and must call `__kind(componentType, api => handlers)`; handlers may implement attach, start, frame, event, swap,
- * listens and call (host requests through {@link ScriptSession.provider}). The scripts module knows no provider.
- */
+
 export interface ScriptExtension {
  id: string;
  componentType: string;
@@ -219,9 +169,7 @@ class GameObject {
   }
   get x() { return __h.get(this.id, 'x'); } set x(v) { __h.set(this.id, 'x', __num(v)); }
   get y() { return __h.get(this.id, 'y'); } set y(v) { __h.set(this.id, 'y', __num(v)); }
-  /** 2D: degrees. 3D: Euler degrees {x, y, z} (XYZ order, like the Inspector); change one axis or assign all three. */
-  get rotation() { return __h.is3(this.id) ? __euler(this) : __h.get(this.id, 'rotation'); }
-  set rotation(v) { if (__h.is3(this.id)) __setEuler(this, {x: __num(v.x), y: __num(v.y), z: __num(v.z)}); else __h.set(this.id, 'rotation', __num(v)); }
+  get rotation() { return __h.get(this.id, 'rotation'); } set rotation(v) { __h.set(this.id, 'rotation', __num(v)); }
   get scaleX() { return __h.get(this.id, 'scaleX'); } set scaleX(v) { __h.set(this.id, 'scaleX', __num(v)); }
   get skewX() { return __h.get(this.id, 'skewX'); } set skewX(v) { __h.set(this.id, 'skewX', __num(v)); }
   get skewY() { return __h.get(this.id, 'skewY'); } set skewY(v) { __h.set(this.id, 'skewY', __num(v)); }
@@ -233,8 +181,6 @@ class GameObject {
   /** Removes this object and its children from the game (scripts on them stop). */
   destroy() { __h.destroy(this.id); }
   get parent() { return __object(__h.parent(this.id)); }
-  /** 3D: move under another 3D object of the same view, keeping where it is in the world; null puts it back at the view's top level. */
-  set parent(v) { __h.reparent(this.id, v == null ? '' : String(v.id)); }
   get children() { return JSON.parse(__h.children(this.id)).map(__object); }
   /** This object's animation player as an RxJS-friendly timeline handle. */
   timeline(clip) {
@@ -263,78 +209,10 @@ class GameObject {
       ended$: __on('soundEnd', self),
     });
   }
-  /** Whether this object lives in a 3D view (position, rotation, scale and lookAt are then 3D). */
-  get is3D() { return __h.is3(this.id); }
-  /** 3D: local position in world units; change x, y or z, or assign {x, y, z}. */
-  get position() { return __vec3(this, ['x', 'y', 'z']); } set position(v) { __h.set3(this.id, JSON.stringify({x: __num(v.x), y: __num(v.y), z: __num(v.z)})); }
-  /** 3D: local scale per axis. */
-  get scale() { return __vec3(this, ['scaleX', 'scaleY', 'scaleZ']); } set scale(v) { const n = typeof v === 'number' ? {x: v, y: v, z: v} : v; __h.set3(this.id, JSON.stringify({scaleX: __num(n.x), scaleY: __num(n.y), scaleZ: __num(n.z)})); }
-  /** 3D: local rotation as a quaternion {x, y, z, w} (normalized when written). */
-  get quaternion() { const t = JSON.parse(__h.get3(this.id)); return {x: t.qx, y: t.qy, z: t.qz, w: t.qw}; } set quaternion(q) { __h.set3(this.id, JSON.stringify({qx: __num(q.x), qy: __num(q.y), qz: __num(q.z), qw: __num(q.w)})); }
-  /** 3D: where the object is in the view's world, after its parents (read only). */
-  get worldPosition() { return JSON.parse(__h.world3(this.id)); }
-  /** 3D: turns +Z (or axis '-Z') toward another object or a world point {x, y, z}; yawOnly keeps it upright. False when there is no direction. */
-  lookAt(target, options) { const o = options || {}, at = target instanceof GameObject ? {target: target.id} : {x: __num(target.x), y: __num(target.y), z: __num(target.z)}; return __h.look3(this.id, JSON.stringify(Object.assign(at, {yawOnly: Boolean(o.yawOnly), axis: o.axis === '-Z' ? '-Z' : '+Z'}))); }
-  /** 3D: this object's Model 3D: state, unload() (frees its GPU resources, the object stays) and load() (a promise). */
-  get model() {
-    const id = this.id, state = () => JSON.parse(__h.model3(id, 'state'));
-    return Object.freeze({
-      get state() { return state().state; }, get error() { return state().error || null; },
-      unload() { __h.model3(id, 'unload'); },
-      load() { __h.model3(id, 'load'); return new Promise((resolve, reject) => __loads.push({id, resolve, reject})); },
-    });
-  }
-  /** 3D: this object's Mesh 3D: geometry (from game.geometry, or null for the stand-in) and morph weights (0–1 per target). */
-  get mesh() {
-    const id = this.id;
-    return Object.freeze({
-      get geometry() { const g = __h.mesh(id, 'get', ''); return g ? __geometries.get(g) || null : null; },
-      set geometry(ref) { __h.mesh(id, 'set', ref == null ? '' : String(ref.id)); },
-      get morph() { return JSON.parse(__h.mesh(id, 'weights', '')); },
-      set morph(w) { __h.mesh(id, 'morph', JSON.stringify(Array.from(w || [], __num))); },
-    });
-  }
-  /** 3D: a Particles 3D driven by this script: write(numbers, count) with x, y, z, size, r, g, b, alpha per particle (colours 0–1); pool is its Count. */
-  get particles() { const id = this.id; return Object.freeze({ write(data, count) { const a = __floats(data); __h.pwrite(JSON.stringify([id, count === undefined ? Math.floor(a.length / 8) : __num(count)]), __bufferOf(a)); }, get count() { return __h.pinfo(id); } }); }
-  /** 3D: a Batch 3D: geometries (the shapes items pick by index) and write(numbers, count) with shape, x, y, z, qx, qy, qz, qw, scale, r, g, b per item. */
-  get batch() { const id = this.id; return Object.freeze({ set geometries(list) { __h.bgeoms(id, JSON.stringify(Array.from(list || [], g => g ? String(g.id) : ''))); }, write(data, count) { const a = __floats(data); __h.bwrite(JSON.stringify([id, count === undefined ? Math.floor(a.length / 12) : __num(count)]), __bufferOf(a)); }, get size() { return __h.binfo(id); } }); }
   play(kind) { __h.service(this.id, String(kind || ''), 'play'); }
   stop(kind) { __h.service(this.id, String(kind || ''), 'stop'); }
   toString() { return 'GameObject(' + this.name + ')'; }
 }
-// 3D vectors read and write the object's transform per axis. Euler angles are kept per object while nobody else
-// turned it, so rotation.y += dt keeps counting past 90° instead of flipping through another Euler solution.
-const __vec3 = (o, keys) => { const id = o.id, read = () => JSON.parse(__h.get3(id)), v = {};
-  ['x', 'y', 'z'].forEach((axis, i) => Object.defineProperty(v, axis, {enumerable: true, get: () => read()[keys[i]], set: n => { __h.set3(id, JSON.stringify({[keys[i]]: __num(n)})); }}));
-  v.set = (x, y, z) => { __h.set3(id, JSON.stringify({[keys[0]]: __num(x), [keys[1]]: __num(y === undefined ? x : y), [keys[2]]: __num(z === undefined ? x : z)})); return v; };
-  v.toString = () => { const t = read(); return '(' + t[keys[0]] + ', ' + t[keys[1]] + ', ' + t[keys[2]] + ')'; };
-  return Object.seal(v); };
-const __eulers = new Map();
-const __eulerValue = o => { const t = JSON.parse(__h.get3(o.id)), q = [t.qx, t.qy, t.qz, t.qw].join(','), kept = __eulers.get(o.id); if (kept && kept.q === q) return kept.e; const e = JSON.parse(__h.euler3(o.id)); __eulers.set(o.id, {q, e}); return e; };
-const __setEuler = (o, e) => { const q = __h.rot3(o.id, JSON.stringify(e)); __eulers.set(o.id, {q, e: {x: e.x, y: e.y, z: e.z}}); };
-const __euler = o => { const v = {};
-  ['x', 'y', 'z'].forEach(axis => Object.defineProperty(v, axis, {enumerable: true, get: () => __eulerValue(o)[axis], set: n => { const e = Object.assign({}, __eulerValue(o)); e[axis] = __num(n); __setEuler(o, e); }}));
-  v.set = (x, y, z) => { __setEuler(o, {x: __num(x), y: __num(y), z: __num(z)}); return v; };
-  v.toString = () => { const e = __eulerValue(o); return '(' + e.x + '°, ' + e.y + '°, ' + e.z + '°)'; };
-  return Object.seal(v); };
-// Model loads in flight: settled each frame once the 3D view reports the model ready or failed.
-let __loads = [];
-const __settleLoads = () => { if (!__loads.length) return; const waiting = []; for (const l of __loads) { let s; try { s = JSON.parse(__h.model3(l.id, 'state')); } catch (e) { l.reject(e); continue; } if (s.state === 'ready') l.resolve(__object(l.id)); else if (s.state === 'error') l.reject(new Error(s.error || 'The model did not load')); else if (s.state === 'unloaded' && !__h.model3(l.id, 'wanted')) l.reject(new Error('The model was unloaded again')); else waiting.push(l); } __loads = waiting; };
-// Geometry crosses the sandbox as ArrayBuffers (one tight copy each, so typed-array views with an offset are fine).
-const __geometries = new Map();
-// Per-frame writes send a Float32Array's own buffer when it covers it (no copy in the sandbox), else a tight copy.
-const __floats = v => v instanceof Float32Array ? v : Float32Array.from(v, __num);
-const __bufferOf = a => a.byteOffset === 0 && a.byteLength === a.buffer.byteLength ? a.buffer : a.slice().buffer;
-const __f32 = v => (v instanceof Float32Array ? v : Float32Array.from(v, __num)).slice().buffer;
-const __geometry = spec => {
-  const s = spec || {}, meta = {format: s.format || {}, attrs: [], indices: false, morphs: []}, buffers = [];
-  for (const name of ['positions', 'normals', 'uvs', 'colors', 'colors1']) if (s[name] != null) { meta.attrs.push(name); buffers.push(__f32(s[name])); }
-  if (s.indices != null) { meta.indices = true; buffers.push((s.indices instanceof Uint32Array ? s.indices : Uint32Array.from(s.indices, __num)).slice().buffer); }
-  for (const m of s.morphTargets || []) { meta.morphs.push(m.normals != null); buffers.push(__f32(m.positions)); if (m.normals != null) buffers.push(__f32(m.normals)); }
-  const info = JSON.parse(__h.geom(JSON.stringify(meta), ...buffers)), ref = Object.freeze({id: info.id, vertexCount: info.vertexCount, morphTargets: info.morphTargets, toString: () => 'Geometry(' + info.vertexCount + ' vertices)'});
-  __geometries.set(info.id, ref); return ref;
-};
-const __hit3 = h => h ? Object.freeze(Object.assign({}, h, {object: __object(h.entityId)})) : null;
 const __object = id => { if (!id) return null; let o = __shared.get(id); if (!o) { o = new GameObject(id); __shared.set(id, o); } return o; };
 const __text = v => { if (typeof v === 'string') return v; if (v instanceof GameObject) return String(v); try { return JSON.stringify(v); } catch (e) { return String(v); } };
 const __log = level => (...values) => __h.log(level, values.map(__text).join(' '));
@@ -408,14 +286,6 @@ globalThis.game = Object.freeze({
     get zoom() { return JSON.parse(__h.cam('view')).zoom; }, set zoom(v) { __h.cam('zoom', __num(v)); },
     get x() { return JSON.parse(__h.cam('view')).x; }, get y() { return JSON.parse(__h.cam('view')).y; }, get rotation() { return JSON.parse(__h.cam('view')).rotation; },
   }),
-  /** The closest 3D object under a world-pixel point (game.pointer.x/y): {object, point, normal, uv, distance} or null. */
-  raycast(x, y) { return __hit3(JSON.parse(__h.ray3(__num(x), __num(y)))); },
-  /** The 3D hit under the mouse or touch right now (null over empty space or outside 3D views). */
-  get pointer3d() { const p = JSON.parse(__h.pointer()); return __hit3(JSON.parse(__h.ray3(p.x, p.y))); },
-  /** A shape from arrays for Mesh 3D objects: positions (x, y, z per vertex) and optional normals (computed when missing), uvs, colors / colors1 (r, g, b, a 0–1), indices (triangles) and morphTargets [{positions, normals?}] as offsets; format packs storage. */
-  geometry(spec) { return __geometry(spec); },
-  /** Shared 3D model resources: {resources, refs, loaded, pendingUnloads} (null without 3D views). */
-  assets: Object.freeze({ stats() { return JSON.parse(__h.stats3()); } }),
   isDown(action) { return __h.isDown(String(action)); },
   changeScene(name) { __h.scene(String(name)); },
   addScene(name) { __h.additive('add', String(name)); },
@@ -506,7 +376,6 @@ const __streamError = where => error => __errors.push(where + ': ' + (error && e
 globalThis.__frame = dt => {
   __clock.now += dt;
   __runTimers(__streamError('Timer'));
-  __settleLoads();
   __startAll();
   try { __frame$.next({dt, time: __clock.now}); } catch (error) { __streamError('frame$')(error); }
   for (const i of __live()) __call(i, 'update', [dt]);
@@ -611,7 +480,6 @@ export class ScriptSession {
  /** Runs `update` hooks once per rendered frame (scripts start on their first update or event). */
  readonly system: RuntimeSystem = {id: 'scripts', update: dt => this.call(this.frame, [dt]), dispose: () => this.dispose(), spawned: ids => this.spawned(ids)};
  private pointerState = {x: 0, y: 0, down: false};
- private geometryCount = 0; private geometryBytes = 0; private meshes = new Map<string, string>(); private weights = new Map<string, number[]>();
  private readonly sessionKey = Math.random().toString(36).slice(2, 10);
  private pending: string[] = [];
  /** Scripts on spawned objects attach once the current call returns and start on their next update. */
@@ -728,8 +596,6 @@ export class ScriptSession {
   if (event.type === 'timer.done') { const owner = this.host.entities().find(e => e.components.some(c => c.id === event.sourceId)); if (owner) this.call(this.event, ['onTimer', owner.id, null, null]); return; }
   if (event.type === 'dialogue.event' || event.type === 'dialogue.end') { const name = this.host.dialogue?.name?.(event.sourceId) ?? event.sourceId; return this.call(this.event, ['onDialogue', '', event.type === 'dialogue.end' ? 'end' : event.event ?? '', name]); }
   if (event.type === 'navigation.arrived') return this.call(this.event, ['onArrive', event.sourceId, null, null]);
-  const pointer3d = ({'pixi3d.pointerEnter': 'onPointerEnter', 'pixi3d.pointerLeave': 'onPointerLeave', 'pixi3d.dragEnd': 'onDragEnd'} as Record<string, string>)[event.type];
-  if (pointer3d) return this.call(this.event, [pointer3d, event.sourceId, null, null]);
   if (event.type === 'physics.enter') return this.call(this.event, ['onCollision', event.sourceId, event.event || null, event.data ? JSON.stringify(event.data) : null]);
   if (event.type === 'physics.exit') return this.call(this.event, ['onCollisionExit', event.sourceId, event.event || null, null]);
   if (event.type === 'global.change') { const g = this.host.names.globals.find(x => x.id === event.sourceId); if (g && this.host.globals) this.call(this.event, ['onGlobal', '', g.name, JSON.stringify(this.host.globals.get(g.id))]); return; }
@@ -838,141 +704,6 @@ export class ScriptSession {
    const t = e.components.find(c => c.type === 'scene.transform2d');
    if (!t) throw Error(`${e.name} has no transform`);
    (t.data as Record<string, unknown>)[String(key)] = Number(v);
-  });
-  // 3D objects: transform reads and writes on the running scene's Transform 3D (the 3D view shows them next frame).
-  const t3 = (id: unknown) => { const e = this.entity(String(id)); if (!e) throw Error('This object no longer exists'); const c = e.components.find(c => c.type === transform3dType); if (!c) throw Error(`${e.name} is not a 3D object`); return {e, data: c.data as Transform3D}; };
-  const parents3 = (e: Entity) => { const out: Transform3D[] = []; for (let p = this.entity(e.parentId ?? ''); p; p = this.entity(p.parentId ?? '')) { const c = p.components.find(c => c.type === transform3dType); if (!c) break; out.unshift(c.data as Transform3D); } return out; };
-  const at3 = (e: Entity, data: Transform3D) => { const m = world3D(parents3(e), data); return {x: m[12], y: m[13], z: m[14]}; };
-  const writeQuat = (data: Transform3D, q: readonly number[]) => { const l = Math.hypot(q[0], q[1], q[2], q[3]); if (!(l > 1e-9)) throw TypeError('A quaternion needs a length'); data.qx = q[0] / l; data.qy = q[1] / l; data.qz = q[2] / l; data.qw = q[3] / l; };
-  fn('is3', id => Boolean(this.entity(String(id))?.components.some(c => c.type === transform3dType)));
-  fn('get3', id => JSON.stringify(t3(id).data));
-  fn('set3', (id, json) => {
-   const {data} = t3(id), patch = JSON.parse(String(json)) as Record<string, unknown>, next = {...data};
-   for (const [key, value] of Object.entries(patch)) {
-    if (!['x', 'y', 'z', 'qx', 'qy', 'qz', 'qw', 'scaleX', 'scaleY', 'scaleZ'].includes(key)) throw Error(`${key} cannot be changed`);
-    const n = Number(value); if (!Number.isFinite(n) || Math.abs(n) > 1e9) throw TypeError(`Expected a finite number for ${key}`);
-    if (key.startsWith('scale') && Math.abs(n) < 1e-8) throw RangeError('Scale cannot be 0');
-    (next as Record<string, number>)[key] = n;
-   }
-   if (['qx', 'qy', 'qz', 'qw'].some(k => k in patch)) writeQuat(next, [next.qx, next.qy, next.qz, next.qw]);
-   Object.assign(data, next);
-  });
-  fn('euler3', id => { const {data} = t3(id); return JSON.stringify(eulerFromQuat([data.qx, data.qy, data.qz, data.qw])); });
-  fn('rot3', (id, json) => { const {data} = t3(id), e = JSON.parse(String(json)) as {x: number; y: number; z: number}; writeQuat(data, quatFromEuler(Number(e.x), Number(e.y), Number(e.z))); return [data.qx, data.qy, data.qz, data.qw].join(','); });
-  fn('world3', id => { const {e, data} = t3(id); return JSON.stringify(at3(e, data)); });
-  fn('look3', (id, json) => {
-   const {e, data} = t3(id), o = JSON.parse(String(json)) as {target?: string; x?: number; y?: number; z?: number; yawOnly: boolean; axis: '+Z' | '-Z'};
-   const target = o.target !== undefined ? (() => { const t = t3(o.target); return at3(t.e, t.data); })() : {x: Number(o.x), y: Number(o.y), z: Number(o.z)}, from = at3(e, data);
-   const world = lookRotation({x: target.x - from.x, y: target.y - from.y, z: target.z - from.z}, {x: 0, y: 1, z: 0}, o.axis, o.yawOnly);
-   if (!world) return false;
-   // The turn is in world space; under rotated parents the local rotation is the parents' inverse times it.
-   const parents = parents3(e), parent = parents.length ? decompose3D(world3D(parents)) : undefined, local: quat = [...world];
-   // Plain arrays keep double precision (gl-matrix's create() would allocate Float32Array).
-   if (parent) quat.multiply(local, quat.invert([0, 0, 0, 1], [parent.qx, parent.qy, parent.qz, parent.qw]), world);
-   writeQuat(data, [local[0], local[1], local[2], local[3]]); return true;
-  });
-  // The view a 3D object is in: its nearest ancestor that is not 3D (the 3D View object).
-  const view3 = (e: Entity) => { for (let p = this.entity(e.parentId ?? ''), n = 0; p && n < 10000; p = this.entity(p.parentId ?? ''), n++) if (!p.components.some(c => c.type === transform3dType)) return p.id; return undefined; };
-  fn('reparent', (id, parentId) => {
-   const {e, data} = t3(id), view = view3(e), target = String(parentId) || view;
-   if (!view) throw Error(`${e.name} is not inside a 3D view`);
-   const next = this.entity(target ?? '');
-   if (!next) throw Error('The new parent no longer exists');
-   if (next.id !== view) {
-    if (!next.components.some(c => c.type === transform3dType) || view3(next) !== view) throw Error(`${next.name} is not a 3D object in the same view as ${e.name}`);
-    for (let p: Entity | undefined = next, n = 0; p && n < 10000; p = this.entity(p.parentId ?? ''), n++) if (p.id === e.id) throw Error(`${e.name} can't go under ${next.id === e.id ? 'itself' : 'its own child'}`);
-   }
-   if (e.parentId === next.id) return;
-   const chain = (start: Entity | undefined) => { const out: Transform3D[] = []; for (let p = start; p && p.id !== view; p = this.entity(p.parentId ?? '')) out.unshift(t3(p.id).data); return out; };
-   Object.assign(data, reparent3D(data, chain(this.entity(e.parentId ?? '')), next.id === view ? [] : chain(next)) as Transform3D);
-   e.parentId = next.id;
-  });
-  const space3d = () => { if (!this.host.space3d) throw Error('There is no 3D view in this scene'); return this.host.space3d; };
-  // Buffers from the sandbox: each handle becomes a view of a copy in the engine's heap, valid only during the call (it
-  // is freed after, and the heap may move on its next allocation). Bodies copy what they keep; one generic function for
-  // geometry (sliced) and per-frame writes (copied straight into the host's own arrays, no allocation per frame).
-  const raw = (name: string, body: (meta: string, buffers: Uint8Array[]) => unknown) => {
-   const handle = vm.newFunction(name, (...args) => {
-    try {
-     const meta = vm.getString(args[0]), lives = args.slice(1).map(h => vm.getArrayBuffer(h));
-     try { return value(body(meta, lives.map(l => l.value))); } finally { for (const l of lives) l.dispose(); }
-    } catch (error) { return {error: vm.newError(error instanceof Error ? error.message : String(error))}; }
-   });
-   vm.setProp(host, name, handle); handle.dispose();
-  };
-  raw('geom', (json, views) => {
-   const buffers = views.map(v => v.slice());
-   const s = space3d(); if (!s.defineGeometry) throw Error('Mesh 3D shapes are unavailable here');
-   const meta = JSON.parse(json) as {format?: Record<string, unknown>; attrs: string[]; indices: boolean; morphs: boolean[]};
-   let k = 0;
-   const floats = (what: string) => { const b = buffers[k++]; if (!b || b.byteLength % 4) throw Error(`geometry: ${what} must be a list of numbers`); const a = new Float32Array(b.buffer, b.byteOffset, b.byteLength / 4); for (let i = 0; i < a.length; i++) if (!Number.isFinite(a[i])) throw RangeError(`geometry: ${what} has a value that is not a finite number (index ${i})`); return a; };
-   const got: Record<string, Float32Array> = {}; for (const name of meta.attrs) got[name] = floats(name);
-   const positions = got.positions; if (!positions) throw Error('geometry: positions are required');
-   if (positions.length % 3 || !positions.length) throw Error('geometry: positions need x, y, z for each vertex');
-   const count = positions.length / 3; if (count > geometryLimits.vertices) throw RangeError(`geometry: at most ${geometryLimits.vertices} vertices (got ${count})`);
-   const per = (name: string, size: number) => { const a = got[name]; if (a && a.length !== count * size) throw Error(`geometry: ${name} need ${size} numbers per vertex (${count * size}, got ${a.length})`); return a; };
-   per('normals', 3); per('uvs', 2); per('colors', 4); per('colors1', 4);
-   let indices: Uint32Array | undefined;
-   if (meta.indices) { const b = buffers[k++]; if (!b || b.byteLength % 4) throw Error('geometry: indices must be whole numbers'); indices = new Uint32Array(b.buffer, b.byteOffset, b.byteLength / 4);
-    if (indices.length % 3 || indices.length > geometryLimits.indices) throw RangeError(`geometry: indices come in threes (triangles), at most ${geometryLimits.indices}`);
-    for (let i = 0; i < indices.length; i++) if (indices[i] >= count) throw RangeError(`geometry: index ${indices[i]} points past the last vertex (${count - 1})`); }
-   else if (count % 3) throw Error('geometry: without indices, every three vertices make a triangle');
-   if (meta.morphs.length > geometryLimits.morphTargets) throw RangeError(`geometry: at most ${geometryLimits.morphTargets} morph targets`);
-   const morphTargets = meta.morphs.map((hasNormals, i) => { const m = {positions: floats(`morphTargets[${i}].positions`), ...(hasNormals ? {normals: floats(`morphTargets[${i}].normals`)} : {})}; if (m.positions.length !== count * 3 || (m.normals && m.normals.length !== count * 3)) throw Error(`geometry: morphTargets[${i}] need x, y, z for each vertex`); return m; });
-   const pick = <T extends string>(key: string, options: readonly T[]) => { const v = meta.format?.[key] ?? options[0]; if (!options.includes(v as T)) throw Error(`geometry: format.${key} is ${options.join(' or ')}`); return v as T; };
-   const format = {positions: pick('positions', ['float32', 'snorm16'] as const), normals: pick('normals', ['float32', 'snorm8'] as const), colors: pick('colors', ['float32', 'unorm8'] as const)};
-   if (format.positions === 'snorm16' && positions.some(v => Math.abs(v) > 1)) throw RangeError('geometry: snorm16 positions must lie within −1…1 (scale the object instead)');
-   const data: ScriptGeometryData = {positions, normals: got.normals ?? smoothNormals(positions, indices), format, bytes: 0, ...(got.uvs ? {uvs: got.uvs} : {}), ...(got.colors ? {colors: got.colors} : {}), ...(got.colors1 ? {colors1: got.colors1} : {}), ...(indices ? {indices} : {}), ...(morphTargets.length ? {morphTargets} : {})};
-   data.bytes = buffers.reduce((n, b) => n + b.byteLength, 0) + (got.normals ? 0 : count * 12);
-   if (this.geometryCount >= geometryLimits.geometries) throw RangeError(`Too many geometries in one play session (${geometryLimits.geometries}); reuse a geometry for several objects`);
-   if (this.geometryBytes + data.bytes > geometryLimits.bytes) throw RangeError(`Geometries in this play session would pass ${Math.round(geometryLimits.bytes / 1048576)} MB`);
-   const id = `${this.sessionKey}-g${++this.geometryCount}`; this.geometryBytes += data.bytes;
-   s.defineGeometry(id, data);
-   return JSON.stringify({id, vertexCount: count, morphTargets: morphTargets.length});
-  });
-  const floatsOf = (view: Uint8Array, stride: number, count: number, what: string) => {
-   if (!Number.isInteger(count) || count < 0) throw RangeError(`${what}: count must be a whole number`);
-   const f = view.byteOffset % 4 ? new Float32Array(view.slice().buffer) : new Float32Array(view.buffer, view.byteOffset, view.byteLength >> 2);
-   if (f.length < count * stride) throw RangeError(`${what}: ${count} items need ${count * stride} numbers (${stride} each), got ${f.length}`);
-   for (let i = 0; i < count * stride; i++) if (!Number.isFinite(f[i])) throw RangeError(`${what}: value ${i} is not a finite number`);
-   return f.subarray(0, count * stride);
-  };
-  const bulkTarget = (id: unknown, type: string, label: string) => { const e = this.entity(String(id)); if (!e) throw Error('This object no longer exists'); const c = e.components.find(c => c.type === type); if (!c) throw Error(`${e.name} has no ${label}`); return {e, data: c.data as Record<string, unknown>}; };
-  raw('pwrite', (json, [view]) => {
-   const [id, count] = JSON.parse(json) as [string, number], {e, data} = bulkTarget(id, 'pixi3d.particles', 'Particles 3D'), s = space3d();
-   if (data.driver !== 'script') throw Error(`${e.name}: set Particles 3D's "Driven by" to A script first`);
-   if (count > Number(data.count)) throw RangeError(`${e.name}: ${count} particles, but its pool holds ${String(data.count)} (raise Count)`);
-   if (!s.writeParticles) throw Error('Script particles are unavailable here');
-   s.writeParticles(e.id, floatsOf(view, 8, count, `${e.name}.particles.write`), count);
-  });
-  fn('pinfo', id => Number(bulkTarget(id, 'pixi3d.particles', 'Particles 3D').data.count));
-  fn('bgeoms', (id, json) => { const {e} = bulkTarget(id, 'pixi3d.batch', 'Batch 3D'), s = space3d(); if (!s.setBatchGeometries) throw Error('Batch 3D is unavailable here'); s.setBatchGeometries(e.id, JSON.parse(String(json)) as string[]); });
-  fn('binfo', id => Number(bulkTarget(id, 'pixi3d.batch', 'Batch 3D').data.size));
-  raw('bwrite', (json, [view]) => {
-   const [id, count] = JSON.parse(json) as [string, number], {e, data} = bulkTarget(id, 'pixi3d.batch', 'Batch 3D'), s = space3d();
-   if (count > Number(data.size)) throw RangeError(`${e.name}: ${count} items, but it has ${String(data.size)} slots (raise Slots)`);
-   if (!s.writeBatch) throw Error('Batch 3D is unavailable here');
-   s.writeBatch(e.id, floatsOf(view, 12, count, `${e.name}.batch.write`), count);
-  });
-  fn('mesh', (id, op, arg) => {
-   const e = this.entity(String(id)); if (!e) throw Error('This object no longer exists');
-   if (!e.components.some(c => c.type === 'pixi3d.mesh')) throw Error(`${e.name} has no Mesh 3D`);
-   const s = space3d();
-   if (op === 'get') return this.meshes.get(e.id) ?? '';
-   if (op === 'weights') return JSON.stringify(this.weights.get(e.id) ?? []);
-   if (op === 'set') { if (!s.setMeshGeometry) throw Error('Mesh 3D shapes are unavailable here'); const g = String(arg); s.setMeshGeometry(e.id, g); if (g) this.meshes.set(e.id, g); else this.meshes.delete(e.id); return undefined; }
-   if (op === 'morph') { if (!s.setMorph) throw Error('Morph weights are unavailable here'); const w = JSON.parse(String(arg)) as number[]; if (w.length > geometryLimits.morphTargets || w.some(v => !Number.isFinite(v))) throw RangeError(`morph takes up to ${geometryLimits.morphTargets} finite numbers`); s.setMorph(e.id, w); this.weights.set(e.id, w); return undefined; }
-   throw Error(`Unknown mesh operation ${String(op)}`);
-  });
-  fn('ray3', (x, y) => JSON.stringify(space3d().raycast(Number(x), Number(y))));
-  fn('stats3', () => JSON.stringify(this.host.space3d?.stats() ?? null));
-  fn('model3', (id, op) => {
-   const e = this.entity(String(id)); if (!e) throw Error('This object no longer exists');
-   const c = e.components.find(c => c.type === 'pixi3d.modelRenderer'); if (!c) throw Error(`${e.name} has no Model 3D`);
-   const data = c.data as {loaded?: boolean};
-   if (op === 'load' || op === 'unload') { data.loaded = op === 'load'; return undefined; }
-   if (op === 'wanted') return data.loaded !== false;
-   return JSON.stringify(data.loaded === false ? {state: 'unloaded'} : this.host.space3d?.model(e.id) ?? {state: 'loading'});
   });
   fn('spawn', (name, x, y) => { if (!this.host.spawn) throw Error('Spawning is unavailable here'); return this.host.spawn(String(name), Number(x), Number(y)); });
   fn('destroy', id => { if (!this.host.destroy) throw Error('Destroying is unavailable here'); if (this.entity(String(id))) this.host.destroy(String(id)); });

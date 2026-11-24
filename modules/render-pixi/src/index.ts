@@ -388,22 +388,6 @@ export class SceneViewport {
   try{return await this.app.renderer.extract.base64({target:box,frame:new Rectangle(0,0,w,h),resolution:width/w,format:'png'});}
   finally{this.markers(true);box.removeChild(this.game);parent?.addChildAt(this.game,index);this.borrowed=false;bg.destroy();box.destroy();this.setRuntimeView(this.lastView);this.selection(this.selected);this.render();if(ticking)this.app.ticker.start();}
  }
- /** For scripts while the game runs: 3D picks under a world-pixel point (like game.pointer) and Model 3D states, across features. */
- scripts3d() {
-  const ports = () => this.features.flatMap(f => f.scripts3d ? [f.scripts3d] : []);
-  return {
-   raycast: (x: number, y: number) => { const g = this.content.toGlobal({x, y}); for (const p of ports()) { const hit = p.raycast(g); if (hit) return hit; } return null; },
-   model: (id: string) => { for (const p of ports()) { const m = p.model(id); if (m) return m; } return {state: 'loading' as const}; },
-   stats: () => ports()[0]?.stats() ?? null,
-   // Shapes go to every 3D feature (one projection in practice); which Mesh 3D shows one is its own business.
-   defineGeometry: (id: string, data: unknown) => { for (const p of ports()) p.defineGeometry?.(id, data); },
-   setMeshGeometry: (entityId: string, id: string) => { for (const p of ports()) p.setMeshGeometry?.(entityId, id); },
-   setMorph: (entityId: string, weights: readonly number[]) => { for (const p of ports()) p.setMorph?.(entityId, weights); },
-   writeParticles: (entityId: string, data: Float32Array, count: number) => { for (const p of ports()) p.writeParticles?.(entityId, data, count); },
-   setBatchGeometries: (entityId: string, ids: readonly string[]) => { for (const p of ports()) p.setBatchGeometries?.(entityId, ids); },
-   writeBatch: (entityId: string, data: Float32Array, count: number) => { for (const p of ports()) p.writeBatch?.(entityId, data, count); },
-  };
- }
  captureCamera() { return {zoom:this.zoom,pan:{...this.pan}}; }
  restoreCamera(camera:{zoom:number;pan:{x:number;y:number}}):void {this.zoom=camera.zoom;this.pan={...camera.pan};this.resize();}
  setTheme(background: string, accent: string): void { this.background = background; this.accent = accent; if (this.app.renderer) { this.app.renderer.background.color = background; this.selection(this.selected); } }

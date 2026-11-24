@@ -49,7 +49,7 @@ export async function renderAtlas(layout: AtlasLayout, images: ReadonlyMap<strin
 export function atlasCandidates(scenes: readonly {entities: readonly {components: readonly {type: string; data: unknown}[]}[]}[], assets: readonly {id: string; type: string; metadata: unknown}[], maxSide = 1024): AtlasInput[] {
  const users = new Map<string, Set<string>>();
  for (const scene of scenes) for (const e of scene.entities) for (const c of e.components) {
-  // Other image fields (a 3D view's LUT, a material's maps) read the whole file with its own UVs, so such a texture never joins an atlas page.
+  // Other image fields read the whole file with its own UVs, so such a texture never joins an atlas page.
   for (const [key, id] of Object.entries((c.data as Record<string, unknown> | null) ?? {})) {
    if (typeof id !== 'string' || !id || !(key === 'assetId' || /(AssetId|Texture)$/.test(key))) continue;
    users.set(id, (users.get(id) ?? new Set()).add(key === 'assetId' ? c.type : `${c.type}#${key}`));

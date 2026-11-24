@@ -24,7 +24,7 @@ export interface PlayerPluginContext{
  services:Map<string,unknown>;
  /** Pointer on the game in world pixels; a listener that returns true holds the press (e.g. dragging a body). Returns an unsubscribe. */
  pointer(listener:(phase:'down'|'move'|'up',x:number,y:number)=>boolean|void):()=>void;
- /** A world-pixel point (as pointers and scripts see it) on the canvas, for picking in 3D views. */
+ /** A world-pixel point (as pointers and scripts see it) on the canvas. */
  toGlobal(x:number,y:number):{x:number;y:number};entities():readonly Entity[];frame(id:string):VisualFrame;changed():void;
  emit(event:InteractionEvent):void;publish(event:{type:string;value:unknown}):void;report(message:string):void;
  /** The world point at the stage centre (where the game camera looks): the default ear for spatial audio. */

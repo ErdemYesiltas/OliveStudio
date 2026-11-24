@@ -23,7 +23,7 @@ it('strips editor-only prefab links and unused source assets from the shared run
 
 it('accepts the editor recovery module lock without adding a runtime plugin or private state',()=>{const project=newProject();project.modules.recovery='1.0.0';const plan=createStockRegistry().plan(project);expect(plan.runtimes).toEqual([]);expect(plan.project.modules).toEqual({});expect(plan.project.extensions).toEqual({'assets.registry':{version:1,items:[]}});});
 
-it('accepts specialist editor module locks without shipping editor tooling',()=>{const project=newProject();for(const id of ['profiler','debugger','soundlab','git','hub-files','pixi3d-lab'])project.modules[id]='1.0.0';const plan=createStockRegistry().plan(project);expect(plan.runtimes).toEqual([]);expect(plan.project.modules).toEqual({});expect(plan.contributions.some(c=>c.id==='editor-automation')).toBe(false);project.modules.unknown='1.0.0';expect(()=>createStockRegistry().plan(project)).toThrow('module unavailable');});
+it('accepts specialist editor module locks without shipping editor tooling',()=>{const project=newProject();for(const id of ['profiler','debugger','soundlab','git','hub-files'])project.modules[id]='1.0.0';const plan=createStockRegistry().plan(project);expect(plan.runtimes).toEqual([]);expect(plan.project.modules).toEqual({});expect(plan.contributions.some(c=>c.id==='editor-automation')).toBe(false);project.modules.unknown='1.0.0';expect(()=>createStockRegistry().plan(project)).toThrow('module unavailable');});
 
 it('ships XState (behavior + scripts runtimes) only for projects with Behavior components and preflights their scripts',()=>{
  const registry=createStockRegistry(),p=newProject();p.modules.behavior='1.0.0';
@@ -48,7 +48,7 @@ it('ships the Colyseus client only for enabled multiplayer with a Network Player
  expect(createStockRegistry().plan(newProject()).connect).toEqual([]);
 });
 
-it('rejects detached 3D spatial data without a view boundary',()=>{
+it('rejects 3D projects before export',()=>{
  const project=newProject();project.scenes[0].entities.push({id:'mesh',name:'Mesh',parentId:null,active:true,spatial:'scene3d.transform',components:[{id:'transform3d',type:'scene3d.transform',version:1,data:{x:0,y:0,z:0,qx:0,qy:0,qz:0,qw:1,scaleX:1,scaleY:1,scaleZ:1}}]});
- expect(()=>createStockRegistry().plan(project)).toThrow(/view boundary/);
+ expect(()=>createStockRegistry().plan(project)).toThrow(/contains 3D content/);
 });

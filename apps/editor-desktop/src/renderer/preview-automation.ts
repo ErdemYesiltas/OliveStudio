@@ -36,7 +36,7 @@ export const SequenceSchema = z.object({
 }).strict().superRefine((v, c) => { if (v.events.some(e => e.frame > v.frames)) c.addIssue({code: 'custom', message: 'Event frames must be within 0…frames'}); if (Math.ceil((v.frames + 1) / v.observe.every) * Math.max(1, v.observe.objectIds.length) > 20000) c.addIssue({code: 'custom', message: 'Too many observations: raise observe.every or watch fewer objects'}); });
 export type Sequence = z.infer<typeof SequenceSchema>;
 
-const transformOf = (e: PreviewEntity) => {const type=e.spatial??'scene.transform2d',d=e.components?.find(c=>c.type===type)?.data as Record<string,number>|undefined;if(!d)return null;const keys=type==='scene3d.transform'?['x','y','z','qx','qy','qz','qw','scaleX','scaleY','scaleZ']:type==='scene.transform2d'?['x','y','rotation','scaleX','scaleY']:Object.keys(d);return Object.fromEntries(keys.filter(k=>typeof d[k]==='number'&&Number.isFinite(d[k])).map(k=>[k,d[k]]));};
+const transformOf = (e: PreviewEntity) => {const type=e.spatial??'scene.transform2d',d=e.components?.find(c=>c.type===type)?.data as Record<string,number>|undefined;if(!d)return null;const keys=type==='scene.transform2d'?['x','y','rotation','scaleX','scaleY']:Object.keys(d);return Object.fromEntries(keys.filter(k=>typeof d[k]==='number'&&Number.isFinite(d[k])).map(k=>[k,d[k]]));};
 const round = (v: number) => Math.round(v * 1e4) / 1e4;
 function sample(p: PreviewPorts, ids: readonly string[], fields: readonly string[]) {
  const all = new Map(p.entities().map(e => [e.id, e]));

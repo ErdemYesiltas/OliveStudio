@@ -20,16 +20,13 @@ export function createHub(bridge: {text(key: string): string; report(error: unkn
  const t = bridge.text;
  return function Hub() {
   const open = useUi(s => s.hub), busy = useUi(s => s.busy), set = useUi(s => s.set);
-  const [view, setView] = useState<View>('projects'), [query, setQuery] = useState(''), [projects, setProjects] = useState<HubProject[] | null>(null), [examples, setExamples] = useState<HubExample[]>([]), [group, setGroup] = useState('all');
+  const [view, setView] = useState<View>('projects'), [query, setQuery] = useState(''), [projects, setProjects] = useState<HubProject[] | null>(null), [examples, setExamples] = useState<HubExample[]>([]);
   const refresh = () => { void window.platform.hub.list().then(setProjects, bridge.report); };
-  useEffect(() => { if (!open) return; setView('projects'); setQuery(''); setGroup('all'); refresh(); void window.platform.hub.examples().then(setExamples, bridge.report); }, [open]);
+  useEffect(() => { if (!open) return; setView('projects'); setQuery(''); refresh(); void window.platform.hub.examples().then(setExamples, bridge.report); }, [open]);
   const run = (work: () => Promise<boolean>) => { void work().then(done => { if (done) set({hub: false}); else refresh(); }, error => { bridge.report(error); refresh(); }); };
   const needle = query.trim().toLowerCase();
   const shown = useMemo(() => (projects ?? []).filter(p => !needle || p.name.toLowerCase().includes(needle) || p.path.toLowerCase().includes(needle)), [projects, needle]);
-  // Groups: everything, OliveStudio's own examples, then each PixiJS 3D category in catalogue order.
-  const groups = useMemo(() => ['all', 'olive', ...new Set(examples.flatMap(e => e.category ? [e.category] : []))], [examples]);
-  const shownExamples = useMemo(() => examples.filter(e => (group === 'all' || (group === 'olive' ? !e.category : e.category === group)) && (!needle || [e.title, e.description, ...e.tags].some(x => x.toLowerCase().includes(needle)))), [examples, needle, group]);
-  const groupName = (g: string) => g === 'all' ? t('hub.group.all') : g === 'olive' ? t('hub.group.olive') : t('hub.group.pixi3d').replace('{name}', g);
+  const shownExamples = useMemo(() => examples.filter(e => !needle || [e.title, e.description, ...e.tags].some(x => x.toLowerCase().includes(needle))), [examples, needle]);
   const nav = (key: View, icon: ReactNode) => <button className={styles.navItem} aria-current={view === key ? 'page' : undefined} onClick={() => { setView(key); setQuery(''); }}>{icon}<span>{t(`hub.${key}`)}</span></button>;
   return <Dialog.Root open={open} onOpenChange={value => { if (!value) set({hub: false}); }}><Dialog.Portal>
    <Dialog.Content className={styles.hub} data-testid="hub" aria-describedby={undefined}>
@@ -48,7 +45,6 @@ export function createHub(bridge: {text(key: string): string; report(error: unkn
       <Dialog.Close className={styles.close} aria-label={t('hub.close')}><X size={16}/></Dialog.Close>
      </header>
      <label className={styles.search}><Search size={15} aria-hidden="true"/><input type="search" aria-label={t(`hub.search.${view}`)} placeholder={t(`hub.search.${view}`)} value={query} onChange={e => setQuery(e.target.value)}/></label>
-     {view === 'examples' && groups.length > 2 && <div className={styles.groups} role="radiogroup" aria-label={t('hub.groups')}>{groups.map(g => <button key={g} role="radio" aria-checked={group === g} onClick={() => setGroup(g)}>{groupName(g)} <small>{g === 'all' ? examples.length : examples.filter(e => g === 'olive' ? !e.category : e.category === g).length}</small></button>)}</div>}
      {view === 'projects' ? <div className={styles.list} role="list" aria-label={t('hub.recent')} data-testid="hub-projects">
       {projects !== null && !projects.length && <div className={styles.empty}><p>{t('hub.empty')}</p><button onClick={() => setView('examples')}><LayoutGrid size={15}/>{t('hub.browseExamples')}</button></div>}
       {projects !== null && projects.length > 0 && !shown.length && <p className={styles.empty}>{t('hub.noMatch')}</p>}

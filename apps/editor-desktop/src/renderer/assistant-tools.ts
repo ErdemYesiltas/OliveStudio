@@ -92,7 +92,7 @@ export function createEditorTools(s: ToolServices): AgentTools & {execute(name:s
   add_object: a => {
    const wanted = String(a.item ?? ''), items = s.createItems(), item = items.find(i => i.id === wanted) ?? items.find(i => i.id.endsWith('.' + wanted) || i.value.name.toLowerCase() === wanted.toLowerCase());
    if (!item) throw Error(`Unknown item ${wanted}; use one of ${items.map(i => i.id).join(', ')}`);
-   if(item.value.command)throw Error('Use the module automation tool for this item: pixi3d-editor.create_view or pixi3d-editor.create_node');
+   if(item.value.command)throw Error('Use the module automation tool for this item');
    const stage = stageSize(s.project.document.current), e = makeEntity(typeof a.name === 'string' && a.name.trim() ? a.name.trim().slice(0, 100) : item.value.name, Number.isFinite(a.x) ? Number(a.x) : stage.width / 2, Number.isFinite(a.y) ? Number(a.y) : stage.height / 2);
    if (typeof a.parentId === 'string' && a.parentId) e.parentId = entity(a.parentId).id;
    const extra = values(a.fields);

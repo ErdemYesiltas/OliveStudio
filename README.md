@@ -19,9 +19,13 @@ scene/component authoring, assets/library, animation, prefabs, scripts, Preview,
 file operations require editor approval; additional folders are granted in Settings. Long operations expose jobs and
 cancellation. [Automation contract and verification](packages/editor-sdk/AUTOMATION.md).
 
-### Canvas Focus interface
+### Studio workspace
 
-The canvas stays central. **Tools** groups installed panels into Scene, Motion, Audio, Build and Automate, with search across every category. Use **⌘/Ctrl K** to find any panel, or the bottom Scene / Animate / Effects / Logic shortcuts. Library and Properties have quick access at the lower left; selecting an object reveals Properties automatically. Pin panels when needed; saved layouts and role presets remain available. Viewport options live under **View** at the lower right. Graphite uses an olive accent; Light, Warm and custom themes remain supported.
+The default workspace has Hierarchy and Scenes on the left, Scene and Game in the center, Inspector on the right,
+and Project, Prefabs and Console below. Play opens Game. Use **Window** or **⌘/Ctrl K** to find more panels.
+
+This branch is the 2D edition. Existing 2D projects saved by the full editor can open here. Use the
+[`main` branch](https://github.com/ErdemYesiltas/OliveStudio/tree/main) for projects with 3D scenes or assets.
 
 ### What you can do
 
@@ -74,6 +78,14 @@ OliveStudio's own source is available under the [MIT License](LICENSE). Third-pa
 OliveStudio, Electron, TypeScript, React ve PixiJS ile geliştirilen deneysel, modüler bir 2B oyun editörüdür. Sahne tuvalini çalışma alanının merkezine alır. Sahneler, yeniden kullanılabilir nesneler, animasyon, fizik ve etkileşimlerle oyun prototipleri oluşturmayı sağlar. Masaüstü editörü macOS üzerinde geliştirilmektedir.
 
 **OliveStudio, insan yönlendirmesiyle tamamen yapay zekâ kullanılarak geliştirildi.** Öğrenme ve deneme amacıyla geliştirilen bağımsız bir projedir ve herhangi bir ticari amaç gütmez. Editördeki isteğe bağlı yapay zekâ entegrasyonları, uygulamanın geliştirilmesinde yapay zekâ kullanılmasından ayrıdır.
+
+### Studio çalışma alanı
+
+Varsayılan düzende solda Hierarchy ve Scenes, ortada Scene ve Game, sağda Inspector, altta Project, Prefabs ve
+Console bulunur. Play, Game sekmesini açar. Diğer panelleri **Window** veya **⌘/Ctrl K** ile açabilirsiniz.
+
+Bu dal 2B sürümdür. Tam editörde kaydedilmiş 2B projeler burada açılabilir. 3B sahne veya varlık içeren projeler için
+[`main` dalını](https://github.com/ErdemYesiltas/OliveStudio/tree/main) kullanın.
 
 ### Neler yapabilirsiniz?
 

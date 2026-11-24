@@ -4,7 +4,7 @@ import {join, resolve} from 'node:path';
 import ts from 'typescript';
 import {apiDeclarations, globalsDeclaration} from './contracts';
 // The editor shows scripts against apiDeclarations (Monaco), but compiling only strips types, so a declaration that
-// rejects valid code (a 3D example's own script, say) slips through every other test. This compiles the Hub examples'
+// rejects valid code (a bundled example's script) slips through every other test. This compiles the Hub examples'
 // scripts against the declarations with the editor's compiler options.
 it('type-checks every Hub example script against the editor declarations', () => {
  const root = resolve(__dirname, '../../..'), dir = join(__dirname, '__declarations__');

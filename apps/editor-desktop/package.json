@@ -42,17 +42,14 @@
     "@rewrite/particles": "workspace:*",
     "@rewrite/physics": "workspace:*",
     "@rewrite/physics-matter": "workspace:*",
-    "@rewrite/pixi3d-lab": "workspace:*",
     "@rewrite/prefabs": "workspace:*",
     "@rewrite/production-tools": "workspace:*",
     "@rewrite/profiler": "workspace:*",
     "@rewrite/project": "workspace:*",
     "@rewrite/recovery": "workspace:*",
     "@rewrite/render-pixi": "workspace:*",
-    "@rewrite/render-pixi3d": "workspace:*",
     "@rewrite/runtime": "workspace:*",
     "@rewrite/scene": "workspace:*",
-    "@rewrite/scene3d": "workspace:*",
     "@rewrite/scripts": "workspace:*",
     "@rewrite/sdk": "workspace:*",
     "@rewrite/spine": "workspace:*",
@@ -62,7 +59,6 @@
     "@rewrite/tween-pixi": "workspace:*",
     "@rewrite/ui": "workspace:*",
     "dockview": "4.13.1",
-    "draco3dgltf": "1.5.7",
     "lucide-react": "1.72.0",
     "music-metadata": "12.5.0",
     "radix-ui": "1.8.1",
@@ -127,7 +123,8 @@
         "to": "examples",
         "filter": [
           "**/*",
-          "!**/expected-export.json"
+          "!**/expected-export.json",
+          "!pixi3d-*/**"
         ]
       }
     ],
