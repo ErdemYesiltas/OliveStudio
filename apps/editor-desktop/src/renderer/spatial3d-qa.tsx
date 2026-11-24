@@ -1,0 +1,22 @@
+import {model3dDefinition,modelImporter} from '@rewrite/render-pixi3d/model-contracts';
+import fixtureUrl from '../../../../modules/pixi3d-lab/src/fixtures/animated-cube.glb?url';
+import {createRoot} from 'react-dom/client';
+import {useEffect,useRef,useState,useSyncExternalStore} from 'react';
+import {SceneService,transformDefinition} from '@rewrite/scene';
+import {transform3dDefinition,viewport3dDefinition} from '@rewrite/scene3d';
+import {SceneViewport} from '@rewrite/render-pixi';
+import {authoring3dDefinitions} from '@rewrite/render-pixi3d/contracts';
+import {createAuthoringViewport} from '@rewrite/render-pixi3d/runtime';
+import {Authoring3D} from '../../../../modules/render-pixi3d/src/model';
+import {SpatialInspector} from '../../../../modules/render-pixi3d/src/inspector';
+import {authoring3dStrings} from '@rewrite/render-pixi3d/strings';
+import '../../../../modules/render-pixi3d/src/editor.css';
+const modelAsset={id:'ec6f505b-786b-4e40-a938-015d47124022',name:'GLB cube',type:modelImporter.assetType,revision:'a'.repeat(64),source:{extension:'glb',bytes:2068},metadata:{pipeline:'gltf-transform-4.5.1/glb-v1',nodes:1,meshes:1,vertices:36,triangles:12,materials:[{index:0,name:'Olive'}],animations:[{name:'Bob',duration:2}],bounds:{min:[-.5,-.5,-.5],max:[.5,.5,.5]},warnings:[]}};
+const defs=new Map([transformDefinition,transform3dDefinition,viewport3dDefinition,model3dDefinition,...authoring3dDefinitions].map(d=>[d.type,d])),scene=new SceneService(()=>defs),text=(key:string)=>authoring3dStrings[key]??key;
+function Demo(){const host=useRef<HTMLDivElement>(null),view=useRef<SceneViewport|undefined>(undefined),selectedRef=useRef<string|null>(null);const [selected,setSelected]=useState<string|null>(null),[error,setError]=useState(''),[ready,setReady]=useState(false);const doc=useSyncExternalStore(scene.document.subscribe,()=>scene.document.current);const select=(id:string|null)=>{selectedRef.current=id;setSelected(id);view.current?.selection(id);};const report=(error:unknown)=>setError(String(error));const editor=new Authoring3D(scene,select,()=>selectedRef.current,()=>true,()=>({x:480,y:270}));
+ useEffect(()=>{const viewport=new SceneViewport(host.current!,{select,playing:()=>false,commitTransform:(id,next,old)=>scene.setTransform(id,next,old),commitSpatial:c=>scene.setSpatial(c.id,c.data,c.expected,c.parentId),report,text,features:()=>[{prepare:async()=>{},create:ctx=>createAuthoringViewport(ctx,{get:id=>id===modelAsset.id?modelAsset:undefined,url:()=>fixtureUrl}),ownsVisual:e=>e.components.some(c=>c.type==='pixi3d.viewport')}]});view.current=viewport;let dead=false;void viewport.init().then(()=>{if(dead)return;viewport.setStage({width:960,height:540});viewport.setEditing(true);viewport.sync(scene.document.current,selectedRef.current);setReady(true);}).catch(report);return()=>{dead=true;viewport.dispose();};},[]);
+ useEffect(()=>{if(ready)view.current?.sync(doc,selected);},[doc,selected,ready]);
+ const run=(action:()=>unknown)=>{try{action();}catch(e){report(e);}};
+ return <><nav><button disabled={!ready} onClick={()=>run(()=>editor.createView())}>New 3D view</button>{(['cube','sphere','plane','camera'] as const).map(k=><button key={k} onClick={()=>run(()=>editor.create(k))}>Add {k}</button>)}<button onClick={()=>run(()=>editor.placeModel(modelAsset))}>Place model</button><button onClick={()=>run(()=>selectedRef.current&&scene.duplicate(selectedRef.current))}>Duplicate</button><button onClick={()=>run(()=>selectedRef.current&&scene.remove(selectedRef.current))}>Delete</button><button onClick={()=>run(()=>{if(selectedRef.current)scene.setField(selectedRef.current,model3dDefinition.type,'overrideMaterial',true);})}>Override model material</button><button onClick={()=>scene.document.undo()}>Undo</button><button onClick={()=>scene.document.redo()}>Redo</button><button onClick={()=>select(null)}>Deselect</button></nav><output role="alert">{error}</output><main><div ref={host} id="viewport"/><aside><h2>Hierarchy</h2>{doc.entities.map(e=><button key={e.id} onClick={()=>select(e.id)}>{e.name}</button>)}<h2>Properties</h2>{selected&&doc.entities.find(e=>e.id===selected)?.spatial==='scene3d.transform'&&<SpatialInspector scene={scene} entityId={selected} editable text={text} report={report}/>}</aside></main><pre id="document">{JSON.stringify(doc)}</pre></>;
+}
+createRoot(document.getElementById('root')!).render(<Demo/>);

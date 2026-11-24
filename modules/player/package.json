@@ -34,6 +34,13 @@
     "@rewrite/navigation": "workspace:*",
     "@rewrite/lighting": "workspace:*",
     "@rewrite/dialogue": "workspace:*",
-    "@rewrite/achievements": "workspace:*"
+    "@rewrite/achievements": "workspace:*",
+    "@rewrite/behavior": "workspace:*",
+    "@rewrite/behavior-xstate": "workspace:*",
+    "@rewrite/multiplayer": "workspace:*",
+    "@rewrite/multiplayer-colyseus": "workspace:*",
+    "@rewrite/production-tools": "workspace:*",
+    "@rewrite/render-pixi3d": "workspace:*",
+    "@rewrite/scene3d": "workspace:*"
   }
 }

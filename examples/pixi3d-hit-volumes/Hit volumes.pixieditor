@@ -1,0 +1,1130 @@
+{
+ "formatVersion": 1,
+ "name": "Hit volumes",
+ "entrySceneId": "4fb44df0-96aa-49fb-8238-5ce7406225fd",
+ "scenes": [
+  {
+   "formatVersion": 1,
+   "id": "4fb44df0-96aa-49fb-8238-5ce7406225fd",
+   "name": "Hit volumes",
+   "entities": [
+    {
+     "id": "d22dddb7-562f-4826-8f93-e2460dfd857e",
+     "name": "3D View",
+     "parentId": null,
+     "active": true,
+     "components": [
+      {
+       "id": "53c293ce-e4df-4636-8d76-4c47bfc9db39",
+       "type": "scene.transform2d",
+       "version": 1,
+       "data": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+       }
+      },
+      {
+       "id": "b9496941-a0d1-42e4-8a38-1955867a67cf",
+       "type": "pixi3d.viewport",
+       "version": 1,
+       "data": {
+        "width": 960,
+        "height": 540,
+        "cameraId": "24e296ea-8f94-432f-88bd-0642460faf3e",
+        "shadowQuality": "high",
+        "shadowFilter": "pcf",
+        "environment": "hemisphere",
+        "skyColor": "#bcd4ff",
+        "groundColor": "#5b5246",
+        "environmentIntensity": 0.8,
+        "environmentAssetId": "",
+        "cubemapAssetId": "",
+        "background": "color",
+        "backgroundColor": "#1d2530",
+        "toneMapping": "aces",
+        "exposure": 1,
+        "fog": "none",
+        "fogColor": "#adb2ba",
+        "fogNear": 10,
+        "fogFar": 60,
+        "fogDensity": 0.04,
+        "bloom": false,
+        "bloomThreshold": 1,
+        "bloomIntensity": 1,
+        "bloomRadius": 0.7,
+        "ssao": false,
+        "ssaoRadius": 0.5,
+        "ssaoIntensity": 1,
+        "depthOfField": false,
+        "focusDistance": 10,
+        "focusRange": 2,
+        "focusFalloff": 8,
+        "focusBlur": 10,
+        "motionBlur": false,
+        "motionBlurIntensity": 0.5,
+        "motionBlurSamples": 12,
+        "motionBlurMaxLength": 48,
+        "tint": "#ffffff",
+        "lutAssetId": "",
+        "lutIntensity": 1,
+        "antialias": false,
+        "outlineWidth": 0.03,
+        "outlineColor": "#000000"
+       }
+      }
+     ]
+    },
+    {
+     "id": "24e296ea-8f94-432f-88bd-0642460faf3e",
+     "name": "Camera",
+     "parentId": "d22dddb7-562f-4826-8f93-e2460dfd857e",
+     "active": true,
+     "spatial": "scene3d.transform",
+     "components": [
+      {
+       "id": "c015cd7e-9ee0-4f72-85f9-4a561caeb6e2",
+       "type": "scene3d.transform",
+       "version": 1,
+       "data": {
+        "x": 0,
+        "y": 1.2,
+        "z": 7.5,
+        "qx": -0.052335956242943835,
+        "qy": 0,
+        "qz": 0,
+        "qw": 0.9986295347545738,
+        "scaleX": 1,
+        "scaleY": 1,
+        "scaleZ": 1
+       }
+      },
+      {
+       "id": "e05ced19-5307-4958-8e28-32888b81984d",
+       "type": "pixi3d.camera",
+       "version": 1,
+       "data": {
+        "mode": "perspective",
+        "fov": 45,
+        "near": 0.1,
+        "far": 200,
+        "orthographicSize": 5,
+        "feedWidth": 512,
+        "feedHeight": 288
+       }
+      }
+     ]
+    },
+    {
+     "id": "c7d55cf4-874a-48cc-8812-ce7e213d6854",
+     "name": "Sun",
+     "parentId": "d22dddb7-562f-4826-8f93-e2460dfd857e",
+     "active": true,
+     "spatial": "scene3d.transform",
+     "components": [
+      {
+       "id": "70d2f723-b8b0-46fd-8899-06933e2f0c2a",
+       "type": "scene3d.transform",
+       "version": 1,
+       "data": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "qx": -0.4030581999178559,
+        "qy": 0.27253200769780433,
+        "qz": -0.12708376228184318,
+        "qw": 0.8643610990919672,
+        "scaleX": 1,
+        "scaleY": 1,
+        "scaleZ": 1
+       }
+      },
+      {
+       "id": "a436e6bc-0b98-4cff-8936-e0798c8a7858",
+       "type": "pixi3d.light",
+       "version": 1,
+       "data": {
+        "kind": "directional",
+        "color": "#ffffff",
+        "intensity": 2.4,
+        "castShadow": true,
+        "range": 10,
+        "radius": 0.1,
+        "coneAngle": 30,
+        "penumbra": 0.2,
+        "shadowPlacement": "fit",
+        "shadowBoundsX": 0,
+        "shadowBoundsY": 0,
+        "shadowBoundsZ": 0,
+        "shadowBoundsWidth": 20,
+        "shadowBoundsHeight": 20,
+        "shadowBoundsDepth": 20,
+        "shadowCascades": 3,
+        "shadowMaxDistance": 50,
+        "shadowLambda": 0.5,
+        "shadowBias": 0.001,
+        "shadowNormalBiasAuto": true,
+        "shadowNormalBias": 0.05,
+        "shadowUpdate": 1
+       }
+      }
+     ]
+    },
+    {
+     "id": "9107316e-e42b-45b3-80e0-ec879598978e",
+     "name": "Fill",
+     "parentId": "d22dddb7-562f-4826-8f93-e2460dfd857e",
+     "active": true,
+     "spatial": "scene3d.transform",
+     "components": [
+      {
+       "id": "4cfad032-522e-4999-89de-f4b885a075cd",
+       "type": "scene3d.transform",
+       "version": 1,
+       "data": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1,
+        "scaleX": 1,
+        "scaleY": 1,
+        "scaleZ": 1
+       }
+      },
+      {
+       "id": "19169fb0-b168-4d1c-8fef-22d371d93c5f",
+       "type": "pixi3d.light",
+       "version": 1,
+       "data": {
+        "kind": "ambient",
+        "color": "#ffffff",
+        "intensity": 0.15,
+        "castShadow": false,
+        "range": 10,
+        "radius": 0.1,
+        "coneAngle": 30,
+        "penumbra": 0.2,
+        "shadowPlacement": "fit",
+        "shadowBoundsX": 0,
+        "shadowBoundsY": 0,
+        "shadowBoundsZ": 0,
+        "shadowBoundsWidth": 20,
+        "shadowBoundsHeight": 20,
+        "shadowBoundsDepth": 20,
+        "shadowCascades": 3,
+        "shadowMaxDistance": 50,
+        "shadowLambda": 0.5,
+        "shadowBias": 0.001,
+        "shadowNormalBiasAuto": true,
+        "shadowNormalBias": 0.05,
+        "shadowUpdate": 1
+       }
+      }
+     ]
+    },
+    {
+     "id": "731074d0-2b65-44b6-8201-4205499ff4a3",
+     "name": "Floor",
+     "parentId": "d22dddb7-562f-4826-8f93-e2460dfd857e",
+     "active": true,
+     "spatial": "scene3d.transform",
+     "components": [
+      {
+       "id": "2c059a44-d8a5-4cdc-8cd7-d71940efb8c9",
+       "type": "scene3d.transform",
+       "version": 1,
+       "data": {
+        "x": 0,
+        "y": -1.2,
+        "z": 0,
+        "qx": -0.7071067811865475,
+        "qy": 0,
+        "qz": 0,
+        "qw": 0.7071067811865476,
+        "scaleX": 30,
+        "scaleY": 30,
+        "scaleZ": 30
+       }
+      },
+      {
+       "id": "3366ddd4-14aa-457e-8334-a31a15aacb43",
+       "type": "pixi3d.primitive",
+       "version": 1,
+       "data": {
+        "shape": "plane",
+        "color": "#3d4450",
+        "roughness": 0.9,
+        "metallic": 0,
+        "castShadow": true,
+        "receiveShadow": true,
+        "emissiveColor": "#000000",
+        "emissiveStrength": 0,
+        "segments": 32,
+        "radiusTop": 0.5,
+        "openEnded": false,
+        "capsuleLength": 0.5,
+        "tube": 0.15,
+        "arc": 360,
+        "knotP": 2,
+        "knotQ": 3,
+        "detail": 1,
+        "draw": "surface",
+        "hitVolume": "auto",
+        "lodDistance": 0,
+        "lodSegments": 8,
+        "material": "pbr",
+        "alphaMode": "opaque",
+        "alpha": 1,
+        "alphaCutoff": 0.5,
+        "doubleSided": false,
+        "flatShading": false,
+        "baseColorTexture": "",
+        "videoTexture": "",
+        "feedCameraId": "",
+        "screenSourceId": "",
+        "screenWidth": 512,
+        "screenHeight": 256,
+        "portalExitId": "",
+        "normalTexture": "",
+        "normalScale": 1,
+        "metallicRoughnessTexture": "",
+        "occlusionTexture": "",
+        "occlusionStrength": 1,
+        "emissiveTexture": "",
+        "uvScaleX": 1,
+        "uvScaleY": 1,
+        "uvOffsetX": 0,
+        "uvOffsetY": 0,
+        "uvRotation": 0,
+        "uvScrollX": 0,
+        "uvScrollY": 0,
+        "shininess": 32,
+        "specularStrength": 1,
+        "specularColor": "#ffffff",
+        "ior": 1.5,
+        "specularFactor": 1,
+        "clearcoat": 0,
+        "clearcoatRoughness": 0,
+        "clearcoatTexture": "",
+        "sheenColor": "#000000",
+        "sheenRoughness": 0,
+        "sheenTexture": "",
+        "transmission": 0,
+        "thickness": 0,
+        "attenuationColor": "#ffffff",
+        "attenuationDistance": 0,
+        "transmissionTexture": "",
+        "iridescence": 0,
+        "iridescenceIor": 1.3,
+        "iridescenceThicknessMin": 100,
+        "iridescenceThicknessMax": 400,
+        "iridescenceTexture": "",
+        "anisotropy": 0,
+        "anisotropyRotation": 0,
+        "toonBands": 3,
+        "toonSpecularSize": 0.15,
+        "toonRimIntensity": 0.4,
+        "toonOutline": true
+       }
+      }
+     ]
+    },
+    {
+     "id": "436427f0-412c-4a36-8405-5285017ce0d6",
+     "name": "Geometry ring",
+     "parentId": "d22dddb7-562f-4826-8f93-e2460dfd857e",
+     "active": true,
+     "spatial": "scene3d.transform",
+     "components": [
+      {
+       "id": "54b2bf02-37d8-49d7-8e09-f3d4aa6ea46e",
+       "type": "scene3d.transform",
+       "version": 1,
+       "data": {
+        "x": -3.3,
+        "y": 0.1,
+        "z": 0,
+        "qx": 0.7071067811865475,
+        "qy": 0,
+        "qz": 0,
+        "qw": 0.7071067811865476,
+        "scaleX": 1.8,
+        "scaleY": 1.8,
+        "scaleZ": 1.8
+       }
+      },
+      {
+       "id": "d585fbb4-9552-4cbb-80a4-500883c4ae7e",
+       "type": "pixi3d.primitive",
+       "version": 1,
+       "data": {
+        "shape": "torus",
+        "color": "#e0784a",
+        "roughness": 0.5,
+        "metallic": 0,
+        "castShadow": true,
+        "receiveShadow": true,
+        "emissiveColor": "#000000",
+        "emissiveStrength": 0,
+        "segments": 32,
+        "radiusTop": 0.5,
+        "openEnded": false,
+        "capsuleLength": 0.5,
+        "tube": 0.12,
+        "arc": 360,
+        "knotP": 2,
+        "knotQ": 3,
+        "detail": 1,
+        "draw": "surface",
+        "hitVolume": "geometry",
+        "lodDistance": 0,
+        "lodSegments": 8,
+        "material": "pbr",
+        "alphaMode": "opaque",
+        "alpha": 1,
+        "alphaCutoff": 0.5,
+        "doubleSided": false,
+        "flatShading": false,
+        "baseColorTexture": "",
+        "videoTexture": "",
+        "feedCameraId": "",
+        "screenSourceId": "",
+        "screenWidth": 512,
+        "screenHeight": 256,
+        "portalExitId": "",
+        "normalTexture": "",
+        "normalScale": 1,
+        "metallicRoughnessTexture": "",
+        "occlusionTexture": "",
+        "occlusionStrength": 1,
+        "emissiveTexture": "",
+        "uvScaleX": 1,
+        "uvScaleY": 1,
+        "uvOffsetX": 0,
+        "uvOffsetY": 0,
+        "uvRotation": 0,
+        "uvScrollX": 0,
+        "uvScrollY": 0,
+        "shininess": 32,
+        "specularStrength": 1,
+        "specularColor": "#ffffff",
+        "ior": 1.5,
+        "specularFactor": 1,
+        "clearcoat": 0,
+        "clearcoatRoughness": 0,
+        "clearcoatTexture": "",
+        "sheenColor": "#000000",
+        "sheenRoughness": 0,
+        "sheenTexture": "",
+        "transmission": 0,
+        "thickness": 0,
+        "attenuationColor": "#ffffff",
+        "attenuationDistance": 0,
+        "transmissionTexture": "",
+        "iridescence": 0,
+        "iridescenceIor": 1.3,
+        "iridescenceThicknessMin": 100,
+        "iridescenceThicknessMax": 400,
+        "iridescenceTexture": "",
+        "anisotropy": 0,
+        "anisotropyRotation": 0,
+        "toonBands": 3,
+        "toonSpecularSize": 0.15,
+        "toonRimIntensity": 0.4,
+        "toonOutline": true
+       }
+      },
+      {
+       "id": "939edbec-b624-40ff-811b-04c9485b74fe",
+       "type": "interactions.bindings",
+       "version": 1,
+       "data": {
+        "rules": [
+         {
+          "id": "f4ce5887-c1e4-4f07-817f-fc1d1b483233",
+          "trigger": {
+           "type": "pointer.click",
+           "sourceId": "436427f0-412c-4a36-8405-5285017ce0d6",
+           "event": ""
+          },
+          "actions": [
+           {
+            "id": "62b78545-bcf9-44fc-83f4-10daccc105e9",
+            "type": "global.add",
+            "targetId": "d74e7c39-494c-4587-8dc2-f14cbe44b8f2",
+            "value": true,
+            "amount": 1
+           }
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "id": "309fe2f6-f3d2-4e0b-8852-d02192a18536",
+     "name": "Label: Geometry: {geometryHits}",
+     "parentId": null,
+     "active": true,
+     "components": [
+      {
+       "id": "d51f9496-43a8-4146-8b05-97d42ed9b271",
+       "type": "scene.transform2d",
+       "version": 1,
+       "data": {
+        "x": 200.61668050858623,
+        "y": 411.28339016131076,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+       }
+      },
+      {
+       "id": "a01b3d9b-e651-40a9-84db-43787107b699",
+       "type": "pixi.text",
+       "version": 1,
+       "data": {
+        "alpha": 1,
+        "text": "Geometry: {geometryHits}",
+        "fontSize": 16,
+        "color": "#e8edf2",
+        "font": "",
+        "fontWeight": "normal",
+        "fontStyle": "normal",
+        "align": "center",
+        "letterSpacing": 0,
+        "strokeColor": "#0b0f14",
+        "strokeWidth": 4
+       }
+      }
+     ]
+    },
+    {
+     "id": "55446e39-7db6-4342-8c53-4abcdaf5babd",
+     "name": "Box ring",
+     "parentId": "d22dddb7-562f-4826-8f93-e2460dfd857e",
+     "active": true,
+     "spatial": "scene3d.transform",
+     "components": [
+      {
+       "id": "f0bd77ae-ae9d-4bc0-8d11-71dee684353e",
+       "type": "scene3d.transform",
+       "version": 1,
+       "data": {
+        "x": -1.1,
+        "y": 0.1,
+        "z": 0,
+        "qx": 0.7071067811865475,
+        "qy": 0,
+        "qz": 0,
+        "qw": 0.7071067811865476,
+        "scaleX": 1.8,
+        "scaleY": 1.8,
+        "scaleZ": 1.8
+       }
+      },
+      {
+       "id": "48a670e6-cb82-4443-851c-e69e0e58f681",
+       "type": "pixi3d.primitive",
+       "version": 1,
+       "data": {
+        "shape": "torus",
+        "color": "#f2c14e",
+        "roughness": 0.5,
+        "metallic": 0,
+        "castShadow": true,
+        "receiveShadow": true,
+        "emissiveColor": "#000000",
+        "emissiveStrength": 0,
+        "segments": 32,
+        "radiusTop": 0.5,
+        "openEnded": false,
+        "capsuleLength": 0.5,
+        "tube": 0.12,
+        "arc": 360,
+        "knotP": 2,
+        "knotQ": 3,
+        "detail": 1,
+        "draw": "surface",
+        "hitVolume": "box",
+        "lodDistance": 0,
+        "lodSegments": 8,
+        "material": "pbr",
+        "alphaMode": "opaque",
+        "alpha": 1,
+        "alphaCutoff": 0.5,
+        "doubleSided": false,
+        "flatShading": false,
+        "baseColorTexture": "",
+        "videoTexture": "",
+        "feedCameraId": "",
+        "screenSourceId": "",
+        "screenWidth": 512,
+        "screenHeight": 256,
+        "portalExitId": "",
+        "normalTexture": "",
+        "normalScale": 1,
+        "metallicRoughnessTexture": "",
+        "occlusionTexture": "",
+        "occlusionStrength": 1,
+        "emissiveTexture": "",
+        "uvScaleX": 1,
+        "uvScaleY": 1,
+        "uvOffsetX": 0,
+        "uvOffsetY": 0,
+        "uvRotation": 0,
+        "uvScrollX": 0,
+        "uvScrollY": 0,
+        "shininess": 32,
+        "specularStrength": 1,
+        "specularColor": "#ffffff",
+        "ior": 1.5,
+        "specularFactor": 1,
+        "clearcoat": 0,
+        "clearcoatRoughness": 0,
+        "clearcoatTexture": "",
+        "sheenColor": "#000000",
+        "sheenRoughness": 0,
+        "sheenTexture": "",
+        "transmission": 0,
+        "thickness": 0,
+        "attenuationColor": "#ffffff",
+        "attenuationDistance": 0,
+        "transmissionTexture": "",
+        "iridescence": 0,
+        "iridescenceIor": 1.3,
+        "iridescenceThicknessMin": 100,
+        "iridescenceThicknessMax": 400,
+        "iridescenceTexture": "",
+        "anisotropy": 0,
+        "anisotropyRotation": 0,
+        "toonBands": 3,
+        "toonSpecularSize": 0.15,
+        "toonRimIntensity": 0.4,
+        "toonOutline": true
+       }
+      },
+      {
+       "id": "867cb7d9-f635-4dc0-8717-2b4fd7a9bc36",
+       "type": "interactions.bindings",
+       "version": 1,
+       "data": {
+        "rules": [
+         {
+          "id": "f3c015e0-3cfd-4a6d-8950-9b68f2a56484",
+          "trigger": {
+           "type": "pointer.click",
+           "sourceId": "55446e39-7db6-4342-8c53-4abcdaf5babd",
+           "event": ""
+          },
+          "actions": [
+           {
+            "id": "ead71f5e-76b9-4213-8575-f4fd5bbe4f4c",
+            "type": "global.add",
+            "targetId": "c386c336-1f44-4c73-8bc9-ca6fa9125ebc",
+            "value": true,
+            "amount": 1
+           }
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "id": "67ab3665-59ff-4fd6-886e-4bfb87405afe",
+     "name": "Label: Box: {boxHits}",
+     "parentId": null,
+     "active": true,
+     "components": [
+      {
+       "id": "a89ee355-e927-402b-8425-cffa01ba8ecb",
+       "type": "scene.transform2d",
+       "version": 1,
+       "data": {
+        "x": 386.8722268361954,
+        "y": 411.28339016131076,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+       }
+      },
+      {
+       "id": "9b780702-45ae-4e89-807d-8018e55548f6",
+       "type": "pixi.text",
+       "version": 1,
+       "data": {
+        "alpha": 1,
+        "text": "Box: {boxHits}",
+        "fontSize": 16,
+        "color": "#e8edf2",
+        "font": "",
+        "fontWeight": "normal",
+        "fontStyle": "normal",
+        "align": "center",
+        "letterSpacing": 0,
+        "strokeColor": "#0b0f14",
+        "strokeWidth": 4
+       }
+      }
+     ]
+    },
+    {
+     "id": "cb863065-8788-4729-8b86-226818cb3574",
+     "name": "Sphere ring",
+     "parentId": "d22dddb7-562f-4826-8f93-e2460dfd857e",
+     "active": true,
+     "spatial": "scene3d.transform",
+     "components": [
+      {
+       "id": "337e1fe5-54ac-43b7-8022-a4838765845a",
+       "type": "scene3d.transform",
+       "version": 1,
+       "data": {
+        "x": 1.1,
+        "y": 0.1,
+        "z": 0,
+        "qx": 0.7071067811865475,
+        "qy": 0,
+        "qz": 0,
+        "qw": 0.7071067811865476,
+        "scaleX": 1.8,
+        "scaleY": 1.8,
+        "scaleZ": 1.8
+       }
+      },
+      {
+       "id": "2408acc0-531f-44ae-8210-6aab16d1b3ff",
+       "type": "pixi3d.primitive",
+       "version": 1,
+       "data": {
+        "shape": "torus",
+        "color": "#5aa9e6",
+        "roughness": 0.5,
+        "metallic": 0,
+        "castShadow": true,
+        "receiveShadow": true,
+        "emissiveColor": "#000000",
+        "emissiveStrength": 0,
+        "segments": 32,
+        "radiusTop": 0.5,
+        "openEnded": false,
+        "capsuleLength": 0.5,
+        "tube": 0.12,
+        "arc": 360,
+        "knotP": 2,
+        "knotQ": 3,
+        "detail": 1,
+        "draw": "surface",
+        "hitVolume": "sphere",
+        "lodDistance": 0,
+        "lodSegments": 8,
+        "material": "pbr",
+        "alphaMode": "opaque",
+        "alpha": 1,
+        "alphaCutoff": 0.5,
+        "doubleSided": false,
+        "flatShading": false,
+        "baseColorTexture": "",
+        "videoTexture": "",
+        "feedCameraId": "",
+        "screenSourceId": "",
+        "screenWidth": 512,
+        "screenHeight": 256,
+        "portalExitId": "",
+        "normalTexture": "",
+        "normalScale": 1,
+        "metallicRoughnessTexture": "",
+        "occlusionTexture": "",
+        "occlusionStrength": 1,
+        "emissiveTexture": "",
+        "uvScaleX": 1,
+        "uvScaleY": 1,
+        "uvOffsetX": 0,
+        "uvOffsetY": 0,
+        "uvRotation": 0,
+        "uvScrollX": 0,
+        "uvScrollY": 0,
+        "shininess": 32,
+        "specularStrength": 1,
+        "specularColor": "#ffffff",
+        "ior": 1.5,
+        "specularFactor": 1,
+        "clearcoat": 0,
+        "clearcoatRoughness": 0,
+        "clearcoatTexture": "",
+        "sheenColor": "#000000",
+        "sheenRoughness": 0,
+        "sheenTexture": "",
+        "transmission": 0,
+        "thickness": 0,
+        "attenuationColor": "#ffffff",
+        "attenuationDistance": 0,
+        "transmissionTexture": "",
+        "iridescence": 0,
+        "iridescenceIor": 1.3,
+        "iridescenceThicknessMin": 100,
+        "iridescenceThicknessMax": 400,
+        "iridescenceTexture": "",
+        "anisotropy": 0,
+        "anisotropyRotation": 0,
+        "toonBands": 3,
+        "toonSpecularSize": 0.15,
+        "toonRimIntensity": 0.4,
+        "toonOutline": true
+       }
+      },
+      {
+       "id": "58830a41-11de-42a8-8cf5-0e95cf5e6244",
+       "type": "interactions.bindings",
+       "version": 1,
+       "data": {
+        "rules": [
+         {
+          "id": "c9877c32-7c5a-4a71-8199-0a1e0edbb1aa",
+          "trigger": {
+           "type": "pointer.click",
+           "sourceId": "cb863065-8788-4729-8b86-226818cb3574",
+           "event": ""
+          },
+          "actions": [
+           {
+            "id": "e468dbbe-5c20-4d48-8e04-c97c3881df23",
+            "type": "global.add",
+            "targetId": "d6c9a895-f8ac-4fa9-87e7-4fa7b41da52f",
+            "value": true,
+            "amount": 1
+           }
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "id": "f5f93022-69f4-4e70-82f4-613e62d88d0d",
+     "name": "Label: Sphere: {sphereHits}",
+     "parentId": null,
+     "active": true,
+     "components": [
+      {
+       "id": "4cf98bbd-1712-45b3-8bc8-85f4c695b464",
+       "type": "scene.transform2d",
+       "version": 1,
+       "data": {
+        "x": 573.1277731638046,
+        "y": 411.28339016131076,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+       }
+      },
+      {
+       "id": "9bd0205e-04b2-4ec8-8953-e253f3cdb768",
+       "type": "pixi.text",
+       "version": 1,
+       "data": {
+        "alpha": 1,
+        "text": "Sphere: {sphereHits}",
+        "fontSize": 16,
+        "color": "#e8edf2",
+        "font": "",
+        "fontWeight": "normal",
+        "fontStyle": "normal",
+        "align": "center",
+        "letterSpacing": 0,
+        "strokeColor": "#0b0f14",
+        "strokeWidth": 4
+       }
+      }
+     ]
+    },
+    {
+     "id": "6841316f-e39d-49a5-8262-907f01cc089a",
+     "name": "None ring",
+     "parentId": "d22dddb7-562f-4826-8f93-e2460dfd857e",
+     "active": true,
+     "spatial": "scene3d.transform",
+     "components": [
+      {
+       "id": "8d7d465a-54c5-40fd-8e82-f73095fa302e",
+       "type": "scene3d.transform",
+       "version": 1,
+       "data": {
+        "x": 3.3,
+        "y": 0.1,
+        "z": 0,
+        "qx": 0.7071067811865475,
+        "qy": 0,
+        "qz": 0,
+        "qw": 0.7071067811865476,
+        "scaleX": 1.8,
+        "scaleY": 1.8,
+        "scaleZ": 1.8
+       }
+      },
+      {
+       "id": "5e3ce0a6-195a-4674-8e28-b7198f32d248",
+       "type": "pixi3d.primitive",
+       "version": 1,
+       "data": {
+        "shape": "torus",
+        "color": "#8b93a1",
+        "roughness": 0.5,
+        "metallic": 0,
+        "castShadow": true,
+        "receiveShadow": true,
+        "emissiveColor": "#000000",
+        "emissiveStrength": 0,
+        "segments": 32,
+        "radiusTop": 0.5,
+        "openEnded": false,
+        "capsuleLength": 0.5,
+        "tube": 0.12,
+        "arc": 360,
+        "knotP": 2,
+        "knotQ": 3,
+        "detail": 1,
+        "draw": "surface",
+        "hitVolume": "none",
+        "lodDistance": 0,
+        "lodSegments": 8,
+        "material": "pbr",
+        "alphaMode": "opaque",
+        "alpha": 1,
+        "alphaCutoff": 0.5,
+        "doubleSided": false,
+        "flatShading": false,
+        "baseColorTexture": "",
+        "videoTexture": "",
+        "feedCameraId": "",
+        "screenSourceId": "",
+        "screenWidth": 512,
+        "screenHeight": 256,
+        "portalExitId": "",
+        "normalTexture": "",
+        "normalScale": 1,
+        "metallicRoughnessTexture": "",
+        "occlusionTexture": "",
+        "occlusionStrength": 1,
+        "emissiveTexture": "",
+        "uvScaleX": 1,
+        "uvScaleY": 1,
+        "uvOffsetX": 0,
+        "uvOffsetY": 0,
+        "uvRotation": 0,
+        "uvScrollX": 0,
+        "uvScrollY": 0,
+        "shininess": 32,
+        "specularStrength": 1,
+        "specularColor": "#ffffff",
+        "ior": 1.5,
+        "specularFactor": 1,
+        "clearcoat": 0,
+        "clearcoatRoughness": 0,
+        "clearcoatTexture": "",
+        "sheenColor": "#000000",
+        "sheenRoughness": 0,
+        "sheenTexture": "",
+        "transmission": 0,
+        "thickness": 0,
+        "attenuationColor": "#ffffff",
+        "attenuationDistance": 0,
+        "transmissionTexture": "",
+        "iridescence": 0,
+        "iridescenceIor": 1.3,
+        "iridescenceThicknessMin": 100,
+        "iridescenceThicknessMax": 400,
+        "iridescenceTexture": "",
+        "anisotropy": 0,
+        "anisotropyRotation": 0,
+        "toonBands": 3,
+        "toonSpecularSize": 0.15,
+        "toonRimIntensity": 0.4,
+        "toonOutline": true
+       }
+      },
+      {
+       "id": "9d35acfb-3149-48d3-8850-8405ece9662b",
+       "type": "interactions.bindings",
+       "version": 1,
+       "data": {
+        "rules": [
+         {
+          "id": "f7bd2b66-7050-4ecd-8d5a-c7a4c4a1b80e",
+          "trigger": {
+           "type": "pointer.click",
+           "sourceId": "6841316f-e39d-49a5-8262-907f01cc089a",
+           "event": ""
+          },
+          "actions": [
+           {
+            "id": "26a47a23-62e9-49e5-81c5-be1411b938b2",
+            "type": "global.add",
+            "targetId": "d0695a87-6d14-465d-8430-4ea47a86c6f0",
+            "value": true,
+            "amount": 1
+           }
+          ]
+         }
+        ]
+       }
+      }
+     ]
+    },
+    {
+     "id": "f1eaab82-203f-47ea-88e5-8c3cef199172",
+     "name": "Label: None: {noneHits}",
+     "parentId": null,
+     "active": true,
+     "components": [
+      {
+       "id": "c79589cd-17b2-4b94-82a0-d8973de246be",
+       "type": "scene.transform2d",
+       "version": 1,
+       "data": {
+        "x": 759.3833194914138,
+        "y": 411.28339016131076,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+       }
+      },
+      {
+       "id": "c2a3018a-5ea8-4722-8cdc-d6cb3d56e4f7",
+       "type": "pixi.text",
+       "version": 1,
+       "data": {
+        "alpha": 1,
+        "text": "None: {noneHits}",
+        "fontSize": 16,
+        "color": "#e8edf2",
+        "font": "",
+        "fontWeight": "normal",
+        "fontStyle": "normal",
+        "align": "center",
+        "letterSpacing": 0,
+        "strokeColor": "#0b0f14",
+        "strokeWidth": 4
+       }
+      }
+     ]
+    },
+    {
+     "id": "9afce7e1-a48d-4546-8f1a-5d41eff0f23e",
+     "name": "Label: Click the rings and their holes (press Play)",
+     "parentId": null,
+     "active": true,
+     "components": [
+      {
+       "id": "9beca6a1-6d5a-410a-87d8-e9507072de15",
+       "type": "scene.transform2d",
+       "version": 1,
+       "data": {
+        "x": 480,
+        "y": 32,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+       }
+      },
+      {
+       "id": "0833ada2-0e73-470c-82dc-cfd8c15c7701",
+       "type": "pixi.text",
+       "version": 1,
+       "data": {
+        "alpha": 1,
+        "text": "Click the rings and their holes (press Play)",
+        "fontSize": 20,
+        "color": "#e8edf2",
+        "font": "",
+        "fontWeight": "normal",
+        "fontStyle": "normal",
+        "align": "center",
+        "letterSpacing": 0,
+        "strokeColor": "#0b0f14",
+        "strokeWidth": 4
+       }
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "modules": {
+  "project": "1.0.0",
+  "scene": "1.0.0",
+  "assets": "1.0.0",
+  "pixi": "1.0.0",
+  "assetpack": "1.0.0",
+  "audio": "1.0.0",
+  "howler": "1.0.0",
+  "tween": "1.0.0",
+  "gsap": "1.0.0",
+  "tween-pixi": "1.0.0",
+  "animation": "1.0.0",
+  "physics": "1.0.0",
+  "matter": "1.0.0",
+  "spine": "1.0.0",
+  "spine-audio": "1.0.0",
+  "interactions": "1.0.0",
+  "interaction-media": "1.0.0",
+  "build": "1.0.0",
+  "html-export": "1.0.0",
+  "prefabs": "1.0.0",
+  "project-ui": "1.0.0",
+  "recovery": "1.0.0",
+  "studio": "1.0.0",
+  "scene3d": "1.0.0",
+  "pixi3d-editor": "1.0.0"
+ },
+ "providers": {
+  "audio": "howler",
+  "tween": "gsap",
+  "physics": "matter",
+  "render": "pixi"
+ },
+ "extensions": {
+  "assets.registry": {
+   "version": 1,
+   "items": []
+  },
+  "interactions.globals": {
+   "version": 1,
+   "items": [
+    {
+     "id": "d74e7c39-494c-4587-8dc2-f14cbe44b8f2",
+     "name": "geometryHits",
+     "type": "number",
+     "initial": 0
+    },
+    {
+     "id": "c386c336-1f44-4c73-8bc9-ca6fa9125ebc",
+     "name": "boxHits",
+     "type": "number",
+     "initial": 0
+    },
+    {
+     "id": "d6c9a895-f8ac-4fa9-87e7-4fa7b41da52f",
+     "name": "sphereHits",
+     "type": "number",
+     "initial": 0
+    },
+    {
+     "id": "d0695a87-6d14-465d-8430-4ea47a86c6f0",
+     "name": "noneHits",
+     "type": "number",
+     "initial": 0
+    }
+   ]
+  }
+ }
+}

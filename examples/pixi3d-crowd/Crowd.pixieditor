@@ -1,0 +1,1595 @@
+{
+ "formatVersion": 1,
+ "name": "Crowd",
+ "entrySceneId": "700c6ac4-aea6-415a-89ef-80f39a544472",
+ "scenes": [
+  {
+   "formatVersion": 1,
+   "id": "700c6ac4-aea6-415a-89ef-80f39a544472",
+   "name": "Crowd",
+   "entities": [
+    {
+     "id": "589c5292-23ff-4bb4-8695-b771f44d6177",
+     "name": "3D View",
+     "parentId": null,
+     "active": true,
+     "components": [
+      {
+       "id": "ed124276-b464-44e7-8e2e-d6fee87dadfe",
+       "type": "scene.transform2d",
+       "version": 1,
+       "data": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+       }
+      },
+      {
+       "id": "3af6a288-16cc-440d-8991-338957e4b1cb",
+       "type": "pixi3d.viewport",
+       "version": 1,
+       "data": {
+        "width": 960,
+        "height": 540,
+        "cameraId": "c8eb1068-320f-455a-8bcd-975454ccb481",
+        "shadowQuality": "high",
+        "shadowFilter": "pcf",
+        "environment": "hemisphere",
+        "skyColor": "#bcd4ff",
+        "groundColor": "#5b5246",
+        "environmentIntensity": 0.8,
+        "environmentAssetId": "",
+        "cubemapAssetId": "",
+        "background": "color",
+        "backgroundColor": "#1d2530",
+        "toneMapping": "aces",
+        "exposure": 1,
+        "fog": "none",
+        "fogColor": "#adb2ba",
+        "fogNear": 10,
+        "fogFar": 60,
+        "fogDensity": 0.04,
+        "bloom": false,
+        "bloomThreshold": 1,
+        "bloomIntensity": 1,
+        "bloomRadius": 0.7,
+        "ssao": false,
+        "ssaoRadius": 0.5,
+        "ssaoIntensity": 1,
+        "depthOfField": false,
+        "focusDistance": 10,
+        "focusRange": 2,
+        "focusFalloff": 8,
+        "focusBlur": 10,
+        "motionBlur": false,
+        "motionBlurIntensity": 0.5,
+        "motionBlurSamples": 12,
+        "motionBlurMaxLength": 48,
+        "tint": "#ffffff",
+        "lutAssetId": "",
+        "lutIntensity": 1,
+        "antialias": false,
+        "outlineWidth": 0.03,
+        "outlineColor": "#000000"
+       }
+      }
+     ]
+    },
+    {
+     "id": "c8eb1068-320f-455a-8bcd-975454ccb481",
+     "name": "Camera",
+     "parentId": "589c5292-23ff-4bb4-8695-b771f44d6177",
+     "active": true,
+     "spatial": "scene3d.transform",
+     "components": [
+      {
+       "id": "a11f3fc8-b2ca-42bb-81f8-c9c74572e48c",
+       "type": "scene3d.transform",
+       "version": 1,
+       "data": {
+        "x": 0,
+        "y": 4.2,
+        "z": 9.5,
+        "qx": -0.17364817766693033,
+        "qy": 0,
+        "qz": 0,
+        "qw": 0.984807753012208,
+        "scaleX": 1,
+        "scaleY": 1,
+        "scaleZ": 1
+       }
+      },
+      {
+       "id": "1b289018-3b5d-4cdc-8e75-e21caeda6f0f",
+       "type": "pixi3d.camera",
+       "version": 1,
+       "data": {
+        "mode": "perspective",
+        "fov": 45,
+        "near": 0.1,
+        "far": 200,
+        "orthographicSize": 5,
+        "feedWidth": 512,
+        "feedHeight": 288
+       }
+      }
+     ]
+    },
+    {
+     "id": "5f2a66c2-ffe6-4798-8414-9bee67a6dd74",
+     "name": "Sun",
+     "parentId": "589c5292-23ff-4bb4-8695-b771f44d6177",
+     "active": true,
+     "spatial": "scene3d.transform",
+     "components": [
+      {
+       "id": "1152b362-683a-475c-8bc3-330c6537cd12",
+       "type": "scene3d.transform",
+       "version": 1,
+       "data": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "qx": -0.4030581999178559,
+        "qy": 0.27253200769780433,
+        "qz": -0.12708376228184318,
+        "qw": 0.8643610990919672,
+        "scaleX": 1,
+        "scaleY": 1,
+        "scaleZ": 1
+       }
+      },
+      {
+       "id": "bf884828-d344-4061-8c09-c08f78e2b559",
+       "type": "pixi3d.light",
+       "version": 1,
+       "data": {
+        "kind": "directional",
+        "color": "#ffffff",
+        "intensity": 2.4,
+        "castShadow": true,
+        "range": 10,
+        "radius": 0.1,
+        "coneAngle": 30,
+        "penumbra": 0.2,
+        "shadowPlacement": "fit",
+        "shadowBoundsX": 0,
+        "shadowBoundsY": 0,
+        "shadowBoundsZ": 0,
+        "shadowBoundsWidth": 20,
+        "shadowBoundsHeight": 20,
+        "shadowBoundsDepth": 20,
+        "shadowCascades": 3,
+        "shadowMaxDistance": 50,
+        "shadowLambda": 0.5,
+        "shadowBias": 0.001,
+        "shadowNormalBiasAuto": true,
+        "shadowNormalBias": 0.05,
+        "shadowUpdate": 1
+       }
+      }
+     ]
+    },
+    {
+     "id": "b588d6bc-e0a0-41cb-8712-db1e3d91a14b",
+     "name": "Fill",
+     "parentId": "589c5292-23ff-4bb4-8695-b771f44d6177",
+     "active": true,
+     "spatial": "scene3d.transform",
+     "components": [
+      {
+       "id": "e80f7aa5-989c-46d4-8f52-dd76fcbd9974",
+       "type": "scene3d.transform",
+       "version": 1,
+       "data": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1,
+        "scaleX": 1,
+        "scaleY": 1,
+        "scaleZ": 1
+       }
+      },
+      {
+       "id": "815844df-eb44-4490-84fa-bc928ea6cbba",
+       "type": "pixi3d.light",
+       "version": 1,
+       "data": {
+        "kind": "ambient",
+        "color": "#ffffff",
+        "intensity": 0.15,
+        "castShadow": false,
+        "range": 10,
+        "radius": 0.1,
+        "coneAngle": 30,
+        "penumbra": 0.2,
+        "shadowPlacement": "fit",
+        "shadowBoundsX": 0,
+        "shadowBoundsY": 0,
+        "shadowBoundsZ": 0,
+        "shadowBoundsWidth": 20,
+        "shadowBoundsHeight": 20,
+        "shadowBoundsDepth": 20,
+        "shadowCascades": 3,
+        "shadowMaxDistance": 50,
+        "shadowLambda": 0.5,
+        "shadowBias": 0.001,
+        "shadowNormalBiasAuto": true,
+        "shadowNormalBias": 0.05,
+        "shadowUpdate": 1
+       }
+      }
+     ]
+    },
+    {
+     "id": "016c28d4-ec8d-4551-84da-2203a3814e3b",
+     "name": "Floor",
+     "parentId": "589c5292-23ff-4bb4-8695-b771f44d6177",
+     "active": true,
+     "spatial": "scene3d.transform",
+     "components": [
+      {
+       "id": "5664ed91-51b5-4009-8708-6cecf54e355e",
+       "type": "scene3d.transform",
+       "version": 1,
+       "data": {
+        "x": 0,
+        "y": -0.02,
+        "z": 0,
+        "qx": -0.7071067811865475,
+        "qy": 0,
+        "qz": 0,
+        "qw": 0.7071067811865476,
+        "scaleX": 30,
+        "scaleY": 30,
+        "scaleZ": 30
+       }
+      },
+      {
+       "id": "dd9aa932-149e-4f74-850d-e1cb30a46122",
+       "type": "pixi3d.primitive",
+       "version": 1,
+       "data": {
+        "shape": "plane",
+        "color": "#4d5a3f",
+        "roughness": 0.9,
+        "metallic": 0,
+        "castShadow": true,
+        "receiveShadow": true,
+        "emissiveColor": "#000000",
+        "emissiveStrength": 0,
+        "segments": 32,
+        "radiusTop": 0.5,
+        "openEnded": false,
+        "capsuleLength": 0.5,
+        "tube": 0.15,
+        "arc": 360,
+        "knotP": 2,
+        "knotQ": 3,
+        "detail": 1,
+        "draw": "surface",
+        "lodDistance": 0,
+        "lodSegments": 8,
+        "material": "pbr",
+        "alphaMode": "opaque",
+        "alpha": 1,
+        "alphaCutoff": 0.5,
+        "doubleSided": false,
+        "flatShading": false,
+        "baseColorTexture": "",
+        "videoTexture": "",
+        "feedCameraId": "",
+        "screenSourceId": "",
+        "screenWidth": 512,
+        "screenHeight": 256,
+        "portalExitId": "",
+        "normalTexture": "",
+        "normalScale": 1,
+        "metallicRoughnessTexture": "",
+        "occlusionTexture": "",
+        "occlusionStrength": 1,
+        "emissiveTexture": "",
+        "uvScaleX": 1,
+        "uvScaleY": 1,
+        "uvOffsetX": 0,
+        "uvOffsetY": 0,
+        "uvRotation": 0,
+        "uvScrollX": 0,
+        "uvScrollY": 0,
+        "shininess": 32,
+        "specularStrength": 1,
+        "specularColor": "#ffffff",
+        "ior": 1.5,
+        "specularFactor": 1,
+        "clearcoat": 0,
+        "clearcoatRoughness": 0,
+        "clearcoatTexture": "",
+        "sheenColor": "#000000",
+        "sheenRoughness": 0,
+        "sheenTexture": "",
+        "transmission": 0,
+        "thickness": 0,
+        "attenuationColor": "#ffffff",
+        "attenuationDistance": 0,
+        "transmissionTexture": "",
+        "iridescence": 0,
+        "iridescenceIor": 1.3,
+        "iridescenceThicknessMin": 100,
+        "iridescenceThicknessMax": 400,
+        "iridescenceTexture": "",
+        "anisotropy": 0,
+        "anisotropyRotation": 0,
+        "toonBands": 3,
+        "toonSpecularSize": 0.15,
+        "toonRimIntensity": 0.4,
+        "toonOutline": true
+       }
+      }
+     ]
+    },
+    {
+     "id": "7558e39e-f559-430a-8ecd-8904e6d663cf",
+     "name": "Dancer 1",
+     "parentId": "589c5292-23ff-4bb4-8695-b771f44d6177",
+     "active": true,
+     "spatial": "scene3d.transform",
+     "components": [
+      {
+       "id": "09d99ab6-fcfa-41ef-8afb-c0d143717f35",
+       "type": "scene3d.transform",
+       "version": 1,
+       "data": {
+        "x": -3,
+        "y": 0,
+        "z": -2.4000000000000004,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1,
+        "scaleX": 0.8,
+        "scaleY": 0.8,
+        "scaleZ": 0.8
+       }
+      },
+      {
+       "id": "ecc5ade6-a2db-455f-8d12-0a7a13a963cf",
+       "type": "pixi3d.modelRenderer",
+       "version": 1,
+       "data": {
+        "assetId": "bf8f8bc8-fd2f-4085-8c5f-3285372faf5c",
+        "overrideMaterial": false,
+        "color": "#ffffff",
+        "roughness": 0.5,
+        "metallic": 0,
+        "materialSlots": [],
+        "castShadow": true,
+        "receiveShadow": true
+       }
+      },
+      {
+       "id": "3d83d744-9615-4815-86f0-7cad25686730",
+       "type": "animation3d.model",
+       "version": 1,
+       "data": {
+        "clip": "Idle",
+        "loop": true,
+        "speed": 0.7,
+        "autoplay": true,
+        "blendClip": "",
+        "blendWeight": 0.5,
+        "fadeDuration": 0.3,
+        "startOffset": 0
+       }
+      }
+     ]
+    },
+    {
+     "id": "172320a7-70af-4f0a-82e8-5e5f9f0d26b9",
+     "name": "Dancer 2",
+     "parentId": "589c5292-23ff-4bb4-8695-b771f44d6177",
+     "active": true,
+     "spatial": "scene3d.transform",
+     "components": [
+      {
+       "id": "d1965a48-d44d-4972-80de-457a6b817a08",
+       "type": "scene3d.transform",
+       "version": 1,
+       "data": {
+        "x": -1.5,
+        "y": 0,
+        "z": -2.4000000000000004,
+        "qx": 0,
+        "qy": 0.3987490689252462,
+        "qz": 0,
+        "qw": 0.917060074385124,
+        "scaleX": 0.8,
+        "scaleY": 0.8,
+        "scaleZ": 0.8
+       }
+      },
+      {
+       "id": "3836ba36-1fc5-428a-8964-286710890a37",
+       "type": "pixi3d.modelRenderer",
+       "version": 1,
+       "data": {
+        "assetId": "bf8f8bc8-fd2f-4085-8c5f-3285372faf5c",
+        "overrideMaterial": false,
+        "color": "#ffffff",
+        "roughness": 0.5,
+        "metallic": 0,
+        "materialSlots": [],
+        "castShadow": true,
+        "receiveShadow": true
+       }
+      },
+      {
+       "id": "d4bd8ff6-aa0e-4fa0-8522-74f1db0c828b",
+       "type": "animation3d.model",
+       "version": 1,
+       "data": {
+        "clip": "Wave",
+        "loop": true,
+        "speed": 0.8999999999999999,
+        "autoplay": true,
+        "blendClip": "",
+        "blendWeight": 0.5,
+        "fadeDuration": 0.3,
+        "startOffset": 0.2
+       }
+      }
+     ]
+    },
+    {
+     "id": "612b7a3b-2d65-444d-8f0d-dc346fae26a3",
+     "name": "Dancer 3",
+     "parentId": "589c5292-23ff-4bb4-8695-b771f44d6177",
+     "active": true,
+     "spatial": "scene3d.transform",
+     "components": [
+      {
+       "id": "da410796-6cbf-4ad0-81bd-f00a81983d93",
+       "type": "scene3d.transform",
+       "version": 1,
+       "data": {
+        "x": 0,
+        "y": 0,
+        "z": -2.4000000000000004,
+        "qx": 0,
+        "qy": 0.7313537016191705,
+        "qz": 0,
+        "qw": 0.6819983600624985,
+        "scaleX": 0.8,
+        "scaleY": 0.8,
+        "scaleZ": 0.8
+       }
+      },
+      {
+       "id": "1d2d282b-bdac-4bea-8263-9d759bc1c2b8",
+       "type": "pixi3d.modelRenderer",
+       "version": 1,
+       "data": {
+        "assetId": "bf8f8bc8-fd2f-4085-8c5f-3285372faf5c",
+        "overrideMaterial": false,
+        "color": "#ffffff",
+        "roughness": 0.5,
+        "metallic": 0,
+        "materialSlots": [],
+        "castShadow": true,
+        "receiveShadow": true
+       }
+      },
+      {
+       "id": "69598856-833d-4979-8e23-ef411abd1acd",
+       "type": "animation3d.model",
+       "version": 1,
+       "data": {
+        "clip": "Twist",
+        "loop": true,
+        "speed": 1.1,
+        "autoplay": true,
+        "blendClip": "",
+        "blendWeight": 0.5,
+        "fadeDuration": 0.3,
+        "startOffset": 0.4
+       }
+      }
+     ]
+    },
+    {
+     "id": "cf0b88db-958a-417b-82c1-74da0d340ebe",
+     "name": "Dancer 4",
+     "parentId": "589c5292-23ff-4bb4-8695-b771f44d6177",
+     "active": true,
+     "spatial": "scene3d.transform",
+     "components": [
+      {
+       "id": "22da83a6-90c5-4234-8652-c22b05aeafd6",
+       "type": "scene3d.transform",
+       "version": 1,
+       "data": {
+        "x": 1.5,
+        "y": 0,
+        "z": -2.4000000000000004,
+        "qx": 0,
+        "qy": 0.9426414910921784,
+        "qz": 0,
+        "qw": 0.3338068592337709,
+        "scaleX": 0.8,
+        "scaleY": 0.8,
+        "scaleZ": 0.8
+       }
+      },
+      {
+       "id": "f794ffb2-b04a-4c04-8ecc-78d5779285ec",
+       "type": "pixi3d.modelRenderer",
+       "version": 1,
+       "data": {
+        "assetId": "bf8f8bc8-fd2f-4085-8c5f-3285372faf5c",
+        "overrideMaterial": false,
+        "color": "#ffffff",
+        "roughness": 0.5,
+        "metallic": 0,
+        "materialSlots": [],
+        "castShadow": true,
+        "receiveShadow": true
+       }
+      },
+      {
+       "id": "a4af847c-a680-480b-8722-5d9c7e468be3",
+       "type": "animation3d.model",
+       "version": 1,
+       "data": {
+        "clip": "Idle",
+        "loop": true,
+        "speed": 1.2999999999999998,
+        "autoplay": true,
+        "blendClip": "",
+        "blendWeight": 0.5,
+        "fadeDuration": 0.3,
+        "startOffset": 0.6
+       }
+      }
+     ]
+    },
+    {
+     "id": "a1612be4-34c7-4773-8382-5ec1930c32a3",
+     "name": "Dancer 5",
+     "parentId": "589c5292-23ff-4bb4-8695-b771f44d6177",
+     "active": true,
+     "spatial": "scene3d.transform",
+     "components": [
+      {
+       "id": "7d83e1c3-a2aa-418e-8b67-23968b880f84",
+       "type": "scene3d.transform",
+       "version": 1,
+       "data": {
+        "x": 3,
+        "y": 0,
+        "z": -2.4000000000000004,
+        "qx": 0,
+        "qy": 0.9975640502598242,
+        "qz": 0,
+        "qw": -0.06975647374412533,
+        "scaleX": 0.8,
+        "scaleY": 0.8,
+        "scaleZ": 0.8
+       }
+      },
+      {
+       "id": "c4a9ea0b-afe8-4878-849b-b04f6486aa62",
+       "type": "pixi3d.modelRenderer",
+       "version": 1,
+       "data": {
+        "assetId": "bf8f8bc8-fd2f-4085-8c5f-3285372faf5c",
+        "overrideMaterial": false,
+        "color": "#ffffff",
+        "roughness": 0.5,
+        "metallic": 0,
+        "materialSlots": [],
+        "castShadow": true,
+        "receiveShadow": true
+       }
+      },
+      {
+       "id": "0870765b-311f-4c1e-8374-6a7cc73ae486",
+       "type": "animation3d.model",
+       "version": 1,
+       "data": {
+        "clip": "Wave",
+        "loop": true,
+        "speed": 0.7999999999999999,
+        "autoplay": true,
+        "blendClip": "",
+        "blendWeight": 0.5,
+        "fadeDuration": 0.3,
+        "startOffset": 0.8
+       }
+      }
+     ]
+    },
+    {
+     "id": "e7e21714-9b9c-42bc-8a3c-46df5512d8bb",
+     "name": "Dancer 6",
+     "parentId": "589c5292-23ff-4bb4-8695-b771f44d6177",
+     "active": true,
+     "spatial": "scene3d.transform",
+     "components": [
+      {
+       "id": "bd8b416b-80da-46ff-88c5-27b9c021f1c3",
+       "type": "scene3d.transform",
+       "version": 1,
+       "data": {
+        "x": -2.6,
+        "y": 0,
+        "z": -0.8,
+        "qx": 0,
+        "qy": 0.8870108331782218,
+        "qz": 0,
+        "qw": -0.4617486132350338,
+        "scaleX": 0.8,
+        "scaleY": 0.8,
+        "scaleZ": 0.8
+       }
+      },
+      {
+       "id": "121299b9-6dcb-4dd5-8a37-79b8df752e16",
+       "type": "pixi3d.modelRenderer",
+       "version": 1,
+       "data": {
+        "assetId": "bf8f8bc8-fd2f-4085-8c5f-3285372faf5c",
+        "overrideMaterial": false,
+        "color": "#ffffff",
+        "roughness": 0.5,
+        "metallic": 0,
+        "materialSlots": [],
+        "castShadow": true,
+        "receiveShadow": true
+       }
+      },
+      {
+       "id": "1e46a48e-6328-445a-885b-eb4932665aa4",
+       "type": "animation3d.model",
+       "version": 1,
+       "data": {
+        "clip": "Twist",
+        "loop": true,
+        "speed": 1,
+        "autoplay": true,
+        "blendClip": "",
+        "blendWeight": 0.5,
+        "fadeDuration": 0.3,
+        "startOffset": 1
+       }
+      }
+     ]
+    },
+    {
+     "id": "72ad4df7-f139-44b2-8b33-4f58573f4e47",
+     "name": "Dancer 7",
+     "parentId": "589c5292-23ff-4bb4-8695-b771f44d6177",
+     "active": true,
+     "spatial": "scene3d.transform",
+     "components": [
+      {
+       "id": "f1562169-5f23-4d3b-8404-3467225d04ce",
+       "type": "scene3d.transform",
+       "version": 1,
+       "data": {
+        "x": -1.1,
+        "y": 0,
+        "z": -0.8,
+        "qx": 0,
+        "qy": 0.6293203910498374,
+        "qz": 0,
+        "qw": -0.7771459614569709,
+        "scaleX": 0.8,
+        "scaleY": 0.8,
+        "scaleZ": 0.8
+       }
+      },
+      {
+       "id": "f0db8d94-97b4-4bb0-8f24-37a2cbeaa9ef",
+       "type": "pixi3d.modelRenderer",
+       "version": 1,
+       "data": {
+        "assetId": "bf8f8bc8-fd2f-4085-8c5f-3285372faf5c",
+        "overrideMaterial": false,
+        "color": "#ffffff",
+        "roughness": 0.5,
+        "metallic": 0,
+        "materialSlots": [],
+        "castShadow": true,
+        "receiveShadow": true
+       }
+      },
+      {
+       "id": "2c4ea1e6-4a86-409c-841d-ee272891653f",
+       "type": "animation3d.model",
+       "version": 1,
+       "data": {
+        "clip": "Idle",
+        "loop": true,
+        "speed": 1.2,
+        "autoplay": true,
+        "blendClip": "",
+        "blendWeight": 0.5,
+        "fadeDuration": 0.3,
+        "startOffset": 1.2
+       }
+      }
+     ]
+    },
+    {
+     "id": "9e5f6375-bd19-46d8-8cf0-7768a9015410",
+     "name": "Dancer 8",
+     "parentId": "589c5292-23ff-4bb4-8695-b771f44d6177",
+     "active": true,
+     "spatial": "scene3d.transform",
+     "components": [
+      {
+       "id": "4377d271-9fc9-46bc-862e-081f6dc49a05",
+       "type": "scene3d.transform",
+       "version": 1,
+       "data": {
+        "x": 0.4,
+        "y": 0,
+        "z": -0.8,
+        "qx": 0,
+        "qy": 0.267238376078257,
+        "qz": 0,
+        "qw": -0.963630453208623,
+        "scaleX": 0.8,
+        "scaleY": 0.8,
+        "scaleZ": 0.8
+       }
+      },
+      {
+       "id": "3af8f4de-6913-4d44-8ca3-bcb528006963",
+       "type": "pixi3d.modelRenderer",
+       "version": 1,
+       "data": {
+        "assetId": "bf8f8bc8-fd2f-4085-8c5f-3285372faf5c",
+        "overrideMaterial": false,
+        "color": "#ffffff",
+        "roughness": 0.5,
+        "metallic": 0,
+        "materialSlots": [],
+        "castShadow": true,
+        "receiveShadow": true
+       }
+      },
+      {
+       "id": "03a359b0-df35-4c4f-80a6-da36bac15d21",
+       "type": "animation3d.model",
+       "version": 1,
+       "data": {
+        "clip": "Wave",
+        "loop": true,
+        "speed": 0.7,
+        "autoplay": true,
+        "blendClip": "",
+        "blendWeight": 0.5,
+        "fadeDuration": 0.3,
+        "startOffset": 1.4
+       }
+      }
+     ]
+    },
+    {
+     "id": "556145f1-3a81-4cc6-8ce5-badf03212070",
+     "name": "Dancer 9",
+     "parentId": "589c5292-23ff-4bb4-8695-b771f44d6177",
+     "active": true,
+     "spatial": "scene3d.transform",
+     "components": [
+      {
+       "id": "ce20d7f2-ced5-446f-872d-6fbd587b5fee",
+       "type": "scene3d.transform",
+       "version": 1,
+       "data": {
+        "x": 1.9,
+        "y": 0,
+        "z": -0.8,
+        "qx": 0,
+        "qy": 0.13917310096006544,
+        "qz": 0,
+        "qw": 0.9902680687415704,
+        "scaleX": 0.8,
+        "scaleY": 0.8,
+        "scaleZ": 0.8
+       }
+      },
+      {
+       "id": "2ddc4e0b-77c0-431c-8020-8d676ff3de23",
+       "type": "pixi3d.modelRenderer",
+       "version": 1,
+       "data": {
+        "assetId": "bf8f8bc8-fd2f-4085-8c5f-3285372faf5c",
+        "overrideMaterial": false,
+        "color": "#ffffff",
+        "roughness": 0.5,
+        "metallic": 0,
+        "materialSlots": [],
+        "castShadow": true,
+        "receiveShadow": true
+       }
+      },
+      {
+       "id": "f56bf564-2683-48b4-8a65-a47e9d0faa0c",
+       "type": "animation3d.model",
+       "version": 1,
+       "data": {
+        "clip": "Twist",
+        "loop": true,
+        "speed": 0.8999999999999999,
+        "autoplay": true,
+        "blendClip": "",
+        "blendWeight": 0.5,
+        "fadeDuration": 0.3,
+        "startOffset": 1.6
+       }
+      }
+     ]
+    },
+    {
+     "id": "af3edb44-b8c3-4713-82d0-bd43bf9dcbc0",
+     "name": "Dancer 10",
+     "parentId": "589c5292-23ff-4bb4-8695-b771f44d6177",
+     "active": true,
+     "spatial": "scene3d.transform",
+     "components": [
+      {
+       "id": "95dddfe5-2169-46b1-806f-8d4580392680",
+       "type": "scene3d.transform",
+       "version": 1,
+       "data": {
+        "x": 3.4,
+        "y": 0,
+        "z": -0.8,
+        "qx": 0,
+        "qy": 0.5224985647159488,
+        "qz": 0,
+        "qw": 0.8526401643540923,
+        "scaleX": 0.8,
+        "scaleY": 0.8,
+        "scaleZ": 0.8
+       }
+      },
+      {
+       "id": "69cd213c-9ad1-498a-8b50-e1adf7345914",
+       "type": "pixi3d.modelRenderer",
+       "version": 1,
+       "data": {
+        "assetId": "bf8f8bc8-fd2f-4085-8c5f-3285372faf5c",
+        "overrideMaterial": false,
+        "color": "#ffffff",
+        "roughness": 0.5,
+        "metallic": 0,
+        "materialSlots": [],
+        "castShadow": true,
+        "receiveShadow": true
+       }
+      },
+      {
+       "id": "a37e1b22-6be3-414b-8aeb-b9423a6f6672",
+       "type": "animation3d.model",
+       "version": 1,
+       "data": {
+        "clip": "Idle",
+        "loop": true,
+        "speed": 1.1,
+        "autoplay": true,
+        "blendClip": "",
+        "blendWeight": 0.5,
+        "fadeDuration": 0.3,
+        "startOffset": 0.1
+       }
+      }
+     ]
+    },
+    {
+     "id": "7bb0198a-52bc-4642-8aa1-098d60c3323b",
+     "name": "Dancer 11",
+     "parentId": "589c5292-23ff-4bb4-8695-b771f44d6177",
+     "active": true,
+     "spatial": "scene3d.transform",
+     "components": [
+      {
+       "id": "d2e89960-8fd6-4961-8edd-0641206c3363",
+       "type": "scene3d.transform",
+       "version": 1,
+       "data": {
+        "x": -3,
+        "y": 0,
+        "z": 0.8,
+        "qx": 0,
+        "qy": 0.8191520442889918,
+        "qz": 0,
+        "qw": 0.573576436351046,
+        "scaleX": 0.8,
+        "scaleY": 0.8,
+        "scaleZ": 0.8
+       }
+      },
+      {
+       "id": "7c6bb67c-f0c5-4d56-8da6-e69252b60b34",
+       "type": "pixi3d.modelRenderer",
+       "version": 1,
+       "data": {
+        "assetId": "bf8f8bc8-fd2f-4085-8c5f-3285372faf5c",
+        "overrideMaterial": false,
+        "color": "#ffffff",
+        "roughness": 0.5,
+        "metallic": 0,
+        "materialSlots": [],
+        "castShadow": true,
+        "receiveShadow": true
+       }
+      },
+      {
+       "id": "a8393c7c-e630-4904-8e3d-4840e87f55e6",
+       "type": "animation3d.model",
+       "version": 1,
+       "data": {
+        "clip": "Wave",
+        "loop": true,
+        "speed": 1.2999999999999998,
+        "autoplay": true,
+        "blendClip": "",
+        "blendWeight": 0.5,
+        "fadeDuration": 0.3,
+        "startOffset": 0.3
+       }
+      }
+     ]
+    },
+    {
+     "id": "7d345d97-7283-4192-870f-b88f973e55d9",
+     "name": "Dancer 12",
+     "parentId": "589c5292-23ff-4bb4-8695-b771f44d6177",
+     "active": true,
+     "spatial": "scene3d.transform",
+     "components": [
+      {
+       "id": "b1c7b30f-66ed-44f9-8485-028b78e77993",
+       "type": "scene3d.transform",
+       "version": 1,
+       "data": {
+        "x": -1.5,
+        "y": 0,
+        "z": 0.8,
+        "qx": 0,
+        "qy": 0.9799247046208296,
+        "qz": 0,
+        "qw": 0.1993679344171972,
+        "scaleX": 0.8,
+        "scaleY": 0.8,
+        "scaleZ": 0.8
+       }
+      },
+      {
+       "id": "3f026c06-1101-4018-82aa-a80088d6e791",
+       "type": "pixi3d.modelRenderer",
+       "version": 1,
+       "data": {
+        "assetId": "bf8f8bc8-fd2f-4085-8c5f-3285372faf5c",
+        "overrideMaterial": false,
+        "color": "#ffffff",
+        "roughness": 0.5,
+        "metallic": 0,
+        "materialSlots": [],
+        "castShadow": true,
+        "receiveShadow": true
+       }
+      },
+      {
+       "id": "334442e4-eb31-45a3-8ecc-d52b4b492f4d",
+       "type": "animation3d.model",
+       "version": 1,
+       "data": {
+        "clip": "Twist",
+        "loop": true,
+        "speed": 0.7999999999999999,
+        "autoplay": true,
+        "blendClip": "",
+        "blendWeight": 0.5,
+        "fadeDuration": 0.3,
+        "startOffset": 0.5
+       }
+      }
+     ]
+    },
+    {
+     "id": "1a34c069-4f94-40a9-818c-2d2aa53eee0b",
+     "name": "Dancer 13",
+     "parentId": "589c5292-23ff-4bb4-8695-b771f44d6177",
+     "active": true,
+     "spatial": "scene3d.transform",
+     "components": [
+      {
+       "id": "1a50516b-2717-4a7c-8d99-2ccff8c83fc1",
+       "type": "scene3d.transform",
+       "version": 1,
+       "data": {
+        "x": 0,
+        "y": 0,
+        "z": 0.8,
+        "qx": 0,
+        "qy": 0.9781476007338057,
+        "qz": 0,
+        "qw": -0.20791169081775934,
+        "scaleX": 0.8,
+        "scaleY": 0.8,
+        "scaleZ": 0.8
+       }
+      },
+      {
+       "id": "dce91805-7957-4a55-8d58-1d7ef2dc5a00",
+       "type": "pixi3d.modelRenderer",
+       "version": 1,
+       "data": {
+        "assetId": "bf8f8bc8-fd2f-4085-8c5f-3285372faf5c",
+        "overrideMaterial": false,
+        "color": "#ffffff",
+        "roughness": 0.5,
+        "metallic": 0,
+        "materialSlots": [],
+        "castShadow": true,
+        "receiveShadow": true
+       }
+      },
+      {
+       "id": "6e6f9511-30ce-4787-898c-0e63b64ce7a4",
+       "type": "animation3d.model",
+       "version": 1,
+       "data": {
+        "clip": "Idle",
+        "loop": true,
+        "speed": 1,
+        "autoplay": true,
+        "blendClip": "",
+        "blendWeight": 0.5,
+        "fadeDuration": 0.3,
+        "startOffset": 0.7
+       }
+      }
+     ]
+    },
+    {
+     "id": "5bff5511-6ecd-47fd-8354-1227c66e8ffd",
+     "name": "Dancer 14",
+     "parentId": "589c5292-23ff-4bb4-8695-b771f44d6177",
+     "active": true,
+     "spatial": "scene3d.transform",
+     "components": [
+      {
+       "id": "c39aece2-6b9f-4707-8450-a15c97b7b49d",
+       "type": "scene3d.transform",
+       "version": 1,
+       "data": {
+        "x": 1.5,
+        "y": 0,
+        "z": 0.8,
+        "qx": 0,
+        "qy": 0.8141155183563192,
+        "qz": 0,
+        "qw": -0.5807029557109398,
+        "scaleX": 0.8,
+        "scaleY": 0.8,
+        "scaleZ": 0.8
+       }
+      },
+      {
+       "id": "35a803a5-7287-45fa-85fc-006140dcefe4",
+       "type": "pixi3d.modelRenderer",
+       "version": 1,
+       "data": {
+        "assetId": "bf8f8bc8-fd2f-4085-8c5f-3285372faf5c",
+        "overrideMaterial": false,
+        "color": "#ffffff",
+        "roughness": 0.5,
+        "metallic": 0,
+        "materialSlots": [],
+        "castShadow": true,
+        "receiveShadow": true
+       }
+      },
+      {
+       "id": "e3477c7e-8de3-4d65-8c5a-05a643201f60",
+       "type": "animation3d.model",
+       "version": 1,
+       "data": {
+        "clip": "Wave",
+        "loop": true,
+        "speed": 1.2,
+        "autoplay": true,
+        "blendClip": "",
+        "blendWeight": 0.5,
+        "fadeDuration": 0.3,
+        "startOffset": 0.9
+       }
+      }
+     ]
+    },
+    {
+     "id": "095c4ad8-09e6-4c3b-8de1-8e8b6f1a92e3",
+     "name": "Dancer 15",
+     "parentId": "589c5292-23ff-4bb4-8695-b771f44d6177",
+     "active": true,
+     "spatial": "scene3d.transform",
+     "components": [
+      {
+       "id": "ee99562b-c16c-4a77-8b78-8f6e42cfc1bc",
+       "type": "scene3d.transform",
+       "version": 1,
+       "data": {
+        "x": 3,
+        "y": 0,
+        "z": 0.8,
+        "qx": 0,
+        "qy": 0.5150380749100544,
+        "qz": 0,
+        "qw": -0.8571673007021122,
+        "scaleX": 0.8,
+        "scaleY": 0.8,
+        "scaleZ": 0.8
+       }
+      },
+      {
+       "id": "1d41a755-920d-4195-85cd-5ca4d21de80c",
+       "type": "pixi3d.modelRenderer",
+       "version": 1,
+       "data": {
+        "assetId": "bf8f8bc8-fd2f-4085-8c5f-3285372faf5c",
+        "overrideMaterial": false,
+        "color": "#ffffff",
+        "roughness": 0.5,
+        "metallic": 0,
+        "materialSlots": [],
+        "castShadow": true,
+        "receiveShadow": true
+       }
+      },
+      {
+       "id": "1b82e923-bd6f-4dd9-8aef-d15b6a4b6470",
+       "type": "animation3d.model",
+       "version": 1,
+       "data": {
+        "clip": "Twist",
+        "loop": true,
+        "speed": 0.7,
+        "autoplay": true,
+        "blendClip": "",
+        "blendWeight": 0.5,
+        "fadeDuration": 0.3,
+        "startOffset": 1.1
+       }
+      }
+     ]
+    },
+    {
+     "id": "3948f3d8-eaf3-4ecb-85ed-6b9bdabc8675",
+     "name": "Dancer 16",
+     "parentId": "589c5292-23ff-4bb4-8695-b771f44d6177",
+     "active": true,
+     "spatial": "scene3d.transform",
+     "components": [
+      {
+       "id": "d430b5d2-b6ea-4432-8598-35cb78e5b0c4",
+       "type": "scene3d.transform",
+       "version": 1,
+       "data": {
+        "x": -2.6,
+        "y": 0,
+        "z": 2.4000000000000004,
+        "qx": 0,
+        "qy": 0.13052619222005157,
+        "qz": 0,
+        "qw": -0.9914448613738104,
+        "scaleX": 0.8,
+        "scaleY": 0.8,
+        "scaleZ": 0.8
+       }
+      },
+      {
+       "id": "5e93d9b1-1730-42a3-89be-ada619aa5e7a",
+       "type": "pixi3d.modelRenderer",
+       "version": 1,
+       "data": {
+        "assetId": "bf8f8bc8-fd2f-4085-8c5f-3285372faf5c",
+        "overrideMaterial": false,
+        "color": "#ffffff",
+        "roughness": 0.5,
+        "metallic": 0,
+        "materialSlots": [],
+        "castShadow": true,
+        "receiveShadow": true
+       }
+      },
+      {
+       "id": "babcc143-57d5-4176-84bf-1940a8e297ed",
+       "type": "animation3d.model",
+       "version": 1,
+       "data": {
+        "clip": "Idle",
+        "loop": true,
+        "speed": 0.8999999999999999,
+        "autoplay": true,
+        "blendClip": "",
+        "blendWeight": 0.5,
+        "fadeDuration": 0.3,
+        "startOffset": 1.3
+       }
+      }
+     ]
+    },
+    {
+     "id": "1da78d86-be4a-412d-8b0c-34201362c1da",
+     "name": "Dancer 17",
+     "parentId": "589c5292-23ff-4bb4-8695-b771f44d6177",
+     "active": true,
+     "spatial": "scene3d.transform",
+     "components": [
+      {
+       "id": "1b5caa0a-d0e8-4750-887f-61a9e4d024e7",
+       "type": "scene3d.transform",
+       "version": 1,
+       "data": {
+        "x": -1.1,
+        "y": 0,
+        "z": 2.4000000000000004,
+        "qx": 0,
+        "qy": 0.27563735581699916,
+        "qz": 0,
+        "qw": 0.9612616959383189,
+        "scaleX": 0.8,
+        "scaleY": 0.8,
+        "scaleZ": 0.8
+       }
+      },
+      {
+       "id": "f97be32c-3310-4dd7-8deb-14ac7a44664d",
+       "type": "pixi3d.modelRenderer",
+       "version": 1,
+       "data": {
+        "assetId": "bf8f8bc8-fd2f-4085-8c5f-3285372faf5c",
+        "overrideMaterial": false,
+        "color": "#ffffff",
+        "roughness": 0.5,
+        "metallic": 0,
+        "materialSlots": [],
+        "castShadow": true,
+        "receiveShadow": true
+       }
+      },
+      {
+       "id": "d8acae4c-6751-4c6e-85ce-3c6356910226",
+       "type": "animation3d.model",
+       "version": 1,
+       "data": {
+        "clip": "Wave",
+        "loop": true,
+        "speed": 1.1,
+        "autoplay": true,
+        "blendClip": "",
+        "blendWeight": 0.5,
+        "fadeDuration": 0.3,
+        "startOffset": 1.5
+       }
+      }
+     ]
+    },
+    {
+     "id": "7e01282f-1134-470a-8c75-3bf2e3029497",
+     "name": "Dancer 18",
+     "parentId": "589c5292-23ff-4bb4-8695-b771f44d6177",
+     "active": true,
+     "spatial": "scene3d.transform",
+     "components": [
+      {
+       "id": "5c54c6a7-6bf7-4071-81b7-29a8b5cfab53",
+       "type": "scene3d.transform",
+       "version": 1,
+       "data": {
+        "x": 0.4,
+        "y": 0,
+        "z": 2.4000000000000004,
+        "qx": 0,
+        "qy": 0.636078220277764,
+        "qz": 0,
+        "qw": 0.77162458338772,
+        "scaleX": 0.8,
+        "scaleY": 0.8,
+        "scaleZ": 0.8
+       }
+      },
+      {
+       "id": "7efc9cb7-182e-4ff1-85a6-253c0fedb954",
+       "type": "pixi3d.modelRenderer",
+       "version": 1,
+       "data": {
+        "assetId": "bf8f8bc8-fd2f-4085-8c5f-3285372faf5c",
+        "overrideMaterial": false,
+        "color": "#ffffff",
+        "roughness": 0.5,
+        "metallic": 0,
+        "materialSlots": [],
+        "castShadow": true,
+        "receiveShadow": true
+       }
+      },
+      {
+       "id": "906bab64-067f-4846-86f9-3e088d7f9fb3",
+       "type": "animation3d.model",
+       "version": 1,
+       "data": {
+        "clip": "Twist",
+        "loop": true,
+        "speed": 1.2999999999999998,
+        "autoplay": true,
+        "blendClip": "",
+        "blendWeight": 0.5,
+        "fadeDuration": 0.3,
+        "startOffset": 0
+       }
+      }
+     ]
+    },
+    {
+     "id": "a2a5f7f1-a5b6-486f-852c-54a43137088a",
+     "name": "Dancer 19",
+     "parentId": "589c5292-23ff-4bb4-8695-b771f44d6177",
+     "active": true,
+     "spatial": "scene3d.transform",
+     "components": [
+      {
+       "id": "826e022d-4605-4471-8ef7-1f9e0b295927",
+       "type": "scene3d.transform",
+       "version": 1,
+       "data": {
+        "x": 1.9,
+        "y": 0,
+        "z": 2.4000000000000004,
+        "qx": 0,
+        "qy": 0.8910065241883678,
+        "qz": 0,
+        "qw": 0.45399049973954686,
+        "scaleX": 0.8,
+        "scaleY": 0.8,
+        "scaleZ": 0.8
+       }
+      },
+      {
+       "id": "9e46c7eb-1c31-4118-806d-877371a7cece",
+       "type": "pixi3d.modelRenderer",
+       "version": 1,
+       "data": {
+        "assetId": "bf8f8bc8-fd2f-4085-8c5f-3285372faf5c",
+        "overrideMaterial": false,
+        "color": "#ffffff",
+        "roughness": 0.5,
+        "metallic": 0,
+        "materialSlots": [],
+        "castShadow": true,
+        "receiveShadow": true
+       }
+      },
+      {
+       "id": "b2d4e978-cbfe-4465-8b70-15dbcc1feaa8",
+       "type": "animation3d.model",
+       "version": 1,
+       "data": {
+        "clip": "Idle",
+        "loop": true,
+        "speed": 0.7999999999999999,
+        "autoplay": true,
+        "blendClip": "",
+        "blendWeight": 0.5,
+        "fadeDuration": 0.3,
+        "startOffset": 0.2
+       }
+      }
+     ]
+    },
+    {
+     "id": "7685d572-d410-42e6-8a51-77661c97d8a3",
+     "name": "Dancer 20",
+     "parentId": "589c5292-23ff-4bb4-8695-b771f44d6177",
+     "active": true,
+     "spatial": "scene3d.transform",
+     "components": [
+      {
+       "id": "19b9fa00-4431-4169-8cb0-ccf08ef760d6",
+       "type": "scene3d.transform",
+       "version": 1,
+       "data": {
+        "x": 3.4,
+        "y": 0,
+        "z": 2.4000000000000004,
+        "qx": 0,
+        "qy": 0.9981347984218669,
+        "qz": 0,
+        "qw": 0.06104853953485691,
+        "scaleX": 0.8,
+        "scaleY": 0.8,
+        "scaleZ": 0.8
+       }
+      },
+      {
+       "id": "f54ae222-2a49-4a0a-888f-dae49937bee5",
+       "type": "pixi3d.modelRenderer",
+       "version": 1,
+       "data": {
+        "assetId": "bf8f8bc8-fd2f-4085-8c5f-3285372faf5c",
+        "overrideMaterial": false,
+        "color": "#ffffff",
+        "roughness": 0.5,
+        "metallic": 0,
+        "materialSlots": [],
+        "castShadow": true,
+        "receiveShadow": true
+       }
+      },
+      {
+       "id": "27e84fc7-a3f5-412b-8cc3-87428dd444de",
+       "type": "animation3d.model",
+       "version": 1,
+       "data": {
+        "clip": "Wave",
+        "loop": true,
+        "speed": 1,
+        "autoplay": true,
+        "blendClip": "",
+        "blendWeight": 0.5,
+        "fadeDuration": 0.3,
+        "startOffset": 0.4
+       }
+      }
+     ]
+    },
+    {
+     "id": "f1ed4df1-b8d5-469a-8f97-697297fe7082",
+     "name": "Label: Twenty dancers, one model (press Play)",
+     "parentId": null,
+     "active": true,
+     "components": [
+      {
+       "id": "d05d8d33-fd10-4ccc-8b00-899055e746e3",
+       "type": "scene.transform2d",
+       "version": 1,
+       "data": {
+        "x": 480,
+        "y": 32,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+       }
+      },
+      {
+       "id": "aea68d92-f058-44a3-885a-ae094d7cc7db",
+       "type": "pixi.text",
+       "version": 1,
+       "data": {
+        "alpha": 1,
+        "text": "Twenty dancers, one model (press Play)",
+        "fontSize": 20,
+        "color": "#e8edf2",
+        "font": "",
+        "fontWeight": "normal",
+        "fontStyle": "normal",
+        "align": "center",
+        "letterSpacing": 0,
+        "strokeColor": "#0b0f14",
+        "strokeWidth": 4
+       }
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "modules": {
+  "project": "1.0.0",
+  "scene": "1.0.0",
+  "assets": "1.0.0",
+  "pixi": "1.0.0",
+  "assetpack": "1.0.0",
+  "audio": "1.0.0",
+  "howler": "1.0.0",
+  "tween": "1.0.0",
+  "gsap": "1.0.0",
+  "tween-pixi": "1.0.0",
+  "animation": "1.0.0",
+  "physics": "1.0.0",
+  "matter": "1.0.0",
+  "spine": "1.0.0",
+  "spine-audio": "1.0.0",
+  "interactions": "1.0.0",
+  "interaction-media": "1.0.0",
+  "build": "1.0.0",
+  "html-export": "1.0.0",
+  "prefabs": "1.0.0",
+  "project-ui": "1.0.0",
+  "recovery": "1.0.0",
+  "studio": "1.0.0",
+  "scene3d": "1.0.0",
+  "pixi3d-editor": "1.0.0"
+ },
+ "providers": {
+  "audio": "howler",
+  "tween": "gsap",
+  "physics": "matter",
+  "render": "pixi"
+ },
+ "extensions": {
+  "assets.registry": {
+   "version": 1,
+   "items": [
+    {
+     "id": "bf8f8bc8-fd2f-4085-8c5f-3285372faf5c",
+     "name": "Tentacle",
+     "type": "pixi3d.model",
+     "revision": "112e34238f3a71f721d1e16f5c23058fee263a47a7511a5a0c9c500b84530ede",
+     "source": {
+      "extension": "glb",
+      "bytes": 32668
+     },
+     "metadata": {
+      "pipeline": "gltf-transform-4.5.1/glb-v1",
+      "nodes": 6,
+      "meshes": 1,
+      "triangles": 686,
+      "vertices": 351,
+      "materials": [
+       {
+        "index": 0,
+        "name": "Clay"
+       }
+      ],
+      "animations": [
+       {
+        "name": "Idle",
+        "duration": 2.4000000953674316
+       },
+       {
+        "name": "Wave",
+        "duration": 1.2000000476837158
+       },
+       {
+        "name": "Twist",
+        "duration": 1.600000023841858
+       }
+      ],
+      "bounds": {
+       "min": [
+        -0.25999999046325684,
+        0,
+        -0.25348126888275146
+       ],
+       "max": [
+        0.25999999046325684,
+        2,
+        0.25348126888275146
+       ]
+      },
+      "warnings": [],
+      "capabilities": {
+       "skins": 1,
+       "maxJoints": 4,
+       "jointInfluences": 4,
+       "morphTargets": 0,
+       "textures": [],
+       "texturePixels": 0
+      }
+     }
+    }
+   ]
+  }
+ }
+}

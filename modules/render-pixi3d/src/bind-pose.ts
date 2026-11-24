@@ -1,0 +1,7 @@
+import {Mesh3D,type Container3D,type Skeleton} from '@pixi/3d';
+/** Instance-local rest pose, captured before the first clip sample. No geometry or source material copies. */
+export function captureBindPose(root:Container3D){
+ const nodes:{node:Container3D;position:number[];rotation:number[];scale:number[];weights?:Float32Array}[]=[],skeletons=new Map<Skeleton,{position:Float32Array;rotation:Float32Array;scale:Float32Array}>();
+ root.traverse(node=>{nodes.push({node,position:[node.x,node.y,node.z],rotation:[node.quaternion.x,node.quaternion.y,node.quaternion.z,node.quaternion.w],scale:[node.scale.x,node.scale.y,node.scale.z],...(node instanceof Mesh3D&&node.weights?{weights:node.weights.slice()}:{})});if(node instanceof Mesh3D&&node.skeleton&&!skeletons.has(node.skeleton)){const s=node.skeleton;skeletons.set(s,{position:s.localPosition.slice(),rotation:s.localRotation.slice(),scale:s.localScale.slice()});}});
+ return()=>{if(root.destroyed)return;for(const{node,position:p,rotation:q,scale:s,weights}of nodes){if(node.destroyed)continue;node.position.set(p[0],p[1],p[2]);node.quaternion.set(q[0],q[1],q[2],q[3]);node.scale.set(s[0],s[1],s[2]);if(weights&&node instanceof Mesh3D&&node.weights?.length===weights.length)node.weights.set(weights);}for(const[s,pose]of skeletons)for(let i=0;i<s.nodeCount;i++){const p=i*3,q=i*4;s.setLocalTRS(i,pose.position[p],pose.position[p+1],pose.position[p+2],pose.rotation[q],pose.rotation[q+1],pose.rotation[q+2],pose.rotation[q+3],pose.scale[p],pose.scale[p+1],pose.scale[p+2]);}};
+}

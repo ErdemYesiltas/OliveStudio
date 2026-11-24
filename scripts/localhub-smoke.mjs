@@ -1,3 +1,4 @@
+import {freePort} from './helpers/mcp-fixture.mjs';
 // LocalHub in the AI panel against a fake hub (self-signed HTTPS, pinned): pairing (wrong code, wrong certificate —
 // nothing reaches that server — then the right invite), generation as hub jobs (sprite with hints and cut-out, edit of
 // the selected sprite, sound, a voice line answered as Ogg and imported as WAV, sprite sheet and video animations
@@ -7,7 +8,7 @@ import {_electron as electron, expect} from '@playwright/test';
 import {execFileSync} from 'node:child_process';
 import {X509Certificate} from 'node:crypto';
 import {createServer} from 'node:https';
-import {mkdtemp, readFile, rm} from 'node:fs/promises';
+import {mkdtemp, readFile, rm,mkdir,writeFile} from 'node:fs/promises';
 import {readFileSync} from 'node:fs';
 import {createRequire} from 'node:module';
 import {tmpdir} from 'node:os';
@@ -79,7 +80,7 @@ const chatReply = (res, body) => {
  const last = body.messages.at(-1), user = [...body.messages].reverse().find(m => m.role === 'user')?.content ?? '';
  if (last.role === 'user' && /hub star/.test(last.content)) return calls([{name: 'add_object', args: {item: 'pixi.star', name: 'Hub star', x: 200, y: 150}}]);
  if (last.role === 'user' && /coin/.test(last.content)) return calls([{name: 'generate_asset', args: {kind: 'image', prompt: 'gold coin', width: 256, height: 256}}]);
- if (last.role === 'tool' && /coin/.test(user)) return text(JSON.parse(last.content).ok ? 'Made a coin through LocalHub.' : `Failed: ${JSON.parse(last.content).error}`);
+ if(last.role==='tool'&&/coin/.test(user)){const value=JSON.parse(last.content);if(value.ok&&value.result?.id&&['running','awaiting_approval'].includes(value.result.state))return calls([{name:'automation__job',args:{id:value.result.id,waitMs:2000}}]);return text(value.ok&&value.result?.state!=='failed'?'Made a coin through LocalHub.':`Failed: ${value.error??value.result?.error?.message}`);}
  if (last.role === 'tool') return text('Added a star through LocalHub.');
  return text('OK');
 };
@@ -142,6 +143,7 @@ try {
  decoy = createServer({key: other.key, cert: other.cert}, (req, res) => { decoyRequests.push(req.url); res.end('{}'); });
  await new Promise(r => decoy.listen(0, '127.0.0.1', r));
 
+ const mcpPort=await freePort(),mcpToken='localhub-mcp-test-token-0123456789abcdef';await mkdir(join(temp,'user'),{recursive:true});await writeFile(join(temp,'user','mcp.json'),JSON.stringify({enabled:true,port:mcpPort,token:mcpToken}));
  app = await electron.launch({executablePath: process.env.REWRITE_EXECUTABLE || require('electron'), args: [...(process.env.REWRITE_EXECUTABLE ? [] : [join(root, 'apps/editor-desktop/out/main/index.js')]), '--no-hub', '--localhub-memory', `--user-data-dir=${join(temp, 'user')}`], env});
  const page = await app.firstWindow();
  page.setDefaultTimeout(15000);
@@ -360,6 +362,18 @@ try {
  saved = await save();
  expect(saved.scenes.flatMap(s => s.entities).map(e => e.name)).toContain('Hub star');
 
+ // MCP Files adapters use this same pinned Hub connection, conversion/import and upload/delete services.
+ await page.keyboard.press('Escape');
+ await app.evaluate(({dialog,Menu},folder)=>{dialog.showOpenDialog=async()=>({canceled:false,filePaths:[folder]});Menu.getApplicationMenu().items.flatMap(m=>m.submenu?.items??[]).find(i=>i.label==='Settings…').click();},temp);
+ const mcpSettings=page.getByTestId('settings-dialog');await mcpSettings.getByRole('navigation',{name:'Settings sections',exact:true}).getByRole('button',{name:'MCP server',exact:true}).click();await mcpSettings.getByRole('button',{name:'Allow folder',exact:true}).click();await page.keyboard.press('Escape');
+ let mcpSeq=0;const mcp=async(name,args={})=>{const response=await fetch(`http://127.0.0.1:${mcpPort}/mcp`,{method:'POST',headers:{Authorization:`Bearer ${mcpToken}`,'Content-Type':'application/json'},body:JSON.stringify({jsonrpc:'2.0',id:++mcpSeq,method:'tools/call',params:{name,arguments:args}})});const reply=await response.json();expect(reply.result.isError,JSON.stringify(reply)).toBe(false);return JSON.parse(reply.result.content[0].text);};
+ const done=async(handle,approve=false)=>{if(approve)await page.getByRole('button',{name:'Approve',exact:true}).click();await expect.poll(async()=>{const state=await mcp('automation.job',{id:handle.id,waitMs:1000});if(state.state==='failed')throw Error(JSON.stringify(state.error));return state.state;},{timeout:30000}).toBe('complete');return(await mcp('automation.job',{id:handle.id})).result;};
+ const listing=await mcp('hub-files.list',{limit:100});expect(listing.items.length).toBeGreaterThan(0);const image=listing.items.find(f=>f.mime==='image/png'),video=listing.items.find(f=>f.mime.startsWith('video/'));
+ expect((await done(await mcp('hub-files.import',{id:image.id}))).assetIds).toHaveLength(1);const sheetResult=await done(await mcp('hub-files.animate',{id:video.id,frames:4,fps:10}));expect(sheetResult.layout).toMatchObject({frames:4,fps:10});expect(sheetResult.assetIds).toHaveLength(1);
+ const uploadPath=join(temp,'mcp-upload.txt');await writeFile(uploadPath,'MCP Files fixture');const uploaded=await done(await mcp('hub-files.upload',{path:uploadPath}),true);expect(uploaded.filename).toBe('mcp-upload.txt');const rejectedDelete=await mcp('hub-files.delete',{id:uploaded.id});await page.getByRole('button',{name:'Reject',exact:true}).click();expect((await mcp('automation.job',{id:rejectedDelete.id})).state).toBe('cancelled');expect((await mcp('hub-files.list',{query:'mcp-upload'})).total).toBe(1);await done(await mcp('hub-files.delete',{id:uploaded.id}),true);expect((await mcp('hub-files.list',{query:'mcp-upload'})).total).toBe(0);
+ console.log('PASS MCP Hub Files: pinned native list/import/video-to-sheet, scoped approved upload, rejected/approved delete; shared UI services');
+ await page.keyboard.press('Alt+KeyA');
+
  // The Mac takes image.create away (event: session): the Create tab says so.
  hub.scopes = hub.scopes.filter(s => s !== 'image.create');
  emit('session', {scopes: hub.scopes});
@@ -396,6 +410,9 @@ try {
  expect(errors).toEqual([]);
  console.log('PASS LocalHub: pairing (wrong code, pin mismatch), sprite/edit/sound/voice/sheet/video jobs, remix, cancel, assistant + MCP, permission change, revoke, direct');
 } catch (error) { console.error('requests:', hub.requests.map(r => `${r.method} ${r.path}`).join(' | ')); throw error; } finally {
+ // MCP import/animation checks leave unsaved test edits. Discard them explicitly rather than leaving a native
+ // confirmation dialog blocking Playwright's app.close (only this isolated temporary profile is affected).
+ await app?.evaluate(({dialog})=>{dialog.showMessageBox=async()=>({response:1,checkboxChecked:false});}).catch(()=>{});
  await app?.close().catch(() => {});
  for (const s of hub.streams) s.end();
  server?.closeAllConnections?.(); server?.close(); decoy?.close();

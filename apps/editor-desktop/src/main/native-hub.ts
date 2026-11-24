@@ -6,8 +6,8 @@ import {basename, extname, join, resolve, sep} from 'node:path';
 /** A project the Hub lists: where it is, what it is called and when it was last opened here. */
 interface Recent {path: string; name: string; openedAt: number; pinned?: boolean}
 export interface HubProject {path: string; name: string; openedAt: number; pinned?: boolean; modifiedAt: number | null; exists: boolean; scenes: number; thumbnail: string | null}
-export interface HubExample {id: string; title: string; description: string; tags: string[]; thumbnail: string | null}
-interface CatalogEntry {id: string; title: string; description: string; tags: string[]; file: string; thumbnail?: string}
+export interface HubExample {id: string; title: string; description: string; tags: string[]; thumbnail: string | null; category: string | null}
+interface CatalogEntry {id: string; title: string; description: string; tags: string[]; file: string; thumbnail?: string; category?: string}
 type Staged = {text: string; path: string; warnings: string[]};
 
 const limit = 30, readable = (text: string) => { try { const p = JSON.parse(text) as {name?: unknown; scenes?: unknown}; return {name: typeof p.name === 'string' ? p.name : '', scenes: Array.isArray(p.scenes) ? p.scenes.length : 0}; } catch { return {name: '', scenes: 0}; } };
@@ -18,7 +18,7 @@ const png = async (file: string) => { try { const data = await readFile(file); r
  * bundled example projects that are copied to a folder the user picks before they open. Only listed paths and
  * catalogue IDs are accepted from the renderer.
  */
-export function registerHub(options: {window(): BrowserWindow | null; sender(event: IpcMainInvokeEvent): void; task<T>(work: () => Promise<T>): Promise<T>; confirmDiscard(): Promise<boolean>; stage(path: string): Promise<Staged>; current(): string | null; examplesDir: string; showAtStartup: boolean}) {
+export function registerHub(options: {window(): BrowserWindow | null; sender(event: IpcMainInvokeEvent): void; task<T>(work: () => Promise<T>): Promise<T>; confirmDiscard(): Promise<boolean>; stage(path: string): Promise<Staged>; current(): string | null; examplesDir: string; showAtStartup: boolean; resolveFolder(candidate: unknown): Promise<string>}) {
  const store = join(app.getPath('userData'), 'hub.json'), thumbs = join(app.getPath('userData'), 'hub-thumbnails');
  const thumbFor = (path: string) => join(thumbs, createHash('sha256').update(resolve(path)).digest('hex').slice(0, 32) + '.png');
  let recents: Recent[] | null = null;
@@ -44,7 +44,7 @@ export function registerHub(options: {window(): BrowserWindow | null; sender(eve
  ipcMain.handle('hub:remove', async (event, candidate: unknown) => { options.sender(event); const r = await listed(candidate); recents = (await load()).filter(x => x !== r); await persist(); await rm(thumbFor(r.path), {force: true}); });
  ipcMain.handle('hub:pin', async (event, candidate: unknown, pinned: unknown) => { options.sender(event); const r = await listed(candidate); if (typeof pinned !== 'boolean') throw Error('Invalid pin'); if (pinned) r.pinned = true; else delete r.pinned; await persist(); });
  ipcMain.handle('hub:reveal', async (event, candidate: unknown) => { options.sender(event); shell.showItemInFolder((await listed(candidate)).path); });
- ipcMain.handle('hub:examples', async event => { options.sender(event); return Promise.all((await catalog()).map(async (e): Promise<HubExample> => ({id: e.id, title: e.title, description: e.description, tags: e.tags ?? [], thumbnail: e.thumbnail ? await png(inside(e.thumbnail)) : null}))); });
+ ipcMain.handle('hub:examples', async event => { options.sender(event); return Promise.all((await catalog()).map(async (e): Promise<HubExample> => ({id: e.id, title: e.title, description: e.description, tags: e.tags ?? [], thumbnail: e.thumbnail ? await png(inside(e.thumbnail)) : null, category: typeof e.category === 'string' ? e.category : null}))); });
  /** Copy an example (project file and its `.assets` sidecar) to a new place, name it after the file, then stage it. */
  ipcMain.handle('hub:create', (event, id: unknown) => options.task(async () => {
   options.sender(event);
@@ -53,14 +53,29 @@ export function registerHub(options: {window(): BrowserWindow | null; sender(eve
   const window = options.window(); if (!window) return null;
   const result = await dialog.showSaveDialog(window, {title: `New project from “${entry.title}”`, defaultPath: join(app.getPath('documents'), `${entry.title}.pixieditor`), buttonLabel: 'Create', filters: [{name: 'Pixi Editor project', extensions: ['pixieditor']}]});
   if (result.canceled || !result.filePath) return null;
-  const target = extname(result.filePath) === '.pixieditor' ? result.filePath : result.filePath + '.pixieditor', source = inside(entry.file);
-  const project = JSON.parse(await readFile(source, 'utf8')) as {name: string};
+  return copyExample(entry, extname(result.filePath) === '.pixieditor' ? result.filePath : result.filePath + '.pixieditor');
+ }));
+ const copyExample = async (entry: CatalogEntry, target: string) => {
+  const source = inside(entry.file), project = JSON.parse(await readFile(source, 'utf8')) as {name: string};
   project.name = basename(target, '.pixieditor').trim().slice(0, 100) || entry.title;
   await rm(target + '.assets', {recursive: true, force: true});
   if (await stat(source + '.assets').catch(() => null)) await cp(source + '.assets', target + '.assets', {recursive: true});
   await writeFile(target, JSON.stringify(project, null, 1));
   if (entry.thumbnail) { await mkdir(thumbs, {recursive: true}); await cp(inside(entry.thumbnail), thumbFor(target)).catch(() => {}); }
   return options.stage(target);
+ };
+ /**
+  * For agents: copies an example into a folder they were granted, without a dialog, as "<title>.pixieditor" (or "<title> 2"…
+  * when taken, so nothing is overwritten). The renderer runs it only after the request is approved.
+  */
+ ipcMain.handle('hub:create-at', (event, id: unknown, folder: unknown) => options.task(async () => {
+  options.sender(event);
+  const entry = (await catalog()).find(e => e.id === id); if (!entry) throw Error('Unknown example');
+  const directory = await options.resolveFolder(folder); if (!(await stat(directory)).isDirectory()) throw Error('Expected a folder');
+  const name = entry.title.replace(/[\\/:*?"<>|]/g, '-').trim() || entry.id;
+  let target = join(directory, `${name}.pixieditor`);
+  for (let n = 2; await stat(target).catch(() => null) || await stat(target + '.assets').catch(() => null); n++) { if (n > 99) throw Error('Too many copies of this example in the folder'); target = join(directory, `${name} ${n}.pixieditor`); }
+  return copyExample(entry, target);
  }));
  /** A PNG of the current project's stage, captured by the renderer after a save. */
  ipcMain.handle('hub:thumbnail', async (event, url: unknown) => {

@@ -1,7 +1,7 @@
 // Developer ID release for macOS: preflight (identity + notarization credentials), signed and notarized DMG/ZIP via
 // electron-builder, then independent verification (codesign, Gatekeeper, stapled ticket) and SHA-256 checksums.
 // Usage: node scripts/release-mac.mjs --check     (readiness only, builds nothing)
-//        node scripts/release-mac.mjs [--out release-signed]
+//        node scripts/release-mac.mjs (one app in /Applications, artifacts in release/)
 // Credentials come from the environment (never from files in the repo):
 //   identity      CSC_NAME="Developer ID Application: Name (TEAMID)" or CSC_LINK + CSC_KEY_PASSWORD, else the keychain
 //   notarization  APPLE_API_KEY + APPLE_API_KEY_ID + APPLE_API_ISSUER   (App Store Connect API key, preferred)
@@ -10,11 +10,13 @@
 import {execFileSync, spawnSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {existsSync, readdirSync, readFileSync} from 'node:fs';
-import {dirname, join, resolve} from 'node:path';
+import {dirname, join} from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {appPath,artifacts} from './mac-app.mjs';
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
-const args = process.argv.slice(2), check = args.includes('--check'), out = resolve(root, args[args.indexOf('--out') + 1] && args.includes('--out') ? args[args.indexOf('--out') + 1] : 'release-signed');
+const args=process.argv.slice(2),check=args.includes('--check'),out=artifacts;
+if(args.some(a=>a!=='--check'))throw Error('Custom release folders are disabled; the app is always '+appPath);
 const env = process.env, problems = [], notes = [];
 const run = (cmd, argv, options = {}) => spawnSync(cmd, argv, {encoding: 'utf8', ...options});
 
@@ -38,9 +40,8 @@ for (const p of problems) console.log(`todo ${p}`);
 if (check || problems.length) { console.log(problems.length ? `\nNot ready: ${problems.length} item(s).` : '\nReady to sign and notarize.'); process.exit(check && !problems.length ? 0 : problems.length ? 1 : 0); }
 
 const step = (label, cmd, argv, options = {}) => { console.log(`\n▶ ${label}`); const r = run(cmd, argv, {stdio: 'inherit', cwd: root, ...options}); if (r.status !== 0) { console.error(`✗ ${label} failed`); process.exit(1); } };
-step('Build', 'pnpm', ['build']);
-step('Package, sign and notarize', 'pnpm', ['--filter', '@rewrite/desktop', 'package:mac:release', `--config.directories.output=${out}`]);
-const appDir = readdirSync(out).map(d => join(out, d)).find(d => existsSync(join(d, 'OliveStudio.app'))), app = appDir && join(appDir, 'OliveStudio.app');
+step('Package, sign and notarize', 'pnpm', ['--filter', '@rewrite/desktop', 'package:mac:release']);
+const app=existsSync(appPath)?appPath:null;
 if (!app) { console.error('✗ Packaged app not found'); process.exit(1); }
 step('codesign verification', 'codesign', ['--verify', '--deep', '--strict', '--verbose=2', app]);
 step('Gatekeeper assessment', 'spctl', ['--assess', '--type', 'execute', '--verbose=2', app]);

@@ -2,7 +2,7 @@ import { mkdir,mkdtemp,readFile,readdir,writeFile,rename,rm,lstat,realpath } fro
 import { join,relative,basename,extname,dirname } from 'node:path';
 import {isDeepStrictEqual} from 'node:util';
 import { createHash,randomUUID } from 'node:crypto';
-import { AssetSchema,RegistrySchema,sectionKey,type AssetRecord,type AssetHealth } from './contracts';
+import { AssetSchema,RegistrySchema,sectionKey,importFileLimit,importLimitMessage,type AssetRecord,type AssetHealth } from './contracts';
 export interface PreparedSource{name:string;extension:string;bytes:Uint8Array}
 export interface NativeImporter {id:string;assetType:string;extensions:readonly string[];prepare?(path:string,signal:AbortSignal):Promise<PreparedSource>}
 export interface BuildJob { root:string; importerId:string; asset:AssetRecord }
@@ -45,7 +45,9 @@ export class AssetSession {
  private assertLive(signal?:AbortSignal){if(this.disposed||signal?.aborted)throw Error('Asset operation cancelled');}
  async importFiles(paths:readonly string[],importerId:string,replace?:unknown):Promise<AssetRecord[]>{
   const signal=this.abort.signal;this.assertLive(signal);const importer=this.importers.find(i=>i.id===importerId);if(!importer)throw Error('Unsupported importer');
-  if(!paths.length||paths.length>16)throw Error('Choose between 1 and 16 files');
+  if(!paths.length||paths.length>importFileLimit)throw Error(importLimitMessage(paths.length));
+  // Every source is checked before the first one is processed, so a refused request leaves nothing behind.
+  for(const path of paths){const extension=extname(path).slice(1).toLowerCase();if(!importer.extensions.includes(extension))throw Error('Unsupported source extension');const stat=await lstat(path);if(!stat.isFile()||stat.size<1||stat.size>20*1024*1024)throw Error('Assets must be regular files between 1 byte and 20 MB');}
   const previous=replace===undefined?undefined:AssetSchema.parse(replace);
   if(previous&&(!this.records.has(cacheKey(previous))||paths.length!==1||previous.type!==importer.assetType))throw Error('Reimport target is not in this session');
   const result:AssetRecord[]=[];
@@ -59,6 +61,15 @@ export class AssetSession {
    const complete=AssetSchema.parse({...asset,metadata:built.metadata});this.records.set(cacheKey(complete),complete);this.built.set(cacheKey(complete),built);result.push(complete);
   }
   return result;
+ }
+ /** A lease owned by the native import transaction. Rollback removes only newly staged sources/cache entries. */
+ async importLease(){
+  const keys=new Set(this.records.keys()),sources=new Set(await readdir(join(this.root,'sources'))),cache=new Set(await readdir(join(this.root,'cache')));
+  let done=false;
+  return async()=>{if(done)return;done=true;if(this.disposed)return;
+   for(const key of this.records.keys())if(!keys.has(key)){this.records.delete(key);this.built.delete(key);}
+   for(const [folder,known]of [['sources',sources],['cache',cache]] as const)for(const name of await readdir(join(this.root,folder)))if(!known.has(name))await rm(join(this.root,folder,name),{recursive:true,force:true});
+  };
  }
  async restore(projectPath:string,input:unknown):Promise<void>{
   const signal=this.abort.signal;this.assertLive(signal);const records=projectAssets(input),sourceRoot=join(projectPath+'.assets','sources');
@@ -137,3 +148,5 @@ export async function sweepSessions(parent:string,options:{alive?:(pid:number)=>
  }
  return removed;
 }
+export {importFileLimit,importLimitMessage} from './contracts';
+export {BundleManifestSchema,stem} from './bundle';

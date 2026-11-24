@@ -1,0 +1,345 @@
+{
+ "formatVersion": 1,
+ "name": "Particle container",
+ "entrySceneId": "70a04176-0698-497b-8746-5c0ceeb63f35",
+ "scenes": [
+  {
+   "formatVersion": 1,
+   "id": "70a04176-0698-497b-8746-5c0ceeb63f35",
+   "name": "Particle container",
+   "entities": [
+    {
+     "id": "95cdbbab-44bc-4697-8f91-5fc8ad5c0c4b",
+     "name": "3D View",
+     "parentId": null,
+     "active": true,
+     "components": [
+      {
+       "id": "e7c560f8-4ae8-4483-8e7c-e9581111898f",
+       "type": "scene.transform2d",
+       "version": 1,
+       "data": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+       }
+      },
+      {
+       "id": "ee60a707-79ff-4327-8a8a-e9e60c554d6d",
+       "type": "pixi3d.viewport",
+       "version": 1,
+       "data": {
+        "width": 960,
+        "height": 540,
+        "cameraId": "c7c9917b-9928-4721-837a-960123ac3e8b",
+        "shadowQuality": "high",
+        "shadowFilter": "pcf",
+        "environment": "hemisphere",
+        "skyColor": "#bcd4ff",
+        "groundColor": "#5b5246",
+        "environmentIntensity": 0.8,
+        "environmentAssetId": "",
+        "cubemapAssetId": "",
+        "background": "color",
+        "backgroundColor": "#05070d",
+        "toneMapping": "aces",
+        "exposure": 1,
+        "fog": "none",
+        "fogColor": "#adb2ba",
+        "fogNear": 10,
+        "fogFar": 60,
+        "fogDensity": 0.04,
+        "bloom": true,
+        "bloomThreshold": 0.6,
+        "bloomIntensity": 0.8,
+        "bloomRadius": 0.6,
+        "ssao": false,
+        "ssaoRadius": 0.5,
+        "ssaoIntensity": 1,
+        "depthOfField": false,
+        "focusDistance": 10,
+        "focusRange": 2,
+        "focusFalloff": 8,
+        "focusBlur": 10,
+        "motionBlur": false,
+        "motionBlurIntensity": 0.5,
+        "motionBlurSamples": 12,
+        "motionBlurMaxLength": 48,
+        "tint": "#ffffff",
+        "lutAssetId": "",
+        "lutIntensity": 1,
+        "antialias": false,
+        "outlineWidth": 0.03,
+        "outlineColor": "#000000",
+        "debugView": "none",
+        "velocityScale": 1
+       }
+      }
+     ]
+    },
+    {
+     "id": "c7c9917b-9928-4721-837a-960123ac3e8b",
+     "name": "Camera",
+     "parentId": "95cdbbab-44bc-4697-8f91-5fc8ad5c0c4b",
+     "active": true,
+     "spatial": "scene3d.transform",
+     "components": [
+      {
+       "id": "7f802cc4-948f-4ac9-862b-61f0b5b5cacc",
+       "type": "scene3d.transform",
+       "version": 1,
+       "data": {
+        "x": 0,
+        "y": 4.2,
+        "z": 6.5,
+        "qx": -0.27563735581699916,
+        "qy": 0,
+        "qz": 0,
+        "qw": 0.9612616959383189,
+        "scaleX": 1,
+        "scaleY": 1,
+        "scaleZ": 1
+       }
+      },
+      {
+       "id": "1a1c26b2-31bf-4edf-865d-efdfe1d868b2",
+       "type": "pixi3d.camera",
+       "version": 1,
+       "data": {
+        "mode": "perspective",
+        "fov": 45,
+        "near": 0.1,
+        "far": 200,
+        "orthographicSize": 5,
+        "feedWidth": 512,
+        "feedHeight": 288
+       }
+      }
+     ]
+    },
+    {
+     "id": "bee95487-22c6-40a0-8d98-b59b45fd4066",
+     "name": "Fill",
+     "parentId": "95cdbbab-44bc-4697-8f91-5fc8ad5c0c4b",
+     "active": true,
+     "spatial": "scene3d.transform",
+     "components": [
+      {
+       "id": "430c9e19-d97d-42ae-8155-2fa0fc216d64",
+       "type": "scene3d.transform",
+       "version": 1,
+       "data": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1,
+        "scaleX": 1,
+        "scaleY": 1,
+        "scaleZ": 1
+       }
+      },
+      {
+       "id": "60c918e8-76e9-4bb7-8560-c81a8fb25382",
+       "type": "pixi3d.light",
+       "version": 1,
+       "data": {
+        "kind": "ambient",
+        "color": "#ffffff",
+        "intensity": 0.2,
+        "castShadow": false,
+        "range": 10,
+        "radius": 0.1,
+        "coneAngle": 30,
+        "penumbra": 0.2,
+        "shadowPlacement": "fit",
+        "shadowBoundsX": 0,
+        "shadowBoundsY": 0,
+        "shadowBoundsZ": 0,
+        "shadowBoundsWidth": 20,
+        "shadowBoundsHeight": 20,
+        "shadowBoundsDepth": 20,
+        "shadowCascades": 3,
+        "shadowMaxDistance": 50,
+        "shadowLambda": 0.5,
+        "shadowBias": 0.001,
+        "shadowNormalBiasAuto": true,
+        "shadowNormalBias": 0.05,
+        "shadowUpdate": 1
+       }
+      }
+     ]
+    },
+    {
+     "id": "6ea25993-4a85-4ac4-8ef3-6473dc391451",
+     "name": "Galaxy",
+     "parentId": "95cdbbab-44bc-4697-8f91-5fc8ad5c0c4b",
+     "active": true,
+     "spatial": "scene3d.transform",
+     "components": [
+      {
+       "id": "63075b5f-11ab-464c-833a-0405fa4db6a1",
+       "type": "scene3d.transform",
+       "version": 1,
+       "data": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1,
+        "scaleX": 1,
+        "scaleY": 1,
+        "scaleZ": 1
+       }
+      },
+      {
+       "id": "8dcd482f-92b6-4605-8868-3d2b19cf52da",
+       "type": "pixi3d.particles",
+       "version": 1,
+       "data": {
+        "count": 4000,
+        "emission": "continuous",
+        "autoplay": false,
+        "seed": 1,
+        "lifetime": 2,
+        "lifetimeRandom": 0.3,
+        "speed": 2,
+        "speedRandom": 0.5,
+        "spread": 25,
+        "gravity": 1,
+        "spawnShape": "point",
+        "spawnRadius": 0.25,
+        "spawnWidth": 1,
+        "spawnHeight": 1,
+        "spawnDepth": 1,
+        "size": 0.2,
+        "sizeRandom": 0.3,
+        "endScale": 0.2,
+        "alpha": 1,
+        "endAlpha": 0,
+        "tint": "#ffd27a",
+        "endTint": "#ff6a2a",
+        "rotationSpeed": 0,
+        "particleTexture": "soft",
+        "blendMode": "add",
+        "burstInterval": 0,
+        "space": "local",
+        "billboard": "spherical",
+        "textureAsset": "",
+        "frameColumns": 1,
+        "frameRows": 1,
+        "frameMode": "overLife",
+        "frameRate": 12,
+        "driver": "script"
+       }
+      },
+      {
+       "id": "dfc10aa1-9b3c-4c68-80fc-db3584637f0f",
+       "type": "scripts.behaviour",
+       "version": 1,
+       "data": {
+        "scriptId": "b6c6a7df-8f96-41d6-876a-3cdd3a0890e5",
+        "params": {},
+        "refs": {}
+       }
+      }
+     ]
+    },
+    {
+     "id": "1f107578-9f6e-4632-8b32-87c55426821a",
+     "name": "Label: 4,000 particles placed by a script every frame",
+     "parentId": null,
+     "active": true,
+     "components": [
+      {
+       "id": "a4825136-b4fb-49f8-8900-b99046ba01a3",
+       "type": "scene.transform2d",
+       "version": 1,
+       "data": {
+        "x": 480,
+        "y": 32,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+       }
+      },
+      {
+       "id": "ebc8e3b1-97a6-423e-86a6-d3c07f30e6df",
+       "type": "pixi.text",
+       "version": 1,
+       "data": {
+        "alpha": 1,
+        "text": "4,000 particles placed by a script every frame",
+        "fontSize": 20,
+        "color": "#e8edf2",
+        "font": "",
+        "fontWeight": "normal",
+        "fontStyle": "normal",
+        "align": "center",
+        "letterSpacing": 0,
+        "strokeColor": "#0b0f14",
+        "strokeWidth": 4
+       }
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "modules": {
+  "project": "1.0.0",
+  "scene": "1.0.0",
+  "assets": "1.0.0",
+  "pixi": "1.0.0",
+  "assetpack": "1.0.0",
+  "audio": "1.0.0",
+  "howler": "1.0.0",
+  "tween": "1.0.0",
+  "gsap": "1.0.0",
+  "tween-pixi": "1.0.0",
+  "animation": "1.0.0",
+  "physics": "1.0.0",
+  "matter": "1.0.0",
+  "spine": "1.0.0",
+  "spine-audio": "1.0.0",
+  "interactions": "1.0.0",
+  "interaction-media": "1.0.0",
+  "build": "1.0.0",
+  "html-export": "1.0.0",
+  "prefabs": "1.0.0",
+  "project-ui": "1.0.0",
+  "recovery": "1.0.0",
+  "studio": "1.0.0",
+  "scene3d": "1.0.0",
+  "pixi3d-editor": "1.0.0"
+ },
+ "providers": {
+  "audio": "howler",
+  "tween": "gsap",
+  "physics": "matter",
+  "render": "pixi"
+ },
+ "extensions": {
+  "assets.registry": {
+   "version": 1,
+   "items": []
+  },
+  "scripts.library": {
+   "version": 1,
+   "items": [
+    {
+     "id": "b6c6a7df-8f96-41d6-876a-3cdd3a0890e5",
+     "name": "Galaxy",
+     "source": "// Every frame: where each of the pool's particles is, its size, colour and alpha (8 numbers each).\nexport const params = {arms: param.number(3, {min: 1, max: 8}), speed: param.number(0.6, {min: 0, max: 5})};\nexport function start(self: GameObject3D) {\n  const n = self.particles.count, seeds = new Float32Array(n * 3);\n  for (let i = 0; i < n; i++) { seeds[i * 3] = Math.pow(Math.random(), 0.7) * 3; seeds[i * 3 + 1] = (Math.random() - 0.5) * 0.6; seeds[i * 3 + 2] = (Math.random() - 0.5) * 0.25; }\n  self.state.seeds = seeds; self.state.data = new Float32Array(n * 8);\n}\nexport function update(self: GameObject3D) {\n  const n = self.particles.count, seeds: Float32Array = self.state.seeds, data: Float32Array = self.state.data, arms = self.params.arms;\n  for (let i = 0; i < n; i++) {\n    const r = seeds[i * 3], arm = (i % arms) / arms * Math.PI * 2, a = arm + r * 1.6 + seeds[i * 3 + 1] - game.time * self.params.speed / (0.4 + r * 0.5), o = i * 8;\n    data[o] = Math.cos(a) * r; data[o + 1] = seeds[i * 3 + 2] * (1 - r / 3.2); data[o + 2] = Math.sin(a) * r; data[o + 3] = 0.05 + (1 - r / 3) * 0.08;\n    const t = Math.min(1, r / 3); data[o + 4] = 1 - t * 0.6; data[o + 5] = 0.75 - t * 0.35; data[o + 6] = 0.45 + t * 0.55; data[o + 7] = 0.9;\n  }\n  self.particles.write(data, n);\n}\n",
+     "code": "\"use strict\";Object.defineProperty(exports, \"__esModule\", {value: true});// Every frame: where each of the pool's particles is, its size, colour and alpha (8 numbers each).\n const params = {arms: param.number(3, {min: 1, max: 8}), speed: param.number(0.6, {min: 0, max: 5})}; exports.params = params;\n function start(self) {\n  const n = self.particles.count, seeds = new Float32Array(n * 3);\n  for (let i = 0; i < n; i++) { seeds[i * 3] = Math.pow(Math.random(), 0.7) * 3; seeds[i * 3 + 1] = (Math.random() - 0.5) * 0.6; seeds[i * 3 + 2] = (Math.random() - 0.5) * 0.25; }\n  self.state.seeds = seeds; self.state.data = new Float32Array(n * 8);\n} exports.start = start;\n function update(self) {\n  const n = self.particles.count, seeds = self.state.seeds, data = self.state.data, arms = self.params.arms;\n  for (let i = 0; i < n; i++) {\n    const r = seeds[i * 3], arm = (i % arms) / arms * Math.PI * 2, a = arm + r * 1.6 + seeds[i * 3 + 1] - game.time * self.params.speed / (0.4 + r * 0.5), o = i * 8;\n    data[o] = Math.cos(a) * r; data[o + 1] = seeds[i * 3 + 2] * (1 - r / 3.2); data[o + 2] = Math.sin(a) * r; data[o + 3] = 0.05 + (1 - r / 3) * 0.08;\n    const t = Math.min(1, r / 3); data[o + 4] = 1 - t * 0.6; data[o + 5] = 0.75 - t * 0.35; data[o + 6] = 0.45 + t * 0.55; data[o + 7] = 0.9;\n  }\n  self.particles.write(data, n);\n} exports.update = update;\n"
+    }
+   ]
+  }
+ }
+}

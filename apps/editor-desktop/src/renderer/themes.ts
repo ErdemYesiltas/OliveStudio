@@ -4,7 +4,7 @@ const color = z.string().regex(/^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$/);
 export const ThemeSchema = z.object({ id:z.string().regex(/^[a-z][a-z0-9-]{1,47}$/),name:z.string().min(1).max(60),scheme:z.enum(['dark','light']),colors: ColorsSchema.extend({ bg:color,surface:color,raised:color,text:color,muted:color,border:color,accent:color,danger:color,viewport:color,focus:color.optional() }) }).strict();
 export type Theme = z.infer<typeof ThemeSchema>;
 export const themes: Theme[] = [
- {id:'graphite',name:'Graphite',scheme:'dark',colors:{bg:'#232426',surface:'#292a2d',raised:'#34363a',text:'#e8e8e5',muted:'#a4a6ac',border:'#414348',accent:'#7caef5',focus:'#7caef5',danger:'#f49a9a',viewport:'#1b1d20'}},
+ {id:'graphite',name:'Graphite',scheme:'dark',colors:{bg:'#232426',surface:'#292a2d',raised:'#34363a',text:'#e8e8e5',muted:'#a4a6ac',border:'#414348',accent:'#b1c58a',focus:'#b1c58a',danger:'#f49a9a',viewport:'#1b1d20'}},
  {id:'light',name:'Light',scheme:'light',colors:{bg:'#f5f5f2',surface:'#ffffff',raised:'#e9eaed',text:'#25282e',muted:'#5c626d',border:'#d7d9de',accent:'#2b61ae',focus:'#2b61ae',danger:'#a83e3e',viewport:'#e1e3e6'}},
  {id:'warm',name:'Warm',scheme:'light',colors:{bg:'#f5f0e8',surface:'#fcf8f2',raised:'#e8e0d5',text:'#342b2b',muted:'#6f5e59',border:'#dfd2c7',accent:'#6c5a82',focus:'#6c5a82',danger:'#a3443b',viewport:'#e9e0d5'}},
 ];

@@ -1,0 +1,16 @@
+import {destroyLocalApplication} from '@rewrite/render-pixi/lifecycle';
+import {useEffect,useRef,useState} from 'react';
+import {Application} from 'pixi.js';
+import {createObjectAdapters,particleBounds,particleState} from '@rewrite/render-pixi/objects';
+import type {VisualHandle} from '@rewrite/render-pixi/visuals';
+import type {Json} from '@rewrite/sdk';
+import type {ParticleEditor} from './model';
+export function ParticlePreview({editor,url,text}:{editor:ParticleEditor;url:(id:string)=>string|undefined;text:(key:string)=>string}){const host=useRef<HTMLDivElement>(null),[stats,setStats]=useState({time:0,alive:0}),[error,setError]=useState(''),[zoom,setZoom]=useState(1);const zoomRef=useRef(zoom);zoomRef.current=zoom;
+ useEffect(()=>{const target=host.current!;let disposed=false,raf=0,observer:ResizeObserver|undefined,handle:VisualHandle|undefined,key='',lastStats=0,ready=false;const app=new Application(),adapter=createObjectAdapters(url).find(a=>a.type==='pixi.particles')!;
+ const size=()=>{const {width,height}=target.getBoundingClientRect();return{width:Math.max(1,Math.round(width)),height:Math.max(1,Math.round(height))};};
+ const draw=()=>{if(disposed||!ready)return;try{const {settings:p,time}=editor.preview(),frame={token:'particle-editor',time,emit:false,silent:true},next=JSON.stringify(adapter.key(p as unknown as Json));if(next!==key){handle?.dispose();handle=adapter.create(p as unknown as Json,{entityId:'preview',componentId:'preview',frame:()=>frame,changed:()=>{},event:()=>{}});app.stage.addChild(handle.view);key=next;}handle!.update(p as unknown as Json,frame);const b=particleBounds(p),{width,height}=size(),scale=Math.max(.001,Math.min((width-32)/Math.max(64,b.width),(height-32)/Math.max(64,b.height))*zoomRef.current);handle!.view.scale.set(scale);handle!.view.position.set(width/2-(b.x+b.width/2)*scale,height/2-(b.y+b.height/2)*scale);app.render();const now=performance.now();if(now-lastStats>100){lastStats=now;let alive=0;for(let i=0;i<p.count;i++)if(particleState(p,i,time).alive)alive++;setStats({time,alive});const d=handle!.diagnostics();if(d.error)setError(String(d.error));else setError('');}}catch(e){setError(String(e));}raf=requestAnimationFrame(draw);};
+ void app.init({...size(),autoStart:false,backgroundAlpha:0,antialias:true,resolution:Math.min(2,window.devicePixelRatio||1),preference:'webgl'}).then(()=>{if(disposed){destroyLocalApplication(app);return;}ready=true;target.appendChild(app.canvas);app.canvas.setAttribute('aria-label',text('particles.previewCanvas'));observer=new ResizeObserver(()=>{const s=size();if(app.screen.width!==s.width||app.screen.height!==s.height)app.renderer.resize(s.width,s.height);});observer.observe(target);draw();}).catch(e=>{if(!disposed)setError(String(e));});
+ return()=>{disposed=true;cancelAnimationFrame(raf);observer?.disconnect();handle?.dispose();if(ready)destroyLocalApplication(app);};
+ },[editor,url,text]);
+ return <div><div ref={host} className="particle-preview"/>{error&&<p role="alert">{error}</p>}<div className="particle-preview-stats"><span>{text('particles.alive')}: {stats.alive} / {editor.draft.count}</span><output>{stats.time.toFixed(2)} s</output><label>{text('particles.zoom')}<input aria-label={text('particles.zoom')} type="range" min=".25" max="4" step=".05" value={zoom} onChange={e=>setZoom(Number(e.target.value))}/></label></div></div>;
+}

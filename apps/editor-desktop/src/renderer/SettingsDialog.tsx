@@ -17,7 +17,7 @@ type Entry = {id: string; owner: string; value: SettingDefinition};
  * sections (e.g. Game rendering) edit the open project with undo, unlike the machine-local preferences below them.
  * `@modified` (or the filter button) shows only settings changed from their defaults.
  */
-export function SettingsDialog({open, onOpenChange, entries, store, onCloseAutoFocus, projectSections = []}: {open: boolean; onOpenChange(open: boolean): void; entries: readonly Entry[]; store: SettingsStore; onCloseAutoFocus(event: Event): void; projectSections?: readonly {id: string; value: SettingsSectionDefinition}[]}) {
+export function SettingsDialog({open, onOpenChange, entries, store, onCloseAutoFocus, projectSections = [], initialSection}: {open: boolean; onOpenChange(open: boolean): void; entries: readonly Entry[]; store: SettingsStore; onCloseAutoFocus(event: Event): void; projectSections?: readonly {id: string; value: SettingsSectionDefinition}[]; initialSection?:string}) {
  const [, refresh] = useReducer((n: number) => n + 1, 0), [query, setQuery] = useState(''), [modifiedOnly, setModifiedOnly] = useState(false), [active, setActive] = useState(''), list = useRef<HTMLDivElement>(null);
  useEffect(() => store.subscribe(refresh), [store]);
  useEffect(() => { if (!open) { setQuery(''); setModifiedOnly(false); setActive(''); } }, [open]);
@@ -38,7 +38,14 @@ export function SettingsDialog({open, onOpenChange, entries, store, onCloseAutoF
  const reveal = (key: string) => { setActive(key); const box = list.current, el = box?.querySelector<HTMLElement>(`:scope > section[data-section="${CSS.escape(key)}"]`); if (box && el) box.scrollTo({top: el.offsetTop - box.offsetTop}); };
  const nav = (key: string, title: string, count?: number) => <button key={key} className={styles.settingsNavItem} aria-current={current === key ? 'true' : undefined} data-nav={key} onClick={() => reveal(key)}><span>{title}</span>{count !== undefined && (needle || modifiedFilter) && <small>{count}</small>}</button>;
  return <Dialog.Root open={open} onOpenChange={onOpenChange}><Dialog.Portal><Dialog.Overlay className={styles.overlay}/>
-  <Dialog.Content className={`${styles.dialog} ${styles.settingsDialog}`} data-testid="settings-dialog" onCloseAutoFocus={onCloseAutoFocus}>
+  <Dialog.Content className={`${styles.dialog} ${styles.settingsDialog}`} data-testid="settings-dialog" onCloseAutoFocus={onCloseAutoFocus} onOpenAutoFocus={event=>{
+   if(!initialSection)return;
+   const target=list.current?.parentElement?.querySelector<HTMLElement>(`[data-nav="${CSS.escape(initialSection)}"]`);
+   if(!target)return;
+   event.preventDefault();
+   reveal(initialSection);
+   target.focus({preventScroll:true});
+  }}>
    <header className={styles.settingsHeader}>
     <div><Dialog.Title>{t('settings.title')}</Dialog.Title><Dialog.Description>{t('settings.description')}</Dialog.Description></div>
     <div className={styles.settingsSearch}>

@@ -1,0 +1,441 @@
+{
+ "formatVersion": 1,
+ "name": "Custom emitter",
+ "entrySceneId": "12e2010e-d019-4da3-8082-61f22354abf1",
+ "scenes": [
+  {
+   "formatVersion": 1,
+   "id": "12e2010e-d019-4da3-8082-61f22354abf1",
+   "name": "Custom emitter",
+   "entities": [
+    {
+     "id": "999aa71f-228a-4072-8dfd-4b0fb7e0320f",
+     "name": "3D View",
+     "parentId": null,
+     "active": true,
+     "components": [
+      {
+       "id": "7e1b1cc4-a402-40f7-86dc-43b0bb096264",
+       "type": "scene.transform2d",
+       "version": 1,
+       "data": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+       }
+      },
+      {
+       "id": "401a9829-7995-43f1-8be1-936a55773d83",
+       "type": "pixi3d.viewport",
+       "version": 1,
+       "data": {
+        "width": 960,
+        "height": 540,
+        "cameraId": "27a97a52-4b28-4b29-85c6-85d85ff39670",
+        "shadowQuality": "high",
+        "shadowFilter": "pcf",
+        "environment": "hemisphere",
+        "skyColor": "#bcd4ff",
+        "groundColor": "#5b5246",
+        "environmentIntensity": 0.8,
+        "environmentAssetId": "",
+        "cubemapAssetId": "",
+        "background": "color",
+        "backgroundColor": "#0a0c12",
+        "toneMapping": "aces",
+        "exposure": 1,
+        "fog": "none",
+        "fogColor": "#adb2ba",
+        "fogNear": 10,
+        "fogFar": 60,
+        "fogDensity": 0.04,
+        "bloom": true,
+        "bloomThreshold": 0.7,
+        "bloomIntensity": 0.9,
+        "bloomRadius": 0.6,
+        "ssao": false,
+        "ssaoRadius": 0.5,
+        "ssaoIntensity": 1,
+        "depthOfField": false,
+        "focusDistance": 10,
+        "focusRange": 2,
+        "focusFalloff": 8,
+        "focusBlur": 10,
+        "motionBlur": false,
+        "motionBlurIntensity": 0.5,
+        "motionBlurSamples": 12,
+        "motionBlurMaxLength": 48,
+        "tint": "#ffffff",
+        "lutAssetId": "",
+        "lutIntensity": 1,
+        "antialias": false,
+        "outlineWidth": 0.03,
+        "outlineColor": "#000000",
+        "debugView": "none",
+        "velocityScale": 1
+       }
+      }
+     ]
+    },
+    {
+     "id": "27a97a52-4b28-4b29-85c6-85d85ff39670",
+     "name": "Camera",
+     "parentId": "999aa71f-228a-4072-8dfd-4b0fb7e0320f",
+     "active": true,
+     "spatial": "scene3d.transform",
+     "components": [
+      {
+       "id": "3c3d4448-ddad-4f4a-8132-28434d938efc",
+       "type": "scene3d.transform",
+       "version": 1,
+       "data": {
+        "x": 0,
+        "y": 0.3,
+        "z": 5.4,
+        "qx": -0.03489949670250097,
+        "qy": 0,
+        "qz": 0,
+        "qw": 0.9993908270190958,
+        "scaleX": 1,
+        "scaleY": 1,
+        "scaleZ": 1
+       }
+      },
+      {
+       "id": "8d6f0aff-17a2-4c76-8d3f-d21e141df913",
+       "type": "pixi3d.camera",
+       "version": 1,
+       "data": {
+        "mode": "perspective",
+        "fov": 45,
+        "near": 0.1,
+        "far": 200,
+        "orthographicSize": 5,
+        "feedWidth": 512,
+        "feedHeight": 288
+       }
+      }
+     ]
+    },
+    {
+     "id": "d9f546a3-1861-4c9c-8705-256da02eb92c",
+     "name": "Key",
+     "parentId": "999aa71f-228a-4072-8dfd-4b0fb7e0320f",
+     "active": true,
+     "spatial": "scene3d.transform",
+     "components": [
+      {
+       "id": "ba069991-9c1b-4976-8a39-62907cc3a1b7",
+       "type": "scene3d.transform",
+       "version": 1,
+       "data": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "qx": -0.25268400030018495,
+        "qy": 0.20906461293484896,
+        "qz": -0.05601869420181802,
+        "qw": 0.9430295273800398,
+        "scaleX": 1,
+        "scaleY": 1,
+        "scaleZ": 1
+       }
+      },
+      {
+       "id": "80ba276a-3391-4c6f-826e-1a643d773929",
+       "type": "pixi3d.light",
+       "version": 1,
+       "data": {
+        "kind": "directional",
+        "color": "#ffffff",
+        "intensity": 1.6,
+        "castShadow": false,
+        "range": 10,
+        "radius": 0.1,
+        "coneAngle": 30,
+        "penumbra": 0.2,
+        "shadowPlacement": "fit",
+        "shadowBoundsX": 0,
+        "shadowBoundsY": 0,
+        "shadowBoundsZ": 0,
+        "shadowBoundsWidth": 20,
+        "shadowBoundsHeight": 20,
+        "shadowBoundsDepth": 20,
+        "shadowCascades": 3,
+        "shadowMaxDistance": 50,
+        "shadowLambda": 0.5,
+        "shadowBias": 0.001,
+        "shadowNormalBiasAuto": true,
+        "shadowNormalBias": 0.05,
+        "shadowUpdate": 1
+       }
+      }
+     ]
+    },
+    {
+     "id": "9f3ed98a-9b56-438f-8d15-0024aca6b756",
+     "name": "Fill",
+     "parentId": "999aa71f-228a-4072-8dfd-4b0fb7e0320f",
+     "active": true,
+     "spatial": "scene3d.transform",
+     "components": [
+      {
+       "id": "47bb7566-d74a-491f-8737-2839f6d89875",
+       "type": "scene3d.transform",
+       "version": 1,
+       "data": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1,
+        "scaleX": 1,
+        "scaleY": 1,
+        "scaleZ": 1
+       }
+      },
+      {
+       "id": "0fca7633-20ad-4786-8430-19849c6a04f6",
+       "type": "pixi3d.light",
+       "version": 1,
+       "data": {
+        "kind": "ambient",
+        "color": "#ffffff",
+        "intensity": 0.35,
+        "castShadow": false,
+        "range": 10,
+        "radius": 0.1,
+        "coneAngle": 30,
+        "penumbra": 0.2,
+        "shadowPlacement": "fit",
+        "shadowBoundsX": 0,
+        "shadowBoundsY": 0,
+        "shadowBoundsZ": 0,
+        "shadowBoundsWidth": 20,
+        "shadowBoundsHeight": 20,
+        "shadowBoundsDepth": 20,
+        "shadowCascades": 3,
+        "shadowMaxDistance": 50,
+        "shadowLambda": 0.5,
+        "shadowBias": 0.001,
+        "shadowNormalBiasAuto": true,
+        "shadowNormalBias": 0.05,
+        "shadowUpdate": 1
+       }
+      }
+     ]
+    },
+    {
+     "id": "edca8f87-abde-4292-87c7-9c9647bdab31",
+     "name": "Sign",
+     "parentId": "999aa71f-228a-4072-8dfd-4b0fb7e0320f",
+     "active": true,
+     "spatial": "scene3d.transform",
+     "components": [
+      {
+       "id": "214648a6-0547-4c0a-83e1-e6e20b5755c8",
+       "type": "scene3d.transform",
+       "version": 1,
+       "data": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1,
+        "scaleX": 1,
+        "scaleY": 1,
+        "scaleZ": 1
+       }
+      },
+      {
+       "id": "4b53b585-05b5-4525-8363-c52095aed3e3",
+       "type": "pixi3d.batch",
+       "version": 1,
+       "data": {
+        "size": 768,
+        "color": "#ffffff",
+        "roughness": 0.8,
+        "metallic": 0,
+        "castShadow": false,
+        "receiveShadow": true
+       }
+      }
+     ]
+    },
+    {
+     "id": "8e357b82-971a-4fc8-85d8-d49840debbb9",
+     "name": "Sparks",
+     "parentId": "999aa71f-228a-4072-8dfd-4b0fb7e0320f",
+     "active": true,
+     "spatial": "scene3d.transform",
+     "components": [
+      {
+       "id": "24fe0e4b-e8d0-4494-84a7-cc29195b64b2",
+       "type": "scene3d.transform",
+       "version": 1,
+       "data": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1,
+        "scaleX": 1,
+        "scaleY": 1,
+        "scaleZ": 1
+       }
+      },
+      {
+       "id": "f7f7b82d-538e-411f-8e54-0d39fa8c429e",
+       "type": "pixi3d.particles",
+       "version": 1,
+       "data": {
+        "count": 1500,
+        "emission": "continuous",
+        "autoplay": false,
+        "seed": 1,
+        "lifetime": 2,
+        "lifetimeRandom": 0.3,
+        "speed": 2,
+        "speedRandom": 0.5,
+        "spread": 25,
+        "gravity": 1,
+        "spawnShape": "point",
+        "spawnRadius": 0.25,
+        "spawnWidth": 1,
+        "spawnHeight": 1,
+        "spawnDepth": 1,
+        "size": 0.2,
+        "sizeRandom": 0.3,
+        "endScale": 0.2,
+        "alpha": 1,
+        "endAlpha": 0,
+        "tint": "#ffd27a",
+        "endTint": "#ff6a2a",
+        "rotationSpeed": 0,
+        "particleTexture": "soft",
+        "blendMode": "add",
+        "burstInterval": 0,
+        "space": "local",
+        "billboard": "spherical",
+        "textureAsset": "",
+        "frameColumns": 1,
+        "frameRows": 1,
+        "frameMode": "overLife",
+        "frameRate": 12,
+        "driver": "script"
+       }
+      },
+      {
+       "id": "eccdc988-c458-415f-83fd-4ed6531d119b",
+       "type": "scripts.behaviour",
+       "version": 1,
+       "data": {
+        "scriptId": "c39a83f5-f759-480b-8b1f-193f3cb5210a",
+        "params": {},
+        "refs": {
+         "sign": "edca8f87-abde-4292-87c7-9c9647bdab31"
+        }
+       }
+      }
+     ]
+    },
+    {
+     "id": "4baf0583-2f1b-4615-8d5d-331bca58eedd",
+     "name": "Label: Sparks emitted on the burning edge of a tiled sign",
+     "parentId": null,
+     "active": true,
+     "components": [
+      {
+       "id": "0476edf8-4583-410d-8092-ce5968c20b9b",
+       "type": "scene.transform2d",
+       "version": 1,
+       "data": {
+        "x": 480,
+        "y": 32,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+       }
+      },
+      {
+       "id": "e6407668-c01c-4ae6-83ec-4da4a32ac5e9",
+       "type": "pixi.text",
+       "version": 1,
+       "data": {
+        "alpha": 1,
+        "text": "Sparks emitted on the burning edge of a tiled sign",
+        "fontSize": 20,
+        "color": "#e8edf2",
+        "font": "",
+        "fontWeight": "normal",
+        "fontStyle": "normal",
+        "align": "center",
+        "letterSpacing": 0,
+        "strokeColor": "#0b0f14",
+        "strokeWidth": 4
+       }
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "modules": {
+  "project": "1.0.0",
+  "scene": "1.0.0",
+  "assets": "1.0.0",
+  "pixi": "1.0.0",
+  "assetpack": "1.0.0",
+  "audio": "1.0.0",
+  "howler": "1.0.0",
+  "tween": "1.0.0",
+  "gsap": "1.0.0",
+  "tween-pixi": "1.0.0",
+  "animation": "1.0.0",
+  "physics": "1.0.0",
+  "matter": "1.0.0",
+  "spine": "1.0.0",
+  "spine-audio": "1.0.0",
+  "interactions": "1.0.0",
+  "interaction-media": "1.0.0",
+  "build": "1.0.0",
+  "html-export": "1.0.0",
+  "prefabs": "1.0.0",
+  "project-ui": "1.0.0",
+  "recovery": "1.0.0",
+  "studio": "1.0.0",
+  "scene3d": "1.0.0",
+  "pixi3d-editor": "1.0.0"
+ },
+ "providers": {
+  "audio": "howler",
+  "tween": "gsap",
+  "physics": "matter",
+  "render": "pixi"
+ },
+ "extensions": {
+  "assets.registry": {
+   "version": 1,
+   "items": []
+  },
+  "scripts.library": {
+   "version": 1,
+   "items": [
+    {
+     "id": "c39a83f5-f759-480b-8b1f-193f3cb5210a",
+     "name": "Burn",
+     "source": "// A burn sweeps across a sign of tiles; sparks are emitted on the tiles at its edge (a custom emitter shape).\nexport const params = {sign: param.object({label: 'Sign (Batch 3D)'}), seconds: param.number(6, {min: 2, max: 30, label: 'Burn time'})};\nconst COLS = 48, ROWS = 16, TILE = 0.075;\nexport function start(self: GameObject3D) {\n  const sign = self.params.sign as GameObject3D, s = 0.5;\n  // One unit cube from arrays: 24 vertices (4 per face, so each face keeps its own normal).\n  const positions: number[] = [], normals: number[] = [], indices: number[] = [];\n  for (const [nx, ny, nz] of [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0, 0, -1]]) {\n    const u = ny ? [1, 0, 0] : [0, 1, 0], v = [ny * u[2] - nz * u[1], nz * u[0] - nx * u[2], nx * u[1] - ny * u[0]], base = positions.length / 3;\n    for (const [a, c] of [[-1, -1], [1, -1], [1, 1], [-1, 1]]) { positions.push((nx + a * u[0] + c * v[0]) * s, (ny + a * u[1] + c * v[1]) * s, (nz + a * u[2] + c * v[2]) * s); normals.push(nx, ny, nz); }\n    indices.push(base, base + 1, base + 2, base, base + 2, base + 3);\n  }\n  sign.batch.geometries = [game.geometry({positions, normals, indices})];\n  self.state.tiles = new Float32Array(COLS * ROWS * 12); self.state.noise = Float32Array.from({length: COLS * ROWS}, () => Math.random() * 0.35);\n  const n = self.particles.count; self.state.sparks = new Float32Array(n * 6); self.state.out = new Float32Array(n * 8); self.state.next = 0;\n}\nexport function update(self: GameObject3D, dt: number) {\n  const sign = self.params.sign as GameObject3D, tiles: Float32Array = self.state.tiles, noise: Float32Array = self.state.noise;\n  const front = ((game.time % (self.params.seconds + 1.5)) / self.params.seconds) * 1.5 - 0.2, edge: number[] = [];\n  for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {\n    const i = r * COLS + c, o = i * 12, x = (c - (COLS - 1) / 2) * TILE * 1.1, y = ((ROWS - 1) / 2 - r) * TILE * 1.1, burn = (front - c / COLS - noise[i]) * 6;\n    // burn < 0: untouched sign; 0–1: glowing; past 1: charred and shrinking away.\n    const glow = Math.max(0, Math.min(1, 1 - Math.abs(burn - 0.5) * 2)), gone = Math.max(0, Math.min(1, burn - 1));\n    if (glow > 0.2) edge.push(x, y);\n    const k = burn < 0 ? 0 : Math.min(1, burn), size = TILE * (1 - gone);\n    tiles[o] = 0; tiles[o + 1] = x; tiles[o + 2] = y; tiles[o + 3] = 0; tiles[o + 4] = 0; tiles[o + 5] = 0; tiles[o + 6] = 0; tiles[o + 7] = 1; tiles[o + 8] = Math.max(0.0001, size);\n    tiles[o + 9] = (0.85 * (1 - k) + 0.12 * k) + glow * 1.2; tiles[o + 10] = (0.78 * (1 - k) + 0.08 * k) + glow * 0.45; tiles[o + 11] = (0.62 * (1 - k) + 0.06 * k) + glow * 0.05;\n  }\n  sign.batch.write(tiles, COLS * ROWS);\n  // Sparks: 6 numbers each (x, y, z, vx, vy, age); new ones start on the burning edge's tiles.\n  const sparks: Float32Array = self.state.sparks, out: Float32Array = self.state.out, n = self.particles.count;\n  for (let k = 0; k < 30 && edge.length; k++) { const i = self.state.next, j = Math.floor(Math.random() * edge.length / 2) * 2, o = i * 6; self.state.next = (i + 1) % n;\n    sparks[o] = edge[j] + (Math.random() - 0.5) * TILE; sparks[o + 1] = edge[j + 1] + (Math.random() - 0.5) * TILE; sparks[o + 2] = TILE * 0.6; sparks[o + 3] = (Math.random() - 0.5) * 0.4; sparks[o + 4] = 0.3 + Math.random() * 0.8; sparks[o + 5] = 0.001; }\n  for (let i = 0; i < n; i++) { const o = i * 6, p = i * 8, age = sparks[o + 5];\n    if (age <= 0 || age > 1.4) { out[p + 3] = 0; out[p + 7] = 0; continue; }\n    sparks[o] += sparks[o + 3] * dt; sparks[o + 1] += sparks[o + 4] * dt; sparks[o + 4] -= 0.25 * dt; sparks[o + 5] = age + dt;\n    const t = age / 1.4; out[p] = sparks[o]; out[p + 1] = sparks[o + 1]; out[p + 2] = sparks[o + 2]; out[p + 3] = 0.05 * (1 - t * 0.6);\n    out[p + 4] = 1; out[p + 5] = 0.75 - t * 0.6; out[p + 6] = 0.3 - t * 0.3; out[p + 7] = 1 - t;\n  }\n  self.particles.write(out, n);\n}\n",
+     "code": "\"use strict\";Object.defineProperty(exports, \"__esModule\", {value: true});// A burn sweeps across a sign of tiles; sparks are emitted on the tiles at its edge (a custom emitter shape).\n const params = {sign: param.object({label: 'Sign (Batch 3D)'}), seconds: param.number(6, {min: 2, max: 30, label: 'Burn time'})}; exports.params = params;\nconst COLS = 48, ROWS = 16, TILE = 0.075;\n function start(self) {\n  const sign = self.params.sign , s = 0.5;\n  // One unit cube from arrays: 24 vertices (4 per face, so each face keeps its own normal).\n  const positions = [], normals = [], indices = [];\n  for (const [nx, ny, nz] of [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0, 0, -1]]) {\n    const u = ny ? [1, 0, 0] : [0, 1, 0], v = [ny * u[2] - nz * u[1], nz * u[0] - nx * u[2], nx * u[1] - ny * u[0]], base = positions.length / 3;\n    for (const [a, c] of [[-1, -1], [1, -1], [1, 1], [-1, 1]]) { positions.push((nx + a * u[0] + c * v[0]) * s, (ny + a * u[1] + c * v[1]) * s, (nz + a * u[2] + c * v[2]) * s); normals.push(nx, ny, nz); }\n    indices.push(base, base + 1, base + 2, base, base + 2, base + 3);\n  }\n  sign.batch.geometries = [game.geometry({positions, normals, indices})];\n  self.state.tiles = new Float32Array(COLS * ROWS * 12); self.state.noise = Float32Array.from({length: COLS * ROWS}, () => Math.random() * 0.35);\n  const n = self.particles.count; self.state.sparks = new Float32Array(n * 6); self.state.out = new Float32Array(n * 8); self.state.next = 0;\n} exports.start = start;\n function update(self, dt) {\n  const sign = self.params.sign , tiles = self.state.tiles, noise = self.state.noise;\n  const front = ((game.time % (self.params.seconds + 1.5)) / self.params.seconds) * 1.5 - 0.2, edge = [];\n  for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {\n    const i = r * COLS + c, o = i * 12, x = (c - (COLS - 1) / 2) * TILE * 1.1, y = ((ROWS - 1) / 2 - r) * TILE * 1.1, burn = (front - c / COLS - noise[i]) * 6;\n    // burn < 0: untouched sign; 0–1: glowing; past 1: charred and shrinking away.\n    const glow = Math.max(0, Math.min(1, 1 - Math.abs(burn - 0.5) * 2)), gone = Math.max(0, Math.min(1, burn - 1));\n    if (glow > 0.2) edge.push(x, y);\n    const k = burn < 0 ? 0 : Math.min(1, burn), size = TILE * (1 - gone);\n    tiles[o] = 0; tiles[o + 1] = x; tiles[o + 2] = y; tiles[o + 3] = 0; tiles[o + 4] = 0; tiles[o + 5] = 0; tiles[o + 6] = 0; tiles[o + 7] = 1; tiles[o + 8] = Math.max(0.0001, size);\n    tiles[o + 9] = (0.85 * (1 - k) + 0.12 * k) + glow * 1.2; tiles[o + 10] = (0.78 * (1 - k) + 0.08 * k) + glow * 0.45; tiles[o + 11] = (0.62 * (1 - k) + 0.06 * k) + glow * 0.05;\n  }\n  sign.batch.write(tiles, COLS * ROWS);\n  // Sparks: 6 numbers each (x, y, z, vx, vy, age); new ones start on the burning edge's tiles.\n  const sparks = self.state.sparks, out = self.state.out, n = self.particles.count;\n  for (let k = 0; k < 30 && edge.length; k++) { const i = self.state.next, j = Math.floor(Math.random() * edge.length / 2) * 2, o = i * 6; self.state.next = (i + 1) % n;\n    sparks[o] = edge[j] + (Math.random() - 0.5) * TILE; sparks[o + 1] = edge[j + 1] + (Math.random() - 0.5) * TILE; sparks[o + 2] = TILE * 0.6; sparks[o + 3] = (Math.random() - 0.5) * 0.4; sparks[o + 4] = 0.3 + Math.random() * 0.8; sparks[o + 5] = 0.001; }\n  for (let i = 0; i < n; i++) { const o = i * 6, p = i * 8, age = sparks[o + 5];\n    if (age <= 0 || age > 1.4) { out[p + 3] = 0; out[p + 7] = 0; continue; }\n    sparks[o] += sparks[o + 3] * dt; sparks[o + 1] += sparks[o + 4] * dt; sparks[o + 4] -= 0.25 * dt; sparks[o + 5] = age + dt;\n    const t = age / 1.4; out[p] = sparks[o]; out[p + 1] = sparks[o + 1]; out[p + 2] = sparks[o + 2]; out[p + 3] = 0.05 * (1 - t * 0.6);\n    out[p + 4] = 1; out[p + 5] = 0.75 - t * 0.6; out[p + 6] = 0.3 - t * 0.3; out[p + 7] = 1 - t;\n  }\n  self.particles.write(out, n);\n} exports.update = update;\n"
+    }
+   ]
+  }
+ }
+}

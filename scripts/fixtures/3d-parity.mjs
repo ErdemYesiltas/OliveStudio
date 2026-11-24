@@ -1,0 +1,18 @@
+// Exports the exact saved native QA scene plus an optional test-only runtime inspection contribution.
+import {createServer as vite} from 'vite';
+import {readFile,writeFile,mkdir,mkdtemp,rm} from 'node:fs/promises';
+import {resolve,join} from 'node:path';
+import {createHash} from 'node:crypto';
+import {buildPlayer} from '../build-player.mjs';
+const source=resolve(process.argv[2]??'outputs/animation3d-qa/3D Animation QA.pixieditor'),out=resolve(process.argv[3]??'outputs/pose3d-qa');await mkdir(out,{recursive:true});
+const text=await readFile(source,'utf8'),project=JSON.parse(text),sourceHash=createHash('sha256').update(text).digest('hex'),scene=project.scenes.find(s=>s.id===project.entrySceneId),assets=project.extensions['assets.registry'].items;
+const models=scene.entities.flatMap(e=>{const animation=e.components.find(c=>c.type==='animation3d.model'),model=e.components.find(c=>c.type==='pixi3d.modelRenderer');if(!animation||!model)return[];const a=assets.find(a=>a.id===model.data.assetId),clip=a?.metadata.animations.find(a=>a.name===animation.data.clip);if(!clip)throw Error('Missing fixture animation');return[{name:e.name,entityId:e.id,componentId:animation.id,duration:clip.duration,speed:animation.data.speed,loop:animation.data.loop}];});if(!models.length||models.length>8)throw Error('Use a small animated model fixture');
+const other=project.scenes.find(s=>s.id!==scene.id),rooms=other?{id:other.id,entities:other.entities.map(e=>e.id)}:undefined;
+const config={models,...(rooms?{rooms}:{}),times:[0,.25,.5,.8999,1,1.5,2],sourceHash},runtime={id:'qa.pose-probe',entry:'scripts/fixtures/pose-probe.ts',requires:['pixi3d']},profile=JSON.parse(await readFile('modules/html-export/runtime-profile.json','utf8'));profile.runtimes[runtime.id]=runtime;const profileFile=join(out,'profile.json');await writeFile(profileFile,JSON.stringify(profile));await buildPlayer({profileFile,outDir:join(out,'template')});
+const ssr=await vite({configFile:false,root:resolve('.'),optimizeDeps:{noDiscovery:true,include:[]},server:{middlewareMode:true},ssr:{noExternal:[/^@rewrite\//]}}),cache=await mkdtemp(join(out,'source-cache-'));
+try{
+ const{createStockRegistry}=await ssr.ssrLoadModule('/modules/html-export/src/stock.ts'),{createHtmlTarget}=await ssr.ssrLoadModule('/modules/html-export/src/export.node.ts'),{NativeBuildService}=await ssr.ssrLoadModule('/modules/build/src/build.node.ts'),{buildModel}=await ssr.ssrLoadModule('/modules/render-pixi3d/src/model.node.ts');
+ const registry=createStockRegistry([{id:'qa.pose-probe',version:'1.0.0',runtime,extensions:[{key:'qa.pose-probe',runtime:true,activate:true,parse:v=>v}]}]),exportProject=structuredClone(project);exportProject.extensions['qa.pose-probe']=config;const built=new Set();await mkdir(join(cache,'sources'));
+ const result=await new NativeBuildService([createHtmlTarget(registry)],join(out,'template'),async(id,revision,file)=>{const a=assets.find(a=>a.id===id&&a.revision===revision);if(!a||a.type!=='pixi3d.model'||file!=='model.glb')throw Error('Fixture expects self-contained GLB assets only');if(!built.has(id)){await writeFile(join(cache,'sources',`${id}-${revision}.glb`),await readFile(join(source+'.assets','sources',`${id}-${revision}.glb`)));await buildModel({root:cache,asset:a,importerId:'pixi3d-editor.glb'});built.add(id);}return readFile(join(cache,'cache',`${id}-${revision}`,file));}).run(out,exportProject,'html');
+ await writeFile(join(out,'fixture.json'),JSON.stringify({source,sourceHash,output:result.output,...config},null,2)+'\n');console.log(JSON.stringify({output:result.output,sourceHash,models:models.length,samples:config.times.length}));
+}finally{await ssr.close();await rm(cache,{recursive:true,force:true});}

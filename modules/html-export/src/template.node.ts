@@ -13,3 +13,5 @@ export async function prepareRuntime(template:string,stage:string,plan:ExportPla
  for(const file of files){if(signal.aborted)throw Error('Build cancelled');safe(file);const source=join(template,file),info=await lstat(source);if(!info.isFile()||info.isSymbolicLink())throw Error('Invalid template file: '+file);const target=join(stage,file);await mkdir(dirname(target),{recursive:true});await copyFile(source,target);report.push({path:file,bytes:info.size,vendors:manifest.files[file]?.vendors??[]});}
  await writeFile(join(stage,'runtime-report.json'),JSON.stringify({version:1,runtimes:plan.runtimes,contributions:plan.contributions,files:report,totalBytes:report.reduce((n,f)=>n+f.bytes,0)},null,2)+'\n');
 }
+/** Adds network origins (validated by the export plan) to the exported page's CSP connect-src. */
+export async function allowConnections(stage:string,sources:readonly string[]){const page=join(stage,'index.html'),html=await readFile(page,'utf8'),next=html.replace(/(connect-src [^;"]*)/,(m:string)=>`${m} ${sources.join(' ')}`);if(next===html)throw Error('index.html has no connect-src policy');await writeFile(page,next);}

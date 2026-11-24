@@ -58,3 +58,12 @@ spikes/**/node_modules/
 
 # Local development documents
 /docs/
+
+# MCP acceptance application bundle
+/release-mcp/
+
+# Kept beside the repository after it moved to the workspace root (23 Nov 2026)
+/_legacy-prototype/
+/Games/
+/AI-HANDOFF.md
+/OliveStudio-private-history.bundle

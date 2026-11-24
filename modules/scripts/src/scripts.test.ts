@@ -87,7 +87,7 @@ it('sandbox: no host globals, endless loops and memory bombs are stopped', () =>
  const loop = new ScriptSession(engine, library({id: 's1', name: 'Loop', source: 'export function update() { while (true) {} }'}), h, m => reports.push(m), {callMs: 50, memoryBytes: 32 << 20, stackBytes: 512 << 10, messagesPerFrame: 10});
  loop.system.update!(0); loop.system.update!(0);
  expect(reports.at(-1)).toBe('Scripts stopped: Loop.update ran longer than 50 ms (endless loop?)');
- const bomb = new ScriptSession(engine, library({id: 's1', name: 'Bomb', source: 'export function update() { const a: string[] = []; for (;;) a.push("x".repeat(1 << 16)); }'}), h, m => reports.push(m), {callMs: 5000, memoryBytes: 16 << 20, stackBytes: 512 << 10, messagesPerFrame: 10});
+ const bomb = new ScriptSession(engine, library({id: 's1', name: 'Bomb', source: 'export function update() { const bytes = new Uint8Array(64 << 20); game.log(bytes.length); }'}), h, m => reports.push(m), {callMs: 5000, memoryBytes: 16 << 20, stackBytes: 512 << 10, messagesPerFrame: 10});
  bomb.system.update!(0);
  expect(reports.at(-1)).toBe('Bomb (line 1): update stopped this script — out of memory');
  const ping = new ScriptSession(engine, library({id: 's1', name: 'Ping', source: 'export function start() { game.send("ping"); } export function onMessage() { game.send("ping"); }'}), h, m => reports.push(m), {callMs: 1000, memoryBytes: 32 << 20, stackBytes: 512 << 10, messagesPerFrame: 10});

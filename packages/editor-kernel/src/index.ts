@@ -129,3 +129,5 @@ export class ModuleHost {
     this.scopes.clear(); this.order = []; this.phase = 'stopped';
   }
 }
+
+export * from './automation';

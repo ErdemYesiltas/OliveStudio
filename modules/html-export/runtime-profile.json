@@ -62,6 +62,31 @@
     "achievements": {
       "id": "achievements",
       "entry": "modules/player/src/plugins/achievements.ts"
+    },
+    "behavior": {
+      "id": "behavior",
+      "entry": "modules/player/src/plugins/behavior.ts",
+      "requires": [
+        "scripts"
+      ]
+    },
+    "multiplayer": {
+      "id": "multiplayer",
+      "entry": "modules/player/src/plugins/multiplayer.ts",
+      "requires": [
+        "input"
+      ]
+    },
+    "production": {
+      "id": "production",
+      "entry": "modules/player/src/plugins/production.ts",
+      "requires": [
+        "input"
+      ]
+    },
+    "pixi3d": {
+      "id": "pixi3d",
+      "entry": "modules/player/src/plugins/pixi3d.ts"
     }
   }
 }

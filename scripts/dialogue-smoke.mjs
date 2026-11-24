@@ -94,7 +94,8 @@ try {
  await expect(box.getByRole('button')).toHaveText(['1. Buy a gem', '2. Bye']);
  await page.keyboard.press('1');
  await expect(box).toHaveAttribute('data-line', 'b');
- await page.keyboard.press('Space');
+ // Short text may finish during locator/action scheduling. Advance from an observed finished line rather than
+ // assuming the first key still reveals typing (otherwise two keys can skip the following line).
  await expect(box).toHaveAttribute('data-typing', 'false');
  await page.keyboard.press('Space');
  await expect(box).toHaveAttribute('data-line', 'c');
@@ -148,7 +149,7 @@ try {
  await expect(gameBox).toHaveAttribute('data-typing', 'false');
  await gameBox.getByRole('button', {name: '1. Buy a gem'}).click();
  await expect(gameBox).toHaveAttribute('data-line', 'b');
- await gameBox.click(); await expect(gameBox).toHaveAttribute('data-typing', 'false'); await gameBox.click();
+ await expect(gameBox).toHaveAttribute('data-typing', 'false'); await gameBox.click();
  await expect(gameBox).toHaveAttribute('data-line', 'c');
  await expect.poll(async () => JSON.parse(await stage.getAttribute('data-poses') ?? '{}').gem?.active).toBe(false);
  await expect(gameBox).toHaveAttribute('data-typing', 'false'); await gameBox.click();

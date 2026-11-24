@@ -52,6 +52,8 @@ type Pads = () => readonly (Pick<Gamepad, 'buttons' | 'axes'> | null)[];
  * Raw events are pure method calls so the same core runs in the editor, the player and tests.
  */
 export class InputSession {
+ private keyListeners=new Set<(code:string,down:boolean)=>void>();
+ subscribeKeys(listener:(code:string,down:boolean)=>void){this.keyListeners.add(listener);return()=>{this.keyListeners.delete(listener);};}
  private keys = new Set<string>(); private mouse = new Set<number>(); private touches = new Set<number>(); private padButtons = new Set<number>(); private padAxes: number[] = [];
  private pressed = new Map<string, boolean>(); private values = new Map<string, number>();
  paused = false;
@@ -60,7 +62,7 @@ export class InputSession {
  }
  /** Codes bound by any action, so the host can stop page scrolling only for keys the game uses. */
  get boundKeys(): ReadonlySet<string> { return new Set(this.map.actions.flatMap(a => a.bindings.flatMap(b => b.type === 'key' ? [b.code] : b.type === 'keyAxis' ? [b.negative, b.positive] : []))); }
- key(code: string, down: boolean) { if (down) this.keys.add(code); else this.keys.delete(code); this.evaluate(); }
+ key(code: string, down: boolean) { const changed=this.keys.has(code)!==down;if(changed)for(const listener of this.keyListeners)listener(code,down);if (down) this.keys.add(code); else this.keys.delete(code); this.evaluate(); }
  pointer(id: number, kind: 'mouse' | 'touch', button: number, down: boolean) {
   if (kind === 'touch') { if (down) this.touches.add(id); else this.touches.delete(id); } else if (down) this.mouse.add(button); else this.mouse.delete(button);
   this.evaluate();
@@ -73,7 +75,7 @@ export class InputSession {
   this.evaluate();
  }
  /** Focus loss, hidden page or Stop: nothing stays held. */
- releaseAll() { this.keys.clear(); this.mouse.clear(); this.touches.clear(); this.padButtons.clear(); this.padAxes = []; this.evaluate(); }
+ releaseAll() { for(const code of [...this.keys])this.key(code,false);this.keys.clear(); this.mouse.clear(); this.touches.clear(); this.padButtons.clear(); this.padAxes = []; this.evaluate(); }
  isPressed(id: string) { return this.pressed.get(id) ?? false; }
  axis(id: string) { return this.values.get(id) ?? 0; }
  snapshot() { return Object.fromEntries(this.map.actions.map(a => [a.name, a.kind === 'button' ? this.isPressed(a.id) : this.axis(a.id)])); }

@@ -1,0 +1,32 @@
+{
+  "name": "@rewrite/production-tools",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./contracts": "./src/contracts.ts",
+    "./runtime": "./src/runtime.ts",
+    "./quality": "./src/quality.ts",
+    "./views": "./src/views.tsx",
+    "./models": "./src/models.ts"
+  },
+  "dependencies": {
+    "@rewrite/sdk": "workspace:*",
+    "@rewrite/project": "workspace:*",
+    "@rewrite/scene": "workspace:*",
+    "@rewrite/scripts": "workspace:*",
+    "@rewrite/behavior": "workspace:*",
+    "@rewrite/input": "workspace:*",
+    "@rewrite/interactions": "workspace:*",
+    "@rewrite/assets": "workspace:*",
+    "@rewrite/prefabs": "workspace:*",
+    "@rewrite/render-pixi": "workspace:*",
+    "zod": "4.6.7",
+    "react": "19.3.1"
+  },
+  "devDependencies": {
+    "@rewrite/kernel": "workspace:*",
+    "@rewrite/behavior-xstate": "workspace:*"
+  }
+}

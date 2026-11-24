@@ -1,0 +1,450 @@
+{
+ "formatVersion": 1,
+ "name": "Geometry from arrays",
+ "entrySceneId": "3d7009e5-0a64-45c7-836b-91f4e4b81e82",
+ "scenes": [
+  {
+   "formatVersion": 1,
+   "id": "3d7009e5-0a64-45c7-836b-91f4e4b81e82",
+   "name": "Geometry from arrays",
+   "entities": [
+    {
+     "id": "26a471b6-c42b-40df-8ff4-a4d6b4ce84fa",
+     "name": "3D View",
+     "parentId": null,
+     "active": true,
+     "components": [
+      {
+       "id": "0606a818-7bc5-4b04-806a-d23735466da5",
+       "type": "scene.transform2d",
+       "version": 1,
+       "data": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+       }
+      },
+      {
+       "id": "e01e68fb-d134-43c2-8c0a-266419539ab0",
+       "type": "pixi3d.viewport",
+       "version": 1,
+       "data": {
+        "width": 960,
+        "height": 540,
+        "cameraId": "37e4daa1-e1fe-4def-80f0-027f75c8024f",
+        "shadowQuality": "high",
+        "shadowFilter": "pcf",
+        "environment": "hemisphere",
+        "skyColor": "#bcd4ff",
+        "groundColor": "#5b5246",
+        "environmentIntensity": 0.8,
+        "environmentAssetId": "",
+        "cubemapAssetId": "",
+        "background": "color",
+        "backgroundColor": "#1d2530",
+        "toneMapping": "aces",
+        "exposure": 1,
+        "fog": "none",
+        "fogColor": "#adb2ba",
+        "fogNear": 10,
+        "fogFar": 60,
+        "fogDensity": 0.04,
+        "bloom": false,
+        "bloomThreshold": 1,
+        "bloomIntensity": 1,
+        "bloomRadius": 0.7,
+        "ssao": false,
+        "ssaoRadius": 0.5,
+        "ssaoIntensity": 1,
+        "depthOfField": false,
+        "focusDistance": 10,
+        "focusRange": 2,
+        "focusFalloff": 8,
+        "focusBlur": 10,
+        "motionBlur": false,
+        "motionBlurIntensity": 0.5,
+        "motionBlurSamples": 12,
+        "motionBlurMaxLength": 48,
+        "tint": "#ffffff",
+        "lutAssetId": "",
+        "lutIntensity": 1,
+        "antialias": false,
+        "outlineWidth": 0.03,
+        "outlineColor": "#000000",
+        "debugView": "none",
+        "velocityScale": 1
+       }
+      }
+     ]
+    },
+    {
+     "id": "37e4daa1-e1fe-4def-80f0-027f75c8024f",
+     "name": "Camera",
+     "parentId": "26a471b6-c42b-40df-8ff4-a4d6b4ce84fa",
+     "active": true,
+     "spatial": "scene3d.transform",
+     "components": [
+      {
+       "id": "65fbfaa5-a3e5-4242-8b7e-db0fd52dcd9d",
+       "type": "scene3d.transform",
+       "version": 1,
+       "data": {
+        "x": 0,
+        "y": 3.2,
+        "z": 7,
+        "qx": -0.1908089953765448,
+        "qy": 0,
+        "qz": 0,
+        "qw": 0.981627183447664,
+        "scaleX": 1,
+        "scaleY": 1,
+        "scaleZ": 1
+       }
+      },
+      {
+       "id": "751e8c9a-1a7b-4864-8c0e-d462654f304c",
+       "type": "pixi3d.camera",
+       "version": 1,
+       "data": {
+        "mode": "perspective",
+        "fov": 45,
+        "near": 0.1,
+        "far": 200,
+        "orthographicSize": 5,
+        "feedWidth": 512,
+        "feedHeight": 288
+       }
+      }
+     ]
+    },
+    {
+     "id": "46dd2d77-717c-4c6c-8bb6-9c870abb34d2",
+     "name": "Sun",
+     "parentId": "26a471b6-c42b-40df-8ff4-a4d6b4ce84fa",
+     "active": true,
+     "spatial": "scene3d.transform",
+     "components": [
+      {
+       "id": "7ea2e7f6-9f5a-4796-8bcf-278bd2269a75",
+       "type": "scene3d.transform",
+       "version": 1,
+       "data": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "qx": -0.4030581999178559,
+        "qy": 0.27253200769780433,
+        "qz": -0.12708376228184318,
+        "qw": 0.8643610990919672,
+        "scaleX": 1,
+        "scaleY": 1,
+        "scaleZ": 1
+       }
+      },
+      {
+       "id": "59856d2f-af4e-4f56-846b-e5b3957854d5",
+       "type": "pixi3d.light",
+       "version": 1,
+       "data": {
+        "kind": "directional",
+        "color": "#ffffff",
+        "intensity": 2.4,
+        "castShadow": true,
+        "range": 10,
+        "radius": 0.1,
+        "coneAngle": 30,
+        "penumbra": 0.2,
+        "shadowPlacement": "fit",
+        "shadowBoundsX": 0,
+        "shadowBoundsY": 0,
+        "shadowBoundsZ": 0,
+        "shadowBoundsWidth": 20,
+        "shadowBoundsHeight": 20,
+        "shadowBoundsDepth": 20,
+        "shadowCascades": 3,
+        "shadowMaxDistance": 50,
+        "shadowLambda": 0.5,
+        "shadowBias": 0.001,
+        "shadowNormalBiasAuto": true,
+        "shadowNormalBias": 0.05,
+        "shadowUpdate": 1
+       }
+      }
+     ]
+    },
+    {
+     "id": "285e25f8-e46a-4851-8b42-a470ab351af6",
+     "name": "Fill",
+     "parentId": "26a471b6-c42b-40df-8ff4-a4d6b4ce84fa",
+     "active": true,
+     "spatial": "scene3d.transform",
+     "components": [
+      {
+       "id": "39d3c362-c8b4-47c0-8559-e034ea877068",
+       "type": "scene3d.transform",
+       "version": 1,
+       "data": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1,
+        "scaleX": 1,
+        "scaleY": 1,
+        "scaleZ": 1
+       }
+      },
+      {
+       "id": "1a7c849d-925e-4789-8be7-eb464571612f",
+       "type": "pixi3d.light",
+       "version": 1,
+       "data": {
+        "kind": "ambient",
+        "color": "#ffffff",
+        "intensity": 0.15,
+        "castShadow": false,
+        "range": 10,
+        "radius": 0.1,
+        "coneAngle": 30,
+        "penumbra": 0.2,
+        "shadowPlacement": "fit",
+        "shadowBoundsX": 0,
+        "shadowBoundsY": 0,
+        "shadowBoundsZ": 0,
+        "shadowBoundsWidth": 20,
+        "shadowBoundsHeight": 20,
+        "shadowBoundsDepth": 20,
+        "shadowCascades": 3,
+        "shadowMaxDistance": 50,
+        "shadowLambda": 0.5,
+        "shadowBias": 0.001,
+        "shadowNormalBiasAuto": true,
+        "shadowNormalBias": 0.05,
+        "shadowUpdate": 1
+       }
+      }
+     ]
+    },
+    {
+     "id": "96df9b30-f2af-4b9d-8e71-de038101bf45",
+     "name": "Hills",
+     "parentId": "26a471b6-c42b-40df-8ff4-a4d6b4ce84fa",
+     "active": true,
+     "spatial": "scene3d.transform",
+     "components": [
+      {
+       "id": "b8c670b5-bde1-4933-8ac7-890b2aaafb6a",
+       "type": "scene3d.transform",
+       "version": 1,
+       "data": {
+        "x": 0,
+        "y": -0.6,
+        "z": 0,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1,
+        "scaleX": 1,
+        "scaleY": 1,
+        "scaleZ": 1
+       }
+      },
+      {
+       "id": "f988bd30-72cd-4716-8c38-2c437c872522",
+       "type": "pixi3d.mesh",
+       "version": 1,
+       "data": {
+        "color": "#ffffff",
+        "roughness": 0.9,
+        "metallic": 0,
+        "texture": "96215984-b431-453d-85a4-8bf87fffbb2e",
+        "vertexColors": false,
+        "doubleSided": false,
+        "flatShading": false,
+        "castShadow": true,
+        "receiveShadow": true
+       }
+      },
+      {
+       "id": "831f74a6-eb54-4248-88b8-627370751c93",
+       "type": "scripts.behaviour",
+       "version": 1,
+       "data": {
+        "scriptId": "ad5cc09c-ea3c-4882-8380-7f68d733a565",
+        "params": {},
+        "refs": {}
+       }
+      }
+     ]
+    },
+    {
+     "id": "d3078dfb-b3e0-4a30-8188-669b3608d0dc",
+     "name": "Gem",
+     "parentId": "26a471b6-c42b-40df-8ff4-a4d6b4ce84fa",
+     "active": true,
+     "spatial": "scene3d.transform",
+     "components": [
+      {
+       "id": "603a44f0-8e18-42f0-8289-463095ee18d6",
+       "type": "scene3d.transform",
+       "version": 1,
+       "data": {
+        "x": 0,
+        "y": 1.1,
+        "z": 0.8,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1,
+        "scaleX": 1,
+        "scaleY": 1,
+        "scaleZ": 1
+       }
+      },
+      {
+       "id": "42e60643-1623-46f1-82b3-e32205a5ba60",
+       "type": "pixi3d.mesh",
+       "version": 1,
+       "data": {
+        "color": "#7fd6ff",
+        "roughness": 0.15,
+        "metallic": 0.2,
+        "texture": "",
+        "vertexColors": false,
+        "doubleSided": false,
+        "flatShading": true,
+        "castShadow": true,
+        "receiveShadow": true
+       }
+      },
+      {
+       "id": "9085247b-c0fc-4d8e-8a81-5abe6a5956a0",
+       "type": "scripts.behaviour",
+       "version": 1,
+       "data": {
+        "scriptId": "e0c9db02-c94c-493f-8175-0661ade5646f",
+        "params": {},
+        "refs": {}
+       }
+      }
+     ]
+    },
+    {
+     "id": "1a8d2fdd-94aa-4fae-80a9-5e8d38067a2d",
+     "name": "Label: Shapes built from arrays in a script",
+     "parentId": null,
+     "active": true,
+     "components": [
+      {
+       "id": "ccffca0f-1f72-436b-8b26-4c3133c17b83",
+       "type": "scene.transform2d",
+       "version": 1,
+       "data": {
+        "x": 480,
+        "y": 32,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+       }
+      },
+      {
+       "id": "f84d8a65-bcd4-4e9b-83c6-bbcba7441968",
+       "type": "pixi.text",
+       "version": 1,
+       "data": {
+        "alpha": 1,
+        "text": "Shapes built from arrays in a script",
+        "fontSize": 20,
+        "color": "#e8edf2",
+        "font": "",
+        "fontWeight": "normal",
+        "fontStyle": "normal",
+        "align": "center",
+        "letterSpacing": 0,
+        "strokeColor": "#0b0f14",
+        "strokeWidth": 4
+       }
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "modules": {
+  "project": "1.0.0",
+  "scene": "1.0.0",
+  "assets": "1.0.0",
+  "pixi": "1.0.0",
+  "assetpack": "1.0.0",
+  "audio": "1.0.0",
+  "howler": "1.0.0",
+  "tween": "1.0.0",
+  "gsap": "1.0.0",
+  "tween-pixi": "1.0.0",
+  "animation": "1.0.0",
+  "physics": "1.0.0",
+  "matter": "1.0.0",
+  "spine": "1.0.0",
+  "spine-audio": "1.0.0",
+  "interactions": "1.0.0",
+  "interaction-media": "1.0.0",
+  "build": "1.0.0",
+  "html-export": "1.0.0",
+  "prefabs": "1.0.0",
+  "project-ui": "1.0.0",
+  "recovery": "1.0.0",
+  "studio": "1.0.0",
+  "scene3d": "1.0.0",
+  "pixi3d-editor": "1.0.0"
+ },
+ "providers": {
+  "audio": "howler",
+  "tween": "gsap",
+  "physics": "matter",
+  "render": "pixi"
+ },
+ "extensions": {
+  "assets.registry": {
+   "version": 1,
+   "items": [
+    {
+     "id": "96215984-b431-453d-85a4-8bf87fffbb2e",
+     "name": "Checker",
+     "type": "pixi.texture",
+     "revision": "225a7826fe362550c8b4838b19e169476a1fa3c9a51dce8e0b46d837072544e7",
+     "source": {
+      "extension": "png",
+      "bytes": 1408
+     },
+     "metadata": {
+      "width": 256,
+      "height": 256,
+      "processedBytes": 1408,
+      "pipeline": "pixi3d-examples"
+     }
+    }
+   ]
+  },
+  "scripts.library": {
+   "version": 1,
+   "items": [
+    {
+     "id": "ad5cc09c-ea3c-4882-8380-7f68d733a565",
+     "name": "Hills",
+     "source": "// A height field from arrays: one vertex per grid point, two triangles per cell, uvs for the colour map.\nexport const params = {size: param.number(48, {min: 4, max: 200, label: 'Cells per side'})};\nexport function start(self: GameObject3D) {\n  const n = self.params.size, positions: number[] = [], uvs: number[] = [], indices: number[] = [];\n  for (let z = 0; z <= n; z++) for (let x = 0; x <= n; x++) {\n    const u = x / n, v = z / n, px = (u - 0.5) * 8, pz = (v - 0.5) * 8;\n    positions.push(px, Math.sin(px * 1.3) * Math.cos(pz * 1.1) * 0.45 + Math.sin(px * 0.4 + pz * 0.7) * 0.3, pz);\n    uvs.push(u * 4, v * 4);\n  }\n  for (let z = 0; z < n; z++) for (let x = 0; x < n; x++) { const a = z * (n + 1) + x, b = a + n + 1; indices.push(a, b, a + 1, a + 1, b, b + 1); }\n  // No normals given: the host works them out from the triangles.\n  self.mesh.geometry = game.geometry({positions, uvs, indices});\n}\n",
+     "code": "\"use strict\";Object.defineProperty(exports, \"__esModule\", {value: true});// A height field from arrays: one vertex per grid point, two triangles per cell, uvs for the colour map.\n const params = {size: param.number(48, {min: 4, max: 200, label: 'Cells per side'})}; exports.params = params;\n function start(self) {\n  const n = self.params.size, positions = [], uvs = [], indices = [];\n  for (let z = 0; z <= n; z++) for (let x = 0; x <= n; x++) {\n    const u = x / n, v = z / n, px = (u - 0.5) * 8, pz = (v - 0.5) * 8;\n    positions.push(px, Math.sin(px * 1.3) * Math.cos(pz * 1.1) * 0.45 + Math.sin(px * 0.4 + pz * 0.7) * 0.3, pz);\n    uvs.push(u * 4, v * 4);\n  }\n  for (let z = 0; z < n; z++) for (let x = 0; x < n; x++) { const a = z * (n + 1) + x, b = a + n + 1; indices.push(a, b, a + 1, a + 1, b, b + 1); }\n  // No normals given: the host works them out from the triangles.\n  self.mesh.geometry = game.geometry({positions, uvs, indices});\n} exports.start = start;\n"
+    },
+    {
+     "id": "e0c9db02-c94c-493f-8175-0661ade5646f",
+     "name": "Gem",
+     "source": "// Eight triangles listed vertex by vertex (no indices): every face keeps its own normal, so it shades flat.\nexport function start(self: GameObject3D) {\n  const top = [0, 0.7, 0], bottom = [0, -0.7, 0], ring = [[0.5, 0, 0], [0, 0, -0.5], [-0.5, 0, 0], [0, 0, 0.5]], positions: number[] = [];\n  for (let i = 0; i < 4; i++) { const a = ring[i], b = ring[(i + 1) % 4]; positions.push(...top, ...b, ...a, ...bottom, ...a, ...b); }\n  self.mesh.geometry = game.geometry({positions});\n}\nexport function update(self: GameObject3D, dt: number) { self.rotation.y += 45 * dt; }\n",
+     "code": "\"use strict\";Object.defineProperty(exports, \"__esModule\", {value: true});// Eight triangles listed vertex by vertex (no indices): every face keeps its own normal, so it shades flat.\n function start(self) {\n  const top = [0, 0.7, 0], bottom = [0, -0.7, 0], ring = [[0.5, 0, 0], [0, 0, -0.5], [-0.5, 0, 0], [0, 0, 0.5]], positions = [];\n  for (let i = 0; i < 4; i++) { const a = ring[i], b = ring[(i + 1) % 4]; positions.push(...top, ...b, ...a, ...bottom, ...a, ...b); }\n  self.mesh.geometry = game.geometry({positions});\n} exports.start = start;\n function update(self, dt) { self.rotation.y += 45 * dt; } exports.update = update;\n"
+    }
+   ]
+  }
+ }
+}

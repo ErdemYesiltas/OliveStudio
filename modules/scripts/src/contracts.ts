@@ -68,7 +68,7 @@ export function onClick(self: GameObject) {
 `;
 
 /** Hooks the runtime calls, in the order the docs list them. */
-export const hookNames = ['start', 'update', 'onClick', 'onCollision', 'onInput', 'onGlobal', 'onCollisionExit', 'onMessage', 'onMarker', 'onComplete', 'onBeat', 'onSoundEnd', 'onPointerDown', 'onPointerMove', 'onPointerUp', 'onTimer', 'onArrive', 'onDialogue'] as const;
+export const hookNames = ['start', 'update', 'onClick', 'onCollision', 'onInput', 'onGlobal', 'onCollisionExit', 'onMessage', 'onMarker', 'onComplete', 'onBeat', 'onSoundEnd', 'onPointerDown', 'onPointerMove', 'onPointerUp', 'onTimer', 'onArrive', 'onDialogue', 'onPointerEnter', 'onPointerLeave', 'onDragEnd'] as const;
 
 /** Declarations for the editor (Monaco extra lib): the sandbox API, nothing else exists (no DOM, no network, no imports). */
 export const apiDeclarations = `
@@ -148,6 +148,8 @@ interface GameObject {
   alpha: number;
   /** Hidden objects (and their children) stop updating and receiving clicks. */
   active: boolean;
+  /** True for objects in a 3D view: use them as GameObject3D (game.find<GameObject3D>(name)). */
+  readonly is3D: boolean;
   /** The text of a Text or Bitmap Text object (throws on other objects). */
   text: string;
   /** Remove this object and its children from the game (its scripts stop; IDs are not reused). */
@@ -168,6 +170,48 @@ interface GameObject {
   play(kind?: 'audio' | 'tween' | 'animation' | 'timer'): void;
   stop(kind?: 'audio' | 'tween' | 'animation' | 'timer'): void;
 }
+/** Vertex data for game.geometry: numbers per vertex (positions/normals 3, uvs 2, colors/colors1 4 as r, g, b, a 0–1), triangles as indices; normals are computed when missing. */
+interface GeometrySpec {
+  positions: ArrayLike<number>; normals?: ArrayLike<number>; uvs?: ArrayLike<number>; colors?: ArrayLike<number>; colors1?: ArrayLike<number>; indices?: ArrayLike<number>;
+  /** Shapes as offsets from positions (and normals) for every vertex; Mesh 3D's morph weights blend them in (at most 8). */
+  morphTargets?: {positions: ArrayLike<number>; normals?: ArrayLike<number>}[];
+  /** How it is stored on the GPU: snorm16 positions (within −1…1), snorm8 normals, unorm8 colours; default float32. */
+  format?: {positions?: 'float32' | 'snorm16'; normals?: 'float32' | 'snorm8'; colors?: 'float32' | 'unorm8'};
+}
+/** A shape the host keeps for this play session; give it to any number of Mesh 3D objects. */
+interface GeometryRef {readonly id: string; readonly vertexCount: number; readonly morphTargets: number}
+/** 3D vectors read and write one axis at a time (\`self.position.y += 1\`); set() writes all three. */
+interface Vec3 {x: number; y: number; z: number; set(x: number, y?: number, z?: number): Vec3}
+/** A hit in a 3D view: the object, the world point, and the surface normal and UV on triangle meshes (null on simple shapes). */
+interface Hit3D {readonly object: GameObject3D; readonly point: {x: number; y: number; z: number}; readonly normal: {x: number; y: number; z: number} | null; readonly uv: {u: number; v: number} | null; readonly distance: number}
+/** An object in a 3D view (Transform 3D): world units, Euler degrees in XYZ order like the Inspector. Use \`self: GameObject3D\` in its hooks. */
+interface GameObject3D extends Omit<GameObject, 'rotation' | 'x' | 'y' | 'scaleX' | 'scaleY' | 'skewX' | 'skewY' | 'is3D' | 'children' | 'parent'> {
+  readonly is3D: true;
+  /** Local position (parent space); assign {x, y, z} to set all three. */
+  get position(): Vec3; set position(v: {x: number; y: number; z: number});
+  /** Local rotation in degrees; \`self.rotation.y += 90 * dt\` turns it about +Y. */
+  get rotation(): Vec3; set rotation(v: {x: number; y: number; z: number});
+  /** Local rotation as a unit quaternion (normalized when written). */
+  quaternion: {x: number; y: number; z: number; w: number};
+  /** Local scale per axis; assign a number to scale all three. */
+  get scale(): Vec3; set scale(v: number | {x: number; y: number; z: number});
+  /** Direct children (in a 3D view they are 3D objects too). */
+  readonly children: GameObject3D[];
+  /** The parent object; set another 3D object of the same view (or null for the view's top level) to move this one under it, keeping its place in the world. */
+  parent: GameObject3D | GameObject | null;
+  /** Where the object is in the view's world (read only). */
+  readonly worldPosition: {readonly x: number; readonly y: number; readonly z: number};
+  /** Turn +Z (or '-Z') toward an object or a world point; yawOnly keeps it upright. False when the target is on top of it. */
+  lookAt(target: GameObject | {x: number; y: number; z: number}, options?: {yawOnly?: boolean; axis?: '+Z' | '-Z'}): boolean;
+  /** A Particles 3D whose "Driven by" is A script: write 8 numbers per particle (x, y, z, size, r, g, b, alpha; colours 0–1) every frame; count is its pool. */
+  readonly particles: {write(data: Float32Array | ArrayLike<number>, count?: number): void; readonly count: number};
+  /** A Batch 3D: the shapes its items pick from (by index), and 12 numbers per item (shape index, x, y, z, qx, qy, qz, qw, scale, r, g, b); size is its slots. */
+  readonly batch: {geometries: (GeometryRef | null)[]; write(data: Float32Array | ArrayLike<number>, count?: number): void; readonly size: number};
+  /** The Mesh 3D: the shape it shows (null = its stand-in cube) and morph weights, one 0–1 number per morph target. */
+  readonly mesh: {geometry: GeometryRef | null; morph: number[]};
+  /** The Model 3D: unload() frees its GPU resources (the object stays, drawing nothing); load() brings it back and resolves when it is drawn. */
+  readonly model: {readonly state: 'unloaded' | 'loading' | 'ready' | 'error'; readonly error: string | null; unload(): void; load(): Promise<GameObject3D>};
+}
 /** A scene script's \`self\`: the scene has no position, only parameters and state. */
 interface SceneSelf {
   readonly name: string;
@@ -184,7 +228,8 @@ declare const param: {
   color(defaultValue?: string, options?: ParamOptions): string;
   choice<T extends string>(options: readonly T[], defaultValue?: T, extra?: ParamOptions): T;
   /** An object of the same scene, picked in the Properties panel (null when none is set). */
-  object(options?: ParamOptions): GameObject | null;
+  /** \`param.object<GameObject3D>()\` for a 3D object. */
+  object<T extends GameObject | GameObject3D = GameObject>(options?: ParamOptions): T | null;
 };
 declare const game: {
   /** Seconds since the scene started. */
@@ -192,9 +237,9 @@ declare const game: {
   /** Stage size in pixels. */
   readonly stage: {readonly width: number; readonly height: number};
   /** The first active-or-not object with this name, or null. */
-  find(name: string): GameObject | null;
+  find<T extends GameObject | GameObject3D = GameObject>(name: string): T | null;
   /** Every object with this name. */
-  findAll(name: string): GameObject[];
+  findAll<T extends GameObject | GameObject3D = GameObject>(name: string): T[];
   /** Project globals (same object as \`globals\`). */
   readonly globals: Globals;
   /** World physics: gravity (px/s², settable) and queries in world pixels (bodies only). */
@@ -220,6 +265,14 @@ declare const game: {
   spawn(name: string, x?: number, y?: number): GameObject;
   /** The mouse or touch in world pixels (after the camera) and whether it is pressed. onPointerDown / onPointerMove / onPointerUp(self, x, y) run on every script. */
   readonly pointer: {readonly x: number; readonly y: number; readonly down: boolean};
+  /** A shape from arrays for Mesh 3D objects (\`self.mesh.geometry = game.geometry({...})\`); kept for the play session, not saved. */
+  geometry(spec: GeometrySpec): GeometryRef;
+  /** The closest 3D object under a world-pixel point (e.g. game.pointer.x, game.pointer.y), or null. Hover hooks: onPointerEnter(self) / onPointerLeave(self); a Draggable 3D drop calls onDragEnd(self). */
+  raycast(x: number, y: number): Hit3D | null;
+  /** The 3D hit under the mouse or touch right now, or null. */
+  readonly pointer3d: Hit3D | null;
+  /** Shared 3D model files: how many are cached, how many objects use them, how many are ready, and unloads still waiting. */
+  readonly assets: {stats(): {resources: number; refs: number; loaded: number; pendingUnloads: number} | null};
   /** Calls onMessage(self, message, data) on every script in the scene (after the current hook). */
   send(message: string, data?: unknown): void;
   log(...values: unknown[]): void;

@@ -6,6 +6,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./contracts": "./src/contracts.ts",
+    "./quaternion": "./src/quaternion.ts",
     "./views": "./src/views.tsx"
   },
   "dependencies": {

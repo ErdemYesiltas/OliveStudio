@@ -1,0 +1,13 @@
+import {z} from 'zod';
+import {automationTools,automationTool,type ModuleContext,type Json} from '@rewrite/sdk';
+import {projectToken} from '@rewrite/project';
+import {compileScript} from './compile';
+import {ScriptLibrarySchema,ScriptNameSchema,scriptTemplate,apiDeclarations,scriptsSection} from './contracts';
+export function registerScriptAutomation(c:ModuleContext){
+ const project=()=>c.get(projectToken),library=()=>ScriptLibrarySchema.parse(project().document.current.extensions[scriptsSection]??{version:1,items:[]});
+ c.contribute(automationTools,'scripts.list',automationTool(z.object({}).strict(),{description:'Read script sources, compiled status and scene bindings.',effect:'read',execute:()=>library()}));
+ c.contribute(automationTools,'scripts.describe_api',automationTool(z.object({}).strict(),{description:'Read the existing QuickJS game API declarations and starter script. Scripts have no filesystem, Node or renderer access.',effect:'read',execute:()=>({declarations:apiDeclarations,template:scriptTemplate})}));
+ c.contribute(automationTools,'scripts.validate',automationTool(z.object({source:z.string().max(200000),name:ScriptNameSchema.default('Script')}).strict(),{description:'Compile TypeScript with the editor compiler, without executing it. This is syntax/import validation, not TypeScript type checking.',effect:'read',execute:a=>compileScript(a.source,a.name)}));
+ c.contribute(automationTools,'scripts.upsert',automationTool(z.object({id:z.string().min(1).optional(),name:ScriptNameSchema,source:z.string().max(200000)}).strict(),{description:'Create/update a script through the same compiler as the editor. Compilation errors are retained for editing and block Play/export.',effect:'edit',execute:a=>{const data=library(),id=a.id??crypto.randomUUID(),old=data.items.findIndex(s=>s.id===id);if(a.id&&old<0)throw Error('Script not found');const script={id,name:a.name,source:a.source,...compileScript(a.source,a.name)};if(old<0)data.items.push(script);else data.items[old]=script;project().document.transact('Edit script',p=>{p.extensions[scriptsSection]=ScriptLibrarySchema.parse(data) as Json;});return script;}}));
+ c.contribute(automationTools,'scripts.remove',automationTool(z.object({id:z.string().min(1)}).strict(),{description:'Remove a script; attached behaviours report missing scripts until rebound.',effect:'edit',execute:a=>{const data=library();if(!data.items.some(s=>s.id===a.id))throw Error('Script not found');data.items=data.items.filter(s=>s.id!==a.id);project().document.transact('Remove script',p=>{p.extensions[scriptsSection]=data as Json;});}}));
+}

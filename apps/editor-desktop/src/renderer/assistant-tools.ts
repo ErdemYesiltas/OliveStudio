@@ -1,4 +1,4 @@
-import type {ComponentDefinition, CreateItemDefinition, Json} from '@rewrite/sdk';
+import type {AutomationContext,ComponentDefinition, CreateItemDefinition, Json} from '@rewrite/sdk';
 import {makeEntity, transform, type Entity, type SceneService} from '@rewrite/scene';
 import {stageSize, type ProjectService} from '@rewrite/project';
 import type {AssetService} from '@rewrite/assets';
@@ -15,7 +15,7 @@ export interface ToolServices {
  definitions(): ReadonlyMap<string, ComponentDefinition>; createItems(): readonly {id: string; value: CreateItemDefinition}[];
  triggers(): readonly TriggerDefinition[]; actions(): readonly ActionDefinition[]; catalog(): InteractionCatalog;
  selection(): readonly string[]; select(ids: readonly string[]): void; text(key: string): string;
- generate(kind: 'image' | 'audio', prompt: string, options: {seconds?: number; width?: number; height?: number; skill?: string}): Promise<string>;
+ generate(kind: 'image' | 'audio', prompt: string, options: {seconds?: number; width?: number; height?: number; skill?: string}, context?:AutomationContext): Promise<string>;
  /** A skill's instructions (and preset) by name; throws for an unknown skill. */
  useSkill(name: string): string;
  preview(action: 'play' | 'stop'): Promise<void>;
@@ -50,14 +50,14 @@ export const editorToolSpecs: ToolSpec[] = [
  tool('set_global', 'Create or update a project global (number, boolean, string, list or object) used by rules, state machines, {name} / {name.field} text templates and scripts (globals.name).', obj({name: str('Global name (letters, digits, _)'), type: {type: 'string', enum: ['number', 'boolean', 'string', 'list', 'object']}, initial: {description: 'Initial value of that type (a JSON array for list, a JSON object for object)'}}, ['name', 'type'])),
  tool('set_stage_size', 'Set the game stage size in pixels.', obj({width: num('Width'), height: num('Height')}, ['width', 'height'])),
  tool('rename_project', 'Rename the project.', obj({name: str('Project name')}, ['name'])),
- tool('generate_asset', 'Generate an image or a sound with the local ComfyUI and import it into the Library; returns the asset id (use it as assetId of pixi.sprite or audio.sound fields).', obj({kind: {type: 'string', enum: ['image', 'audio']}, prompt: str('What to generate'), seconds: num('Audio length'), width: num('Image width'), height: num('Image height'), skill: str('Optional skill name whose generation preset (prompt template, LoRAs, size) styles the asset')}, ['kind', 'prompt'])),
+ tool('generate_asset', 'Generate an image or sound with ComfyUI/LocalHub (requires a configured AI model; NOT Sound Lab). For procedural game sounds discover soundlab.preset/create. Import it into the Library; returns the asset id (use it as assetId of pixi.sprite or audio.sound fields).', obj({kind: {type: 'string', enum: ['image', 'audio']}, prompt: str('What to generate'), seconds: num('Audio length'), width: num('Image width'), height: num('Image height'), skill: str('Optional skill name whose generation preset (prompt template, LoRAs, size) styles the asset')}, ['kind', 'prompt'])),
  tool('list_strings', 'Localization table (i18next): languages, default language and keyed texts (plural forms are key_one, key_other…; texts show as {@key} in Text objects).', obj({})),
  tool('set_strings', 'Add or change localized texts; missing languages are added. Values may use {{global}} and $t(key). Texts you write are marked for review.', obj({strings: {type: 'array', description: 'e.g. [{"key":"menu.play","values":{"en":"Play","tr":"Oyna"},"note":"Main menu button"}]', items: obj({key: str('Key: letters, digits, _ and .'), values: {type: 'object', description: 'Language code → text', additionalProperties: {type: 'string'}}, note: str('Optional context for translators')}, ['key', 'values'])}}, ['strings'])),
  tool('use_skill', 'Load a skill\'s instructions (and its generation preset) by name before doing work the skill covers.', obj({name: str('Skill name from the Skills list')}, ['name'])),
  tool('preview', 'Start or stop the game preview.', obj({action: {type: 'string', enum: ['play', 'stop']}}, ['action'])),
 ];
 
-export function createEditorTools(s: ToolServices): AgentTools {
+export function createEditorTools(s: ToolServices): AgentTools & {execute(name:string,args:Record<string,unknown>,context?:AutomationContext):unknown} {
  const doc = () => s.scene.document.current;
  const entity = (id: unknown) => {
   const e = typeof id === 'string' ? doc().entities.find(x => x.id === id || x.name === id) : undefined;
@@ -70,7 +70,7 @@ export function createEditorTools(s: ToolServices): AgentTools {
  const setFields = (id: string, type: string, input: Record<string, Json>) => { const d = definition(type), keys = new Set(d.fields.map(f => f.key)); for (const [key, value] of Object.entries(input)) { if (!keys.has(key)) throw Error(`${type} has no field ${key}; fields: ${[...keys].join(', ')}`); s.scene.setField(id, type, key, value); } };
  const scenes = () => s.project.document.current.scenes;
  const scene = (id: unknown) => { const x = scenes().find(v => v.id === id || v.name === id); if (!x) throw Error(`No scene ${String(id)}`); return x; };
- const run: Record<string, (a: Record<string, unknown>) => unknown> = {
+ const run: Record<string, (a: Record<string, unknown>,context?:AutomationContext) => unknown> = {
   get_editor_state: () => {
    const p = s.project.document.current, objects = doc().entities;
    return {
@@ -82,7 +82,7 @@ export function createEditorTools(s: ToolServices): AgentTools {
     componentTypes: [...s.definitions().values()].filter(d => d.addable !== false && !d.hiddenInInspector && d.type !== 'scene.transform2d').map(d => d.type),
    };
   },
-  describe_component: a => { const d = definition(a.component); return {type: d.type, title: s.text(d.titleKey), defaults: d.defaults() as Json, fields: d.fields.map(f => ({key: f.key, kind: f.kind, ...(f.options ? {options: f.options.map(o => o.value)} : {}), ...(f.assetType ? {assetType: f.assetType} : {})}))}; },
+  describe_component: a => { const d = definition(a.component); return {type: d.type, title: s.text(d.titleKey), defaults: d.defaults() as Json, ...(d.dataSchema?{dataSchema:d.dataSchema}:{}), fields: d.fields.map(f => ({key: f.key, kind: f.kind, ...(f.options ? {options: f.options.map(o => o.value)} : {}), ...(f.assetType ? {assetType: f.assetType} : {})}))}; },
   list_interactions: () => ({triggers: s.triggers().map(t => ({type: t.type, title: s.text(t.titleKey), source: t.entityReference ? 'object id' : t.sceneReference ? 'scene id' : t.globalReference ? 'global id' : 'id from references', options: t.references(s.catalog()).slice(0, 20).map(r => ({id: r.id, name: r.name}))})), actions: s.actions().map(x => ({type: x.type, title: s.text(x.titleKey), target: x.entityReference ? 'object id' : x.sceneReference ? 'scene id' : x.globalReference ? 'global id' : 'id from references', options: x.references(s.catalog()).slice(0, 20).map(r => ({id: r.id, name: r.name}))}))}),
   create_scene: a => ({sceneId: s.project.createScene(String(a.name ?? 'Scene'))}),
   open_scene: a => { s.project.openScene(scene(a.sceneId).id); return {open: s.project.activeSceneId}; },
@@ -92,6 +92,7 @@ export function createEditorTools(s: ToolServices): AgentTools {
   add_object: a => {
    const wanted = String(a.item ?? ''), items = s.createItems(), item = items.find(i => i.id === wanted) ?? items.find(i => i.id.endsWith('.' + wanted) || i.value.name.toLowerCase() === wanted.toLowerCase());
    if (!item) throw Error(`Unknown item ${wanted}; use one of ${items.map(i => i.id).join(', ')}`);
+   if(item.value.command)throw Error('Use the module automation tool for this item: pixi3d-editor.create_view or pixi3d-editor.create_node');
    const stage = stageSize(s.project.document.current), e = makeEntity(typeof a.name === 'string' && a.name.trim() ? a.name.trim().slice(0, 100) : item.value.name, Number.isFinite(a.x) ? Number(a.x) : stage.width / 2, Number.isFinite(a.y) ? Number(a.y) : stage.height / 2);
    if (typeof a.parentId === 'string' && a.parentId) e.parentId = entity(a.parentId).id;
    const extra = values(a.fields);
@@ -132,7 +133,7 @@ export function createEditorTools(s: ToolServices): AgentTools {
   },
   set_stage_size: a => { s.project.setStage({width: Number(a.width), height: Number(a.height)}); return stageSize(s.project.document.current); },
   rename_project: a => { s.project.renameProject(String(a.name)); return {ok: true}; },
-  generate_asset: async a => ({assetId: await s.generate(a.kind === 'audio' ? 'audio' : 'image', String(a.prompt ?? ''), {seconds: Number.isFinite(a.seconds) ? Number(a.seconds) : undefined, width: Number.isFinite(a.width) ? Number(a.width) : undefined, height: Number.isFinite(a.height) ? Number(a.height) : undefined, ...(typeof a.skill === 'string' && a.skill.trim() ? {skill: a.skill} : {})})}),
+  generate_asset: async (a,context) => ({assetId: await s.generate(a.kind === 'audio' ? 'audio' : 'image', String(a.prompt ?? ''), {seconds: Number.isFinite(a.seconds) ? Number(a.seconds) : undefined, width: Number.isFinite(a.width) ? Number(a.width) : undefined, height: Number.isFinite(a.height) ? Number(a.height) : undefined, ...(typeof a.skill === 'string' && a.skill.trim() ? {skill: a.skill} : {})},context)}),
   list_strings: () => { const table = LocalizationSchema.parse(s.project.document.current.extensions[localizationSection] ?? defaultLocalization); return {...table, entries: table.entries.slice(0, 300), more: Math.max(0, table.entries.length - 300)}; },
   set_strings: a => {
    if (!Array.isArray(a.strings) || !a.strings.length) throw Error('strings must be a non-empty array');
@@ -157,11 +158,11 @@ export function createEditorTools(s: ToolServices): AgentTools {
   use_skill: a => ({instructions: s.useSkill(String(a.name ?? ''))}),
   preview: async a => { await s.preview(a.action === 'stop' ? 'stop' : 'play'); return {ok: true}; },
  };
- return {specs: editorToolSpecs, execute(name, args) {
+ return {specs: editorToolSpecs, execute(name, args,context?:AutomationContext) {
   if (s.busy() && !['get_editor_state', 'describe_component', 'list_interactions', 'preview', 'use_skill', 'list_strings'].includes(name)) throw Error('The editor is busy (Preview or a file operation); stop the preview first');
   const handler = run[name];
   if (!handler) throw Error(`Unknown tool ${name}`);
-  return handler(args);
+  return handler(args,context);
  }};
 }
 export type {Entity};

@@ -52,8 +52,8 @@ function trackChoices(entity:Entity|undefined,channels:readonly TweenChannel[],t
  if(!entity)return[];
  const out:TrackChoice[]=[{id:JSON.stringify([entityTarget,'active']),componentId:entityTarget,property:'active',label:text('animation.visible'),kind:'bool',value:entity.active}];
  for(const c of entity.components){const data=c.data&&typeof c.data==='object'&&!Array.isArray(c.data)?c.data as Record<string,unknown>:{};
-  for(const channel of channels.filter(k=>k.componentType===c.type&&k.version===c.version))out.push({id:JSON.stringify([c.id,channel.property]),componentId:c.id,property:channel.property,label:`${c.type} · ${text(channel.titleKey)}`,kind:'number',value:channelValue(channel,data[channel.property]),channel});
-  for(const [property,value] of Object.entries(data)){if(skipped.has(property)||channels.some(k=>k.componentType===c.type&&k.property===property))continue;const kind=trackKindOf(value);if(!kind||kind==='text'&&property!=='text')continue;out.push({id:JSON.stringify([c.id,property]),componentId:c.id,property,label:`${c.type} · ${property}`,kind,value:value as TrackValue});}
+  for(const channel of channels.filter(k=>k.componentType===c.type&&k.version===c.version&&!k.quaternion))out.push({id:JSON.stringify([c.id,channel.property]),componentId:c.id,property:channel.property,label:`${c.type} · ${text(channel.titleKey)}`,kind:'number',value:channelValue(channel,data[channel.property]),channel});
+  for(const [property,value] of Object.entries(data)){if(skipped.has(property)||channels.some(k=>k.componentType===c.type&&(k.property===property||k.quaternion?.includes(property))))continue;const kind=trackKindOf(value);if(!kind||kind==='text'&&property!=='text')continue;out.push({id:JSON.stringify([c.id,property]),componentId:c.id,property,label:`${c.type} · ${property}`,kind,value:value as TrackValue});}
  }
  return out;
 }

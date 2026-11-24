@@ -20,7 +20,9 @@
     "./screen": "./src/screen.ts",
     "./overlay": "./src/overlay.ts",
     "./click": "./src/click.ts",
-    "./device-frame": "./src/device-frame.ts"
+    "./device-frame": "./src/device-frame.ts",
+    "./lifecycle": "./src/lifecycle.ts",
+    "./viewport-features": "./src/viewport-features.ts"
   },
   "dependencies": {
     "@rewrite/sdk": "workspace:*",

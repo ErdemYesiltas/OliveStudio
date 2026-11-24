@@ -60,7 +60,8 @@ export function resolveChannel(channels: readonly TweenChannel[], entity: Entity
  }
  const component = entity.components.find(c => c.id === componentId);
  if (!component || !component.data || typeof component.data !== 'object' || Array.isArray(component.data)) throw Error('Animation target component is missing');
- const data = component.data as Record<string, Json>, numeric = channels.find(c => c.componentType === component.type && c.version === component.version && c.property === property);
+ const data = component.data as Record<string, Json>, numeric = channels.find(c => c.componentType === component.type && c.version === component.version && c.property === property && !c.quaternion);
+ if (channels.some(c => c.componentType === component.type && c.version === component.version && (c.property === property || c.quaternion?.includes(property)) && c.quaternion)) throw Error(`${component.type}.${property} is a rotation: use a tween rotation track`);
  const kind: TrackKind | null = numeric ? 'number' : trackKindOf(data[property]);
  if (!kind) throw Error(`${component.type}.${property} cannot be animated`);
  const check = (v: unknown): TrackValue => {

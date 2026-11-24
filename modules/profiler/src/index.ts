@@ -35,7 +35,9 @@ export function breakdown(sample: ProfileSample): Record<Category, number> {
 export class ProfileRecorder {
  private ring: ProfileSample[] = [];
  private listeners = new Set<() => void>();
- paused = false;
+ private capturePaused=false;
+ get paused(){return this.capturePaused;}
+ set paused(value:boolean){if(value===this.capturePaused)return;this.capturePaused=value;for(const listener of this.listeners)listener();}
  readonly capacity: number;
  constructor(capacity = 600) { this.capacity = capacity; }
  push(sample: ProfileSample) {

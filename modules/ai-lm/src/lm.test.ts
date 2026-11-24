@@ -124,3 +124,13 @@ it('translation prompts ask for JSON with every plural category and keep placeho
  expect(parseTranslation('<think>x</think>```json\n{"k1":"Текст","k2":3,"other":"x"}\n```', ['k1', 'k2'])).toEqual({k1: 'Текст'});
  expect(() => parseTranslation('sorry', ['k1'])).toThrow('JSON object');
 });
+
+it('does not finish on an async acknowledgement: reports authoritative job failure and lets the model repair the task',async()=>{
+ let round=0,polls=0;
+ const result=await runAgent({messages:[{role:'user',content:'Finish the job'}],tools:{specs:['start','fix','automation__job'].map(name=>({type:'function',function:{name,description:name,parameters:{type:'object'}}})),execute:(name)=>{if(name==='start')return{id:'job',state:'running'};if(name==='automation__job'){polls++;return{id:'job',state:'failed',error:{message:'Provider unavailable'}};}return{ok:true};}},chat:async messages=>{
+  round++;if(round===1)return{content:'',toolCalls:[{id:'a',type:'function',function:{name:'start',arguments:'{}'}}],finish:'tool_calls'};
+  if(round===2)return{content:'Done prematurely',toolCalls:[],finish:'stop'};
+  if(round===3){expect(messages.at(-1)?.content).toContain('Provider unavailable');return{content:'',toolCalls:[{id:'b',type:'function',function:{name:'fix',arguments:'{}'}}],finish:'tool_calls'};}
+  return{content:'Repaired and finished',toolCalls:[],finish:'stop'};
+ }});expect(result.reply).toBe('Repaired and finished');expect(polls).toBe(1);expect(result.steps.map(s=>s.name)).toEqual(['start','fix']);
+});

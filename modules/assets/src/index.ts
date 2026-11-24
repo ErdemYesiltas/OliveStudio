@@ -1,6 +1,9 @@
+import {z} from 'zod';
+import {registerAssetAutomation} from './automation';
 import { token,type EditorModule,type Json } from '@rewrite/sdk';
 import { projectToken,projectSections,type ProjectService,type Project } from '@rewrite/project';
 import { AssetSchema,AssetHealthSchema,RegistrySchema,sectionKey,assetUrl,type AssetRecord,type AssetHealth,type AssetPort } from './contracts';
+import { SheetsSchema,sheetsSection } from './bundle';
 import { LibrarySchema,emptyLibrary,librarySection,pruneLibrary,type Library } from './library';
 export * from './library';
 export * from './contracts';
@@ -32,7 +35,7 @@ export class AssetService {
  get items(){const input=this.project.document.current.extensions[sectionKey];if(input!==this.cachedInput){this.cachedInput=input;this.cachedItems=registry(this.project);this.cachedMap=new Map(this.cachedItems.map(a=>[a.id,a]));}return this.cachedItems;}
  get(id:string){void this.items;return this.cachedMap.get(id);}
  url(asset:AssetRecord,file='image.webp'){return assetUrl(this.port.sessionId,asset,file);}
- async import(importerId:string,replaceId?:string,request?:()=>Promise<AssetRecord[]|null>){
+ async import(importerId:string,replaceId?:string,request?:()=>Promise<AssetRecord[]|null>,alsoApply?:(draft:import('@rewrite/project').Project,assets:readonly AssetRecord[])=>void){
   if(this.disposed)throw Error('Asset service is closed');if(this.busy)throw Error('An asset operation is already running');
   const generation=this.project.generation,previous=replaceId?this.get(replaceId):undefined;
   if(replaceId&&!previous)throw Error('Asset no longer exists');
@@ -46,6 +49,7 @@ export class AssetService {
     const value=RegistrySchema.parse(draft.extensions[sectionKey]??{version:1,items:[]});
     for(const asset of assets){const index=value.items.findIndex(a=>a.id===asset.id);if(index>=0)value.items[index]=asset;else value.items.push(asset);}
     draft.extensions[sectionKey]=value as Json;
+    alsoApply?.(draft,assets);
    });
   }finally{this.busy=false;this.changed();}
  }
@@ -68,4 +72,5 @@ export class AssetService {
  rename(id:string,name:string){this.project.document.transact('Rename asset',draft=>{const value=RegistrySchema.parse(draft.extensions[sectionKey]);const asset=value.items.find(a=>a.id===id);if(!asset)throw Error('Asset missing');asset.name=AssetSchema.shape.name.parse(name);draft.extensions[sectionKey]=value as Json;});}
 }
 export const assetToken=token<AssetService>('assets','assets.registry');
-export function assetsModule(port:AssetPort):EditorModule{return{manifest:{id:'assets',version:'1.0.0',apiVersion:1,requires:{project:'^1'}},activate(c){c.contribute(projectSections,'assets.registry',{key:sectionKey,parse:v=>RegistrySchema.parse(v) as Json});c.contribute(projectSections,'assets.library',{key:librarySection,parse:v=>LibrarySchema.parse(v) as unknown as Json});const service=new AssetService(c.get(projectToken),port);c.provide(assetToken,service);c.own(()=>service.dispose());}};}
+export function assetsModule(port:AssetPort):EditorModule{return{manifest:{id:'assets',version:'1.0.0',apiVersion:1,requires:{project:'^1'}},activate(c){c.contribute(projectSections,'assets.registry',{key:sectionKey,get dataSchema(){return z.toJSONSchema(RegistrySchema,{unrepresentable:'any'});},parse:v=>RegistrySchema.parse(v) as Json});c.contribute(projectSections,'assets.sheets',{key:sheetsSection,get dataSchema(){return z.toJSONSchema(SheetsSchema);},parse:v=>SheetsSchema.parse(v) as Json});c.contribute(projectSections,'assets.library',{key:librarySection,get dataSchema(){return z.toJSONSchema(LibrarySchema,{unrepresentable:'any'});},parse:v=>LibrarySchema.parse(v) as unknown as Json});const service=new AssetService(c.get(projectToken),port);c.provide(assetToken,service);registerAssetAutomation(c,service);c.own(()=>service.dispose());}};}
+export * from './bundle';

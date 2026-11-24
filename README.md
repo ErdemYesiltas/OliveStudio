@@ -12,12 +12,24 @@ OliveStudio is an experimental, modular 2D game editor built with Electron, Type
 
 **OliveStudio was developed entirely with AI, under human direction.** The project was built independently for learning and experimentation, with no commercial purpose. The editor's optional AI integrations are separate from the process used to develop it.
 
+### MCP automation
+
+Enable **Settings → Editor → MCP server** to let a local MCP client use the running editor. Module-owned tools cover
+scene/component authoring, assets/library, animation, prefabs, scripts, Preview, presentation and HTML export. Critical
+file operations require editor approval; additional folders are granted in Settings. Long operations expose jobs and
+cancellation. [Automation contract and verification](packages/editor-sdk/AUTOMATION.md).
+
+### Canvas Focus interface
+
+The canvas stays central. **Tools** groups installed panels into Scene, Motion, Audio, Build and Automate, with search across every category. Use **⌘/Ctrl K** to find any panel, or the bottom Scene / Animate / Effects / Logic shortcuts. Library and Properties have quick access at the lower left; selecting an object reveals Properties automatically. Pin panels when needed; saved layouts and role presets remain available. Viewport options live under **View** at the lower right. Graphite uses an olive accent; Light, Warm and custom themes remain supported.
+
 ### What you can do
 
 | Area | Features |
 | --- | --- |
 | Scene editing | Organize objects in a layered hierarchy. Move, rotate, and scale them on the canvas, configure snap and grid controls, and reuse object groups as prefabs. |
 | Assets | Import images, audio, and compatible Spine animations into the project library. Reimport updated media while preserving references in scenes. |
+| Particles | Design effects in a live Pixi preview with six presets, spawn/motion/color controls, project presets, undo and MCP automation. [Particle Editor](modules/particles/README.md). |
 | Animation and sound | Animate properties with timeline keyframes, preview scene playback, and attach audio to objects or events. |
 | Game behavior | Build interactions, triggers, dialogue, and scene transitions. Add optional physics, navigation, lighting, achievements, or authored scripts. |
 | Preview and export | Play the scene in an isolated runtime, pause it, or step through frames. Use the HTML export for supported runtime features and inspect its compatibility report. |
@@ -38,7 +50,7 @@ pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-From the OliveStudio repository root, run `pnpm check` for type checking, linting, unit tests, and a build. Use `pnpm test:desktop` for the Electron smoke test or `pnpm package:mac` to create a local macOS app bundle under `release/`.
+From the OliveStudio repository root, run `pnpm check` for type checking, linting, unit tests, and a build. Use `pnpm test:desktop` for the Electron smoke test or `pnpm package:mac` to update the single local app at `/Applications/OliveStudio.app`.
 
 ### Source layout
 
@@ -89,7 +101,7 @@ pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-OliveStudio kökünde `pnpm check` ile tür denetimi, lint, birim testleri ve derlemeyi çalıştırabilirsiniz. `pnpm test:desktop` Electron temel işlev testini, `pnpm package:mac` ise `release/` altında bir yerel macOS paketini üretir.
+OliveStudio kökünde `pnpm check` ile tür denetimi, lint, birim testleri ve derlemeyi çalıştırabilirsiniz. `pnpm test:desktop` Electron temel işlev testini, `pnpm package:mac` ise `/Applications/OliveStudio.app` konumundaki tek uygulamayı günceller.
 
 ### Kaynak düzeni
 
@@ -107,3 +119,11 @@ OliveStudio kökünde `pnpm check` ile tür denetimi, lint, birim testleri ve de
 ### Lisans
 
 OliveStudio’ya ait kaynak kod [MIT Lisansı](LICENSE) ile yayımlanır. Üçüncü taraf bağımlılıkların kendi lisans koşulları geçerlidir. Spine Runtimes içeren derlemelerin veya dışa aktarımların kullanımı ve dağıtımı, [depoda bulunan Spine Runtimes lisansının](third-party/SPINE-RUNTIMES-LICENSE.txt) koşullarına tabidir. [Esoteric Software’in güncel koşulları](https://esotericsoftware.com/spine-runtimes-license).
+
+## Production workflows (20 November 2026)
+
+Nine independent feature modules now provide World, Brushes, Behavior Graph, Test Studio, Gameplay Lab, Game Data, Visual Review, Build Quality and Starter Kits/Search. The desktop host and HTML player share their runtime implementation. Setup, the 36 MCP tools, tested flows and first-release limits: [Production Tools](modules/production-tools/README.md). Implementation plan: [PLAN.md](modules/production-tools/PLAN.md).
+
+## Single macOS application
+
+`pnpm package:mac` (also desktop `package:mac` / `package:mac:adhoc`) builds, validates and replaces **`/Applications/OliveStudio.app`**. Signed `pnpm release:mac` uses the same app location; only distribution artifacts go in `release/`. Custom output folders are rejected. The previous app stays intact until the replacement is ready; packaging refuses to replace a running app. Retired release/QA app bundles go to macOS Trash with `restore-map.json`, preserving projects, profiles and test evidence. `pnpm build:cleanup` retires legacy generated duplicates separately. Do not make renamed QA app bundles; use separate user-data profiles or the existing Electron development executable.

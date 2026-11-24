@@ -6,12 +6,12 @@ interface UiState {
  selection:readonly string[];
  /** Editor-only view state (not saved, no history, ignored by Preview and export). */
  hidden:ReadonlySet<string>; locked:ReadonlySet<string>;
- panel:string|null; theme:string; resolvedTheme:string; customThemes:Theme[]; title:string; dirty:boolean; busy:boolean; mode:'edit'|'playing'|'paused'; notice:string;
+ panel:string|null; theme:string; resolvedTheme:string; customThemes:Theme[]; title:string; dirty:boolean; busy:boolean; previewPreparing:boolean; mode:'edit'|'playing'|'paused'; notice:string;
  /** The Hub (start screen) covers the editor. */
  hub:boolean; set(value:Partial<Omit<UiState,'set'>>):void
 }
 let theme = 'graphite'; try { theme = localStorage.getItem('rewrite:theme') ?? theme; } catch { /* ephemeral session */ }
-export const useUi = create<UiState>(set => ({ selected:null,selection:[],hidden:new Set(),locked:new Set(),panel:null,theme,resolvedTheme:'graphite',customThemes:[],title:'Untitled scene',dirty:false,busy:false,mode:'edit',notice:'',hub:false,set }));
+export const useUi = create<UiState>(set => ({ selected:null,selection:[],hidden:new Set(),locked:new Set(),panel:null,theme,resolvedTheme:'graphite',customThemes:[],title:'Untitled scene',dirty:false,busy:false,previewPreparing:false,mode:'edit',notice:'',hub:false,set }));
 export const notify = (error: unknown) => useUi.getState().set({ notice:String(error) });
 export function select(id: string|null, mode:'replace'|'toggle'='replace') {
  const state=useUi.getState();

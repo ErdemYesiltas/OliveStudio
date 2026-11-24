@@ -7,11 +7,13 @@ import {acquireTexture as acquire, releaseTexture as release} from './textures';
 /** Frame-by-frame animation from a grid sprite sheet (an imported image, sliced left-to-right, top-to-bottom). */
 export const FlipbookSchema = z.object({
  assetId: z.string(), columns: z.number().int().min(1).max(64), rows: z.number().int().min(1).max(64), frames: z.number().int().min(1).max(4096),
+ /** First cell of the animation in the sheet (row-major); one sheet can hold several named ranges. */
+ start: z.number().int().min(0).max(4095).optional(),
  fps: z.number().min(0.1).max(120), loop: z.boolean(), autoplay: z.boolean(),
  width: z.number().positive().max(10000), height: z.number().positive().max(10000), anchorX: z.number().min(0).max(1), anchorY: z.number().min(0).max(1), alpha: z.number().min(0).max(1),
  /** Runtime only (play/stop actions): playback start and the time it froze. Never authored. */
  startedAt: z.number().nullable().optional(), stoppedAt: z.number().nullable().optional(),
-}).strict().refine(v => v.frames <= v.columns * v.rows, {message: 'Frame count exceeds the sheet grid'});
+}).strict().refine(v => (v.start ?? 0) + v.frames <= v.columns * v.rows, {message: 'Frame count exceeds the sheet grid'});
 export type Flipbook = z.infer<typeof FlipbookSchema>;
 export const flipbookDefinition: ComponentDefinition = {
  type: 'pixi.flipbook', version: 1, titleKey: 'component.flipbook', exclusiveGroup: 'render.visual',
@@ -52,7 +54,7 @@ export function createFlipbookAdapter(url: (assetId: string) => string | undefin
    };
    const show = (index: number) => {
     if (!base) return;
-    const frame = Math.min(index, p.frames - 1);
+    const frame = (p.start ?? 0) + Math.min(index, p.frames - 1);
     if (frame !== current) {
      const w = Math.floor(base.width / p.columns), h = Math.floor(base.height / p.rows);
      frames[frame] ??= new Texture({source: base.source, frame: new Rectangle((frame % p.columns) * w, Math.floor(frame / p.columns) * h, w, h)});

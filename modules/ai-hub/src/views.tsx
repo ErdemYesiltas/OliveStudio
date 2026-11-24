@@ -125,20 +125,22 @@ export function createHubViews(bridge: Bridge) {
  const update = (id: string, patch: Partial<LocalJob>) => persist(state.jobs.map(j => j.id === id ? {...j, ...patch} : j));
  let loaded = false;
  const ensureLoaded = () => { if (!loaded) { loaded = true; set({jobs: loadJobs()}); } };
+ const adoptionGuards=new Map<string,()=>void>();
  const waiters = new Map<string, {resolve(ids: string[]): void; reject(error: Error): void}>();
  const settle = (id: string, result: string[] | Error) => { const w = waiters.get(id); if (!w) return; waiters.delete(id); if (result instanceof Error) w.reject(result); else w.resolve(result); };
 
  const importOutputs = async (job: LocalJob, outputs: readonly HubOutput[]) => {
-  const ids: string[] = [], usable = outputs.filter(o => outputKind(o) === (job.kind === 'audio' ? 'audio' : 'image'));
+  const allRecords:unknown[]=[], usable = outputs.filter(o => outputKind(o) === (job.kind === 'audio' ? 'audio' : 'image'));
   if (!usable.length) throw Error(`LocalHub returned no ${job.kind === 'audio' ? 'sound' : 'image'} (${outputs.map(o => o.mime || o.filename).join(', ') || 'no files'})`);
   for (const [i, output] of usable.entries()) {
    let bytes: Uint8Array<ArrayBuffer> = new Uint8Array(output.bytes), extension = outputExtension(output);
    if (job.kind === 'audio') { if (!['wav', 'mp3'].includes(extension)) { bytes = await toWav(bytes); extension = 'wav'; } }
    else { if (extension !== 'png') bytes = await toPng(bytes); extension = 'png'; if (job.cutout && bridge.cutout) bytes = await bridge.cutout(bytes); }
    const records = await bridge.importBytes(bytes, safeName(usable.length > 1 ? `${job.name}-${i + 1}` : job.name), extension);
-   ids.push(...bridge.adopt(records, job.info));
+   allRecords.push(...records);
   }
-  return ids;
+  adoptionGuards.get(job.id)?.();
+  return bridge.adopt(allRecords,job.info);
  };
  const importing = new Set<string>();
  /** A finished image or sound job goes to the Library (once the project is editable); animations wait for review. */
@@ -206,10 +208,11 @@ export function createHubViews(bridge: Bridge) {
  };
  const add = (job: LocalJob) => { persist([job, ...state.jobs]); watch(); };
  /** Submits one request as a hub job (speech answers at once and is imported directly). */
- const submit = async (request: CreateRequest, meta: Pick<LocalJob, 'name' | 'kind' | 'purpose' | 'info'> & Partial<Pick<LocalJob, 'cutout' | 'animation' | 'video'>>) => {
+ const submit = async (request: CreateRequest, meta: Pick<LocalJob, 'name' | 'kind' | 'purpose' | 'info'> & Partial<Pick<LocalJob, 'cutout' | 'animation' | 'video'>>,beforeAdopt?:()=>void) => {
   ensureLoaded();
   const reply = await bridge.port.create(request);
   const base: LocalJob = {id: reply.job?.id ?? `speech-${crypto.randomUUID()}`, project: bridge.projectKey(), capability: request.capability, createdAt: Date.now(), state: 'queued', ...meta};
+  if(beforeAdopt)adoptionGuards.set(base.id,beforeAdopt);
   if (reply.output) {
    const ids = await importOutputs(base, [reply.output]);
    add({...base, state: 'imported', assets: ids});
@@ -262,7 +265,7 @@ export function createHubViews(bridge: Bridge) {
   } finally { set({step: ''}); }
  };
  const review = async (job: LocalJob) => { showFrames(job.id, await framesOf(job)); };
- const createAnimation = async (job: LocalJob, chosen?: readonly Uint8Array<ArrayBuffer>[]) => {
+ const createAnimation = async (job: LocalJob, chosen?: readonly Uint8Array<ArrayBuffer>[], automation?:{check():void;place:boolean}) => {
   const a = job.animation; if (!a) return;
   let frames = chosen ?? await framesOf(job);
   if (!frames.length) throw Error(t('comfy.noFrames'));
@@ -270,11 +273,13 @@ export function createHubViews(bridge: Bridge) {
   try {
    if (job.cutout && bridge.cutout) frames = await Promise.all(frames.map(f => bridge.cutout!(f)));
    const sheet = await packSheet(frames, a.columns), layout: SheetLayout = {columns: sheet.columns, rows: sheet.rows, frames: frames.length, fps: a.fps, loop: a.loop, width: sheet.width, height: sheet.height};
-   const ids = bridge.adopt(await bridge.importBytes(sheet.bytes, safeName(`${job.name}-sheet`), 'png'), {...job.info, frames: frames.length, fps: a.fps});
+   const records=await bridge.importBytes(sheet.bytes,safeName(`${job.name}-sheet`),'png');automation?.check();
+   const ids=bridge.adopt(records,{...job.info,frames:frames.length,fps:a.fps});
    if (!ids[0]) throw Error('The sprite sheet was not imported');
-   bridge.placeAnimation(ids[0], layout);
+   if(automation?.place!==false)bridge.placeAnimation(ids[0],layout);
    update(job.id, {state: 'imported', assets: ids, layout});
    set({results: [{id: ids[0], kind: 'animation' as const, sheet: layout}, ...state.results].slice(0, 24), ...(state.review?.jobId === job.id ? {review: null} : {})});
+   return{assetIds:ids,layout};
   } finally { set({step: ''}); }
  };
  let writerAbort: AbortController | null = null;
@@ -463,7 +468,7 @@ export function createHubViews(bridge: Bridge) {
  };
  const fileKind = (f: Pick<HubFileInfo, 'mime' | 'filename'>) => outputKind({mime: f.mime, filename: f.filename});
  /** Images and sounds go to the Library: job outputs with how they were made, uploads as plain imports. */
- const importFile = async (f: HubFileInfo) => {
+ const importFile = async (f: HubFileInfo,check?:()=>void) => {
   if (!bridge.canImport()) throw Error(t('hub.files.notNow'));
   files({busy: f.id});
   try {
@@ -473,32 +478,31 @@ export function createHubViews(bridge: Bridge) {
    if (kind === 'audio' && !['wav', 'mp3'].includes(extension)) { bytes = await toWav(bytes); extension = 'wav'; }
    if (kind === 'image' && extension !== 'png') { bytes = await toPng(bytes); extension = 'png'; }
    const records = await bridge.importBytes(bytes, safeName(f.filename.replace(/\.[a-z0-9]+$/i, '')), extension);
+   check?.();
    const ids = f.source === 'job' ? bridge.adopt(records, {workflow: 'LocalHub · files', prompt: f.filename, negative: '', seed: 0, steps: 0, cfg: 0, width: 0, height: 0, model: '', createdAt: new Date(f.createdAt * 1000).toISOString(), kind}) : bridge.addToLibrary(records);
-   files({done: {...state.files.done, [f.id]: ids}});
+   files({done: {...state.files.done, [f.id]: ids}});return{assetIds:ids};
   } finally { files({busy: ''}); }
  };
  /** A video on the hub becomes an animation: its frames wait in Create for review (like a video job). */
- const animateFile = async (f: HubFileInfo, frames: number, fps: number) => {
+ const fileAnimation = (f:HubFileInfo,frames:number,fps:number) => {
   const id = `file-${crypto.randomUUID()}`, name = safeName(`${f.filename.replace(/\.[a-z0-9]+$/i, '')}-anim`);
   const job: LocalJob = {id, project: bridge.projectKey(), name, capability: 'files', purpose: 'video.sprite', kind: 'animation', createdAt: Date.now(), state: 'completed', file: f.id, cutout: state.cutout,
    animation: {method: 'video', frames, columns: gridFor(frames).columns, fps, loop: true}, info: {workflow: 'LocalHub · files', prompt: f.filename, negative: '', seed: 0, steps: 0, cfg: 0, width: 0, height: 0, model: '', createdAt: new Date().toISOString(), kind: 'animation', frames, fps, method: 'video'}};
-  add(job);
-  files({busy: f.id});
+  add(job);return job;
+ };
+ const animateFile=async(f:HubFileInfo,frames:number,fps:number)=>{const job=fileAnimation(f,frames,fps);
+  files({busy:f.id});
   try { await review(job); } finally { files({busy: ''}); }
  };
  const upload = async (bytes: Uint8Array, name: string) => {
   if (bytes.byteLength > uploadLimit) throw Error(t('hub.files.tooLarge'));
   uploadName(name);
   files({busy: 'upload'});
-  try { const added = await bridge.port.uploadFile(bytes, name); files({items: [added, ...state.files.items.filter(x => x.id !== added.id)]}); }
+  try { const added = await bridge.port.uploadFile(bytes, name); files({items: [added, ...state.files.items.filter(x => x.id !== added.id)]});return added; }
   finally { files({busy: ''}); }
  };
- const remove = async (f: HubFileInfo) => {
-  if (state.files.confirm !== f.id) { files({confirm: f.id}); return; }
-  files({busy: f.id, confirm: ''});
-  try { await bridge.port.deleteFile(f.id); files({items: state.files.items.filter(x => x.id !== f.id)}); }
-  finally { files({busy: ''}); }
- };
+ const deleteFile=async(f:HubFileInfo)=>{files({busy:f.id,confirm:''});try{await bridge.port.deleteFile(f.id);files({items:state.files.items.filter(x=>x.id!==f.id)});}finally{files({busy:''});}};
+ const remove=async(f:HubFileInfo)=>{if(state.files.confirm!==f.id){files({confirm:f.id});return;}await deleteFile(f);};
  /** Image thumbnail or audio/video player, loaded on demand (blob URL freed on unmount). */
  function FilePreview({file, kind}: {file: HubFileInfo; kind: 'image' | 'audio' | 'video'}) {
   const [url, setUrl] = useState('');
@@ -564,13 +568,21 @@ export function createHubViews(bridge: Bridge) {
 
  return {
   Connection, Create, Jobs, Files, ChatTools, refresh,
+  fileTools:{
+   files:()=>bridge.port.files(),
+   async import(id:string,check:()=>void){check();const file=(await bridge.port.files()).find(f=>f.id===id);if(!file)throw Error('LocalHub file not found');return importFile(file,check);},
+   async animate(id:string,frames:number,fps:number,check:()=>void){check();const file=(await bridge.port.files()).find(f=>f.id===id);if(!file||fileKind(file)!=='video')throw Error('LocalHub video not found');const job=fileAnimation(file,frames,fps);return createAnimation(job,undefined,{check,place:false});},
+   upload,
+   async remove(id:string){const file=(await bridge.port.files()).find(f=>f.id===id);if(!file)throw Error('LocalHub file not found');await deleteFile(file);},
+  },
   status: () => state.status,
   useStatus: () => useSyncExternalStore(subscribe, () => state.status),
   servers: () => state.servers,
   /** Running hub jobs of this project (the Jobs tab badge). */
   useActiveJobs() { const key = bridge.useProjectKey(); return useSyncExternalStore(subscribe, () => state.jobs.filter(j => j.project === key && isActive(j)).length); },
   /** One image or sound for the assistant: waits for the job and returns the imported asset IDs. */
-  async generateNow(request: {kind: 'image' | 'audio'; prompt: string; seconds?: number; width?: number; height?: number; preset?: GeneratePreset; skill?: string}): Promise<string[]> {
+  async generateNow(request: {kind: 'image' | 'audio'; prompt: string; seconds?: number; width?: number; height?: number; preset?: GeneratePreset; skill?: string;beforeAdopt?:()=>void;signal?:AbortSignal}): Promise<string[]> {
+   request.signal?.throwIfAborted();
    const capability: CreateCapability = request.kind === 'audio' ? 'audio.create' : 'image.create';
    const a = availability(state.status ?? await bridge.port.status(), capability);
    if (a !== 'ready') throw Error(t(`hub.unavailable.${a}`).replace('{capability}', capability));
@@ -579,12 +591,15 @@ export function createHubViews(bridge: Bridge) {
    const prompt = applyTemplate(p?.prompt ?? '', request.prompt), width = snap(request.width ?? p?.width), height = snap(request.height ?? p?.height ?? width), negative = p?.negative ?? (request.kind === 'audio' ? '' : 'blurry, low quality, watermark, text');
    const seconds = request.kind === 'audio' ? Math.min(60, Math.max(1, request.seconds ?? 5)) : undefined;
    const {job, ids} = await submit({capability, prompt, seed, ...(negative ? {negative} : {}), ...(p?.steps ? {steps: p.steps} : {}), ...(width && height && request.kind === 'image' ? {width, height} : {}), ...(seconds ? {seconds} : {})},
-    {name: nameFromPrompt(request.prompt, seed), kind: request.kind, purpose: request.kind === 'audio' ? 'audio.sfx' : 'image.sprite', info: {workflow: `LocalHub · ${capability}`, prompt, negative, seed, steps: p?.steps ?? 0, cfg: 0, width: width ?? 0, height: height ?? 0, model: '', createdAt: new Date().toISOString(), kind: request.kind, ...(request.skill ? {skill: request.skill} : {}), ...(seconds ? {seconds} : {})}});
+    {name: nameFromPrompt(request.prompt, seed), kind: request.kind, purpose: request.kind === 'audio' ? 'audio.sfx' : 'image.sprite', info: {workflow: `LocalHub · ${capability}`, prompt, negative, seed, steps: p?.steps ?? 0, cfg: 0, width: width ?? 0, height: height ?? 0, model: '', createdAt: new Date().toISOString(), kind: request.kind, ...(request.skill ? {skill: request.skill} : {}), ...(seconds ? {seconds} : {})}},request.beforeAdopt);
+   const cancel=()=>{adoptionGuards.set(job.id,()=>{throw Error('Generation cancelled');});void bridge.port.cancel(job.id);update(job.id,{state:'cancelled'});settle(job.id,Error('Generation cancelled'));};
+   if(request.signal?.aborted){cancel();request.signal.throwIfAborted();}
    if (ids) return ids;
    const done = state.jobs.find(j => j.id === job.id);
    if (done?.state === 'imported') return done.assets ?? [];
    if (done && finished(done)) throw Error(done.error ?? t(`hub.job.${done.state}`));
-   return new Promise<string[]>((resolve, reject) => { waiters.set(job.id, {resolve, reject}); });
+   request.signal?.addEventListener('abort',cancel,{once:true});
+   return new Promise<string[]>((resolve, reject) => { waiters.set(job.id, {resolve, reject}); }).finally(()=>{request.signal?.removeEventListener('abort',cancel);});
   },
   dispose() { offEvents(); if (timer) clearInterval(timer); for (const f of state.review?.frames ?? []) URL.revokeObjectURL(f.url); for (const w of waiters.values()) w.reject(Error('Closed')); waiters.clear(); },
  };

@@ -1,0 +1,31 @@
+{
+  "name": "@rewrite/multiplayer-colyseus",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./client": "./src/client.ts",
+    "./server": "./src/server.node.ts",
+    "./target": "./src/target.node.ts"
+  },
+  "dependencies": {
+    "@rewrite/multiplayer": "workspace:*",
+    "@colyseus/core": "0.18.28",
+    "@colyseus/ws-transport": "0.18.5",
+    "@colyseus/schema": "5.0.46",
+    "@colyseus/sdk": "0.18.10",
+    "@rewrite/sdk": "workspace:*",
+    "@rewrite/build": "workspace:*",
+    "@rewrite/scene": "workspace:*",
+    "@rewrite/runtime": "workspace:*",
+    "@rewrite/physics": "workspace:*",
+    "@rewrite/physics-matter": "workspace:*",
+    "@rewrite/scripts": "workspace:*",
+    "@rewrite/behavior": "workspace:*",
+    "@rewrite/behavior-xstate": "workspace:*",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@rewrite/scene": "workspace:*"
+  }
+}

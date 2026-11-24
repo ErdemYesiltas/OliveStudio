@@ -1,0 +1,7 @@
+.pixi3d-lab{padding:16px;min-width:0;color:var(--text,inherit);font:13px/1.5 system-ui;overflow:auto;height:100%;box-sizing:border-box}
+.pixi3d-lab h2{font-size:17px;margin:0}.pixi3d-lab small{font-size:10px;opacity:.6;margin-left:8px}
+.pixi3d-lab p{margin:8px 0;opacity:.8}.pixi3d-controls{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:12px 0}
+.pixi3d-controls button,.pixi3d-controls select{font:inherit;padding:6px 9px;border:1px solid var(--border,#68746b66);border-radius:6px;background:var(--raised,#71837622);color:inherit;cursor:pointer}
+.pixi3d-controls button:disabled{opacity:.4;cursor:default}.pixi3d-controls :focus-visible{outline:2px solid var(--focus,#8abf94);outline-offset:2px}
+.pixi3d-surface{height:360px;min-width:0;background:#18251f;border-radius:8px;overflow:hidden}.pixi3d-surface canvas{display:block;max-width:100%}
+.pixi3d-lab output{display:block;white-space:pre-wrap;font:11px/1.5 monospace;overflow-wrap:anywhere}.pixi3d-lab [role=alert]{color:var(--danger,#ef8f8f)}

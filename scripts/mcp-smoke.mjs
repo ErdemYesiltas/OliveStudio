@@ -62,6 +62,8 @@ try {
  const shot = await rpc('tools/call', {name: 'screenshot', arguments: {}});
  expect(shot.result.content[0]).toMatchObject({type: 'image', mimeType: 'image/png'});
  expect(Buffer.from(shot.result.content[0].data, 'base64').subarray(1, 4).toString()).toBe('PNG');
+ await menu('Settings…');await dialog.getByRole('navigation',{name:'Settings sections',exact:true}).getByRole('button',{name:'MCP server',exact:true}).click();await section.getByRole('button',{name:'Show token',exact:true}).click();
+ const protectedShot=await rpc('tools/call',{name:'screenshot',arguments:{area:'window'}});expect(protectedShot.result.isError).toBe(true);expect(protectedShot.result.content[0].text).toContain('Hide revealed credentials');await section.getByRole('button',{name:'Hide token',exact:true}).click();expect((await rpc('tools/call',{name:'screenshot',arguments:{area:'window'}})).result.content[0].type).toBe('image');await page.keyboard.press('Escape');
  await menu('Undo');
  await expect(page.getByLabel('Unsaved changes', {exact: true})).toHaveCount(0);
  expect(JSON.parse((await rpc('tools/call', {name: 'get_editor_state', arguments: {}})).result.content[0].text).objects.map(o => o.name)).not.toContain('MCP star');

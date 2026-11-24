@@ -10,9 +10,9 @@ export const PrefabRegistrySchema=z.object({version:z.literal(1),items:z.array(P
 export const InstanceSchema=z.object({prefabId:z.uuid(),revision:z.number().int().positive(),base:SnapshotSchema,entities:z.record(z.string(),z.string().min(1)),components:z.record(z.string(),z.string().min(1))}).strict();
 export type Prefab=z.infer<typeof PrefabSchema>;export type Snapshot=z.infer<typeof SnapshotSchema>;export type PrefabInstance=z.infer<typeof InstanceSchema>;
 export const instanceType='prefabs.instance';
-export const prefabInstanceDefinition:ComponentDefinition={type:instanceType,version:1,titleKey:'prefab.instance',editorOnly:true,hiddenInInspector:true,addable:false,preserveLocalIdsOnDuplicate:true,fields:[],defaults(){throw Error('Use Create prefab or Instantiate');},parse:v=>InstanceSchema.parse(v),remapReferences(value,ids){const p=InstanceSchema.parse(value);p.entities=Object.fromEntries(Object.entries(p.entities).map(([k,v])=>[k,ids.entities.get(v)??v]));p.components=Object.fromEntries(Object.entries(p.components).map(([k,v])=>[k,ids.components.get(v)??v]));return p;}};
+export const prefabInstanceDefinition:ComponentDefinition={type:instanceType,version:1,titleKey:'prefab.instance',editorOnly:true,hiddenInInspector:true,addable:false,preserveLocalIdsOnDuplicate:true,fields:[],defaults(){throw Error('Use Create prefab or Instantiate');},get dataSchema(){return z.toJSONSchema(InstanceSchema,{unrepresentable:'any'});},parse:v=>InstanceSchema.parse(v),remapReferences(value,ids){const p=InstanceSchema.parse(value);p.entities=Object.fromEntries(Object.entries(p.entities).map(([k,v])=>[k,ids.entities.get(v)??v]));p.components=Object.fromEntries(Object.entries(p.components).map(([k,v])=>[k,ids.components.get(v)??v]));return p;}};
 
 /** Prefab edit mode: the prefab open as a temporary scene, and the scene to return to. */
 export const prefabEditSection='prefabs.editing';
-export const PrefabEditSchema=z.object({prefabId:z.uuid(),sceneId:z.string().min(1),returnSceneId:z.string().min(1)}).strict();
+export const PrefabEditSchema=z.object({prefabId:z.uuid(),sceneId:z.string().min(1),returnSceneId:z.string().min(1),boundaryId:z.uuid().optional()}).strict();
 export type PrefabEdit=z.infer<typeof PrefabEditSchema>;

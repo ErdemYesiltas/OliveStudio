@@ -29,8 +29,8 @@ export const emptyLibrary = (): Library => ({version: 1, folders: [], items: {}}
 export const entryOf = (lib: Library, id: string): LibraryEntry => lib.items[id] ?? {folderId: null, tags: []};
 
 /** Broad kind of an asset type, for filters. */
-export type AssetKind = 'image' | 'audio' | 'font' | 'spine' | 'other';
-export const kindOf = (type: string): AssetKind => type === 'pixi.texture' ? 'image' : type === 'audio.clip' ? 'audio' : type === 'font.face' ? 'font' : type === 'spine.skeleton' ? 'spine' : 'other';
+export type AssetKind = 'image' | 'audio' | 'font' | 'spine' | 'model' | 'other';
+export const kindOf = (type: string): AssetKind => type === 'pixi.texture' ? 'image' : type === 'audio.clip' ? 'audio' : type === 'font.face' ? 'font' : type === 'spine.skeleton' ? 'spine' : type === 'pixi3d.model' ? 'model' : 'other';
 
 /** Folders from the root to `folderId`. */
 export function folderPath(lib: Library, folderId: string | null): Folder[] {

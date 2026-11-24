@@ -22,3 +22,33 @@ it('activates a custom action runtime even without a custom component',()=>{cons
 it('strips editor-only prefab links and unused source assets from the shared runtime plan',async()=>{const{PrefabService}=await import('@rewrite/prefabs'),{ProjectService}=await import('@rewrite/project'),{SceneService}=await import('@rewrite/scene');const registry=createStockRegistry(),project=new ProjectService(()=>registry.definitions,()=>[]),scene=new SceneService(()=>registry.definitions,project.sceneDocument),service=new PrefabService(project,scene),root=makeEntity('Sprite'),id=crypto.randomUUID();root.components.push({id:'sprite',type:'pixi.sprite',version:1,data:{assetId:id,width:10,height:10,anchorX:.5,anchorY:.5,alpha:1,tint:'#ffffff'}});project.fresh({formatVersion:1,id:'scene',name:'Prefab',entities:[root]});project.document.transact('Asset',p=>{p.modules.prefabs='1.0.0';p.extensions['assets.registry']={version:1,items:[{id,name:'Image',type:'pixi.texture',revision:'a'.repeat(64),source:{extension:'png',bytes:10},metadata:{}}]};});service.create(root.id);const plan=registry.plan(project.document.current);expect(plan.assets).toHaveLength(1);expect(plan.project.scenes[0].entities[0].components.some(c=>c.type==='prefabs.instance')).toBe(false);expect(plan.project.extensions['prefabs.registry']).toBeUndefined();expect(plan.project.modules).toEqual({});scene.remove(root.id);expect(service.items).toHaveLength(1);expect(registry.plan(project.document.current).assets).toHaveLength(0);});
 
 it('accepts the editor recovery module lock without adding a runtime plugin or private state',()=>{const project=newProject();project.modules.recovery='1.0.0';const plan=createStockRegistry().plan(project);expect(plan.runtimes).toEqual([]);expect(plan.project.modules).toEqual({});expect(plan.project.extensions).toEqual({'assets.registry':{version:1,items:[]}});});
+
+it('accepts specialist editor module locks without shipping editor tooling',()=>{const project=newProject();for(const id of ['profiler','debugger','soundlab','git','hub-files','pixi3d-lab'])project.modules[id]='1.0.0';const plan=createStockRegistry().plan(project);expect(plan.runtimes).toEqual([]);expect(plan.project.modules).toEqual({});expect(plan.contributions.some(c=>c.id==='editor-automation')).toBe(false);project.modules.unknown='1.0.0';expect(()=>createStockRegistry().plan(project)).toThrow('module unavailable');});
+
+it('ships XState (behavior + scripts runtimes) only for projects with Behavior components and preflights their scripts',()=>{
+ const registry=createStockRegistry(),p=newProject();p.modules.behavior='1.0.0';
+ expect(registry.plan(p).runtimes).toEqual([]);
+ const source='export const machine = xstate.setup({}).createMachine({id: "door", initial: "a", states: {a: {}}});';
+ p.extensions['scripts.library']={version:1,items:[{id:'m',name:'Door',source,code:'exports.machine = 1;'},{id:'n',name:'Plain',source:'export function update() {}',code:'exports.update = function () {};'}]};
+ const e=makeEntity('Door');e.components.push({id:'b',type:'behavior.machine',version:1,data:{scriptId:'m',params:{},refs:{},machine:{id:'door'}}});p.scenes[0].entities.push(e);
+ const plan=registry.plan(p);expect(plan.runtimes).toEqual(['scripts','behavior']);expect(plan.contributions.some(c=>c.id==='behavior')).toBe(true);
+ (e.components.find(c=>c.id==='b')!.data as {scriptId:string}).scriptId='n';
+ expect(()=>registry.plan(p)).toThrow('script Plain has no "export const machine"');
+});
+
+it('ships the Colyseus client only for enabled multiplayer with a Network Player and opens the CSP to its server',()=>{
+ const registry=createStockRegistry(),p=newProject();p.modules.multiplayer='1.0.0';
+ const e=makeEntity('Hero');e.components.push({id:'np',type:'multiplayer.player',version:1,data:{speed:200,left:'left',right:'right',up:'up',down:'down'}});p.scenes[0].entities.push(e);
+ expect(()=>registry.plan(p)).toThrow('need multiplayer to be enabled');
+ p.extensions['multiplayer.settings']={version:1,enabled:true,provider:'colyseus',room:'game',maxPlayers:2,tickRate:20,reconnectSeconds:5,interpolationMs:100,endpoint:'wss://play.example.com'};
+ expect(()=>registry.plan(p)).toThrow('input action "left"');
+ p.extensions['input.map']={version:1,deadzone:0.2,actions:['left','right','up','down'].map(name=>({id:name,name,kind:'button',bindings:[{type:'key',code:'Space'}]}))};
+ const plan=registry.plan(p);expect(plan.runtimes).toEqual(['input','multiplayer']);expect(plan.connect).toEqual(['https://play.example.com','wss://play.example.com']);
+ (p.extensions['multiplayer.settings'] as {endpoint:string}).endpoint='';expect(registry.plan(p).connect).toEqual(['http://*:2567','https://*:2567','ws://*:2567','wss://*:2567']);
+ expect(createStockRegistry().plan(newProject()).connect).toEqual([]);
+});
+
+it('rejects detached 3D spatial data without a view boundary',()=>{
+ const project=newProject();project.scenes[0].entities.push({id:'mesh',name:'Mesh',parentId:null,active:true,spatial:'scene3d.transform',components:[{id:'transform3d',type:'scene3d.transform',version:1,data:{x:0,y:0,z:0,qx:0,qy:0,qz:0,qw:1,scaleX:1,scaleY:1,scaleZ:1}}]});
+ expect(()=>createStockRegistry().plan(project)).toThrow(/view boundary/);
+});

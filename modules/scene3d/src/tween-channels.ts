@@ -1,0 +1,3 @@
+import type {TweenChannel} from '@rewrite/tween/contracts';
+/** Position and scale tween as independent scalars; rotation is one quaternion channel sampled by slerp (never per-component). Dependency-free so the HTML player can share it. */
+export const transform3dTweenChannels:readonly TweenChannel[]=[...(['x','y','z'] as const).map(property=>({componentType:'scene3d.transform',version:1,property,titleKey:'field.'+property,min:-1e9,max:1e9})),...(['scaleX','scaleY','scaleZ'] as const).map(property=>({componentType:'scene3d.transform',version:1,property,titleKey:'field.'+property,min:-10000,max:10000,nonZero:true})),{componentType:'scene3d.transform',version:1,property:'rotation',titleKey:'field.rotation',quaternion:['qx','qy','qz','qw']}];

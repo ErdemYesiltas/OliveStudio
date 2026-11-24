@@ -158,6 +158,1350 @@
    ],
    "file": "maze/Maze Escape.pixieditor",
    "thumbnail": "maze/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-lighting-models",
+   "title": "PBR, Phong, Flat and Toon",
+   "description": "The four lighting models side by side in one colour: physically based (metal and roughness), Phong (a highlight you size), Flat (no lighting at all) and Toon (shade bands, a rim light and an ink outline). Pick a sphere and switch its Material in the Inspector.",
+   "tags": [
+    "PixiJS 3D",
+    "Materials",
+    "3D"
+   ],
+   "category": "Materials",
+   "origin": "https://pixijs.com/3d/examples?example=materials_lighting-models",
+   "file": "pixi3d-lighting-models/PBR, Phong, Flat and Toon.pixieditor",
+   "thumbnail": "pixi3d-lighting-models/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-metal-roughness",
+   "title": "Metal and roughness",
+   "description": "The standard PBR material in three numbers: colour, metallic and roughness. Rows go from plastic to metal, columns from mirror-smooth to fully rough, all lit by the same sky-and-ground environment light and a sun.",
+   "tags": [
+    "PixiJS 3D",
+    "Materials",
+    "3D"
+   ],
+   "category": "Materials",
+   "origin": "https://pixijs.com/3d/examples?example=materials_pbr",
+   "file": "pixi3d-metal-roughness/Metal and roughness.pixieditor",
+   "thumbnail": "pixi3d-metal-roughness/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-transparency",
+   "title": "Transparency",
+   "description": "How a surface treats alpha: Opaque ignores it, Cut-out (mask) keeps only pixels above a threshold, so a fence texture gets real holes and sharp shadows, and Blend mixes with what is behind for glass. Double-sided shows a card from behind too.",
+   "tags": [
+    "PixiJS 3D",
+    "Materials",
+    "3D"
+   ],
+   "category": "Materials",
+   "origin": "https://pixijs.com/3d/examples?example=materials_alpha",
+   "file": "pixi3d-transparency/Transparency.pixieditor",
+   "thumbnail": "pixi3d-transparency/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-low-poly",
+   "title": "Low-poly look",
+   "description": "Faceted shading: with \"Faceted (flat normals)\" each triangle gets one normal, so a curved shape reads as a cut gem or a low-poly prop. The same sphere, smooth on the left and faceted on the right.",
+   "tags": [
+    "PixiJS 3D",
+    "Materials",
+    "3D"
+   ],
+   "category": "Materials",
+   "origin": "https://pixijs.com/3d/examples?example=materials_flat-shading",
+   "file": "pixi3d-low-poly/Low-poly look.pixieditor",
+   "thumbnail": "pixi3d-low-poly/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-texture-set",
+   "title": "PBR texture set",
+   "description": "A PBR material from five images, adding one map at a time from left to right: colour, normal (bumps catch the light), metal-rough (a metal band and rough mortar), occlusion (darker gaps) and a glow map (embers in the cracks).",
+   "tags": [
+    "PixiJS 3D",
+    "Materials",
+    "3D"
+   ],
+   "category": "Materials",
+   "origin": "https://pixijs.com/3d/examples?example=materials_textures",
+   "file": "pixi3d-texture-set/PBR texture set.pixieditor",
+   "thumbnail": "pixi3d-texture-set/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-toon",
+   "title": "Toon shading",
+   "description": "Cel shading: the Toon material splits light into a few flat bands, adds a sharp highlight and a rim light, and the view draws an ink outline around every toon surface that asks for one (Outline width and colour live on the 3D View).",
+   "tags": [
+    "PixiJS 3D",
+    "Materials",
+    "3D"
+   ],
+   "category": "Materials",
+   "origin": "https://pixijs.com/3d/examples?example=materials_toon",
+   "file": "pixi3d-toon/Toon shading.pixieditor",
+   "thumbnail": "pixi3d-toon/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-uv-transform",
+   "title": "UV transform",
+   "description": "Placing a texture on a surface: Scroll moves it every second (a conveyor belt, press Play), Tile repeats it, Atlas frame shows one quarter of a 2 × 2 sheet with a scale of 0.5 and an offset, and Rotation turns it about the centre.",
+   "tags": [
+    "PixiJS 3D",
+    "Materials",
+    "3D"
+   ],
+   "category": "Materials",
+   "origin": "https://pixijs.com/3d/examples?example=materials_uv-transform",
+   "file": "pixi3d-uv-transform/UV transform.pixieditor",
+   "thumbnail": "pixi3d-uv-transform/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-clearcoat",
+   "title": "Clear coat",
+   "description": "A clear lacquer over the base material, with its own roughness, like car paint: the same rough red metal with no coat, a glossy coat and a satin coat. The coat keeps a sharp highlight while the base underneath stays soft.",
+   "tags": [
+    "PixiJS 3D",
+    "Materials",
+    "3D"
+   ],
+   "category": "Materials",
+   "origin": "https://pixijs.com/3d/examples?example=materials_clearcoat",
+   "file": "pixi3d-clearcoat/Clear coat.pixieditor",
+   "thumbnail": "pixi3d-clearcoat/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-sheen",
+   "title": "Sheen (velvet)",
+   "description": "Sheen is the soft glow cloth and velvet get at grazing angles. Each ball is the same dark fabric; the sheen colour lights its edges, and sheen roughness spreads that glow wider.",
+   "tags": [
+    "PixiJS 3D",
+    "Materials",
+    "3D"
+   ],
+   "category": "Materials",
+   "origin": "https://pixijs.com/3d/examples?example=materials_sheen",
+   "file": "pixi3d-sheen/Sheen (velvet).pixieditor",
+   "thumbnail": "pixi3d-sheen/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-glass",
+   "title": "Glass and liquids",
+   "description": "Transmission lets light through: clear glass bends and tints what is behind it, frosted glass blurs it with roughness, and a coloured liquid absorbs light the deeper it goes (absorb colour and distance). The view draws through its own texture so WebGL can see behind the glass.",
+   "tags": [
+    "PixiJS 3D",
+    "Materials",
+    "3D"
+   ],
+   "category": "Materials",
+   "origin": "https://pixijs.com/3d/examples?example=materials_transmission",
+   "file": "pixi3d-glass/Glass and liquids.pixieditor",
+   "thumbnail": "pixi3d-glass/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-iridescence",
+   "title": "Iridescence",
+   "description": "A thin film over the surface, like a soap bubble or oil on water: its colour shifts with the viewing angle. The film thickness range picks which colours appear; a thicker film shows more bands.",
+   "tags": [
+    "PixiJS 3D",
+    "Materials",
+    "3D"
+   ],
+   "category": "Materials",
+   "origin": "https://pixijs.com/3d/examples?example=materials_iridescence",
+   "file": "pixi3d-iridescence/Iridescence.pixieditor",
+   "thumbnail": "pixi3d-iridescence/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-anisotropy",
+   "title": "Anisotropy (brushed metal)",
+   "description": "Anisotropy stretches highlights along one direction on the surface, the look of brushed metal or a vinyl record. Strength sets how long the streak is; the angle turns its direction.",
+   "tags": [
+    "PixiJS 3D",
+    "Materials",
+    "3D"
+   ],
+   "category": "Materials",
+   "origin": "https://pixijs.com/3d/examples?example=materials_anisotropy",
+   "file": "pixi3d-anisotropy/Anisotropy (brushed metal).pixieditor",
+   "thumbnail": "pixi3d-anisotropy/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-specular-ior",
+   "title": "Specular and IOR",
+   "description": "How strongly a non-metal reflects: the index of refraction (1.0 air, 1.33 water, 1.5 glass, 2.4 diamond) sets the base reflection, and Reflection strength and Highlight colour scale and tint it.",
+   "tags": [
+    "PixiJS 3D",
+    "Materials",
+    "3D"
+   ],
+   "category": "Materials",
+   "origin": "https://pixijs.com/3d/examples?example=materials_specular-ior",
+   "file": "pixi3d-specular-ior/Specular and IOR.pixieditor",
+   "thumbnail": "pixi3d-specular-ior/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-extension-maps",
+   "title": "PBR extension maps",
+   "description": "A texture map varies an extension across one surface instead of setting it everywhere: chips in a clear coat, lead lines in stained glass, rings in an iridescent film and a woven sheen pattern.",
+   "tags": [
+    "PixiJS 3D",
+    "Materials",
+    "3D"
+   ],
+   "category": "Materials",
+   "origin": "https://pixijs.com/3d/examples?example=materials_extension-maps",
+   "file": "pixi3d-extension-maps/PBR extension maps.pixieditor",
+   "thumbnail": "pixi3d-extension-maps/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-video",
+   "title": "Video texture",
+   "description": "One video clip feeds two screens, so both always show the same frame. The clip plays muted in a loop as the colour map; a Flat material keeps it as bright as the video itself. Import your own .mp4 or .webm from the Library.",
+   "tags": [
+    "PixiJS 3D",
+    "Materials",
+    "3D"
+   ],
+   "category": "Materials",
+   "origin": "https://pixijs.com/3d/examples?example=materials_video",
+   "file": "pixi3d-video/Video texture.pixieditor",
+   "thumbnail": "pixi3d-video/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-shapes",
+   "title": "Built-in shapes",
+   "description": "The nine built-in shapes: cube, sphere, plane, cylinder, cone, capsule, torus, torus knot and icosahedron. Each fits a unit box, so the transform scale sizes it; shape options such as smoothness, tube thickness, knot winds or gem detail sit under Shape in the Inspector.",
+   "tags": [
+    "PixiJS 3D",
+    "Geometry",
+    "3D"
+   ],
+   "category": "Geometry",
+   "origin": "https://pixijs.com/3d/examples?example=geometry_shapes",
+   "file": "pixi3d-shapes/Built-in shapes.pixieditor",
+   "thumbnail": "pixi3d-shapes/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-lines-points",
+   "title": "Lines and points",
+   "description": "\"Draw as\" shows the same geometry three ways: as a lit surface, as a wireframe of its triangle edges (each shared edge once) and as a point at every vertex. Smoothness changes how many triangles, edges and points there are.",
+   "tags": [
+    "PixiJS 3D",
+    "Geometry",
+    "3D"
+   ],
+   "category": "Geometry",
+   "origin": "https://pixijs.com/3d/examples?example=geometry_lines-and-points",
+   "file": "pixi3d-lines-points/Lines and points.pixieditor",
+   "thumbnail": "pixi3d-lines-points/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-sprites",
+   "title": "Sprites in 3D",
+   "description": "A Sprite 3D is a picture on a flat quad, sized from its image (Size per pixel) and turned toward the camera: trees turn only around their upright axis, the glow faces the camera from every side, and the road sign stays a flat card. Cut-out transparency gives the leaves clean edges.",
+   "tags": [
+    "PixiJS 3D",
+    "Sprites",
+    "3D"
+   ],
+   "category": "Sprites",
+   "origin": "https://pixijs.com/3d/examples?example=sprites_sprite3d",
+   "file": "pixi3d-sprites/Sprites in 3D.pixieditor",
+   "thumbnail": "pixi3d-sprites/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-tangent-space",
+   "title": "Tangent space",
+   "description": "A normal map stores bump directions in the surface's own space (its tangent space), so one brick map lights correctly on any shape: the bricks catch the sun the same way on a flat panel, a cylinder, a sphere and a torus.",
+   "tags": [
+    "PixiJS 3D",
+    "Geometry",
+    "3D"
+   ],
+   "category": "Geometry",
+   "origin": "https://pixijs.com/3d/examples?example=geometry_tangent-space",
+   "file": "pixi3d-tangent-space/Tangent space.pixieditor",
+   "thumbnail": "pixi3d-tangent-space/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-environment-light",
+   "title": "Environment light (cube map)",
+   "description": "A cube map lights a scene from all around and is what shiny surfaces reflect: the chrome ball mirrors the sky, mountains and sun, the matte ball takes only its soft colours, and the background shows the same cube. Load your own sky as one image: a 4:3 cross, a 6:1 strip or a 1:6 column.",
+   "tags": [
+    "PixiJS 3D",
+    "Lighting",
+    "3D"
+   ],
+   "category": "Lighting",
+   "origin": "https://pixijs.com/3d/examples?example=lighting_environment",
+   "file": "pixi3d-environment-light/Environment light (cube map).pixieditor",
+   "thumbnail": "pixi3d-environment-light/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-hdr-environment",
+   "title": "HDR environment",
+   "description": "A Radiance .hdr sky keeps light brighter than white: its sun is about 60 times brighter than the sky, so even two stops darker it still glints in metal, where an 8-bit sky image would have turned grey. Import your own .hdr panorama from the Library.",
+   "tags": [
+    "PixiJS 3D",
+    "Lighting",
+    "3D"
+   ],
+   "category": "Lighting",
+   "origin": "https://pixijs.com/3d/examples?example=lighting_hdr-environment",
+   "file": "pixi3d-hdr-environment/HDR environment.pixieditor",
+   "thumbnail": "pixi3d-hdr-environment/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-fog",
+   "title": "Fog",
+   "description": "Distance fog fades far objects into a colour: Linear between a near and a far distance, Exponential and Exponential squared by density. Match the background to the fog colour so the horizon disappears.",
+   "tags": [
+    "PixiJS 3D",
+    "Lighting",
+    "3D"
+   ],
+   "category": "Lighting",
+   "origin": "https://pixijs.com/3d/examples?example=lighting_fog",
+   "file": "pixi3d-fog/Fog.pixieditor",
+   "thumbnail": "pixi3d-fog/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-tone-mapping",
+   "title": "Tone mapping",
+   "description": "Tone mapping turns scene light, which can be far brighter than white, into colours a screen can show. None clips bright light to flat white, while ACES, Reinhard and Uncharted 2 roll it off and keep colour in the glowing spheres.",
+   "tags": [
+    "PixiJS 3D",
+    "Lighting",
+    "3D"
+   ],
+   "category": "Lighting",
+   "origin": "https://pixijs.com/3d/examples?example=lighting_tone-mapping",
+   "file": "pixi3d-tone-mapping/Tone mapping.pixieditor",
+   "thumbnail": "pixi3d-tone-mapping/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-light-types",
+   "title": "Light types",
+   "description": "The four kinds of light, one per view: Directional (parallel sun rays with shadows), Ambient (flat light everywhere, no direction), Point (a bulb that fades with its range) and Spot (a cone with a soft edge and shadows). Select a light to see its gizmo.",
+   "tags": [
+    "PixiJS 3D",
+    "Lighting",
+    "3D"
+   ],
+   "category": "Lighting",
+   "origin": "https://pixijs.com/3d/examples?example=lighting_light-types",
+   "file": "pixi3d-light-types/Light types.pixieditor",
+   "thumbnail": "pixi3d-light-types/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-many-lights",
+   "title": "Many lights",
+   "description": "Twenty-four coloured point lights at once, one between each group of spheres. Each light reaches only as far as its range, so a pixel pays only for the lights near it, and every pool of colour stays local.",
+   "tags": [
+    "PixiJS 3D",
+    "Lighting",
+    "3D"
+   ],
+   "category": "Lighting",
+   "origin": "https://pixijs.com/3d/examples?example=lighting_many-lights",
+   "file": "pixi3d-many-lights/Many lights.pixieditor",
+   "thumbnail": "pixi3d-many-lights/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-shadows",
+   "title": "Shadows",
+   "description": "A shadow needs a light that casts (Cast shadows on the sun) and meshes that cast and receive. Shadow quality sets the shadow map size and Shadow edges its filter: Low and hard on the left, High and soft in the middle, Ultra and softer on the right.",
+   "tags": [
+    "PixiJS 3D",
+    "Shadows",
+    "3D"
+   ],
+   "category": "Shadows",
+   "origin": "https://pixijs.com/3d/examples?example=shadows_basics",
+   "file": "pixi3d-shadows/Shadows.pixieditor",
+   "thumbnail": "pixi3d-shadows/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-shadows-large",
+   "title": "Shadows over a large scene",
+   "description": "One shadow map stretched over a large world gets blurry. Cascades split the view by distance and give the near part its own sharp map, so the posts by the camera and those far away both keep shadows. Shadow distance limits how far they reach.",
+   "tags": [
+    "PixiJS 3D",
+    "Shadows",
+    "3D"
+   ],
+   "category": "Shadows",
+   "origin": "https://pixijs.com/3d/examples?example=shadows_large-scenes",
+   "file": "pixi3d-shadows-large/Shadows over a large scene.pixieditor",
+   "thumbnail": "pixi3d-shadows-large/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-lod",
+   "title": "Level of detail",
+   "description": "Level of detail swaps a far object for a coarser copy: each sphere past its Simplify distance drops to a few segments, with a 10% band so it never flickers at the boundary. The wireframe makes the swap visible; press Play and the camera dollies in and out.",
+   "tags": [
+    "PixiJS 3D",
+    "Instancing",
+    "3D"
+   ],
+   "category": "Instancing",
+   "origin": "https://pixijs.com/3d/examples?example=instancing_lod",
+   "file": "pixi3d-lod/Level of detail.pixieditor",
+   "thumbnail": "pixi3d-lod/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-orbit-camera",
+   "title": "Orbit camera",
+   "description": "A Camera control in Orbit mode on the scene camera: in Play, drag to turn around the target, scroll to zoom and right-drag to pan, within the min and max distance. Auto-rotate turns it on its own until you take over.",
+   "tags": [
+    "PixiJS 3D",
+    "Cameras",
+    "3D"
+   ],
+   "category": "Cameras",
+   "origin": "https://pixijs.com/3d/examples?example=cameras_orbit",
+   "file": "pixi3d-orbit-camera/Orbit camera.pixieditor",
+   "thumbnail": "pixi3d-orbit-camera/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-first-person",
+   "title": "First-person camera",
+   "description": "A Camera control in First person mode: in Play, click the view to look around with the mouse (the pointer locks; Esc frees it) and walk with W A S D. Walk speed and look speed are on the control.",
+   "tags": [
+    "PixiJS 3D",
+    "Cameras",
+    "3D"
+   ],
+   "category": "Cameras",
+   "origin": "https://pixijs.com/3d/examples?example=cameras_first-person",
+   "file": "pixi3d-first-person/First-person camera.pixieditor",
+   "thumbnail": "pixi3d-first-person/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-second-cameras",
+   "title": "Second cameras",
+   "description": "A second camera draws the scene into a texture a surface shows: the monitor plays a security camera aimed at the statue, and the small panel is a minimap from an orthographic camera looking straight down. Set a surface's \"Show camera\" to a camera's ID; the feed size is on that camera.",
+   "tags": [
+    "PixiJS 3D",
+    "Cameras",
+    "3D"
+   ],
+   "category": "Cameras",
+   "origin": "https://pixijs.com/3d/examples?example=cameras_render-to-texture",
+   "file": "pixi3d-second-cameras/Second cameras.pixieditor",
+   "thumbnail": "pixi3d-second-cameras/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-projection",
+   "title": "Perspective and orthographic",
+   "description": "How a camera flattens 3D onto the screen: Perspective shrinks what is far away by the field of view; Orthographic keeps sizes, which with a camera turned 45° and tilted down gives the isometric look of strategy and puzzle games.",
+   "tags": [
+    "PixiJS 3D",
+    "Cameras",
+    "3D"
+   ],
+   "category": "Cameras",
+   "origin": "https://pixijs.com/3d/examples?example=cameras_projection",
+   "file": "pixi3d-projection/Perspective and orthographic.pixieditor",
+   "thumbnail": "pixi3d-projection/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-clipping",
+   "title": "Clipping planes",
+   "description": "A camera draws only what lies between its Near clip and Far clip distances. Left: the default range shows the whole row. Middle: a near clip of 4 cuts away the posts closest to the camera. Right: a far clip of 9 drops everything beyond it.",
+   "tags": [
+    "PixiJS 3D",
+    "Cameras",
+    "3D"
+   ],
+   "category": "Cameras",
+   "origin": "https://pixijs.com/3d/examples?example=cameras_clipping",
+   "file": "pixi3d-clipping/Clipping planes.pixieditor",
+   "thumbnail": "pixi3d-clipping/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-portal",
+   "title": "Portals",
+   "description": "A portal surface shows the far side of another surface, its exit, as if looking through an opening: here a door in a grey room opens onto a sunny garden that sits elsewhere in the scene, hidden behind the wall. Set the entry's \"Portal exit\" to the exit object's ID.",
+   "tags": [
+    "PixiJS 3D",
+    "Cameras",
+    "3D"
+   ],
+   "category": "Cameras",
+   "origin": "https://pixijs.com/3d/examples?example=post_portal",
+   "file": "pixi3d-portal/Portals.pixieditor",
+   "thumbnail": "pixi3d-portal/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-screen-world",
+   "title": "Screen and world",
+   "description": "A 2D object with \"Follow 3D object\" rides on a 3D object's place on screen while the game runs: each name tag follows its moving ball, a little above it, and hides if the ball goes behind the camera. Health bars and markers work the same way.",
+   "tags": [
+    "PixiJS 3D",
+    "2D and 3D",
+    "3D"
+   ],
+   "category": "2D and 3D",
+   "origin": "https://pixijs.com/3d/examples?example=2d3d_coordinates",
+   "file": "pixi3d-screen-world/Screen and world.pixieditor",
+   "thumbnail": "pixi3d-screen-world/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-view-filters",
+   "title": "Filters on a 3D view",
+   "description": "A 3D view is a 2D object too, so Effects and Mask work on it like on a sprite: the left view is pixelated, the middle one hue-shifted with a glow, and the right one cut to a circle by a mask.",
+   "tags": [
+    "PixiJS 3D",
+    "2D and 3D",
+    "3D"
+   ],
+   "category": "2D and 3D",
+   "origin": "https://pixijs.com/3d/examples?example=2d3d_filters",
+   "file": "pixi3d-view-filters/Filters on a 3D view.pixieditor",
+   "thumbnail": "pixi3d-view-filters/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-many-views",
+   "title": "Many views",
+   "description": "Many 3D views side by side on one 2D stage, each with its own scene, lights and camera. Every camera here has an Orbit control with auto-rotate, so in Play each object turns in its own window.",
+   "tags": [
+    "PixiJS 3D",
+    "2D and 3D",
+    "3D"
+   ],
+   "category": "2D and 3D",
+   "origin": "https://pixijs.com/3d/examples?example=2d3d_many-views",
+   "file": "pixi3d-many-views/Many views.pixieditor",
+   "thumbnail": "pixi3d-many-views/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-view-in-ui",
+   "title": "A view in a 2D UI",
+   "description": "A 3D view sits inside a 2D layout like any panel: its transparent background lets the 2D card show through, the 2D title, price and button draw around it, and its Orbit camera turns the product on its own until you drag it.",
+   "tags": [
+    "PixiJS 3D",
+    "2D and 3D",
+    "3D"
+   ],
+   "category": "2D and 3D",
+   "origin": "https://pixijs.com/3d/examples?example=2d3d_view-in-ui",
+   "file": "pixi3d-view-in-ui/A view in a 2D UI.pixieditor",
+   "thumbnail": "pixi3d-view-in-ui/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-glass-over-2d",
+   "title": "3D over 2D",
+   "description": "A view with a transparent background draws its 3D over whatever 2D sits behind it: the stripes and the 2D text show around the metal ring and through the see-through ball (Transparency: Blend). Glass (transmission) bends only the 3D scene, not 2D behind the view.",
+   "tags": [
+    "PixiJS 3D",
+    "2D and 3D",
+    "3D"
+   ],
+   "category": "2D and 3D",
+   "origin": "https://pixijs.com/3d/examples?example=2d3d_glass-over-2d",
+   "file": "pixi3d-glass-over-2d/3D over 2D.pixieditor",
+   "thumbnail": "pixi3d-glass-over-2d/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-container-texture",
+   "title": "2D on a 3D surface",
+   "description": "A surface can show a live 2D object: set its \"Show 2D object\" to the ID of a 2D group and it captures that group every frame, here a panel with a title, a bouncing ball and a moving bar. The group sits off the stage, so it only shows on the monitor. Flat keeps it as bright as a screen.",
+   "tags": [
+    "PixiJS 3D",
+    "2D and 3D",
+    "3D"
+   ],
+   "category": "2D and 3D",
+   "origin": "https://pixijs.com/3d/examples?example=2d3d_container-texture",
+   "file": "pixi3d-container-texture/2D on a 3D surface.pixieditor",
+   "thumbnail": "pixi3d-container-texture/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-playing-clips",
+   "title": "Playing clips",
+   "description": "One skinned model, three Model animation settings: Idle on its own, Wave on its own, and Idle blended with Wave at half strength (\"Blend with clip\"). Change the clip while it plays and it crossfades over \"Crossfade (s)\" instead of cutting.",
+   "tags": [
+    "PixiJS 3D",
+    "Animation",
+    "3D"
+   ],
+   "category": "Animation",
+   "origin": "https://pixijs.com/3d/examples?example=animation_clips",
+   "file": "pixi3d-playing-clips/Playing clips.pixieditor",
+   "thumbnail": "pixi3d-playing-clips/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-tweening",
+   "title": "Tweening 3D objects",
+   "description": "A Tween player on a 3D object animates its transform without any clip: one cube slides, one turns (rotation tweens take the short way round), one breathes in scale. Tweens can loop, yoyo and ease like their 2D cousins.",
+   "tags": [
+    "PixiJS 3D",
+    "Animation",
+    "3D"
+   ],
+   "category": "Animation",
+   "origin": "https://pixijs.com/3d/examples?example=animation_gsap",
+   "file": "pixi3d-tweening/Tweening 3D objects.pixieditor",
+   "thumbnail": "pixi3d-tweening/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-morph-targets",
+   "title": "Morph targets",
+   "description": "A model's morph targets are extra shapes its surface blends toward. The left blob plays its Wobble clip, which animates the Squash and Spike weights; the right one sets them by hand (\"Set morph weights by hand\", Morph 1 = 0.6, Morph 2 = 0.8).",
+   "tags": [
+    "PixiJS 3D",
+    "Animation",
+    "3D"
+   ],
+   "category": "Animation",
+   "origin": "https://pixijs.com/3d/examples?example=animation_morph-targets",
+   "file": "pixi3d-morph-targets/Morph targets.pixieditor",
+   "thumbnail": "pixi3d-morph-targets/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-driving-bones",
+   "title": "Driving bones",
+   "description": "\"Aim a bone\" turns one bone of a playing model toward another object after its clip poses it: each tentacle waves, but its Tip bone keeps pointing (along +Y) at the glowing ball that circles above. Aim strength blends between the clip and the aim.",
+   "tags": [
+    "PixiJS 3D",
+    "Animation",
+    "3D"
+   ],
+   "category": "Animation",
+   "origin": "https://pixijs.com/3d/examples?example=animation_bones",
+   "file": "pixi3d-driving-bones/Driving bones.pixieditor",
+   "thumbnail": "pixi3d-driving-bones/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-crowd",
+   "title": "Crowd",
+   "description": "Twenty copies of one animated model, each with its own Model animation: clips mixed, speeds from 0.7 to 1.3 and \"Start at\" offsets, so no two move in step. The model file loads once and every copy shares it.",
+   "tags": [
+    "PixiJS 3D",
+    "Animation",
+    "3D"
+   ],
+   "category": "Animation",
+   "origin": "https://pixijs.com/3d/examples?example=animation_crowd",
+   "file": "pixi3d-crowd/Crowd.pixieditor",
+   "thumbnail": "pixi3d-crowd/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-pointer-events",
+   "title": "Pointer events",
+   "description": "In the game, 3D objects answer the pointer like 2D ones. Each shape has rules: \"Pointer enters a 3D object\" lights the ring under it, \"Pointer leaves\" turns it off, and a click (\"Pointer click\", which works on 3D objects too) adds 1 to the clicks global the counter text shows.",
+   "tags": [
+    "PixiJS 3D",
+    "Interaction",
+    "3D"
+   ],
+   "category": "Interaction",
+   "origin": "https://pixijs.com/3d/examples?example=interaction_pointer-events",
+   "file": "pixi3d-pointer-events/Pointer events.pixieditor",
+   "thumbnail": "pixi3d-pointer-events/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-dragging",
+   "title": "Dragging objects",
+   "description": "A Draggable component lets the player move a 3D object with the pointer. The crates slide on the ground and snap to a half-unit grid; the ball moves on a plane facing the camera, so it can be lifted. \"3D object dropped\" counts every drop.",
+   "tags": [
+    "PixiJS 3D",
+    "Interaction",
+    "3D"
+   ],
+   "category": "Interaction",
+   "origin": "https://pixijs.com/3d/examples?example=interaction_drag",
+   "file": "pixi3d-dragging/Dragging objects.pixieditor",
+   "thumbnail": "pixi3d-dragging/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-hit-volumes",
+   "title": "Hit volumes",
+   "description": "\"Clickable shape\" sets what the pointer is tested against. Geometry uses the real triangles, so the hole in the ring misses; Box and Sphere use a simple shape around it, so the hole hits; None never hits. Each ring counts its own clicks.",
+   "tags": [
+    "PixiJS 3D",
+    "Interaction",
+    "3D"
+   ],
+   "category": "Interaction",
+   "origin": "https://pixijs.com/3d/examples?example=interaction_hit-volumes",
+   "file": "pixi3d-hit-volumes/Hit volumes.pixieditor",
+   "thumbnail": "pixi3d-hit-volumes/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-particle-basics",
+   "title": "Particle basics",
+   "description": "A campfire from three Particles 3D emitters: additive flames that shrink and redden, grey smoke with normal blending that rises slowly and grows, and fast sparks that gravity pulls back down. Every particle is a function of time, so Pause, Step and scrubbing show the same frame.",
+   "tags": [
+    "PixiJS 3D",
+    "Particles",
+    "3D"
+   ],
+   "category": "Particles",
+   "origin": "https://pixijs.com/3d/examples?example=particles_basics",
+   "file": "pixi3d-particle-basics/Particle basics.pixieditor",
+   "thumbnail": "pixi3d-particle-basics/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-particle-spawn",
+   "title": "Spawn shapes and bursts",
+   "description": "Where particles start: a point, inside a sphere, inside a box. The firework is a burst that repeats every 1.6 s (\"Repeat burst every\"); the green one waits until you click the button, whose rule runs \"Play particles\" on it.",
+   "tags": [
+    "PixiJS 3D",
+    "Particles",
+    "3D"
+   ],
+   "category": "Particles",
+   "origin": "https://pixijs.com/3d/examples?example=particles_spawn",
+   "file": "pixi3d-particle-spawn/Spawn shapes and bursts.pixieditor",
+   "thumbnail": "pixi3d-particle-spawn/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-particle-flipbook",
+   "title": "Flipbook particles",
+   "description": "A Library image as the particle: a 4 × 4 sheet of flower shapes (\"Flipbook columns\" and \"rows\"). Left: frames follow each particle's life; middle: they loop at 8 frames per second; right: each particle keeps one random frame.",
+   "tags": [
+    "PixiJS 3D",
+    "Particles",
+    "3D"
+   ],
+   "category": "Particles",
+   "origin": "https://pixijs.com/3d/examples?example=particles_flipbook",
+   "file": "pixi3d-particle-flipbook/Flipbook particles.pixieditor",
+   "thumbnail": "pixi3d-particle-flipbook/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-particle-spaces",
+   "title": "Local and world space",
+   "description": "Two balls slide side to side, each carrying an emitter. Top: \"Local\" space, so its particles travel with the ball as a cloud around it (and shrink with its scale). Bottom: \"World\" space, so each particle stays where the ball was when it was born and the ball leaves a trail.",
+   "tags": [
+    "PixiJS 3D",
+    "Particles",
+    "3D"
+   ],
+   "category": "Particles",
+   "origin": "https://pixijs.com/3d/examples?example=particles_spaces",
+   "file": "pixi3d-particle-spaces/Local and world space.pixieditor",
+   "thumbnail": "pixi3d-particle-spaces/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-outlines",
+   "title": "Outlines",
+   "description": "The Outline 3D add-on draws an ink shell around one object, whatever its material, in the view's outline width and colour. The toon ball always has its ink; the others get an outline only while the pointer is over them: rules run \"Turn 3D outline on/off\" on enter and leave. Width is in the object's own units.",
+   "tags": [
+    "PixiJS 3D",
+    "Post-processing",
+    "3D"
+   ],
+   "category": "Post-processing",
+   "origin": "https://pixijs.com/3d/examples?example=post_passes-per-mesh",
+   "file": "pixi3d-outlines/Outlines.pixieditor",
+   "thumbnail": "pixi3d-outlines/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-wireframe-overlay",
+   "title": "Wireframe overlay",
+   "description": "The Wireframe overlay 3D add-on draws an object's edges over its shaded surface, in its own colour. Primitives get their exact edges; a model is drawn by the view's wireframe pass (one colour per view), here on a tentacle whose clip bends the lines with it.",
+   "tags": [
+    "PixiJS 3D",
+    "Post-processing",
+    "3D"
+   ],
+   "category": "Post-processing",
+   "origin": "https://pixijs.com/3d/examples?example=post_material-passes",
+   "file": "pixi3d-wireframe-overlay/Wireframe overlay.pixieditor",
+   "thumbnail": "pixi3d-wireframe-overlay/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-bounds",
+   "title": "Bounding boxes",
+   "description": "The Bounding box 3D add-on draws the world-axis box around an object every frame: a turning bar's box grows and shrinks with its corners, a scaled ball's box stretches, and a sliding group's box travels with it. A rule can switch a box on and off like an outline.",
+   "tags": [
+    "PixiJS 3D",
+    "Scene",
+    "3D"
+   ],
+   "category": "Scene",
+   "origin": "https://pixijs.com/3d/examples?example=scene_bounds",
+   "file": "pixi3d-bounds/Bounding boxes.pixieditor",
+   "thumbnail": "pixi3d-bounds/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-motion-view",
+   "title": "Motion blur and velocity view",
+   "description": "Two views of one scene, both cameras circling it (Camera control: orbit, auto-rotate). Left: \"Motion blur\" streaks what the camera's motion sweeps across. Right: \"Debug view: Motion (velocity)\" paints how far each pixel moved since the last frame, which is what the blur reads. Only camera motion counts: an object moving in front of a still camera stays sharp.",
+   "tags": [
+    "PixiJS 3D",
+    "Post-processing",
+    "3D"
+   ],
+   "category": "Post-processing",
+   "origin": "https://pixijs.com/3d/examples?example=post_motion-blur",
+   "file": "pixi3d-motion-view/Motion blur and velocity view.pixieditor",
+   "thumbnail": "pixi3d-motion-view/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-bloom",
+   "title": "Bloom",
+   "description": "Bloom spreads light from pixels brighter than \"Bloom threshold\" into a glow. Left: off. Right: on; the glowing tubes and orbs have emissive strength above 1, which only bloom turns into halos.",
+   "tags": [
+    "PixiJS 3D",
+    "Post-processing",
+    "3D"
+   ],
+   "category": "Post-processing",
+   "origin": "https://pixijs.com/3d/examples?example=post_bloom",
+   "file": "pixi3d-bloom/Bloom.pixieditor",
+   "thumbnail": "pixi3d-bloom/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-ssao",
+   "title": "Ambient occlusion",
+   "description": "Ambient occlusion darkens creases and corners that the sky light cannot reach. Left: off. Right: \"Ambient occlusion\" on; look where the crates meet the floor and each other.",
+   "tags": [
+    "PixiJS 3D",
+    "Post-processing",
+    "3D"
+   ],
+   "category": "Post-processing",
+   "origin": "https://pixijs.com/3d/examples?example=post_ssao",
+   "file": "pixi3d-ssao/Ambient occlusion.pixieditor",
+   "thumbnail": "pixi3d-ssao/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-depth-of-field",
+   "title": "Depth of field",
+   "description": "Depth of field blurs what lies outside a band around \"Focus distance\", like a camera lens. Left: all sharp. Right: focus on the middle pillar (5 units away); nearer and farther ones blur more the further they are.",
+   "tags": [
+    "PixiJS 3D",
+    "Post-processing",
+    "3D"
+   ],
+   "category": "Post-processing",
+   "origin": "https://pixijs.com/3d/examples?example=post_depth-of-field",
+   "file": "pixi3d-depth-of-field/Depth of field.pixieditor",
+   "thumbnail": "pixi3d-depth-of-field/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-tilt-shift",
+   "title": "Tilt-shift",
+   "description": "Tilt-shift is depth of field with a narrow band and a strong blur, seen from high above: a real town starts to look like a model. Left: off. Right: a 0.6-unit sharp band at the crossroads.",
+   "tags": [
+    "PixiJS 3D",
+    "Post-processing",
+    "3D"
+   ],
+   "category": "Post-processing",
+   "origin": "https://pixijs.com/3d/examples?example=post_tilt-shift",
+   "file": "pixi3d-tilt-shift/Tilt-shift.pixieditor",
+   "thumbnail": "pixi3d-tilt-shift/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-antialiasing",
+   "title": "Antialiasing (FXAA)",
+   "description": "FXAA smooths jagged edges after the frame is drawn, cheaply. Left: off. Right: \"Antialiasing (FXAA)\" on; thin poles, wires and diagonal edges lose their stair steps.",
+   "tags": [
+    "PixiJS 3D",
+    "Post-processing",
+    "3D"
+   ],
+   "category": "Post-processing",
+   "origin": "https://pixijs.com/3d/examples?example=post_antialiasing",
+   "file": "pixi3d-antialiasing/Antialiasing (FXAA).pixieditor",
+   "thumbnail": "pixi3d-antialiasing/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-effect-stack",
+   "title": "Effect stack",
+   "description": "Post effects run in a fixed order on one view: ambient occlusion and bloom on linear light, then depth of field, tint, colour grading and FXAA last. Left: plain. Right: AO, bloom, depth of field, a warm tint and FXAA together.",
+   "tags": [
+    "PixiJS 3D",
+    "Post-processing",
+    "3D"
+   ],
+   "category": "Post-processing",
+   "origin": "https://pixijs.com/3d/examples?example=post_effect-stack",
+   "file": "pixi3d-effect-stack/Effect stack.pixieditor",
+   "thumbnail": "pixi3d-effect-stack/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-hierarchy",
+   "title": "Hierarchy",
+   "description": "Objects inside objects: a sun carries an orbit group of three planets, and each planet carries its own group of moons. Turning a group turns everything inside it, so each body only needs its own small spin. (The groups turn by a third of a circle and repeat; with three bodies the loop is seamless.)",
+   "tags": [
+    "PixiJS 3D",
+    "Scene",
+    "3D"
+   ],
+   "category": "Scene",
+   "origin": "https://pixijs.com/3d/examples?example=scene_hierarchy",
+   "file": "pixi3d-hierarchy/Hierarchy.pixieditor",
+   "thumbnail": "pixi3d-hierarchy/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-transforms",
+   "title": "Local and world transforms",
+   "description": "A child's position, rotation and scale are in its parent's space. Each orange ball sits at the same local position (1, 0, 0) under a different parent: a plain one, one turned 45°, and one scaled ×2, so the same numbers land in three different places.",
+   "tags": [
+    "PixiJS 3D",
+    "Scene",
+    "3D"
+   ],
+   "category": "Scene",
+   "origin": "https://pixijs.com/3d/examples?example=scene_transforms",
+   "file": "pixi3d-transforms/Local and world transforms.pixieditor",
+   "thumbnail": "pixi3d-transforms/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-hello-cube",
+   "title": "Hello cube",
+   "description": "The smallest 3D scene: a 3D View with a camera, a sun light and one cube that a rotation tween keeps turning (a quarter turn that repeats, which looks the same on a cube).",
+   "tags": [
+    "PixiJS 3D",
+    "Getting started",
+    "3D"
+   ],
+   "category": "Getting started",
+   "origin": "https://pixijs.com/3d/examples?example=start_hello-cube",
+   "file": "pixi3d-hello-cube/Hello cube.pixieditor",
+   "thumbnail": "pixi3d-hello-cube/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-model-viewer",
+   "title": "Model viewer",
+   "description": "A glTF model in an HDR sky: Model 3D shows the imported GLB, \"Environment: HDR\" lights it, Camera control (orbit) lets the player drag to turn around it and scroll to zoom, and it turns slowly on its own until touched.",
+   "tags": [
+    "PixiJS 3D",
+    "Getting started",
+    "3D"
+   ],
+   "category": "Getting started",
+   "origin": "https://pixijs.com/3d/examples?example=start_model-viewer",
+   "file": "pixi3d-model-viewer/Model viewer.pixieditor",
+   "thumbnail": "pixi3d-model-viewer/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-gltf",
+   "title": "glTF models",
+   "description": "Three GLB files imported into the Library and placed with Model 3D: a lamp of three meshes and materials, a skinned tentacle playing a clip, and a blob with morph targets. The importer keeps meshes, materials, skins, morphs and clips.",
+   "tags": [
+    "PixiJS 3D",
+    "Assets",
+    "3D"
+   ],
+   "category": "Assets",
+   "origin": "https://pixijs.com/3d/examples?example=assets_gltf",
+   "file": "pixi3d-gltf/glTF models.pixieditor",
+   "thumbnail": "pixi3d-gltf/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-model-materials",
+   "title": "Model materials",
+   "description": "One lamp model, three instances. Left: as imported. Middle: \"Override material\" tints the whole instance. Right: material slots change only the Shade (index 2) and the Pole (index 1); the file and the other instances stay as they were.",
+   "tags": [
+    "PixiJS 3D",
+    "Assets",
+    "3D"
+   ],
+   "category": "Assets",
+   "origin": "https://pixijs.com/3d/examples?example=assets_model-materials",
+   "file": "pixi3d-model-materials/Model materials.pixieditor",
+   "thumbnail": "pixi3d-model-materials/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-batching",
+   "title": "Batching",
+   "description": "Instances 3D draws many copies of one shape as a single batch: here a 100 × 100 grid, 10,000 cubes in one draw call, coloured by a gradient across X. Moving the whole field is one transform.",
+   "tags": [
+    "PixiJS 3D",
+    "Instancing",
+    "3D"
+   ],
+   "category": "Instancing",
+   "origin": "https://pixijs.com/3d/examples?example=instancing_batching",
+   "file": "pixi3d-batching/Batching.pixieditor",
+   "thumbnail": "pixi3d-batching/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-instance-data",
+   "title": "Instance data",
+   "description": "Each copy can differ: the spheres take random colours between two, random sizes (\"Scale random\") and spread (\"Scatter\"); the lamps are model instances, each turned at random (\"Yaw random\"). All of it comes from the seed, so it is the same every time.",
+   "tags": [
+    "PixiJS 3D",
+    "Instancing",
+    "3D"
+   ],
+   "category": "Instancing",
+   "origin": "https://pixijs.com/3d/examples?example=instancing_instance-data",
+   "file": "pixi3d-instance-data/Instance data.pixieditor",
+   "thumbnail": "pixi3d-instance-data/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-look-at",
+   "title": "Look at",
+   "description": "Look at 3D turns an object toward another every frame while the game runs. The turrets \"Stay upright\", turning only around Y; the eyes turn fully; the spotlight uses its −Z front, as lights and cameras do, and follows the ball as well. In the editor's own camera the authored rotation stays, so it can still be edited.",
+   "tags": [
+    "PixiJS 3D",
+    "Scene",
+    "3D"
+   ],
+   "category": "Scene",
+   "origin": "https://pixijs.com/3d/examples?example=scene_look-at",
+   "file": "pixi3d-look-at/Look at.pixieditor",
+   "thumbnail": "pixi3d-look-at/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-raycast",
+   "title": "Raycast",
+   "description": "Follow the pointer 3D casts a ray from the pointer into the scene every move: the ring sits on whatever surface is under it, lying flat on slopes and box sides (\"Lie flat on the surface\"), and drops to the ground plane past the objects. The turrets Look at the ring, so they aim wherever you point.",
+   "tags": [
+    "PixiJS 3D",
+    "Interaction",
+    "3D"
+   ],
+   "category": "Interaction",
+   "origin": "https://pixijs.com/3d/examples?example=interaction_raycast",
+   "file": "pixi3d-raycast/Raycast.pixieditor",
+   "thumbnail": "pixi3d-raycast/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-decals",
+   "title": "Decals",
+   "description": "Decals 3D stamps a flat mark where you click, lying on the surface that was hit and riding with it: the marks on the sliding crate travel with it. Each decal's size, turn and colour come from the seed; past \"Most decals at once\" the oldest goes. Decals are not saved in the scene.",
+   "tags": [
+    "PixiJS 3D",
+    "Interaction",
+    "3D"
+   ],
+   "category": "Interaction",
+   "origin": "https://pixijs.com/3d/examples?example=interaction_decals",
+   "file": "pixi3d-decals/Decals.pixieditor",
+   "thumbnail": "pixi3d-decals/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-event-flow",
+   "title": "Event flow",
+   "description": "Pointer enter and leave flow up through groups, like the web's pointerenter: entering a cup also enters the Table group it sits in, so the table's rule lights the ring under it while the cup's own rule outlines the cup. Moving from cup to cup leaves only the cup; the table stays entered.",
+   "tags": [
+    "PixiJS 3D",
+    "Interaction",
+    "3D"
+   ],
+   "category": "Interaction",
+   "origin": "https://pixijs.com/3d/examples?example=interaction_event-flow",
+   "file": "pixi3d-event-flow/Event flow.pixieditor",
+   "thumbnail": "pixi3d-event-flow/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-attach",
+   "title": "Find and reparent",
+   "description": "A script finds objects by name and moves them to another parent while the game runs: click a crate and it becomes a child of the moving cart (self.parent = game.find('Cart')), keeping its place in the world, so it rides along; click the green pad and every crate on the cart goes back to the top of the 3D view (crate.parent = null), staying where it was dropped. The view is not rebuilt when a parent changes.",
+   "tags": [
+    "PixiJS 3D",
+    "Scene",
+    "3D"
+   ],
+   "category": "Scene",
+   "origin": "https://pixijs.com/3d/examples?example=scene_find-and-reparent",
+   "file": "pixi3d-attach/Find and reparent.pixieditor",
+   "thumbnail": "pixi3d-attach/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-paint",
+   "title": "Paint",
+   "description": "Paintable 3D turns a primitive's colour into a canvas you paint on while the game runs: press and drag over the ball, the box or the board. The brush lands at the texture point under the pointer, so it wraps around curves and stays on each face. Click a swatch to change the brush (\"Set 3D brush colour\"), the white button to clear (\"Clear 3D paint\"). Paint is not saved.",
+   "tags": [
+    "PixiJS 3D",
+    "Interaction",
+    "3D"
+   ],
+   "category": "Interaction",
+   "origin": "https://pixijs.com/3d/examples?example=interaction_paint",
+   "file": "pixi3d-paint/Paint.pixieditor",
+   "thumbnail": "pixi3d-paint/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-render-state",
+   "title": "Render state",
+   "description": "Render state decides how a surface draws against what is already there. Left to right: \"Depth test\" off shows the crate through the wall; \"Skip faces: Front faces\" draws the inside of the box; and three glowing panels overlap with Add, Multiply and Screen blending over a white card.",
+   "tags": [
+    "PixiJS 3D",
+    "Materials",
+    "3D"
+   ],
+   "category": "Materials",
+   "origin": "https://pixijs.com/3d/examples?example=materials_render-state",
+   "file": "pixi3d-render-state/Render state.pixieditor",
+   "thumbnail": "pixi3d-render-state/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-gltf-scenes",
+   "title": "glTF scenes",
+   "description": "One glTF file can hold several scenes. This one has Day (house and sun) and Night (house, moon and a lit window); Model 3D's \"glTF scene\" picks which one an instance shows, sharing the same meshes and materials.",
+   "tags": [
+    "PixiJS 3D",
+    "Assets",
+    "3D"
+   ],
+   "category": "Assets",
+   "origin": "https://pixijs.com/3d/examples?example=assets_gltf-scenes",
+   "file": "pixi3d-gltf-scenes/glTF scenes.pixieditor",
+   "thumbnail": "pixi3d-gltf-scenes/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-compression",
+   "title": "Compressed models",
+   "description": "Compressed GLB files are decoded once, on import: EXT_meshopt_compression and KHR_draco_mesh_compression become plain geometry, so games ship no decoder. The same 12,000-triangle rock, imported from three files; the labels give each file's size.",
+   "tags": [
+    "PixiJS 3D",
+    "Assets",
+    "3D"
+   ],
+   "category": "Assets",
+   "origin": "https://pixijs.com/3d/examples?example=assets_compression",
+   "file": "pixi3d-compression/Compressed models.pixieditor",
+   "thumbnail": "pixi3d-compression/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-renderers",
+   "title": "Renderers",
+   "description": "The same project runs on WebGL 2 or WebGPU. Project settings → Renderer picks Auto (WebGPU where the browser supports it, else WebGL 2), WebGL 2 or WebGPU; the scene, materials and effects are the same on both, which OliveStudio checks for every 3D feature.",
+   "tags": [
+    "PixiJS 3D",
+    "Getting started",
+    "3D"
+   ],
+   "category": "Getting started",
+   "origin": "https://pixijs.com/3d/examples?example=start_renderers",
+   "file": "pixi3d-renderers/Renderers.pixieditor",
+   "thumbnail": "pixi3d-renderers/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-render-graph",
+   "title": "Render graph panel",
+   "description": "A developer panel, not part of the game: select the 3D View and press \"Render graph\" in its toolbar to record frames and see each pass (shadows, the opaque and transparent scene, bloom, outlines) with its draws and why any were rebuilt. Nothing is recorded unless you press Record.",
+   "tags": [
+    "PixiJS 3D",
+    "Debug",
+    "3D"
+   ],
+   "category": "Debug",
+   "origin": "https://pixijs.com/3d/examples?example=debug_graph-overlay",
+   "file": "pixi3d-render-graph/Render graph panel.pixieditor",
+   "thumbnail": "pixi3d-render-graph/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-geometry-panel",
+   "title": "Geometry panel",
+   "description": "A developer panel, not part of the game: select the 3D View and press \"Geometry\" in its toolbar for a small shaded preview of every geometry the view draws, with its vertex count, drawn on the CPU so it costs the scene nothing.",
+   "tags": [
+    "PixiJS 3D",
+    "Debug",
+    "3D"
+   ],
+   "category": "Debug",
+   "origin": "https://pixijs.com/3d/examples?example=debug_thumbnails",
+   "file": "pixi3d-geometry-panel/Geometry panel.pixieditor",
+   "thumbnail": "pixi3d-geometry-panel/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-keyframes",
+   "title": "Keyframes in code",
+   "description": "A script builds keyframe tracks in code: position, rotation and scale keys for each of 16 tiles, eased between keys and sampled every frame. The tiles fly in from the floor, turn and settle into a logo, then scatter and do it again. Press a tile and game.raycast finds it, so it hops; press empty space to start over. Open the Assemble script to change the keys.",
+   "tags": [
+    "PixiJS 3D",
+    "Animation",
+    "3D"
+   ],
+   "category": "Animation",
+   "origin": "https://pixijs.com/3d/examples?example=animation_keyframes",
+   "file": "pixi3d-keyframes/Keyframes in code.pixieditor",
+   "thumbnail": "pixi3d-keyframes/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-asset-lifetime",
+   "title": "Model lifetime",
+   "description": "Two ways to take a castle out of the scene, and what each keeps. Hide turns the object off: it is not drawn, but its model stays loaded, so it comes back at once. Unload frees the model's GPU resources while the object stays in the scene; Bring back loads it again. The status line shows the shared model files the 3D view holds.",
+   "tags": [
+    "PixiJS 3D",
+    "Assets",
+    "3D"
+   ],
+   "category": "Assets",
+   "origin": "https://pixijs.com/3d/examples?example=assets_lifetime",
+   "file": "pixi3d-asset-lifetime/Model lifetime.pixieditor",
+   "thumbnail": "pixi3d-asset-lifetime/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-mirror",
+   "title": "Mirror",
+   "description": "Mirror 3D on a plane reflects the scene from wherever the camera stands: the view is drawn again from the camera reflected in the mirror and shown on the glass. Left stays left in a mirror, so the red block on the left is on the left in the reflection too. Drag to orbit and watch the reflection follow.",
+   "tags": [
+    "PixiJS 3D",
+    "Cameras",
+    "3D"
+   ],
+   "category": "Cameras",
+   "origin": "https://pixijs.com/3d/examples?example=cameras_mirror",
+   "file": "pixi3d-mirror/Mirror.pixieditor",
+   "thumbnail": "pixi3d-mirror/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-geometry-arrays",
+   "title": "Geometry from arrays",
+   "description": "Mesh 3D takes its shape from a script: game.geometry({positions, indices, normals, uvs}) builds it from plain arrays and self.mesh.geometry shows it. The hills are a 48 × 48 grid with heights, uvs for the checker map and normals the host computes; the gem is eight triangles without indices, shaded flat. Shapes live for the play session; in the editor a Mesh 3D shows a cube stand-in.",
+   "tags": [
+    "PixiJS 3D",
+    "Geometry",
+    "3D"
+   ],
+   "category": "Geometry",
+   "origin": "https://pixijs.com/3d/examples?example=geometry_custom",
+   "file": "pixi3d-geometry-arrays/Geometry from arrays.pixieditor",
+   "thumbnail": "pixi3d-geometry-arrays/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-vertex-colors",
+   "title": "Vertex colours",
+   "description": "Per-vertex data: each vertex of the left sphere carries a colour (r, g, b, a) and Mesh 3D's \"Vertex colours\" multiplies the surface by it; the right sphere has the same shape and colours with that switch off. A second colour set (colors1) is stored too, but only a custom shader can read it (planned with Shader 3D assets).",
+   "tags": [
+    "PixiJS 3D",
+    "Geometry",
+    "3D"
+   ],
+   "category": "Geometry",
+   "origin": "https://pixijs.com/3d/examples?example=geometry_vertex-data",
+   "file": "pixi3d-vertex-colors/Vertex colours.pixieditor",
+   "thumbnail": "pixi3d-vertex-colors/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-vertex-formats",
+   "title": "Vertex formats",
+   "description": "The same sphere twice: on the left every value is a 32-bit float; on the right the script asks for packed storage with game.geometry's format option (positions as 16-bit snorm, normals as 8-bit snorm, colours as 8-bit unorm), so the GPU reads them back as floats from fewer bytes. The labels give each copy's vertex bytes.",
+   "tags": [
+    "PixiJS 3D",
+    "Geometry",
+    "3D"
+   ],
+   "category": "Geometry",
+   "origin": "https://pixijs.com/3d/examples?example=geometry_vertex-formats",
+   "file": "pixi3d-vertex-formats/Vertex formats.pixieditor",
+   "thumbnail": "pixi3d-vertex-formats/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-geometry-morph",
+   "title": "Morph targets from arrays",
+   "description": "Morph targets store extra shapes as offsets for every vertex; Mesh 3D's morph weights blend them in. The script gives a sphere two targets, Squash and Spikes, and moves their weights over time; the bars show the weights.",
+   "tags": [
+    "PixiJS 3D",
+    "Geometry",
+    "3D"
+   ],
+   "category": "Geometry",
+   "origin": "https://pixijs.com/3d/examples?example=geometry_morph-targets",
+   "file": "pixi3d-geometry-morph/Morph targets from arrays.pixieditor",
+   "thumbnail": "pixi3d-geometry-morph/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-particle-container",
+   "title": "Particle container",
+   "description": "A Particles 3D whose \"Driven by\" is A script is a fixed pool drawn in one call, and the script says where every particle is each frame: self.particles.write(numbers) with x, y, z, size, colour and alpha per particle. Here 4,000 particles orbit as a spiral galaxy, inner ones faster.",
+   "tags": [
+    "PixiJS 3D",
+    "Particles",
+    "3D"
+   ],
+   "category": "Particles",
+   "origin": "https://pixijs.com/3d/examples?example=particles_container",
+   "file": "pixi3d-particle-container/Particle container.pixieditor",
+   "thumbnail": "pixi3d-particle-container/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-custom-emitter",
+   "title": "Custom emitter",
+   "description": "A custom emitter shape: a sign made of 768 small tiles (a Batch 3D) burns from left to right, and sparks start on the tiles at the burning edge, rise, cool and fade. One script runs both: it writes the tiles' colour and size and the sparks' places every frame (self.batch.write, self.particles.write).",
+   "tags": [
+    "PixiJS 3D",
+    "Particles",
+    "3D"
+   ],
+   "category": "Particles",
+   "origin": "https://pixijs.com/3d/examples?example=particles_custom-emitter",
+   "file": "pixi3d-custom-emitter/Custom emitter.pixieditor",
+   "thumbnail": "pixi3d-custom-emitter/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-batched-mesh",
+   "title": "Batch 3D",
+   "description": "Batch 3D is one scene node that draws many copies of several shapes: a script builds a sphere, a cube and a cone from arrays, hands them to self.batch.geometries, and writes 20,000 items (shape, place, turn, size, colour) once with self.batch.write. Drag to orbit.",
+   "tags": [
+    "PixiJS 3D",
+    "Instancing",
+    "3D"
+   ],
+   "category": "Instancing",
+   "origin": "https://pixijs.com/3d/examples?example=instancing_batched-mesh",
+   "file": "pixi3d-batched-mesh/Batch 3D.pixieditor",
+   "thumbnail": "pixi3d-batched-mesh/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-shader-extra-bits",
+   "title": "Extra bits",
+   "description": "A Shader 3D of kind \"extra\" adds its code to an object's own material: these PBR shapes keep their colour, roughness and lights, and the shader paints moving stripes on top (material.stripe, material.density, material.speed; material.time is game time). Each shader is written in WGSL (WebGPU) and GLSL (WebGL); open the Shaders panel to edit it. A shader only joins a material after it compiled on that renderer.",
+   "tags": [
+    "PixiJS 3D",
+    "Shaders",
+    "3D"
+   ],
+   "category": "Shaders",
+   "origin": "https://pixijs.com/3d/examples?example=shaders_extra-bits",
+   "file": "pixi3d-shader-extra-bits/Extra bits.pixieditor",
+   "thumbnail": "pixi3d-shader-extra-bits/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-shader-material",
+   "title": "Your own material",
+   "description": "A Shader 3D of kind \"material\" replaces the surface with your own code: a texture (pattern) and three values (tint, lines, speed) become an unlit hologram with moving scan lines. The parameters show on the Shader 3D add-on, and each object can set its own.",
+   "tags": [
+    "PixiJS 3D",
+    "Shaders",
+    "3D"
+   ],
+   "category": "Shaders",
+   "origin": "https://pixijs.com/3d/examples?example=shaders_custom-material",
+   "file": "pixi3d-shader-material/Your own material.pixieditor",
+   "thumbnail": "pixi3d-shader-material/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-shader-lighting",
+   "title": "Custom lighting model",
+   "description": "A Shader 3D of kind \"lighting\" keeps a plain surface (colour, colour map) and lets your code decide how it answers light: before the light loop, once per light (nDotL, attenuation, shadow, light.color are ready), and after it. This one shades from a cool colour to a warm one and adds a rim; the left knot uses the built-in lighting for comparison.",
+   "tags": [
+    "PixiJS 3D",
+    "Shaders",
+    "3D"
+   ],
+   "category": "Shaders",
+   "origin": "https://pixijs.com/3d/examples?example=shaders_lighting-model",
+   "file": "pixi3d-shader-lighting/Custom lighting model.pixieditor",
+   "thumbnail": "pixi3d-shader-lighting/thumbnail.png"
+  },
+  {
+   "id": "pixi3d-shader-projected",
+   "title": "Projected textures",
+   "description": "One cloud texture projected across several objects: the \"extra\" shader samples it by world position (x and z), not by each object's uvs, so the cloud shadows line up across the ground, the boxes and the dome, and drift with game time.",
+   "tags": [
+    "PixiJS 3D",
+    "Shaders",
+    "3D"
+   ],
+   "category": "Shaders",
+   "origin": "https://pixijs.com/3d/examples?example=shaders_projected-textures",
+   "file": "pixi3d-shader-projected/Projected textures.pixieditor",
+   "thumbnail": "pixi3d-shader-projected/thumbnail.png"
   }
  ]
 }

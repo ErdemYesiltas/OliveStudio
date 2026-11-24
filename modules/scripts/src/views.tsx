@@ -45,6 +45,8 @@ function configure() {
  typescriptDefaults.addExtraLib(JSON.stringify({name: 'rxjs', version: '7.8.2', types: 'dist/types/index.d.ts'}), 'file:///node_modules/rxjs/package.json');
  typescriptDefaults.addExtraLib(apiDeclarations, 'file:///scripts/game-api.d.ts');
 }
+/** Extra declarations for the script editor (sandbox providers' globals, e.g. a state-machine library). Returns a disposer. */
+export function addScriptLibrary(source: string, uri: string) { configure(); return typescriptDefaults.addExtraLib(source, uri); }
 const modelUri = (id: string) => monaco.Uri.parse(`file:///scripts/${encodeURIComponent(id)}.ts`);
 const dark = () => { const bg = getComputedStyle(document.body).backgroundColor.match(/\d+/g)?.map(Number) ?? [0, 0, 0]; return (bg[0] * 299 + bg[1] * 587 + bg[2] * 114) / 1000 < 128; };
 
@@ -65,6 +67,15 @@ export const scriptConsole = (() => {
   use() { useSyncExternalStore(fn => { listeners.add(fn); return () => { listeners.delete(fn); }; }, () => version); return lines; },
  };
 })();
+
+export function ScriptConsole({text:t,standalone=false}:{text(key:string):string;standalone?:boolean}) {
+  const lines = scriptConsole.use(), end = useRef<HTMLDivElement>(null);
+  useEffect(() => { if(end.current)end.current.scrollTop=end.current.scrollHeight; }, [lines]);
+  return <section className={standalone ? "scripts-console dock-console" : "scripts-console"} aria-label={t('scripts.console')}>
+   <div className="scripts-console-head">{!standalone&&<span>{t('scripts.console')}</span>}<button disabled={!lines.length} onClick={() => scriptConsole.clear()}>{t('scripts.clearConsole')}</button></div>
+   <div ref={end} role="log" data-testid={standalone ? "preview-console" : "script-console"}>{lines.length ? lines.map((l, i) => <div key={i} className={`scripts-line ${l.level}`} data-level={l.level}>{l.message}</div>) : <div className="scripts-line muted">{t('scripts.consoleEmpty')}</div>}</div>
+  </section>;
+ }
 
 /** Typing is saved (compiled, one undo step) after a short pause; Play and blur save immediately. */
 let pending: (() => void) | null = null, timer: ReturnType<typeof setTimeout> | undefined;
@@ -176,7 +187,7 @@ export function createScriptViews(bridge: ScriptsBridge) {
    {!library.items.length && <p className="panel-empty">{t('scripts.empty')}</p>}
    <div className="scripts-editor" ref={host} data-testid="script-editor" hidden={!script}/>
    <DebuggerView/>
-   <ScriptConsole/>
+   <ScriptConsole text={t}/>
   </div>;
  }
 
@@ -220,14 +231,6 @@ export function createScriptViews(bridge: ScriptsBridge) {
   </details>;
  }
 
- function ScriptConsole() {
-  const lines = scriptConsole.use(), end = useRef<HTMLDivElement>(null);
-  useEffect(() => { end.current?.scrollIntoView({block: 'nearest'}); }, [lines]);
-  return <section className="scripts-console" aria-label={t('scripts.console')}>
-   <div className="scripts-console-head"><span>{t('scripts.console')}</span><button disabled={!lines.length} onClick={() => scriptConsole.clear()}>{t('scripts.clearConsole')}</button></div>
-   <div role="log" data-testid="script-console">{lines.length ? lines.map((l, i) => <div key={i} className={`scripts-line ${l.level}`} data-level={l.level}>{l.message}</div>) : <div className="scripts-line muted">{t('scripts.consoleEmpty')}</div>}<div ref={end}/></div>
-  </section>;
- }
 
 /** Fields from the script's params export: per-object (or per-scene) values override the script's defaults. */
  function ParamsEditor({value, script, save, owner}: {value: Behaviour; script: Script | undefined; save(next: Behaviour): void; owner: string}) {
@@ -301,5 +304,7 @@ export function createScriptViews(bridge: ScriptsBridge) {
    </div>
   </div>;
  }
- return {ScriptsPanel, ScriptInspector};
+ /** Shows a script in the Scripts panel (the panel opens through the bridge). */
+ const openScript = (id: string) => { flushScriptEdits(); setCurrent(id); bridge.open(); };
+ return {ScriptsPanel, ScriptInspector, ParamsEditor, openScript, createScript: create};
 }

@@ -1,3 +1,4 @@
+import {parseGitStatus} from './git-status';
 import { execFile } from 'node:child_process';
 import { basename, dirname } from 'node:path';
 import { ipcMain, type IpcMainInvokeEvent } from 'electron';
@@ -25,7 +26,7 @@ export function registerGit(options: {sender(event: IpcMainInvokeEvent): void; t
   const dir = dirname(path), root = await inRepo(dir);
   if (!root) return {available: true, saved: true, repo: false, folder: dir};
   const branch = (await run(dir, ['rev-parse', '--abbrev-ref', 'HEAD']).catch(() => 'main\n')).trim();
-  const changes = (await run(dir, ['status', '--porcelain=v1', '--untracked-files=all', '--', '.'])).split('\n').filter(Boolean).map(l => ({status: l.slice(0, 2).trim() || '?', file: l.slice(3)}));
+  const changes = parseGitStatus(await run(dir,['status','--porcelain=v1','-z','--untracked-files=all','--','.']));
   const head = await run(dir, ['rev-parse', '--short', 'HEAD']).then(s => s.trim(), () => null);
   return {available: true, saved: true, repo: true, folder: dir, root, branch, head, changes};
  })());
@@ -34,13 +35,15 @@ export function registerGit(options: {sender(event: IpcMainInvokeEvent): void; t
   if (await inRepo(dir)) return true;
   await run(dir, ['init', '-b', 'main']); return true;
  }));
- ipcMain.handle('git:commit', (event, message: unknown) => options.task(async () => {
+ ipcMain.handle('git:commit', (event, message: unknown, files:unknown) => options.task(async () => {
   options.sender(event); const {dir} = project();
   if (typeof message !== 'string' || !message.trim() || message.length > 2000) throw Error('Write a short description of the change');
-  await run(dir, ['add', '-A', '--', '.']);
-  const staged = await run(dir, ['diff', '--cached', '--name-only', '--', '.']);
+  if(files!==undefined&&(!Array.isArray(files)||!files.length||files.length>200||files.some(f=>typeof f!=='string'||!f||f.length>1000||/^(?:[A-Za-z]:|[\\/])/.test(f)||f.split(/[\\/]/).some(p=>p==='..'||p==='.'||p==='.git'))))throw Error('Invalid Git file list');
+  const paths=files===undefined?['.']:files as string[];
+  await run(dir, ['add', '-A', '--', ...paths]);
+  const staged = await run(dir, ['diff', '--cached', '--name-only', '--', ...paths]);
   if (!staged.trim()) throw Error('Nothing to commit: save the project first');
-  await run(dir, ['commit', '-q', '-m', message.trim(), '--', '.']);
+  await run(dir, ['commit', '-q', '-m', message.trim(), '--', ...paths]);
   return (await run(dir, ['rev-parse', '--short', 'HEAD'])).trim();
  }));
  ipcMain.handle('git:log', event => (async () => {

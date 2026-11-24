@@ -29,9 +29,10 @@ function draw(canvas: HTMLCanvasElement, samples: readonly ProfileSample[], sele
 export function createProfilerPanel(bridge: {text(key: string): string; recorder: ProfileRecorder; report(error: unknown): void}) {
  const t = bridge.text, recorder = bridge.recorder;
  return function Profiler() {
-  const [version, setVersion] = useState(0), [paused, setPaused] = useState(recorder.paused), [selected, setSelected] = useState<number | null>(null), [copied, setCopied] = useState(false);
+  const [version, setVersion] = useState(0), [selected, setSelected] = useState<number | null>(null), [copied, setCopied] = useState(false);
   const canvas = useRef<HTMLCanvasElement>(null);
   useEffect(() => { let dirty = false; const off = recorder.subscribe(() => { dirty = true; }); const timer = setInterval(() => { if (dirty) { dirty = false; setVersion(v => v + 1); } }, 250); return () => { off(); clearInterval(timer); }; }, []);
+  const paused=recorder.paused;
   const all = recorder.samples(), samples = useMemo(() => all.slice(-SHOWN), [all, version]);
   const frame = selected !== null ? samples[selected] : undefined, summary = useMemo(() => summarize(frame ? [frame] : samples), [samples, frame]);
   useEffect(() => { if (canvas.current) draw(canvas.current, samples, selected); }, [samples, selected]);
@@ -46,7 +47,7 @@ export function createProfilerPanel(bridge: {text(key: string): string; recorder
    : [[t('profiler.fps'), String(summary.fps)], [t('profiler.average'), ms(summary.average)], [t('profiler.p95'), ms(summary.p95)], [t('profiler.spikes'), String(summary.spikes), summary.spikes ? 'warn' : undefined], [t('profiler.drawCalls'), String(summary.drawCalls)], [t('profiler.objects'), String(summary.objects)], ...(summary.heapMb !== undefined ? [[t('profiler.heap'), `${summary.heapMb.toFixed(0)} MB`] as [string, string]] : [])];
   return <div className="panel-body profiler" data-testid="profiler" data-frames={all.length}>
    <div className="profiler-toolbar" role="toolbar" aria-label={t('profiler.capture')}>
-    <button aria-pressed={paused} onClick={() => { recorder.paused = !recorder.paused; setPaused(recorder.paused); }}>{paused ? t('profiler.resume') : t('profiler.pause')}</button>
+    <button aria-pressed={paused} onClick={() => { recorder.paused = !recorder.paused; }}>{paused ? t('profiler.resume') : t('profiler.pause')}</button>
     <button onClick={() => { recorder.clear(); setSelected(null); }} disabled={!all.length}>{t('profiler.clear')}</button>
     <button onClick={copy} disabled={!all.length}>{copied ? t('profiler.copied') : t('profiler.copyCsv')}</button>
     <span className="profiler-scope">{frame ? t('profiler.selectedFrame') : `${t('profiler.lastFrames')} ${samples.length}`}</span>

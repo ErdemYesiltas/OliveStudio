@@ -1,0 +1,20 @@
+{
+  "name": "@rewrite/behavior-xstate",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./editor": "./src/editor.ts"
+  },
+  "dependencies": {
+    "@rewrite/behavior": "workspace:*",
+    "@rewrite/scripts": "workspace:*",
+    "xstate": "5.33.4",
+    "quickjs-emscripten-core": "0.32.0"
+  },
+  "devDependencies": {
+    "@rewrite/scene": "workspace:*",
+    "@rewrite/interactions": "workspace:*"
+  }
+}

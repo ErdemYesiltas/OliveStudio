@@ -1,3 +1,4 @@
+import {registerProjectAutomation} from './automation';
 import { z } from 'zod';
 import { DocumentSession, type DocumentPort } from '@rewrite/documents';
 import { slot,token,type ComponentDefinition,type EditorModule,type Json } from '@rewrite/sdk';
@@ -12,7 +13,7 @@ export type Project=z.infer<typeof ProjectSchema>;
 export interface SceneReference {targetSceneId:string|null;sceneId?:string;label:string}
 export interface ReferenceScope {sceneId?:string;name:string;entities:readonly {name:string;components:readonly {type:string;version:number;data:Json}[]}[]}
 export function sceneReferencesIn(scope:ReferenceScope,definitions:ReadonlyMap<string,ComponentDefinition>):SceneReference[]{return scope.entities.flatMap(e=>e.components.flatMap((component):SceneReference[]=>{const def=definitions.get(component.type),label=`${scope.name} / ${e.name} · ${component.type}`;if(!def||def.version!==component.version)return[{targetSceneId:null,sceneId:scope.sceneId,label}];return (def.sceneReferences?.(component.data)??[]).filter(id=>id!=='').map(targetSceneId=>({targetSceneId,sceneId:scope.sceneId,label}));}));}
-export interface ProjectSection { key:string;parse(value:unknown):Json;validate?(project:Project):void;prepare?(project:Project):void;sceneReferences?(project:Project):readonly SceneReference[] }
+export interface ProjectSection { key:string;dataSchema?:Record<string,unknown>;parse(value:unknown):Json;validate?(project:Project):void;prepare?(project:Project):void;sceneReferences?(project:Project):readonly SceneReference[] }
 export const projectSections=slot<ProjectSection>('project.sections');
 export function newProject(scene=blankScene()):Project{return{formatVersion:1,name:scene.name,entrySceneId:scene.id,scenes:[scene],modules:{},providers:{render:'pixi'},extensions:{}};}
 export function parseProject(input:unknown,definitions:ReadonlyMap<string,ComponentDefinition>,sections:readonly ProjectSection[]=[]):Project{
@@ -78,5 +79,5 @@ export class ProjectService {
 export const projectToken=token<ProjectService>('project','project.model');
 export const sceneDocumentToken=token<DocumentPort<Scene>>('project','project.scene-document');
 export function projectModule(definitions:()=>ReadonlyMap<string,ComponentDefinition>,sections:()=>readonly ProjectSection[]):EditorModule{
- return{manifest:{id:'project',version:'1.0.0',apiVersion:1},activate(c){const project=new ProjectService(definitions,sections);c.provide(projectToken,project);c.provide(sceneDocumentToken,project.sceneDocument);}};
+ return{manifest:{id:'project',version:'1.0.0',apiVersion:1},activate(c){const project=new ProjectService(definitions,sections);c.provide(projectToken,project);registerProjectAutomation(c,project,sections);c.provide(sceneDocumentToken,project.sceneDocument);}};
 }

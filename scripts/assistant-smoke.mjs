@@ -1,5 +1,5 @@
 // LM Studio assistant against a fake OpenAI-compatible server (SSE): the model calls editor tools to create a scene and
-// a red star, the turn is one undo step, a failing tool call is shown and fed back, the Generate panel's prompt writer
+// a red star, document tools keep independent undo steps, a failing tool call is shown and fed back, the Generate panel's prompt writer
 // fills the prompt, and an offline server blocks Send.
 import {_electron as electron, expect} from '@playwright/test';
 import {createServer} from 'node:http';
@@ -65,7 +65,7 @@ try {
  const save = async () => { await choose(file); await menu('Save'); await expect(page.getByLabel('Unsaved changes', {exact: true})).toHaveCount(0); await expect.poll(() => readFile(file, 'utf8').then(() => true, () => false)).toBe(true); return JSON.parse(await readFile(file, 'utf8')); };
  await setAddress(lmUrl);
 
- // A turn: create scene + red star through tools; one undo step.
+ // A turn: create scene + red star; each synchronous document operation is independently undoable.
  await page.keyboard.press('Alt+KeyJ');
  const panel = page.getByTestId('assistant-panel'), log = panel.getByRole('log');
  await expect(panel).toHaveAttribute('data-online', 'true');
@@ -77,17 +77,9 @@ try {
  await expect(log.locator('[data-kind="step"]')).toHaveText(['✓ create scene · Level 2', '✓ add object · Red star']);
  await expect(log.locator('[data-kind="changes"]')).toHaveCount(1);
  await expect(log.locator('[data-kind="changes"]')).toContainText('Changes: + Red star');
- // Review card: the scene and the star with its components; Discard undoes the whole turn (Redo brings it back).
- const review = log.getByTestId('assistant-review');
- await expect(review).toHaveAttribute('data-review', 'open');
- await expect(review.locator('summary')).toHaveText('Review 2 change(s)');
- await expect(review.locator('[data-scope="scene"][data-change="added"]')).toContainText('Level 2');
- await expect(review.locator('[data-scope="object"][data-change="added"]')).toContainText('Red star');
- await expect(review.locator('[data-scope="object"][data-change="added"]')).toContainText('+ Shape');
- await review.getByRole('button', {name: 'Discard', exact: true}).click();
- await expect(review).toHaveAttribute('data-review', 'discarded');
- expect((await save()).scenes.map(s => s.name)).not.toContain('Level 2');
- await menu('Redo');
+ // Cross-turn squashing is intentionally absent: it must never absorb human edits while a model is thinking.
+ await expect(log.getByTestId('assistant-review')).toHaveCount(0);
+ expect(requests[0].tools.length).toBeLessThanOrEqual(64);
  expect(requests[0].tools.map(t => t.function.name)).toEqual(expect.arrayContaining(['get_editor_state', 'add_object', 'create_scene', 'add_rule', 'generate_asset']));
  expect(requests[0].messages[0].role).toBe('system');
  expect(requests[1].messages.filter(m => m.role === 'tool').map(m => JSON.parse(m.content).ok)).toEqual([true, true]);
@@ -97,12 +89,10 @@ try {
  expect(star.components.find(c => c.type === 'pixi.shape').data).toMatchObject({kind: 'star', color: '#ff2020', width: 90});
  expect(star.components.find(c => c.type === 'scene.transform2d').data).toMatchObject({x: 300, y: 200});
  await menu('Undo');
- saved = await save();
- expect(saved.scenes.map(s => s.name)).not.toContain('Level 2');
- await menu('Redo');
- saved = await save();
- expect(saved.scenes.map(s => s.name)).toContain('Level 2');
- console.log('PASS assistant turn: model tool calls create a scene and a red star; a review card lists the changes and Discard undoes the turn; the whole turn undoes and redoes as one step');
+ saved = await save();expect(saved.scenes.find(s=>s.name==='Level 2').entities).toHaveLength(0);
+ await menu('Undo');saved=await save();expect(saved.scenes.map(s=>s.name)).not.toContain('Level 2');
+ await menu('Redo');await menu('Redo');saved=await save();expect(saved.scenes.find(s=>s.name==='Level 2').entities.map(e=>e.name)).toContain('Red star');
+ console.log('PASS assistant turn: model tool calls create a scene and a red star; per-tool Undo/Redo restores the scene and star without squashing across model/human turns');
 
  // A failing tool call is shown and returned to the model, which answers.
  await page.keyboard.press('Alt+KeyJ');

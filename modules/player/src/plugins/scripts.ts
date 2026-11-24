@@ -1,4 +1,4 @@
-import {ScriptSession, loadScriptEngine, type AudioControls, type TimelineControls, type ScriptPhysics, type ScriptNavigation} from '@rewrite/scripts/session';
+import {ScriptSession, loadScriptEngine, type AudioControls, type TimelineControls, type ScriptPhysics, type ScriptNavigation, type ScriptExtension, type Script3D} from '@rewrite/scripts/session';
 import {ScriptLibrarySchema, emptyLibrary, scriptsSection} from '@rewrite/scripts/contracts';
 import {GlobalsSchema, defaultGlobals, globalsSection} from '@rewrite/interactions';
 import {InputMapSchema, defaultInputMap, inputSection} from '@rewrite/input';
@@ -30,6 +30,13 @@ const dialogueFor = (c: Parameters<PlayerPlugin['create']>[0]) => {
  const get = () => { const d = c.services.get('dialogue') as D | undefined; if (!d) throw Error('This game has no dialogues'); return d; };
  return {name: (id: string) => (c.services.get('dialogue') as D | undefined)?.name(id), start: (id: string) => get().start(id), advance: () => get().advance(), choose: (i: number) => get().choose(i), stop: () => get().stop(), view: () => (c.services.get('dialogue') as D | undefined)?.view() ?? null};
 };
+/** 3D picking and model states through the pixi3d plugin's 'script3d' service (looked up per call; absent without 3D). */
+const script3d = (c: Parameters<PlayerPlugin['create']>[0]): Script3D => {
+ const get = () => { const s = c.services.get('script3d') as Script3D | undefined; if (!s) throw Error('There is no 3D view in this game'); return s; };
+ return {raycast: (x, y) => get().raycast(x, y), model: id => get().model(id), stats: () => (c.services.get('script3d') as Script3D | undefined)?.stats() ?? null,
+  defineGeometry: (id, data) => get().defineGeometry?.(id, data), setMeshGeometry: (entityId, id) => get().setMeshGeometry?.(entityId, id), setMorph: (entityId, w) => get().setMorph?.(entityId, w),
+  writeParticles: (entityId, d, n) => get().writeParticles?.(entityId, d, n), setBatchGeometries: (entityId, ids) => get().setBatchGeometries?.(entityId, ids), writeBatch: (entityId, d, n) => get().writeBatch?.(entityId, d, n)};
+};
 export default {id: 'scripts', create(c) {
  const project = c.bundle.project, library = ScriptLibrarySchema.parse(project.extensions[scriptsSection] ?? emptyLibrary());
  const names = {
@@ -46,11 +53,11 @@ export default {id: 'scripts', create(c) {
  const timelines: TimelineControls = {play: (id, clip, fade) => animation().play(id, clip, fade), pause: id => animation().pause(id), resume: id => animation().resume(id), seekPlayer: (id, t) => animation().seekPlayer(id, t), setSpeed: (id, v) => animation().setSpeed(id, v), reverse: id => animation().reverse(id), state: id => animation().state(id)};
  const log = (level: 'info' | 'warn' | 'error', message: string) => { console[level === 'info' ? 'log' : level](`[script] ${message}`); c.publish({type: 'script.log', value: {level, message}}); };
  return {
-  async init() { engine = await loadScriptEngine(); },
+  async init() { engine = await loadScriptEngine(); c.services.set('scripts.session', () => session); },
   systems(scene) {
    session?.dispose(); session = undefined;
    if (!engine) throw Error('The script engine did not load');
-   const next = new ScriptSession(engine, library, {entities: c.entities, time: c.time, stage: project.stage ?? {width: 960, height: 540}, scene: {name: scene.name, behaviour: library.scenes?.[scene.id]}, names, standby: library.items.length > 0, globals: c.globals(), physics: physicsFor(c), navigation: navigationFor(c), dialogue: dialogueFor(c), achievements: achievementsFor(c), language: {current: () => c.language?.()?.language ?? '', set: id => { const l = c.language?.(); if (!l) throw Error('This game has no localization'); l.setLanguage(id); }, t: (key, values) => c.language?.()?.text(key, {...c.globals()?.snapshot(), ...values as Record<string, string | number>})}, animation: timelines, audio: sounds, camera: c.camera, spawn: c.spawn, destroy: c.destroy, setActive: c.setActive, changeScene: c.changeScene, addScene: c.addScene, removeScene: c.removeScene, invoke: c.invoke, log}, message => log('error', message));
+   const next = new ScriptSession(engine, library, {space3d: script3d(c), extensions: c.services.get('scripts.extensions') as ScriptExtension[] | undefined, emit: e => c.emit(e), entities: c.entities, time: c.time, stage: project.stage ?? {width: 960, height: 540}, scene: {name: scene.name, behaviour: library.scenes?.[scene.id]}, names, standby: library.items.length > 0, globals: c.globals(), physics: physicsFor(c), navigation: navigationFor(c), dialogue: dialogueFor(c), achievements: achievementsFor(c), language: {current: () => c.language?.()?.language ?? '', set: id => { const l = c.language?.(); if (!l) throw Error('This game has no localization'); l.setLanguage(id); }, t: (key, values) => c.language?.()?.text(key, {...c.globals()?.snapshot(), ...values as Record<string, string | number>})}, animation: timelines, audio: sounds, camera: c.camera, spawn: c.spawn, destroy: c.destroy, setActive: c.setActive, changeScene: c.changeScene, addScene: c.addScene, removeScene: c.removeScene, invoke: c.invoke, log}, message => log('error', message));
    if (!next.count && !library.items.length) { next.dispose(); return []; }
    session = next;
    return [next.system];

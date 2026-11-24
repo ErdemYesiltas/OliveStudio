@@ -1,0 +1,11 @@
+import {assetsModule,assetPlacements,assetImporters} from '@rewrite/assets';
+import {projectModule} from '@rewrite/project';
+import {it,expect} from 'vitest';
+import {ModuleHost} from '@rewrite/kernel';
+import {components,createItems,automationTools} from '@rewrite/sdk';
+import {sceneModule,transformDefinition} from '@rewrite/scene';
+import {scene3dModule} from '@rewrite/scene3d';
+import {viewportFeatures} from '@rewrite/render-pixi/viewport-features';
+import {componentEditors} from '@rewrite/scene/views';
+import {createPixi3dEditorModule} from './index';
+it('activates the authoring module and registers all public contribution points',async()=>{const host=new ModuleHost(),definitions=()=>new Map(host.entries(components).map(e=>[e.value.type,e.value]));await host.start([projectModule(definitions,()=>[]),assetsModule({sessionId:'test',import:async()=>null,cancel:async()=>{}}),sceneModule(definitions),scene3dModule,{manifest:{id:'pixi',version:'1.0.0',apiVersion:1},activate(){}},{manifest:{id:'interactions',version:'1.0.0',apiVersion:1},activate(){}},createPixi3dEditorModule({select(){},selected:()=>null,editable:()=>true,center:()=>({x:0,y:0})})]);try{expect(host.diagnostics).toEqual([]);expect(host.states.get('pixi3d-editor')).toBe('active');expect(host.entries(createItems)).toHaveLength(12);expect(host.entries(automationTools).filter(e=>e.owner==='pixi3d-editor')).toHaveLength(17);expect(host.entries(assetPlacements).map(e=>e.value.assetType).sort()).toEqual(['pixi3d.environment','pixi3d.model']);expect(host.entries(assetImporters).map(e=>e.id).sort()).toEqual(['pixi3d-editor.cube','pixi3d-editor.glb','pixi3d-editor.hdr','pixi3d-editor.video']);expect(host.entries(viewportFeatures)).toHaveLength(1);expect(host.entries(componentEditors)).toHaveLength(3);expect(definitions().get(transformDefinition.type)).toBeDefined();}finally{await host.stop();}expect(host.entries(viewportFeatures)).toEqual([]);});

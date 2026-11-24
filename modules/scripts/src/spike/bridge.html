@@ -1,0 +1,8 @@
+<!doctype html><meta charset="utf-8"><title>bridge spike</title>
+<script type="module">
+import {loadScriptEngine} from '../session';
+import {runBridge} from './array-bridge';
+const engine = await loadScriptEngine(), results = [];
+for (const count of [1000, 4000]) for (const method of ['compute', 'json', 'buffer', 'calls']) results.push(runBridge(engine, method, count));
+window.__result = {userAgent: navigator.userAgent, results};
+</script>

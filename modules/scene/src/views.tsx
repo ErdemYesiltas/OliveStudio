@@ -3,14 +3,18 @@ import {CommitInput,finiteNumber,isRelativeNumber,numberFrom,useDraftController}
 import {VirtualList} from '@rewrite/ui';
 import {hierarchyRows,hierarchyTarget,searchHierarchy,visibleHierarchy,hierarchyAncestors} from './hierarchy';
 import { useCallback, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
-import { type ComponentDefinition, type Json } from '@rewrite/sdk';
-import { transformDefinition, labelColors, labelType, type Entity, type LabelColor, type SceneService } from './index';
+import { slot, type ComponentDefinition, type Json } from '@rewrite/sdk';
+import { transformDefinition, spatialType, is2DEntity, labelColors, labelType, type Entity, type LabelColor, type SceneService } from './index';
 /** Swatches for the editor colour labels (Layers rows). */
 export const LABEL_SWATCHES:Record<LabelColor,string>={red:'#e5534b',orange:'#e0823d',yellow:'#d9b43a',green:'#57ab5a',blue:'#539bf5',purple:'#b083f0',gray:'#8b949e'};
 /** Copied component (Properties): in memory for this editor window. */
 let componentClip:{type:string;version:number;data:Json;title:string}|null=null;const clipListeners=new Set<()=>void>();
 const subscribeClip=(l:()=>void)=>{clipListeners.add(l);return()=>{clipListeners.delete(l);};},setClip=(next:typeof componentClip)=>{componentClip=next;for(const l of clipListeners)l();};
+export interface ComponentEditorProps{scene:SceneService;entityId:string;editable:boolean;text(key:string):string;report(error:unknown):void}
+export interface ComponentEditor{type:string;version:number;view:React.ComponentType<ComponentEditorProps>}
+export const componentEditors=slot<ComponentEditor>('scene.component-editors');
 export interface SceneUiBridge {
+ componentEditors?():readonly ComponentEditor[];
  text?(key:string):string;
  viewScope?():string;
  assetOptions?(type:string):readonly {id:string;name:string}[];
@@ -62,19 +66,19 @@ export function createSceneViews(scene:SceneService,bridge:SceneUiBridge) {
   const document=useScene(scene),selected=bridge.useSelection(),chosen=bridge.useSelectionSet?.()??[],editable=bridge.useEditable(),entity=document.entities.find(e=>e.id===selected),dragging=bridge.useDragging?.(),clip=useSyncExternalStore(subscribeClip,()=>componentClip);
   const title=(type:string)=>{const d=scene.definitions().get(type);return d?(bridge.text?.(d.titleKey)??d.titleKey.replace('component.','')):type;};
   if(chosen.length>1)return <MultiProperties ids={chosen}/>;
-  if(!entity)return <div className="panel-body"><p className="panel-empty">Select an object on the canvas or in Layers to inspect its components.</p></div>;
+  if(!entity)return <div className="panel-body"><p className="panel-empty">Select an object to inspect its components.</p></div>;
   return <div className="panel-body" data-testid="properties">
    <label className="field"><span>Name</span><CommitInput label="Object name" key={entity.id} value={entity.name} disabled={!editable} commit={raw=>scene.rename(entity.id,raw)} onError={bridge.report}/></label>
    <label className="field"><span>Active</span><input aria-label="Object active" type="checkbox" checked={entity.active} disabled={!editable} onChange={e=>change(()=>scene.setActive(entity.id,e.target.checked))}/></label>
    <label className="field"><span>Parent</span><select aria-label="Object parent" value={entity.parentId??''} disabled={!editable} onChange={e=>change(()=>scene.reparent(entity.id,e.target.value||null))}><option value="">Scene root</option>{document.entities.filter(e=>e.id!==entity.id).map(e=><option key={e.id} value={e.id}>{e.name}</option>)}</select></label>
    {bridge.entityExtra?.(entity)}
    {entity.components.filter(c=>{const d=scene.definitions().get(c.type);return d?.version!==c.version||!d.hiddenInInspector;}).map(c=>{
-    const definition=scene.definitions().get(c.type),supported=definition&&definition.version===c.version;
+    const definition=scene.definitions().get(c.type),supported=definition&&definition.version===c.version,Editor=bridge.componentEditors?.().find(e=>e.type===c.type&&e.version===c.version)?.view;
     const parsed=supported?definition.parse(c.data):c.data;const data={...(parsed&&typeof parsed==='object'&&!Array.isArray(parsed)?parsed:{}),...(c.type===transformDefinition.type?dragging?.get(entity.id):undefined)};
-    return <details key={c.id} className="component" open={c.type==='scene.transform2d'}><summary>{definition?(bridge.text?.(definition.titleKey)??definition.titleKey.replace('component.','')):c.type}</summary>
-     {!supported?<p className="component-warning">This component is preserved but cannot be edited: {c.type} v{c.version}.</p>:definition.fields.filter(field=>field.visible?.(c.data)??true).map(field=><ComponentField key={field.key} field={field} missingAssetLabel={bridge.text?.('asset.missingOption')} label={bridge.text?.(field.titleKey)??field.key} value={data[field.key]??null} disabled={!editable} options={field.kind==='asset'?bridge.assetOptions?.(field.assetType??''):field.options?.map(o=>({id:o.value,name:bridge.text?.(o.titleKey)??o.titleKey}))} commit={value=>scene.setField(entity.id,c.type,field.key,value)}/>)}
+    return <details key={c.id} className="component" open={c.type===spatialType(entity)}><summary>{definition?(bridge.text?.(definition.titleKey)??definition.titleKey.replace('component.','')):c.type}</summary>
+     {!supported?<p className="component-warning">This component is preserved but cannot be edited: {c.type} v{c.version}.</p>:Editor?<Editor scene={scene} entityId={entity.id} editable={editable} text={key=>bridge.text?.(key)??key} report={bridge.report}/>:definition.fields.filter(field=>field.visible?.(c.data)??true).map(field=><ComponentField key={field.key} field={field} missingAssetLabel={bridge.text?.('asset.missingOption')} label={bridge.text?.(field.titleKey)??field.key} value={data[field.key]??null} disabled={!editable} options={field.kind==='asset'?bridge.assetOptions?.(field.assetType??''):field.options?.map(o=>({id:o.value,name:bridge.text?.(o.titleKey)??o.titleKey}))} commit={value=>scene.setField(entity.id,c.type,field.key,value)}/>)}
      {bridge.componentExtra?.(entity,c)}
-     <div className="component-tools" role="group" aria-label={`${title(c.type)} tools`}><button aria-label={`Copy ${title(c.type)} component`} title="Copy component" onClick={()=>setClip({type:c.type,version:c.version,data:structuredClone(c.data),title:title(c.type)})}><Copy size={13}/></button>{c.type!=='scene.transform2d'&&<><button aria-label={`Move ${title(c.type)} up`} title="Move up" disabled={!editable||entity.components.findIndex(x=>x.id===c.id)<=1} onClick={()=>change(()=>scene.moveComponent(entity.id,c.id,-1))}><ArrowUp size={13}/></button><button aria-label={`Move ${title(c.type)} down`} title="Move down" disabled={!editable||entity.components.findIndex(x=>x.id===c.id)===entity.components.length-1} onClick={()=>change(()=>scene.moveComponent(entity.id,c.id,1))}><ArrowDown size={13}/></button><button disabled={!editable} onClick={()=>change(()=>scene.removeComponent(entity.id,c.type))}>Remove component</button></>}</div>
+     <div className="component-tools" role="group" aria-label={`${title(c.type)} tools`}><button aria-label={`Copy ${title(c.type)} component`} title="Copy component" onClick={()=>setClip({type:c.type,version:c.version,data:structuredClone(c.data),title:title(c.type)})}><Copy size={13}/></button>{c.type!==spatialType(entity)&&<><button aria-label={`Move ${title(c.type)} up`} title="Move up" disabled={!editable||entity.components.findIndex(x=>x.id===c.id)<=1} onClick={()=>change(()=>scene.moveComponent(entity.id,c.id,-1))}><ArrowUp size={13}/></button><button aria-label={`Move ${title(c.type)} down`} title="Move down" disabled={!editable||entity.components.findIndex(x=>x.id===c.id)===entity.components.length-1} onClick={()=>change(()=>scene.moveComponent(entity.id,c.id,1))}><ArrowDown size={13}/></button><button disabled={!editable} onClick={()=>change(()=>scene.removeComponent(entity.id,c.type))}>Remove component</button></>}</div>
     </details>;
    })}
    <div className="panel-actions">{clip&&<button aria-label={`Paste ${clip.title} component`} title={entity.components.some(c=>c.type===clip.type)?`Replace this object's ${clip.title} values`:`Add the copied ${clip.title}`} disabled={!editable} onClick={()=>change(()=>scene.pasteComponent(entity.id,clip))}><ClipboardPaste size={14}/> {`Paste ${clip.title}`}</button>}<select aria-label="Add component" value="" disabled={!editable} onChange={e=>{const value=e.target.value;if(value)change(()=>scene.addComponent(entity.id,value));}}><option value="">+ Add component</option>{[...scene.definitions().values()].filter(d=>d.addable!==false&&!entity.components.some(c=>c.type===d.type)&&!(d.uniqueInScene&&scene.document.current.entities.some(e=>e.components.some(c=>c.type===d.type)))).map(d=><option value={d.type} key={d.type}>{bridge.text?.(d.titleKey)??d.type}</option>)}</select></div>
@@ -85,15 +89,16 @@ export function createSceneViews(scene:SceneService,bridge:SceneUiBridge) {
   const entities=ids.flatMap(id=>document.entities.filter(e=>e.id===id)) as Entity[];
   const dragging=bridge.useDragging?.(),transforms=entities.map(e=>({...(e.components.find(c=>c.type===transformDefinition.type)?.data??{}) as Record<string,unknown>,...dragging?.get(e.id)}));
   const common=(key:string)=>{const of=(v:(typeof transforms)[number])=>v[key as 'x']??0;return transforms.every(v=>of(v)===of(transforms[0]))&&transforms.length?of(transforms[0]):undefined;};
+  const all2D=entities.every(is2DEntity);
   const active=entities.every(e=>e.active)?true:entities.every(e=>!e.active)?false:'mixed';
   const allHidden=Boolean(flags)&&ids.every(id=>flags!.hidden.has(id)),allLocked=Boolean(flags)&&ids.every(id=>flags!.locked.has(id));
   return <div className="panel-body" data-testid="properties" data-multi={entities.length}>
    <p className="selection-summary" role="status">{entities.length} {t('selection.objects','objects selected')}</p>
-   {bridge.align&&<div className="align-tools" role="toolbar" aria-label={t('align.tools','Align and distribute')}>{ALIGN.map(([kind,label])=><button key={kind} aria-label={t(`align.${kind}`,label)} title={t(`align.${kind}`,label)} disabled={!editable||(kind.startsWith('distribute')&&entities.length<3)} onClick={()=>change(()=>bridge.align!(kind))}><Icon name={kind}/></button>)}</div>}
+   {bridge.align&&<div className="align-tools" role="toolbar" aria-label={t('align.tools','Align and distribute')}>{ALIGN.map(([kind,label])=><button key={kind} aria-label={t(`align.${kind}`,label)} title={t(`align.${kind}`,label)} disabled={!editable||!all2D||(kind.startsWith('distribute')&&entities.length<3)} onClick={()=>change(()=>bridge.align!(kind))}><Icon name={kind}/></button>)}</div>}
    <label className="field"><span>Active</span><input aria-label="Objects active" type="checkbox" ref={el=>{if(el)el.indeterminate=active==='mixed';}} checked={active===true} disabled={!editable} onChange={e=>change(()=>scene.setActiveMany(ids,e.target.checked))}/></label>
-   <details className="component" open><summary>{bridge.text?.(transformDefinition.titleKey)??'Transform'}</summary>
+   {all2D&&<details className="component" open><summary>{bridge.text?.(transformDefinition.titleKey)??'Transform'}</summary>
     {transformDefinition.fields.map(field=>{const value=common(field.key);return <label key={field.key} className="field"><span>{bridge.text?.(field.titleKey)??field.key}</span><CommitInput live label={field.key} type="number" step="any" placeholder={value===undefined?t('selection.mixed','Mixed'):undefined} value={value===undefined?'':String(value)} disabled={!editable} commit={raw=>{if(value===undefined&&isRelativeNumber(raw))scene.adjustFieldMany(ids,transformDefinition.type,field.key,v=>numberFrom(raw,v));else scene.setFieldMany(ids,transformDefinition.type,field.key,finiteNumber(raw));}} onError={bridge.report}/></label>;})}
-   </details>
+   </details>}
    <div className="panel-actions">
     {bridge.toggleFlag&&<button aria-pressed={allHidden} onClick={()=>bridge.toggleFlag!('hidden',ids)}><Icon name={allHidden?'eyeOff':'eye'}/> {allHidden?t('layers.showSelected','Show'):t('layers.hideSelected','Hide')}</button>}
     {bridge.toggleFlag&&<button aria-pressed={allLocked} onClick={()=>bridge.toggleFlag!('locked',ids)}><Icon name={allLocked?'lock':'unlock'}/> {allLocked?t('layers.unlockSelected','Unlock'):t('layers.lockSelected','Lock')}</button>}

@@ -1,0 +1,826 @@
+{
+ "formatVersion": 1,
+ "name": "Custom lighting model",
+ "entrySceneId": "7bfcbb2b-451c-4beb-8eb5-1b7a931f0d3a",
+ "scenes": [
+  {
+   "formatVersion": 1,
+   "id": "7bfcbb2b-451c-4beb-8eb5-1b7a931f0d3a",
+   "name": "Custom lighting model",
+   "entities": [
+    {
+     "id": "b8c6a9f7-ee74-41fe-802b-9f99be51b4ba",
+     "name": "3D View",
+     "parentId": null,
+     "active": true,
+     "components": [
+      {
+       "id": "ea774761-601b-4e49-872f-9b949c2df6d6",
+       "type": "scene.transform2d",
+       "version": 1,
+       "data": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+       }
+      },
+      {
+       "id": "912a706d-9751-4896-8c77-29892bdb5e4e",
+       "type": "pixi3d.viewport",
+       "version": 1,
+       "data": {
+        "width": 960,
+        "height": 540,
+        "cameraId": "0f84b220-2cb2-4810-81ca-4a2b233ccc2a",
+        "shadowQuality": "high",
+        "shadowFilter": "pcf",
+        "environment": "hemisphere",
+        "skyColor": "#bcd4ff",
+        "groundColor": "#5b5246",
+        "environmentIntensity": 0.8,
+        "environmentAssetId": "",
+        "cubemapAssetId": "",
+        "background": "color",
+        "backgroundColor": "#1d2530",
+        "toneMapping": "aces",
+        "exposure": 1,
+        "fog": "none",
+        "fogColor": "#adb2ba",
+        "fogNear": 10,
+        "fogFar": 60,
+        "fogDensity": 0.04,
+        "bloom": false,
+        "bloomThreshold": 1,
+        "bloomIntensity": 1,
+        "bloomRadius": 0.7,
+        "ssao": false,
+        "ssaoRadius": 0.5,
+        "ssaoIntensity": 1,
+        "depthOfField": false,
+        "focusDistance": 10,
+        "focusRange": 2,
+        "focusFalloff": 8,
+        "focusBlur": 10,
+        "motionBlur": false,
+        "motionBlurIntensity": 0.5,
+        "motionBlurSamples": 12,
+        "motionBlurMaxLength": 48,
+        "tint": "#ffffff",
+        "lutAssetId": "",
+        "lutIntensity": 1,
+        "antialias": false,
+        "outlineWidth": 0.03,
+        "outlineColor": "#000000",
+        "debugView": "none",
+        "velocityScale": 1
+       }
+      }
+     ]
+    },
+    {
+     "id": "0f84b220-2cb2-4810-81ca-4a2b233ccc2a",
+     "name": "Camera",
+     "parentId": "b8c6a9f7-ee74-41fe-802b-9f99be51b4ba",
+     "active": true,
+     "spatial": "scene3d.transform",
+     "components": [
+      {
+       "id": "e1e9b366-ad01-4037-8cc3-a2b09ebeb9ae",
+       "type": "scene3d.transform",
+       "version": 1,
+       "data": {
+        "x": 0,
+        "y": 1.4,
+        "z": 5.6,
+        "qx": -0.08715574274765817,
+        "qy": 0,
+        "qz": 0,
+        "qw": 0.9961946980917455,
+        "scaleX": 1,
+        "scaleY": 1,
+        "scaleZ": 1
+       }
+      },
+      {
+       "id": "a405e99d-cd58-4da7-82d6-1a23f2dbf8a4",
+       "type": "pixi3d.camera",
+       "version": 1,
+       "data": {
+        "mode": "perspective",
+        "fov": 45,
+        "near": 0.1,
+        "far": 200,
+        "orthographicSize": 5,
+        "feedWidth": 512,
+        "feedHeight": 288
+       }
+      }
+     ]
+    },
+    {
+     "id": "73c69ca6-e013-46bb-8d49-250c555ec036",
+     "name": "Sun",
+     "parentId": "b8c6a9f7-ee74-41fe-802b-9f99be51b4ba",
+     "active": true,
+     "spatial": "scene3d.transform",
+     "components": [
+      {
+       "id": "cb45ce52-db8e-4e00-8e42-d38d5b9c49ad",
+       "type": "scene3d.transform",
+       "version": 1,
+       "data": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "qx": -0.4030581999178559,
+        "qy": 0.27253200769780433,
+        "qz": -0.12708376228184318,
+        "qw": 0.8643610990919672,
+        "scaleX": 1,
+        "scaleY": 1,
+        "scaleZ": 1
+       }
+      },
+      {
+       "id": "a4e42b3f-01b5-4bec-880b-4fd206ec73fa",
+       "type": "pixi3d.light",
+       "version": 1,
+       "data": {
+        "kind": "directional",
+        "color": "#ffffff",
+        "intensity": 2.6,
+        "castShadow": true,
+        "range": 10,
+        "radius": 0.1,
+        "coneAngle": 30,
+        "penumbra": 0.2,
+        "shadowPlacement": "fit",
+        "shadowBoundsX": 0,
+        "shadowBoundsY": 0,
+        "shadowBoundsZ": 0,
+        "shadowBoundsWidth": 20,
+        "shadowBoundsHeight": 20,
+        "shadowBoundsDepth": 20,
+        "shadowCascades": 3,
+        "shadowMaxDistance": 50,
+        "shadowLambda": 0.5,
+        "shadowBias": 0.001,
+        "shadowNormalBiasAuto": true,
+        "shadowNormalBias": 0.05,
+        "shadowUpdate": 1
+       }
+      }
+     ]
+    },
+    {
+     "id": "76073092-0ce5-4ec4-8330-20f395f0f918",
+     "name": "Fill",
+     "parentId": "b8c6a9f7-ee74-41fe-802b-9f99be51b4ba",
+     "active": true,
+     "spatial": "scene3d.transform",
+     "components": [
+      {
+       "id": "d9f5430d-f2be-4197-8280-8ab290872dfa",
+       "type": "scene3d.transform",
+       "version": 1,
+       "data": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1,
+        "scaleX": 1,
+        "scaleY": 1,
+        "scaleZ": 1
+       }
+      },
+      {
+       "id": "e9a73a52-a9b7-4fc4-8db2-a811f12bd5cc",
+       "type": "pixi3d.light",
+       "version": 1,
+       "data": {
+        "kind": "ambient",
+        "color": "#ffffff",
+        "intensity": 0.2,
+        "castShadow": false,
+        "range": 10,
+        "radius": 0.1,
+        "coneAngle": 30,
+        "penumbra": 0.2,
+        "shadowPlacement": "fit",
+        "shadowBoundsX": 0,
+        "shadowBoundsY": 0,
+        "shadowBoundsZ": 0,
+        "shadowBoundsWidth": 20,
+        "shadowBoundsHeight": 20,
+        "shadowBoundsDepth": 20,
+        "shadowCascades": 3,
+        "shadowMaxDistance": 50,
+        "shadowLambda": 0.5,
+        "shadowBias": 0.001,
+        "shadowNormalBiasAuto": true,
+        "shadowNormalBias": 0.05,
+        "shadowUpdate": 1
+       }
+      }
+     ]
+    },
+    {
+     "id": "6fa8eb87-fe7d-4f5c-822f-de38f3f5e75f",
+     "name": "Back",
+     "parentId": "b8c6a9f7-ee74-41fe-802b-9f99be51b4ba",
+     "active": true,
+     "spatial": "scene3d.transform",
+     "components": [
+      {
+       "id": "5489d6c4-4205-4bc2-8a1c-7ebcb55ad2fc",
+       "type": "scene3d.transform",
+       "version": 1,
+       "data": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "qx": 0.030153689607045817,
+        "qy": 0.9698463103929541,
+        "qz": 0.17101007166283433,
+        "qw": 0.1710100716628344,
+        "scaleX": 1,
+        "scaleY": 1,
+        "scaleZ": 1
+       }
+      },
+      {
+       "id": "632742bb-96f7-40b7-8e37-6068736e1c0e",
+       "type": "pixi3d.light",
+       "version": 1,
+       "data": {
+        "kind": "directional",
+        "color": "#9fc4ff",
+        "intensity": 1.2,
+        "castShadow": false,
+        "range": 10,
+        "radius": 0.1,
+        "coneAngle": 30,
+        "penumbra": 0.2,
+        "shadowPlacement": "fit",
+        "shadowBoundsX": 0,
+        "shadowBoundsY": 0,
+        "shadowBoundsZ": 0,
+        "shadowBoundsWidth": 20,
+        "shadowBoundsHeight": 20,
+        "shadowBoundsDepth": 20,
+        "shadowCascades": 3,
+        "shadowMaxDistance": 50,
+        "shadowLambda": 0.5,
+        "shadowBias": 0.001,
+        "shadowNormalBiasAuto": true,
+        "shadowNormalBias": 0.05,
+        "shadowUpdate": 1
+       }
+      }
+     ]
+    },
+    {
+     "id": "bc8c5756-f08e-4d7b-8935-19946df17d30",
+     "name": "Floor",
+     "parentId": "b8c6a9f7-ee74-41fe-802b-9f99be51b4ba",
+     "active": true,
+     "spatial": "scene3d.transform",
+     "components": [
+      {
+       "id": "69295d6d-7fe3-4b2c-8fc7-ab39d50cd242",
+       "type": "scene3d.transform",
+       "version": 1,
+       "data": {
+        "x": 0,
+        "y": -1,
+        "z": 0,
+        "qx": -0.7071067811865475,
+        "qy": 0,
+        "qz": 0,
+        "qw": 0.7071067811865476,
+        "scaleX": 30,
+        "scaleY": 30,
+        "scaleZ": 30
+       }
+      },
+      {
+       "id": "2740662e-1d96-4b17-8390-8e88b931956f",
+       "type": "pixi3d.primitive",
+       "version": 1,
+       "data": {
+        "shape": "plane",
+        "color": "#3d4450",
+        "roughness": 0.9,
+        "metallic": 0,
+        "castShadow": true,
+        "receiveShadow": true,
+        "emissiveColor": "#000000",
+        "emissiveStrength": 0,
+        "segments": 32,
+        "radiusTop": 0.5,
+        "openEnded": false,
+        "capsuleLength": 0.5,
+        "tube": 0.15,
+        "arc": 360,
+        "knotP": 2,
+        "knotQ": 3,
+        "detail": 1,
+        "draw": "surface",
+        "hitVolume": "auto",
+        "lodDistance": 0,
+        "lodSegments": 8,
+        "material": "pbr",
+        "alphaMode": "opaque",
+        "alpha": 1,
+        "alphaCutoff": 0.5,
+        "doubleSided": false,
+        "flatShading": false,
+        "baseColorTexture": "",
+        "videoTexture": "",
+        "feedCameraId": "",
+        "screenSourceId": "",
+        "screenWidth": 512,
+        "screenHeight": 256,
+        "portalExitId": "",
+        "normalTexture": "",
+        "normalScale": 1,
+        "metallicRoughnessTexture": "",
+        "occlusionTexture": "",
+        "occlusionStrength": 1,
+        "emissiveTexture": "",
+        "uvScaleX": 1,
+        "uvScaleY": 1,
+        "uvOffsetX": 0,
+        "uvOffsetY": 0,
+        "uvRotation": 0,
+        "uvScrollX": 0,
+        "uvScrollY": 0,
+        "shininess": 32,
+        "specularStrength": 1,
+        "specularColor": "#ffffff",
+        "ior": 1.5,
+        "specularFactor": 1,
+        "clearcoat": 0,
+        "clearcoatRoughness": 0,
+        "clearcoatTexture": "",
+        "sheenColor": "#000000",
+        "sheenRoughness": 0,
+        "sheenTexture": "",
+        "transmission": 0,
+        "thickness": 0,
+        "attenuationColor": "#ffffff",
+        "attenuationDistance": 0,
+        "transmissionTexture": "",
+        "iridescence": 0,
+        "iridescenceIor": 1.3,
+        "iridescenceThicknessMin": 100,
+        "iridescenceThicknessMax": 400,
+        "iridescenceTexture": "",
+        "anisotropy": 0,
+        "anisotropyRotation": 0,
+        "depthTest": true,
+        "depthWrite": true,
+        "cull": "back",
+        "blend": "normal",
+        "toonBands": 3,
+        "toonSpecularSize": 0.15,
+        "toonRimIntensity": 0.4,
+        "toonOutline": true
+       }
+      }
+     ]
+    },
+    {
+     "id": "bff8cad0-891c-4982-887d-15f74341125a",
+     "name": "Built-in lighting",
+     "parentId": "b8c6a9f7-ee74-41fe-802b-9f99be51b4ba",
+     "active": true,
+     "spatial": "scene3d.transform",
+     "components": [
+      {
+       "id": "ff32013c-feab-41ac-8bad-026901dcd0d3",
+       "type": "scene3d.transform",
+       "version": 1,
+       "data": {
+        "x": -1.4,
+        "y": 0.1,
+        "z": 0,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1,
+        "scaleX": 1,
+        "scaleY": 1,
+        "scaleZ": 1
+       }
+      },
+      {
+       "id": "21133322-0ec3-4dda-82cf-c02fdb223024",
+       "type": "pixi3d.primitive",
+       "version": 1,
+       "data": {
+        "shape": "torusKnot",
+        "color": "#e8e8e8",
+        "roughness": 0.5,
+        "metallic": 0,
+        "castShadow": true,
+        "receiveShadow": true,
+        "emissiveColor": "#000000",
+        "emissiveStrength": 0,
+        "segments": 32,
+        "radiusTop": 0.5,
+        "openEnded": false,
+        "capsuleLength": 0.5,
+        "tube": 0.14,
+        "arc": 360,
+        "knotP": 2,
+        "knotQ": 3,
+        "detail": 1,
+        "draw": "surface",
+        "hitVolume": "auto",
+        "lodDistance": 0,
+        "lodSegments": 8,
+        "material": "pbr",
+        "alphaMode": "opaque",
+        "alpha": 1,
+        "alphaCutoff": 0.5,
+        "doubleSided": false,
+        "flatShading": false,
+        "baseColorTexture": "",
+        "videoTexture": "",
+        "feedCameraId": "",
+        "screenSourceId": "",
+        "screenWidth": 512,
+        "screenHeight": 256,
+        "portalExitId": "",
+        "normalTexture": "",
+        "normalScale": 1,
+        "metallicRoughnessTexture": "",
+        "occlusionTexture": "",
+        "occlusionStrength": 1,
+        "emissiveTexture": "",
+        "uvScaleX": 1,
+        "uvScaleY": 1,
+        "uvOffsetX": 0,
+        "uvOffsetY": 0,
+        "uvRotation": 0,
+        "uvScrollX": 0,
+        "uvScrollY": 0,
+        "shininess": 32,
+        "specularStrength": 1,
+        "specularColor": "#ffffff",
+        "ior": 1.5,
+        "specularFactor": 1,
+        "clearcoat": 0,
+        "clearcoatRoughness": 0,
+        "clearcoatTexture": "",
+        "sheenColor": "#000000",
+        "sheenRoughness": 0,
+        "sheenTexture": "",
+        "transmission": 0,
+        "thickness": 0,
+        "attenuationColor": "#ffffff",
+        "attenuationDistance": 0,
+        "transmissionTexture": "",
+        "iridescence": 0,
+        "iridescenceIor": 1.3,
+        "iridescenceThicknessMin": 100,
+        "iridescenceThicknessMax": 400,
+        "iridescenceTexture": "",
+        "anisotropy": 0,
+        "anisotropyRotation": 0,
+        "depthTest": true,
+        "depthWrite": true,
+        "cull": "back",
+        "blend": "normal",
+        "toonBands": 3,
+        "toonSpecularSize": 0.15,
+        "toonRimIntensity": 0.4,
+        "toonOutline": true
+       }
+      }
+     ]
+    },
+    {
+     "id": "65a9f6d5-e685-4799-8ccc-27f307479884",
+     "name": "Warm and cool",
+     "parentId": "b8c6a9f7-ee74-41fe-802b-9f99be51b4ba",
+     "active": true,
+     "spatial": "scene3d.transform",
+     "components": [
+      {
+       "id": "c067f40b-2a96-4859-8e96-66de03bf3505",
+       "type": "scene3d.transform",
+       "version": 1,
+       "data": {
+        "x": 1.4,
+        "y": 0.1,
+        "z": 0,
+        "qx": 0,
+        "qy": 0,
+        "qz": 0,
+        "qw": 1,
+        "scaleX": 1,
+        "scaleY": 1,
+        "scaleZ": 1
+       }
+      },
+      {
+       "id": "b61366f0-a5e2-4021-8300-7eb4f61f56fc",
+       "type": "pixi3d.primitive",
+       "version": 1,
+       "data": {
+        "shape": "torusKnot",
+        "color": "#e8e8e8",
+        "roughness": 0.5,
+        "metallic": 0,
+        "castShadow": true,
+        "receiveShadow": true,
+        "emissiveColor": "#000000",
+        "emissiveStrength": 0,
+        "segments": 32,
+        "radiusTop": 0.5,
+        "openEnded": false,
+        "capsuleLength": 0.5,
+        "tube": 0.14,
+        "arc": 360,
+        "knotP": 2,
+        "knotQ": 3,
+        "detail": 1,
+        "draw": "surface",
+        "hitVolume": "auto",
+        "lodDistance": 0,
+        "lodSegments": 8,
+        "material": "pbr",
+        "alphaMode": "opaque",
+        "alpha": 1,
+        "alphaCutoff": 0.5,
+        "doubleSided": false,
+        "flatShading": false,
+        "baseColorTexture": "",
+        "videoTexture": "",
+        "feedCameraId": "",
+        "screenSourceId": "",
+        "screenWidth": 512,
+        "screenHeight": 256,
+        "portalExitId": "",
+        "normalTexture": "",
+        "normalScale": 1,
+        "metallicRoughnessTexture": "",
+        "occlusionTexture": "",
+        "occlusionStrength": 1,
+        "emissiveTexture": "",
+        "uvScaleX": 1,
+        "uvScaleY": 1,
+        "uvOffsetX": 0,
+        "uvOffsetY": 0,
+        "uvRotation": 0,
+        "uvScrollX": 0,
+        "uvScrollY": 0,
+        "shininess": 32,
+        "specularStrength": 1,
+        "specularColor": "#ffffff",
+        "ior": 1.5,
+        "specularFactor": 1,
+        "clearcoat": 0,
+        "clearcoatRoughness": 0,
+        "clearcoatTexture": "",
+        "sheenColor": "#000000",
+        "sheenRoughness": 0,
+        "sheenTexture": "",
+        "transmission": 0,
+        "thickness": 0,
+        "attenuationColor": "#ffffff",
+        "attenuationDistance": 0,
+        "transmissionTexture": "",
+        "iridescence": 0,
+        "iridescenceIor": 1.3,
+        "iridescenceThicknessMin": 100,
+        "iridescenceThicknessMax": 400,
+        "iridescenceTexture": "",
+        "anisotropy": 0,
+        "anisotropyRotation": 0,
+        "depthTest": true,
+        "depthWrite": true,
+        "cull": "back",
+        "blend": "normal",
+        "toonBands": 3,
+        "toonSpecularSize": 0.15,
+        "toonRimIntensity": 0.4,
+        "toonOutline": true
+       }
+      },
+      {
+       "id": "a7ac3c20-4b04-49df-8de0-8bb65bc6338e",
+       "type": "pixi3d.shader",
+       "version": 1,
+       "data": {
+        "shaderId": "a953e771-22eb-42c0-8cbf-d2615adec3b0",
+        "values": {}
+       }
+      }
+     ]
+    },
+    {
+     "id": "0bdad846-f10e-4000-8507-4037df043ab9",
+     "name": "Label: Built-in lighting",
+     "parentId": null,
+     "active": true,
+     "components": [
+      {
+       "id": "fbfa6a3b-d97c-4adb-808c-23b616bb23a4",
+       "type": "scene.transform2d",
+       "version": 1,
+       "data": {
+        "x": 300,
+        "y": 430,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+       }
+      },
+      {
+       "id": "6c00b434-53d3-472c-8e01-8795e23bec08",
+       "type": "pixi.text",
+       "version": 1,
+       "data": {
+        "alpha": 1,
+        "text": "Built-in lighting",
+        "fontSize": 16,
+        "color": "#e8edf2",
+        "font": "",
+        "fontWeight": "normal",
+        "fontStyle": "normal",
+        "align": "center",
+        "letterSpacing": 0,
+        "strokeColor": "#0b0f14",
+        "strokeWidth": 4
+       }
+      }
+     ]
+    },
+    {
+     "id": "d85610fc-ada7-44fb-8497-a12f9b9d0aa4",
+     "name": "Label: Custom lighting model",
+     "parentId": null,
+     "active": true,
+     "components": [
+      {
+       "id": "34d6614c-0f2f-4efd-8941-f7bf4416749c",
+       "type": "scene.transform2d",
+       "version": 1,
+       "data": {
+        "x": 660,
+        "y": 430,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+       }
+      },
+      {
+       "id": "f69d14f4-c21f-4bc8-8a35-1835cfe30614",
+       "type": "pixi.text",
+       "version": 1,
+       "data": {
+        "alpha": 1,
+        "text": "Custom lighting model",
+        "fontSize": 16,
+        "color": "#e8edf2",
+        "font": "",
+        "fontWeight": "normal",
+        "fontStyle": "normal",
+        "align": "center",
+        "letterSpacing": 0,
+        "strokeColor": "#0b0f14",
+        "strokeWidth": 4
+       }
+      }
+     ]
+    },
+    {
+     "id": "95e03c26-54f4-434c-854d-54bfbb28cec8",
+     "name": "Label: Your code decides how light shades a surface",
+     "parentId": null,
+     "active": true,
+     "components": [
+      {
+       "id": "11cee5b5-585d-4000-8eb5-8b0d6b8454b5",
+       "type": "scene.transform2d",
+       "version": 1,
+       "data": {
+        "x": 480,
+        "y": 32,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1
+       }
+      },
+      {
+       "id": "3effb8cd-b495-4b03-8a47-5170c80f13f5",
+       "type": "pixi.text",
+       "version": 1,
+       "data": {
+        "alpha": 1,
+        "text": "Your code decides how light shades a surface",
+        "fontSize": 20,
+        "color": "#e8edf2",
+        "font": "",
+        "fontWeight": "normal",
+        "fontStyle": "normal",
+        "align": "center",
+        "letterSpacing": 0,
+        "strokeColor": "#0b0f14",
+        "strokeWidth": 4
+       }
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "modules": {
+  "project": "1.0.0",
+  "scene": "1.0.0",
+  "assets": "1.0.0",
+  "pixi": "1.0.0",
+  "assetpack": "1.0.0",
+  "audio": "1.0.0",
+  "howler": "1.0.0",
+  "tween": "1.0.0",
+  "gsap": "1.0.0",
+  "tween-pixi": "1.0.0",
+  "animation": "1.0.0",
+  "physics": "1.0.0",
+  "matter": "1.0.0",
+  "spine": "1.0.0",
+  "spine-audio": "1.0.0",
+  "interactions": "1.0.0",
+  "interaction-media": "1.0.0",
+  "build": "1.0.0",
+  "html-export": "1.0.0",
+  "prefabs": "1.0.0",
+  "project-ui": "1.0.0",
+  "recovery": "1.0.0",
+  "studio": "1.0.0",
+  "scene3d": "1.0.0",
+  "pixi3d-editor": "1.0.0"
+ },
+ "providers": {
+  "audio": "howler",
+  "tween": "gsap",
+  "physics": "matter",
+  "render": "pixi"
+ },
+ "extensions": {
+  "assets.registry": {
+   "version": 1,
+   "items": []
+  },
+  "pixi3d.shaders": {
+   "version": 1,
+   "items": [
+    {
+     "params": [
+      {
+       "name": "warm",
+       "type": "color",
+       "default": "#ffb35c"
+      },
+      {
+       "name": "cool",
+       "type": "color",
+       "default": "#2c4a8c"
+      },
+      {
+       "name": "rim",
+       "type": "float",
+       "default": 0.6
+      }
+     ],
+     "name": "Warm and cool",
+     "kind": "lighting",
+     "wgsl": {
+      "header": "",
+      "material": "",
+      "preLighting": "  var shade = vec3<f32>(0.0);",
+      "perLight": "    // From cool (facing away) to warm (facing the light), in the light's colour.\n    let lit = nDotL * attenuation * shadow;\n    shade += mix(material.cool.rgb, material.warm.rgb, lit) * light.color * 0.6;",
+      "postLighting": "  let rimLight = pow(1.0 - max(dot(normal, viewDir), 0.0), 3.0) * material.rim;\n  finalColor = albedo * (shade + material.cool.rgb * 0.25) + vec3<f32>(rimLight);"
+     },
+     "glsl": {
+      "header": "",
+      "material": "",
+      "preLighting": "  vec3 shade = vec3(0.0);",
+      "perLight": "    // From cool (facing away) to warm (facing the light), in the light's colour.\n    float lit = nDotL * attenuation * shadow;\n    shade += mix(material.cool.rgb, material.warm.rgb, lit) * light.color * 0.6;",
+      "postLighting": "  float rimLight = pow(1.0 - max(dot(normal, viewDir), 0.0), 3.0) * material.rim;\n  finalColor = albedo * (shade + material.cool.rgb * 0.25) + vec3(rimLight);"
+     },
+     "id": "a953e771-22eb-42c0-8cbf-d2615adec3b0"
+    }
+   ]
+  }
+ }
+}

@@ -44,6 +44,10 @@
 .cardBody{flex:1 0 auto;display:flex;flex-direction:column;gap:6px;padding:12px 14px 4px}
 .cardBody h3{margin:0;font-size:15px}
 .cardBody p{margin:0;color:var(--muted);font-size:12.5px;line-height:1.45}
+.groups{display:flex;flex-wrap:wrap;gap:6px}
+.groups button{padding:4px 11px;border:1px solid var(--border);border-radius:99px;background:var(--surface);color:var(--muted);font-size:12px}
+.groups button[aria-checked=true]{border-color:var(--accent);color:var(--text);background:var(--raised)}
+.groups small{opacity:.7;margin-left:2px}
 .tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:2px}
 .tags span{padding:2px 7px;border-radius:99px;background:var(--raised);color:var(--muted);font-size:11px}
 .card .primary{flex-shrink:0;margin:10px 14px 14px;justify-content:center}

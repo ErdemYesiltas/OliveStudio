@@ -16,8 +16,16 @@ try{
  if(empty){await expect(page.getByText('The empty profile is running.',{exact:false})).toBeVisible();console.log('PASS empty native profile: no domain modules, sandbox and shell');}
  else{
   await expect(page.getByTestId('pixi-canvas')).toHaveAttribute('data-ready','true',{timeout:30000});await expect(page.getByTestId('pixi-canvas')).toHaveAttribute('data-renderer','1');
-  await page.getByRole('button',{name:'Layers',exact:true}).click();await page.getByRole('button',{name:'Select Player',exact:true}).click();
-  await page.keyboard.press('Escape');await page.getByRole('button',{name:'Properties',exact:true}).click();
+  const workspace=page.getByRole('button',{name:'Workspace layout',exact:true});
+  await workspace.click();await page.getByRole('menuitem',{name:'Canvas',exact:true}).click();
+  const appearance=async()=>{
+   await page.getByRole('button',{name:'Settings',exact:true}).click();
+   await page.getByTestId('settings-dialog').getByRole('button',{name:'Appearance',exact:true}).click();
+   return page.getByRole('combobox',{name:'Theme',exact:true});
+  };
+  const closeSettings=()=>page.getByRole('button',{name:'Close settings',exact:true}).click();
+  await page.keyboard.press('Alt+KeyL');await page.getByRole('button',{name:'Select Player',exact:true}).click();
+  await page.keyboard.press('Escape');await page.keyboard.press('Alt+KeyP');
   await expect(page.getByRole('textbox',{name:'Object name',exact:true})).toHaveValue('Player');
   const x=page.getByRole('spinbutton',{name:'x',exact:true});await x.fill('450');await x.press('Enter');
   await expect(page.getByLabel('Unsaved changes',{exact:true})).toBeVisible();
@@ -28,16 +36,17 @@ try{
   await page.getByRole('button',{name:'Pin Properties',exact:true}).click();
   await expect(page.getByRole('textbox',{name:'Object name',exact:true})).toHaveValue('Player');await expect(x).toHaveValue('450');
   for(const theme of ['Light','Warm','Graphite']){
-   await page.getByRole('button',{name:'Editor settings'}).click();await page.getByRole('menuitem',{name:theme,exact:true}).click();
+   await (await appearance()).selectOption(theme.toLowerCase());await closeSettings();
    await expect(page.locator('html')).toHaveAttribute('data-theme',theme.toLowerCase());await page.screenshot({path:join(root,`outputs/editor-${theme.toLowerCase()}.png`)});
   }
-  await page.getByRole('button',{name:'Editor settings'}).click();await page.getByRole('menuitem',{name:'System',exact:true}).click();
+  await (await appearance()).selectOption('system');await closeSettings();
   await page.emulateMedia({colorScheme:'light'});await expect(page.locator('html')).toHaveAttribute('data-theme','light');await page.emulateMedia({colorScheme:'dark'});await expect(page.locator('html')).toHaveAttribute('data-theme','graphite');
-  await page.getByRole('button',{name:'Editor settings'}).click();await page.getByRole('menuitem',{name:'Custom theme…',exact:true}).click();
+  const themeControl=await appearance();
+  await page.getByText('Custom theme',{exact:true}).click();
   const custom={id:'test-theme',name:'Test theme',scheme:'dark',colors:{bg:'#232426',surface:'#292a2d',raised:'#34363a',text:'#e8e8e5',muted:'#a4a6ac',border:'#414348',accent:'#95b897',danger:'#f49a9a',viewport:'#1b1d20'}};
   await page.getByRole('textbox',{name:'Theme JSON'}).fill(JSON.stringify({...custom,script:'alert(1)'}));await page.getByRole('button',{name:'Apply theme',exact:true}).click();await expect(page.getByRole('dialog').getByRole('alert')).toBeVisible();
   await page.getByRole('textbox',{name:'Theme JSON'}).fill(JSON.stringify(custom));await page.getByRole('button',{name:'Apply theme',exact:true}).click();await expect(page.locator('html')).toHaveAttribute('data-theme','test-theme');
-  await page.getByRole('button',{name:'Editor settings'}).click();await page.getByRole('menuitem',{name:'Graphite',exact:true}).click();
+  await themeControl.selectOption('graphite');await closeSettings();
   await page.getByRole('button',{name:'Play',exact:true}).click();await expect(page.getByTestId('editor-shell')).toHaveAttribute('data-mode','playing');
   await page.getByRole('button',{name:'Pause / Resume',exact:true}).click();await expect(page.getByTestId('editor-shell')).toHaveAttribute('data-mode','paused');
   const time=Number(await page.getByTestId('pixi-canvas').getAttribute('data-runtime-time'));await page.waitForTimeout(120);expect(Number(await page.getByTestId('pixi-canvas').getAttribute('data-runtime-time'))).toBe(time);
@@ -57,14 +66,14 @@ try{
   const opaquePath=join(temp,'opaque.pixieditor');await writeFile(opaquePath,JSON.stringify(opaque));
   await app.evaluate(({dialog},path)=>{dialog.showOpenDialog=async()=>({canceled:false,filePaths:[path]});},opaquePath);
   await page.getByRole('button',{name:'Project menu'}).click();await page.getByRole('menuitem',{name:'Open…',exact:true}).click();
-  await page.getByRole('button',{name:'Layers',exact:true}).click();await page.getByRole('button',{name:'Select Player',exact:true}).click();await page.keyboard.press('Escape');
+  await page.keyboard.press('Alt+KeyL');await page.getByRole('button',{name:'Select Player',exact:true}).click();await page.keyboard.press('Escape');
   const name=page.getByRole('textbox',{name:'Object name',exact:true});await name.fill('Preserved Player');await name.press('Enter');
   await page.getByRole('button',{name:'Project menu'}).click();await page.getByRole('menuitem',{name:'Save',exact:true}).click();await expect(page.getByLabel('Unsaved changes',{exact:true})).toHaveCount(0);
   const roundtrip=JSON.parse(await readFile(opaquePath,'utf8'));expect(roundtrip.modules['external.feature']).toBe('3.0.0');expect(roundtrip.scenes[0].entities.find(e=>e.name==='Preserved Player').components.at(-1)).toEqual(opaque.scenes[0].entities.find(e=>e.name==='Player').components.at(-1));
   await page.getByRole('button',{name:'Play',exact:true}).click();await expect(page.getByRole('alert')).toContainText('unsupported');await expect(page.getByTestId('editor-shell')).toHaveAttribute('data-mode','edit');await page.getByRole('button',{name:'Dismiss message'}).click();
-  await page.getByRole('button',{name:'Editor settings'}).click();await page.getByRole('menuitem',{name:'Warm',exact:true}).click();
+  await (await appearance()).selectOption('warm');await closeSettings();
   await app.close();app=await electron.launch({executablePath:process.env.REWRITE_EXECUTABLE||require('electron'),args:[...(process.env.REWRITE_EXECUTABLE?[]:[join(root,'apps/editor-desktop/out/main/index.js')]),'--no-hub', `--user-data-dir=${join(temp,'user')}`],env});
-  const restored=await app.firstWindow({timeout:30000});await expect(restored.getByRole('button',{name:'Continue without restoring',exact:true})).toBeVisible();await restored.getByRole('button',{name:'Continue without restoring',exact:true}).click();await expect(restored.locator('html')).toHaveAttribute('data-theme','warm');await expect(restored.locator('.dv-tab').filter({hasText:'Properties'})).toBeVisible();
+  const restored=await app.firstWindow({timeout:30000});await expect(restored.getByRole('button',{name:'Continue without restoring',exact:true})).toBeVisible();await restored.getByRole('button',{name:'Continue without restoring',exact:true}).click();await expect(restored.locator('html')).toHaveAttribute('data-theme','warm');await expect(restored.locator('.dv-tab').filter({hasText:'Inspector'})).toBeVisible();
   console.log('PASS native Undo/Redo, System color scheme and validated custom theme (script fields rejected)');
   console.log('PASS unknown component/module lock preservation, runtime diagnostic and native relaunch panel/theme persistence');
   console.log('PASS native editor: real Pixi GPU, component edits, dock pin state, three themes, Preview controls, sandbox, atomic native save and invalid-open preservation');

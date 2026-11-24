@@ -2,7 +2,8 @@ import type { AssetRecord,AssetHealth } from '@rewrite/assets';
 export interface NativeAssets {
  info():{sessionId:string;workerProcessId:number|null};
  importer(id:string):{extensions:readonly string[]}|undefined;
- importers():readonly {id:string;extensions:readonly string[]}[];
+ importers():readonly {id:string;assetType:string;extensions:readonly string[]}[];
+ importLease():Promise<()=>Promise<void>>;
  import(paths:string[],id:string,replace?:unknown):Promise<AssetRecord[]>;
  stageOpen(path:string,project:unknown):Promise<string[]>;
  acceptOpen(path:string):Promise<string>;

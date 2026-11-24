@@ -8,9 +8,10 @@ export default {id: 'input', create(c) {
   unlock() {
    if (session) return;
    session = new InputSession(map, {emit: e => c.emit(e), setGlobal: (id, value) => { try { c.globals()?.set(id, value); } catch (e) { c.report(String(e)); } }});
+   c.services.set('input',session);
    detach = session.attach(document.documentElement);
   },
   systems: () => [{id: 'input', update: () => session?.update(), dispose() {}}],
-  dispose() { detach?.(); detach = undefined; session = undefined; },
+  dispose() { c.services.delete('input');detach?.(); detach = undefined; session = undefined; },
  };
 }} satisfies PlayerPlugin;

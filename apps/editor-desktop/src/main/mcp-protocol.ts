@@ -3,12 +3,13 @@
  * `tools/call` (no resources, prompts or sampling). Transport-free so it can be tested without a socket.
  */
 export const protocolVersions = ['2025-06-18', '2025-03-26', '2024-11-05'] as const;
-export interface McpTool {name: string; description: string; inputSchema: Record<string, unknown>}
+export interface McpTool {name: string; description: string; inputSchema: Record<string, unknown>; outputSchema?:Record<string,unknown>; annotations?:{readOnlyHint?:boolean;destructiveHint?:boolean;openWorldHint?:boolean}}
 export type McpContent = {type: 'text'; text: string} | {type: 'image'; data: string; mimeType: string};
+export interface McpResult {content:McpContent[];structuredContent?:Record<string,unknown>;isError?:boolean}
 export interface McpHandlers {
  tools(): Promise<McpTool[]>;
  /** The tool's result as MCP content; a thrown error becomes `isError: true` content (the model can recover). */
- call(name: string, args: Record<string, unknown>): Promise<McpContent[]>;
+ call(name: string, args: Record<string, unknown>): Promise<McpContent[] | McpResult>;
 }
 export interface ServerInfo {name: string; version: string; instructions: string}
 type Id = string | number;
@@ -33,10 +34,11 @@ export async function handleMessage(message: unknown, handlers: McpHandlers, inf
    case 'tools/list': return {jsonrpc: '2.0', id, result: {tools: await handlers.tools()}};
    case 'tools/call': {
     if (typeof params.name !== 'string') return error(id, -32602, 'tools/call needs a tool name');
+    if(params.arguments!==undefined&&(!params.arguments||typeof params.arguments!=='object'||Array.isArray(params.arguments)))return error(id,-32602,'Tool arguments must be an object');
     const args = params.arguments && typeof params.arguments === 'object' && !Array.isArray(params.arguments) ? params.arguments as Record<string, unknown> : {};
     if (!(await handlers.tools()).some(t => t.name === params.name)) return error(id, -32602, `Unknown tool: ${params.name}`);
-    try { return {jsonrpc: '2.0', id, result: {content: await handlers.call(params.name, args), isError: false}}; }
-    catch (e) { return {jsonrpc: '2.0', id, result: {content: [{type: 'text', text: e instanceof Error ? e.message : String(e)}], isError: true}}; }
+    try { const result=await handlers.call(params.name,args);return {jsonrpc:'2.0',id,result:Array.isArray(result)?{content:result,isError:false}:{...result,isError:result.isError??false}}; }
+    catch (e) { return {jsonrpc: '2.0', id, result: {content: [{type: 'text', text: e instanceof Error ? e.message : String(e)}], structuredContent:{error:{code:e&&typeof e==='object'&&'code'in e?String(e.code):'TOOL_FAILED',message:e instanceof Error?e.message:String(e)}}, isError: true}}; }
    }
    default: return error(id, -32601, `Method not found: ${m.method}`);
   }
@@ -48,7 +50,8 @@ export async function handleBody(text: string, handlers: McpHandlers, info: Serv
  try { body = JSON.parse(text); } catch { return error(null, -32700, 'Parse error'); }
  if (!Array.isArray(body)) return handleMessage(body, handlers, info);
  if (!body.length) return error(null, -32600, 'Empty batch');
- const out = (await Promise.all(body.slice(0, 50).map(m => handleMessage(m, handlers, info)))).filter((r): r is Response => Boolean(r));
+ if(body.length>50)return error(null,-32600,'Batch exceeds 50 messages');
+ const out:Response[]=[];for(const message of body){const reply=await handleMessage(message,handlers,info);if(reply)out.push(reply);}
  return out.length ? out : undefined;
 }
 /** Only this machine may connect: a loopback Host (DNS rebinding) and, from browsers, a loopback Origin. */

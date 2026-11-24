@@ -1,0 +1,22 @@
+<!doctype html><meta charset="utf-8"><title>validator debug</title>
+<script type="module">
+import '@pixi/3d';
+import {Application} from 'pixi.js';
+import {Material3D} from '@pixi/3d';
+import {ShaderValidator} from '../shader3d-validator';
+import {ShaderItemSchema, shaderBits} from '../shader3d';
+const out = [];
+for (const main of ['webgpu', 'webgl']) {
+  const visible = new Application(); await visible.init({preference: main, width: 200, height: 120}); document.body.appendChild(visible.canvas);
+  const v = new ShaderValidator();
+  for (const [label, code] of [['good', '  albedo *= vec3(0.5);'], ['bad', '  // broken\n  albedo *= nope_shade;']]) {
+    const item = ShaderItemSchema.parse({id: 'x', name: 'X', kind: 'extra', wgsl: {material: code.replace('vec3(0.5)', 'vec3<f32>(0.5)')}, glsl: {material: code}});
+    for (const backend of ['webgl', 'webgpu']) {
+      const r = await v.check(`${main}-${label}-${backend}`, backend, () => ({material: new Material3D({extraBits: shaderBits(item)}), attributes: {uv: true, color: false, color1: false}}));
+      out.push({main, label, backend, state: r.state, errors: r.errors.slice(0, 2)});
+    }
+  }
+  v.dispose(); visible.destroy(true);
+}
+window.__result = out;
+</script>

@@ -27,5 +27,5 @@ it('rejects mismatched reimport identity atomically and clears busy on failure',
 it('registers the assets feature through the host without embedding image types in project schema',async()=>{
  const host=new ModuleHost();const projectKey=(await import('@rewrite/project')).projectToken;
  await host.start([{manifest:{id:'project',version:'1.0.0',apiVersion:1},activate(c){c.provide(projectKey,project());}},assetsModule({sessionId:'s',import:async()=>null,cancel:async()=>{}})]);
- expect(host.entries(projectSections).map(e=>e.value.key)).toEqual([sectionKey,'assets.library']);await host.stop();
+ expect(host.entries(projectSections).map(e=>e.value.key)).toEqual([sectionKey,'assets.sheets','assets.library']);await host.stop();
 });

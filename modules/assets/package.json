@@ -19,6 +19,7 @@
   },
   "devDependencies": {
     "@rewrite/scene": "workspace:*",
-    "@rewrite/kernel": "workspace:*"
+    "@rewrite/kernel": "workspace:*",
+    "@rewrite/render-pixi": "workspace:*"
   }
 }

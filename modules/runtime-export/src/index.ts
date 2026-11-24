@@ -14,8 +14,12 @@ export interface RuntimeExportContribution{
  assets?:readonly {type:string;files(asset:AssetRecord):readonly string[];references?(asset:AssetRecord):readonly {id:string;type:string}[]}[];
  extensions?:readonly {key:string;parse(value:unknown):Json;runtime:boolean;/** Whether this section alone needs the contribution's runtime (a function decides from the parsed value). */activate?:boolean|((value:Json)=>boolean);references?(value:Json):readonly {id:string;type:string}[]}[];
  validate?(catalog:ExportCatalog):readonly string[];
+ /** Network origins the runtime connects to (the page's CSP connect-src), e.g. a game server; asked only when used. */
+ connect?(catalog:ExportCatalog):readonly string[];
 }
-export interface ExportPlan{project:Project;assets:AssetRecord[];files:Record<string,readonly string[]>;runtimes:string[];extensions:Record<string,Json>;contributions:{id:string;version:string}[]}
+/** CSP source for a network origin: scheme, host (or *), optional port — no paths, queries or credentials. */
+export const connectSourcePattern=/^(wss?|https?):\/\/(\*|[A-Za-z0-9.-]+)(:\d{1,5})?$/;
+export interface ExportPlan{project:Project;assets:AssetRecord[];files:Record<string,readonly string[]>;runtimes:string[];extensions:Record<string,Json>;contributions:{id:string;version:string}[];/** CSP connect-src additions of the used contributions. */connect:string[]}
 /** Trusted packaged contributions, never executable module paths taken from project JSON. */
 export class RuntimeExportRegistry{
  readonly definitions=new Map<string,ComponentDefinition>();private components=new Map<string,RuntimeExportContribution>();private assets=new Map<string,{owner:RuntimeExportContribution;collector:NonNullable<RuntimeExportContribution['assets']>[number]}>();private extensions=new Map<string,{owner:RuntimeExportContribution;definition:NonNullable<RuntimeExportContribution['extensions']>[number]}>();private modules=new Map<string,string>();private providers=new Map<string,Set<string>>();private entries=new Map<string,RuntimeEntry>();
@@ -35,6 +39,7 @@ export class RuntimeExportRegistry{
  for(const c of this.contributions){const errors=c.validate?.(catalog)??[];if(errors.length)throw Error(errors.join('\n'));}
  const runtimes=this.order([...runtimeIds]);for(const id of runtimes){const owner=this.contributions.find(c=>c.runtime?.id===id);if(owner)used.add(owner);}
  const runtimeProject={...p,modules:{},extensions:{...extensions,'assets.registry':{version:1,items:[...required.values()].sort((a,b)=>a.id.localeCompare(b.id))}},scenes:p.scenes.map(s=>({...s,entities:s.entities.map(e=>({...e,components:e.components.filter(c=>!this.definitions.get(c.type)?.editorOnly)}))}))};
- return{project:runtimeProject,assets:[...required.values()].sort((a,b)=>a.id.localeCompare(b.id)),files,runtimes,extensions,contributions:[...used].map(c=>({id:c.id,version:c.version})).sort((a,b)=>a.id.localeCompare(b.id))};
+ const connect=[...new Set([...used].flatMap(c=>c.connect?.(catalog)??[]))].sort();for(const source of connect)if(!connectSourcePattern.test(source))throw Error(`Invalid network origin for the game page: ${source}`);
+ return{project:runtimeProject,assets:[...required.values()].sort((a,b)=>a.id.localeCompare(b.id)),files,runtimes,extensions,contributions:[...used].map(c=>({id:c.id,version:c.version})).sort((a,b)=>a.id.localeCompare(b.id)),connect};
  }
 }

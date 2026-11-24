@@ -48,10 +48,13 @@ try {
  console.log('PASS objects without a visual show role badges (rules, timer, plain, camera) and select by click');
 
  await expect(canvas).toHaveAttribute('data-rulers', 'true');
+ const navigation=page.locator('.viewport-navigation > summary');
+ await navigation.click();
  const rulers = page.getByRole('button', {name: 'Show rulers', exact: true});
  await expect(rulers).toHaveAttribute('aria-pressed', 'true');
  await rulers.click(); await expect(canvas).toHaveAttribute('data-rulers', 'false');
  await rulers.click(); await expect(canvas).toHaveAttribute('data-rulers', 'true');
+ await navigation.click();
  console.log('PASS rulers are on by default and toggle from the canvas bar');
 
  at = await view();
@@ -69,8 +72,10 @@ try {
  expect({...box, x: Math.round(box.x * 1000) / 1000, y: Math.round(box.y * 1000) / 1000}).toEqual({x: 360, y: 280, rotation: 0, scaleX: 1, scaleY: 1, skewX: 20});
  console.log('PASS dragging shows Δx/Δy and the position next to the pointer; the skewed object keeps its skew');
 
- const sceneView = page.getByRole('button', {name: /^Scene view/});
- await expect(sceneView).toBeDisabled();
+ const tabs=page.getByRole('group',{name:'Viewport views'});
+ const sceneView=tabs.getByRole('button',{name:'Scene',exact:true});
+ const gameView=tabs.getByRole('button',{name:'Game',exact:true});
+ await expect(sceneView).toHaveAttribute('aria-pressed','true');
  await page.getByRole('button', {name: 'Play', exact: true}).click();
  await expect(canvas).toHaveAttribute('data-stage-mask', 'true');
  await expect(canvas).toHaveAttribute('data-rulers', 'false');
@@ -79,17 +84,17 @@ try {
  await expect(canvas).not.toHaveAttribute('data-stage-mask', /./);
  await expect.poll(() => data('camera-frame')).toEqual([[460, 135], [940, 135], [940, 405], [460, 405]]);
  await expect(canvas).toHaveAttribute('data-rulers', 'true');
- await sceneView.click();
+ await gameView.click();
  await expect(canvas).toHaveAttribute('data-stage-mask', 'true');
  await expect(canvas).not.toHaveAttribute('data-camera-frame', /./);
  await sceneView.click(); await expect(canvas).toHaveAttribute('data-scene-view', 'true');
  await page.getByRole('button', {name: 'Stop', exact: true}).click();
  await expect(canvas).toHaveAttribute('data-scene-view', 'false');
- await expect(sceneView).toBeDisabled();
+ await expect(sceneView).toHaveAttribute('aria-pressed','true');
  await expect(canvas).not.toHaveAttribute('data-stage-mask', /./);
  // Pivot: top left of the box's own visual; the box stays where it is on screen (same pixels blue).
  const blue = async p => { const {data} = await sharp(await page.screenshot({clip: {x: Math.round(p.x), y: Math.round(p.y), width: 1, height: 1}})).raw().toBuffer({resolveWithObject: true}); return data[2] > 180 && data[0] < 120; };
- await page.getByRole('button', {name: 'Properties', exact: true}).click(); await page.getByRole('button', {name: 'Pin Properties', exact: true}).click();
+ await expect(page.locator('.dv-tab').filter({hasText:'Inspector'})).toBeVisible();
  at = await view(); const p = at(360, 280);
  await page.mouse.click(p.x, p.y);
  await expect.poll(() => data('selection')).toEqual(['box']);
@@ -107,6 +112,7 @@ try {
  console.log('PASS Pivot presets move the pivot to a corner of the visual without moving it on screen; one Undo');
 
  // Device preview: a portrait phone sees the whole 960-wide stage with letterbox above and below (fit).
+ await navigation.click();
  await page.getByRole('combobox', {name: 'Device preview', exact: true}).selectOption({label: 'Phone · portrait'});
  await expect.poll(() => data('device-frame')).toEqual([0, -771, 960, 2081]);
  await page.getByRole('combobox', {name: 'Device preview', exact: true}).selectOption({label: 'Desktop · 1920 × 1080'});

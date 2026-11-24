@@ -1,0 +1,25 @@
+{
+  "name": "@rewrite/pixi3d-lab",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.tsx",
+    "./runtime": "./src/runtime.ts",
+    "./contracts": "./src/contracts.ts",
+    "./strings": "./src/strings.ts"
+  },
+  "dependencies": {
+    "@pixi/3d": "0.1.0",
+    "@rewrite/render-pixi": "workspace:*",
+    "@rewrite/runtime": "workspace:*",
+    "@rewrite/sdk": "workspace:*",
+    "pixi.js": "8.23.0",
+    "react": "19.3.1",
+    "zod": "4.6.7",
+    "@rewrite/render-pixi3d": "workspace:*"
+  },
+  "devDependencies": {
+    "@rewrite/kernel": "workspace:*"
+  }
+}

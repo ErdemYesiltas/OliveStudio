@@ -1,3 +1,8 @@
+import {ViewportRuntimeGate} from './runtime-features';
+import type {ViewportFeature,ViewportFeatureHandle,SpatialCommit} from './viewport-features';
+import {project2DScene} from '@rewrite/scene';
+import {destroyLocalApplication} from './lifecycle';
+import {z} from 'zod';
 import {gridLines,readGridSettings,snapMove,gridNudge,gridSteps,type GridSettings} from './grid';
 export {readGridSettings,gridSteps,type GridSettings} from './grid';
 import {cameraForBounds,cameraScale} from './camera';
@@ -28,6 +33,7 @@ export { objectDefinitions,createObjectAdapters,particleState,particleBounds,wav
 import { transform, type Scene } from '@rewrite/scene';
 import { SpriteSchema,TextureMetadataSchema,ShapeSchema,TextSchema,BitmapTextSchema,fontImporter,shapeKinds,textStyle,bitmapTextStyle,bidiText } from './contracts';
 import { drawShape } from './display';
+import { visualKey } from './visual-signature';
 import { loadFont,fontStack } from './fonts';
 import { assetImporters } from '@rewrite/assets';
 import { angleStep,pointerAngle,evaluateTransform,type Transform2D,type TransformTool,type TransformAxis } from './gizmo';
@@ -39,7 +45,7 @@ export { SpriteSchema,TextureMetadataSchema,ShapeSchema,TextSchema,BitmapTextSch
 export { drawShape,shapePoints } from './display';
 
 const shapeIs=(...kinds:string[])=>(v:Json)=>kinds.includes(String((v as {kind?:string}|null)?.kind??'rect'));
-export const shapeDefinition: ComponentDefinition = { type: 'pixi.shape', version: 1, exclusiveGroup:'render.visual', titleKey: 'component.shape', defaults: () => ({ alpha:1,kind:'rect',width: 100, height: 100, color: '#7caef5', rounded: 12,sides:5,innerRadius:.5,strokeColor:'#ffffff',strokeWidth:0 }), parse: v => ShapeSchema.parse(v), fields: [
+export const shapeDefinition: ComponentDefinition = { type: 'pixi.shape', version: 1, supportedSpaces:['scene.2d'], exclusiveGroup:'render.visual', titleKey: 'component.shape', defaults: () => ({ alpha:1,kind:'rect',width: 100, height: 100, color: '#7caef5', rounded: 12,sides:5,innerRadius:.5,strokeColor:'#ffffff',strokeWidth:0 }), get dataSchema(){return z.toJSONSchema(ShapeSchema,{unrepresentable:'any'});},parse: v => ShapeSchema.parse(v), fields: [
  {key:'kind',titleKey:'field.shapeKind',kind:'enum',options:shapeKinds.map(value=>({value,titleKey:`shape.${value}`}))},{key:'alpha',titleKey:'field.alpha',kind:'number'},
  { key: 'width', titleKey: 'field.width', kind: 'number' }, { key: 'height', titleKey: 'field.height', kind: 'number' }, { key: 'color', titleKey: 'field.color', kind: 'color' }, { key: 'rounded', titleKey: 'field.rounded', kind: 'number',visible:shapeIs('rect') },
  {key:'sides',titleKey:'field.sides',kind:'number',visible:shapeIs('polygon','star')},{key:'innerRadius',titleKey:'field.innerRadius',kind:'number',visible:shapeIs('star')},
@@ -47,28 +53,28 @@ export const shapeDefinition: ComponentDefinition = { type: 'pixi.shape', versio
 ] };
 const wraps=(v:Json)=>Boolean((v as {wordWrap?:boolean}|null)?.wordWrap);
 const wrapFields:ComponentDefinition['fields']=[{key:'wordWrap',titleKey:'field.wordWrap',kind:'boolean'},{key:'wrapWidth',titleKey:'field.wrapWidth',kind:'number',visible:wraps},{key:'lineHeight',titleKey:'field.lineHeight',kind:'number'}];
-export const textDefinition: ComponentDefinition = { type: 'pixi.text', version: 1, exclusiveGroup:'render.visual', titleKey: 'component.text', defaults: () => ({ alpha:1,text: 'Hello, world', fontSize: 40, color: '#e8e8e5', font: '', fontWeight:'normal', fontStyle:'normal', align:'center', letterSpacing:0, strokeColor:'#000000', strokeWidth:0, wordWrap:false, wrapWidth:400, lineHeight:0 }), parse: v => TextSchema.parse(v), fields: [{key:'alpha',titleKey:'field.alpha',kind:'number'},
+export const textDefinition: ComponentDefinition = { type: 'pixi.text', version: 1, supportedSpaces:['scene.2d'], exclusiveGroup:'render.visual', titleKey: 'component.text', defaults: () => ({ alpha:1,text: 'Hello, world', fontSize: 40, color: '#e8e8e5', font: '', fontWeight:'normal', fontStyle:'normal', align:'center', letterSpacing:0, strokeColor:'#000000', strokeWidth:0, wordWrap:false, wrapWidth:400, lineHeight:0 }), get dataSchema(){return z.toJSONSchema(TextSchema,{unrepresentable:'any'});},parse: v => TextSchema.parse(v), fields: [{key:'alpha',titleKey:'field.alpha',kind:'number'},
  { key: 'text', titleKey: 'field.text', kind: 'string' }, { key: 'font', titleKey: 'field.font', kind: 'asset', assetType: 'font.face' }, { key: 'fontSize', titleKey: 'field.fontSize', kind: 'number' }, { key: 'color', titleKey: 'field.color', kind: 'color' },
  { key: 'fontWeight', titleKey: 'field.fontWeight', kind: 'enum', options: ['normal','bold'].map(value=>({value,titleKey:`fontWeight.${value}`})) }, { key: 'fontStyle', titleKey: 'field.fontStyle', kind: 'enum', options: ['normal','italic'].map(value=>({value,titleKey:`fontStyle.${value}`})) },
  { key: 'align', titleKey: 'field.align', kind: 'enum', options: ['left','center','right'].map(value=>({value,titleKey:`textAlign.${value}`})) }, { key: 'letterSpacing', titleKey: 'field.letterSpacing', kind: 'number' },
  { key: 'strokeColor', titleKey: 'field.textStrokeColor', kind: 'color' }, { key: 'strokeWidth', titleKey: 'field.textStrokeWidth', kind: 'number' },
  ...wrapFields,
 ] };
-export const bitmapTextDefinition:ComponentDefinition={type:'pixi.bitmapText',version:1,exclusiveGroup:'render.visual',titleKey:'component.bitmapText',defaults:()=>({alpha:1,text:'Score 0',fontSize:40,color:'#ffffff',font:'',letterSpacing:0,align:'center',wordWrap:false,wrapWidth:400,lineHeight:0}),parse:v=>BitmapTextSchema.parse(v),fields:[{key:'alpha',titleKey:'field.alpha',kind:'number'},{key:'text',titleKey:'field.text',kind:'string'},{key:'font',titleKey:'field.font',kind:'asset',assetType:'font.face'},{key:'fontSize',titleKey:'field.fontSize',kind:'number'},{key:'color',titleKey:'field.color',kind:'color'},{key:'letterSpacing',titleKey:'field.letterSpacing',kind:'number'},{key:'align',titleKey:'field.align',kind:'enum',options:['left','center','right'].map(value=>({value,titleKey:`textAlign.${value}`}))},...wrapFields]};
-export const spriteDefinition:ComponentDefinition={type:'pixi.sprite',version:1,titleKey:'component.sprite',exclusiveGroup:'render.visual',defaults:()=>({assetId:'',width:100,height:100,anchorX:.5,anchorY:.5,alpha:1,tint:'#ffffff'}),parse:v=>SpriteSchema.parse(v),fields:[{key:'assetId',titleKey:'field.assetId',kind:'asset',assetType:'pixi.texture'},...['width','height','anchorX','anchorY','alpha'].map(key=>({key,titleKey:`field.${key}`,kind:'number' as const})),{key:'tint',titleKey:'field.tint',kind:'color'}]};
+export const bitmapTextDefinition:ComponentDefinition={type:'pixi.bitmapText',version:1, supportedSpaces:['scene.2d'],exclusiveGroup:'render.visual',titleKey:'component.bitmapText',defaults:()=>({alpha:1,text:'Score 0',fontSize:40,color:'#ffffff',font:'',letterSpacing:0,align:'center',wordWrap:false,wrapWidth:400,lineHeight:0}),get dataSchema(){return z.toJSONSchema(BitmapTextSchema,{unrepresentable:'any'});},parse:v=>BitmapTextSchema.parse(v),fields:[{key:'alpha',titleKey:'field.alpha',kind:'number'},{key:'text',titleKey:'field.text',kind:'string'},{key:'font',titleKey:'field.font',kind:'asset',assetType:'font.face'},{key:'fontSize',titleKey:'field.fontSize',kind:'number'},{key:'color',titleKey:'field.color',kind:'color'},{key:'letterSpacing',titleKey:'field.letterSpacing',kind:'number'},{key:'align',titleKey:'field.align',kind:'enum',options:['left','center','right'].map(value=>({value,titleKey:`textAlign.${value}`}))},...wrapFields]};
+export const spriteDefinition:ComponentDefinition={type:'pixi.sprite',version:1,supportedSpaces:['scene.2d'],titleKey:'component.sprite',exclusiveGroup:'render.visual',defaults:()=>({assetId:'',width:100,height:100,anchorX:.5,anchorY:.5,alpha:1,tint:'#ffffff'}),get dataSchema(){return z.toJSONSchema(SpriteSchema,{unrepresentable:'any'});},parse:v=>SpriteSchema.parse(v),fields:[{key:'assetId',titleKey:'field.assetId',kind:'asset',assetType:'pixi.texture'},...['width','height','anchorX','anchorY','alpha'].map(key=>({key,titleKey:`field.${key}`,kind:'number' as const})),{key:'tint',titleKey:'field.tint',kind:'color'}]};
 export function makeSpriteEntity(asset:AssetRecord,x=480,y=270){
  if(asset.type!=='pixi.texture')throw Error('This asset is not a texture');const meta=TextureMetadataSchema.parse(asset.metadata),entity=makeEntity(asset.name,x,y);
  entity.components.push({id:crypto.randomUUID(),type:'pixi.sprite',version:1,data:{assetId:asset.id,width:meta.width,height:meta.height,anchorX:.5,anchorY:.5,alpha:1,tint:'#ffffff'}});return entity;
 }
 const cameraIs=(key:'target'|'limit')=>(v:Json)=>Boolean((v as Record<string,Json>|null)?.[key]);
 /** Scene camera: one per scene (the Add menu selects the existing one); the target is picked in the Inspector. */
-export const cameraDefinition:ComponentDefinition={type:cameraType,version:1,titleKey:'component.camera',uniqueInScene:'Camera',defaults:()=>CameraSchema.parse({}),parse:v=>CameraSchema.parse(v),fields:[
+export const cameraDefinition:ComponentDefinition={type:cameraType,version:1, supportedSpaces:['scene.2d'],titleKey:'component.camera',uniqueInScene:'Camera',defaults:()=>CameraSchema.parse({}),get dataSchema(){return z.toJSONSchema(CameraSchema,{unrepresentable:'any'});},parse:v=>CameraSchema.parse(v),fields:[
  {key:'zoom',titleKey:'camera.zoom',kind:'number'},{key:'rotate',titleKey:'camera.rotate',kind:'boolean'},{key:'target',titleKey:'camera.target',kind:'string',visible:()=>false},
  ...(['offsetX','offsetY','smoothing','deadzoneWidth','deadzoneHeight'] as const).map(key=>({key,titleKey:`camera.${key}`,kind:'number' as const,visible:cameraIs('target')})),
  {key:'limit',titleKey:'camera.limit',kind:'boolean'},...(['limitLeft','limitTop','limitRight','limitBottom'] as const).map(key=>({key,titleKey:`camera.${key}`,kind:'number' as const,visible:cameraIs('limit')})),
 ],remapReferences:(v,ids)=>{const c=CameraSchema.parse(v);return{...c,target:c.target?ids.entities.get(c.target)??c.target:''};}};
 /** Screen Space (HUD): a top-level object drawn on the screen above the world, ignoring the camera; anchored for other screen sizes. */
-export const screenSpaceDefinition:ComponentDefinition={type:screenSpaceType,version:1,titleKey:'component.screenSpace',defaults:()=>ScreenSpaceSchema.parse({}),parse:v=>ScreenSpaceSchema.parse(v),fields:[{key:'anchor',titleKey:'field.screenAnchor',kind:'enum',options:screenAnchors.map(value=>({value,titleKey:`anchor.${value}`}))}]};
+export const screenSpaceDefinition:ComponentDefinition={type:screenSpaceType,version:1, supportedSpaces:['scene.2d'],titleKey:'component.screenSpace',defaults:()=>ScreenSpaceSchema.parse({}),get dataSchema(){return z.toJSONSchema(ScreenSpaceSchema,{unrepresentable:'any'});},parse:v=>ScreenSpaceSchema.parse(v),fields:[{key:'anchor',titleKey:'field.screenAnchor',kind:'enum',options:screenAnchors.map(value=>({value,titleKey:`anchor.${value}`}))}]};
 export const pixiModule: EditorModule = { manifest: { id: 'pixi', version: '1.0.0', apiVersion: 1, requires: { scene: '^1' },optional:{assets:'^1',project:'^1'} }, activate(c) {
  c.contribute(assetImporters,fontImporter.id,fontImporter);
  c.contribute(components,cameraType,cameraDefinition);c.contribute(components,screenSpaceType,screenSpaceDefinition); c.contribute(components,'pixi.sprite',spriteDefinition); c.contribute(components, 'pixi.shape', shapeDefinition); c.contribute(components, 'pixi.text', textDefinition); c.contribute(components,'pixi.bitmapText',bitmapTextDefinition); c.contribute(components,'pixi.flipbook',flipbookDefinition);
@@ -115,6 +121,15 @@ interface Drag {id:string;pointerId:number;node:Container;start:Transform2D;from
 export interface OnionFrame{poses:ReadonlyMap<string,Transform2D&{active:boolean}>;tint:string;alpha:number}
 export interface ViewportDecoration{entityId?:string;points:readonly {x:number;y:number}[];color?:string}
 export class SceneViewport {
+ private features:ViewportFeatureHandle[]=[];
+ private runtimeGate=new ViewportRuntimeGate(()=>this.features);
+ async prepareRuntime(scene:Scene){this.sync(scene,this.selected);await this.runtimeGate.prepare(scene);}
+ async readyRuntime(){await this.runtimeGate.ready();}
+ enterRuntime(scene:Scene){this.runtimeGate.enter(scene);}
+ exitRuntime(){try{this.runtimeGate.exit();}catch(error){this.callbacks.report?.(error);}}
+
+ private eachFeature(run:(feature:ViewportFeatureHandle)=>void){for(const feature of [...this.features])try{run(feature);}catch(error){this.features=this.features.filter(f=>f!==feature);try{feature.dispose();}catch{/* Preserve the original error. */}this.callbacks.report?.(error);}}
+
  readonly app = new Application();
  private stage = new Container();
  private content = new Container();
@@ -161,6 +176,7 @@ export class SceneViewport {
  private grid=new Graphics();
  private gridSettings:GridSettings=readGridSettings(null);
  private nodes = new Map<string, Container>();
+ private texts = new Map<string, Text|BitmapText>();
  private custom=new Map<string,{componentId:string;handle:VisualHandle}>();
  private observer?: ResizeObserver;
  private drag?: Drag;
@@ -232,22 +248,25 @@ export class SceneViewport {
  private pan = { x: 0, y: 0 };
  private accent = '#7caef5';
  private background = '#17191c';
- private clearVisuals(){for(const e of this.custom.values())e.handle.dispose();this.custom.clear();for(const d of this.callbacks.decorators?.()??[]){try{d.clear();}catch(error){this.callbacks.report?.(error);}}}
- get visualDiagnostics():Record<string,Json>[]{return [...this.custom].map(([entityId,v])=>({entityId,componentId:v.componentId,...v.handle.diagnostics()}));}
+ private clearVisuals(){this.eachFeature(feature=>feature.clear());for(const e of this.custom.values())e.handle.dispose();this.custom.clear();for(const d of this.callbacks.decorators?.()??[]){try{d.clear();}catch(error){this.callbacks.report?.(error);}}}
+ get visualDiagnostics():Record<string,Json>[]{return [...[...this.custom].map(([entityId,v])=>({entityId,componentId:v.componentId,...v.handle.diagnostics()})),...this.features.flatMap(f=>(f.diagnostics?.()??[]).map(d=>({entityId:d.entityId,ready:d.ready,...(d.error?{error:d.error}:{})})))];}
  private customFrame(id:string):VisualFrame{return this.callbacks.visualFrame?.(id)??{token:'edit',time:0,emit:false,silent:true};}
  private updateVisuals(scene:Scene){const byId=new Map(scene.entities.map(e=>[e.id,e]));for(const[id,v]of this.custom){const c=byId.get(id)?.components.find(c=>c.id===v.componentId);if(c)v.handle.update(c.data,this.customFrame(c.id));}}
  constructor(private host: HTMLElement, private callbacks: { select(id: string | null, mode?: SelectMode): void; selectMany?(ids:readonly string[],additive:boolean):void; commitTransform(id:string,value:Transform2D,original:Transform2D):void; commitTransforms?(changes:readonly {id:string;value:Transform2D;expected:Transform2D}[]):void; flags?(id:string):EditorFlags; report?(error:unknown):void; text?(key:string):string; playing(): boolean;interact?(entityId:string):void;
  /** While playing: whether anything reacts to clicks on this object (others let clicks through). Without it every object takes clicks. */
  clickable?(entityId:string):boolean;
  /** Preview pointer in scene pixels while playing (physics dragging, script pointer hooks): presses inside the stage, moves over the canvas or while pressed. */
- runtimePointer?(phase:'down'|'move'|'up',x:number,y:number):boolean|void;resolveAsset?(id:string):{url:string}|undefined;resolveFont?(id:string):{url:string}|undefined;visuals?():readonly VisualAdapter[];visualFrame?(id:string):VisualFrame;visualEpoch?():string;visualEvent?(event:unknown):void;decorators?():readonly SceneDecorator[] }) {}
+ runtimePointer?(phase:'down'|'move'|'up',x:number,y:number):boolean|void;resolveAsset?(id:string):{url:string}|undefined;resolveFont?(id:string):{url:string}|undefined;visuals?():readonly VisualAdapter[];visualFrame?(id:string):VisualFrame;visualEpoch?():string;visualEvent?(event:unknown):void;decorators?():readonly SceneDecorator[];features?():readonly ViewportFeature[];runtimeEntities?():readonly Scene['entities'][number][]|undefined;runtimeTime?():number;runtimeSilent?():boolean;runtimeEvent?(event:{type:string;sourceId:string;silent:boolean;event?:string}):void;commitSpatial?(change:SpatialCommit):void }) {}
  private locked:ReadonlySet<string>=new Set();
  /** True when a decorator (e.g. a layout parent) owns this entity's position; the move tool skips it. */
  positionLocked(id:string){return this.locked.has(id);}
  private decorate(scene:Scene){const decorators=this.callbacks.decorators?.()??[],locked=new Set<string>();for(const d of decorators){try{d.apply(scene.entities,id=>this.nodes.get(id),this.app.renderer,{rtl:this.rtl});for(const id of d.positionLocked?.(scene.entities)??[])locked.add(id);}catch(error){this.callbacks.report?.(error);}}this.locked=locked;}
  async init(): Promise<void> {
+  const prepared:ViewportFeature[]=[];for(const feature of this.callbacks.features?.()??[])try{await feature.prepare();prepared.push(feature);}catch(error){this.callbacks.report?.(error);}
+  if(this.disposed)return;
   await this.app.init({ background: this.background, antialias: true, preference: 'webgl', autoStart: false, resolution: window.devicePixelRatio || 1, autoDensity: true });
-  if (this.disposed) { this.app.destroy(true, { children: true }); return; }
+  if (this.disposed) { destroyLocalApplication(this.app); return; }
+  for(const feature of prepared)try{this.features.push(feature.create({app:this.app,host:this.host,node:id=>this.nodes.get(id),editable:()=>this.editing&&!this.callbacks.playing(),select:id=>this.callbacks.select(id,'replace'),commitSpatial:change=>{if(!this.callbacks.commitSpatial)throw Error('Spatial editing unavailable');this.callbacks.commitSpatial(change);},render:()=>this.render(),report:error=>this.callbacks.report?.(error),text:key=>this.label(key),runtimeEntities:()=>this.callbacks.runtimeEntities?.(),runtimeTime:()=>this.callbacks.runtimeTime?.()??0,runtimeSilent:()=>this.callbacks.runtimeSilent?.()??false,runtimeEvent:event=>this.callbacks.runtimeEvent?.(event),flags:id=>this.callbacks.flags?.(id)??{hidden:false,locked:false}}));}catch(error){this.callbacks.report?.(error);}
   this.host.appendChild(this.app.canvas); this.app.renderer.background.color=this.background; this.host.dataset.ready = 'true'; this.host.dataset.renderer=String(this.app.renderer.type);
   this.debugOverlay.eventMode='none';this.app.stage.addChild(this.stage,this.rulers,this.readout);this.rulers.addChild(this.rulerBands);this.rulers.eventMode='none';this.readout.eventMode='none';this.readout.visible=false;this.cameraFrame.eventMode='none'; this.grid.eventMode='none';this.guideLayer.eventMode='none';this.stageMask.eventMode='none';this.game.addChild(this.onionLayer,this.content,this.ui);this.onionLayer.eventMode='none';this.stage.addChild(this.frame, this.grid, this.game, this.cameraFrame, this.deviceLayer, this.deviceLabel, this.debugOverlay,this.overlay,this.guideLayer);this.deviceLayer.eventMode='none';this.deviceLabel.eventMode='none';this.deviceLabel.visible=false;
   this.app.stage.eventMode = 'static'; this.app.stage.on('pointerdown', e => { if (e.target !== this.app.stage) return; if(e.button!==0||this.callbacks.playing()||!this.editing||this.drag||this.group){if(!this.callbacks.playing())this.callbacks.select(null);return;} const p={x:e.global.x,y:e.global.y};this.marquee={pointerId:e.pointerId,from:p,to:p,additive:e.shiftKey||e.metaKey||e.ctrlKey}; });
@@ -278,6 +297,15 @@ export class SceneViewport {
  viewCenter(){const bounds=this.host.getBoundingClientRect();return this.screenToScene(bounds.left+bounds.width/2,bounds.top+bounds.height/2);}
  screenToScene(clientX:number,clientY:number){const bounds=this.host.getBoundingClientRect();return this.stage.toLocal({x:clientX-bounds.left,y:clientY-bounds.top});}
  refreshAssets(){this.assetRefresh++;this.failed.clear();this.visualSignature='';if(this.snapshot)this.sync(this.snapshot,this.selected);}
+ /** Active sprites' textures by state (readiness): still loading, failed to load or decode, or with no imported asset/URL. */
+ get textureStates():{loading:string[];failed:string[];unresolved:string[]}{
+  const out={loading:new Set<string>(),failed:new Set<string>(),unresolved:new Set<string>()};if(!this.snapshot)return{loading:[],failed:[],unresolved:[]};
+  const objects=new Map(this.snapshot.entities.map(e=>[e.id,e]));
+  for(const e of this.snapshot.entities){let n:typeof e|undefined=e,active=true;while(n){if(!n.active){active=false;break;}n=n.parentId?objects.get(n.parentId):undefined;}if(!active)continue;
+   for(const c of e.components){if(c.type!=='pixi.sprite'||c.version!==1)continue;const p=SpriteSchema.parse(c.data),url=this.callbacks.resolveAsset?.(p.assetId)?.url,id=p.assetId||'(no texture)';
+    if(!url)out.unresolved.add(id);else if(this.failed.has(url))out.failed.add(id);else if(!this.textures.has(url))out.loading.add(id);}}
+  return{loading:[...out.loading],failed:[...out.failed],unresolved:[...out.unresolved]};
+ }
  get missingAssets():string[]{
   if(!this.snapshot)return[];const objects=new Map(this.snapshot.entities.map(e=>[e.id,e]));
   return this.snapshot.entities.flatMap(e=>{let n:typeof e|undefined=e;while(n){if(!n.active)return[];n=n.parentId?objects.get(n.parentId):undefined;}return e.components.flatMap(c=>{if(c.type!=='pixi.sprite'||c.version!==1)return[];const p=SpriteSchema.parse(c.data),url=this.callbacks.resolveAsset?.(p.assetId)?.url;return !url||!this.textures.has(url)?[p.assetId||'(no texture)']:[];});});
@@ -331,9 +359,9 @@ export class SceneViewport {
   * Painting tool (e.g. tilemap brush): while set, left-button strokes on the canvas go to `paint` in the entity's
   * local space instead of selecting or moving; Escape or a cancelled pointer ends the stroke with `cancel`.
   */
- private painter:{entityId:string;paint(local:{x:number;y:number},phase:'start'|'move'|'end'|'cancel'):void}|null=null;private painting?:number;
- setPainter(painter:{entityId:string;paint(local:{x:number;y:number},phase:'start'|'move'|'end'|'cancel'):void}|null){if(this.painting!==undefined)this.painter?.paint({x:0,y:0},'cancel');this.painting=undefined;this.painter=painter;this.host.dataset.painting=painter?painter.entityId:'';}
- private paintLocal(e:PointerEvent){const node=this.painter?this.nodes.get(this.painter.entityId):undefined;if(!node)return undefined;const b=this.host.getBoundingClientRect(),p=node.toLocal({x:e.clientX-b.left,y:e.clientY-b.top});return Number.isFinite(p.x)&&Number.isFinite(p.y)?{x:p.x,y:p.y}:undefined;}
+ private painter:{entityId:string|null;paint(local:{x:number;y:number},phase:'start'|'move'|'end'|'cancel'):void}|null=null;private painting?:number;
+ setPainter(painter:{entityId:string|null;paint(local:{x:number;y:number},phase:'start'|'move'|'end'|'cancel'):void}|null){if(this.painting!==undefined)this.painter?.paint({x:0,y:0},'cancel');this.painting=undefined;this.painter=painter;this.host.dataset.painting=painter?(painter.entityId??'world'):'';}
+ private paintLocal(e:PointerEvent){const node=this.painter?(this.painter.entityId?this.nodes.get(this.painter.entityId):this.stage):undefined;if(!node)return undefined;const b=this.host.getBoundingClientRect(),p=node.toLocal({x:e.clientX-b.left,y:e.clientY-b.top});return Number.isFinite(p.x)&&Number.isFinite(p.y)?{x:p.x,y:p.y}:undefined;}
  /** While playing, the pointer in content (scene) space goes to the runtime: down on the canvas, move and up anywhere. */
  private runtimePoint(e:PointerEvent){const b=this.host.getBoundingClientRect(),p=this.content.toLocal({x:e.clientX-b.left,y:e.clientY-b.top});return Number.isFinite(p.x)&&Number.isFinite(p.y)?p:undefined;}
  private runtimeHeld=false;
@@ -360,10 +388,27 @@ export class SceneViewport {
   try{return await this.app.renderer.extract.base64({target:box,frame:new Rectangle(0,0,w,h),resolution:width/w,format:'png'});}
   finally{this.markers(true);box.removeChild(this.game);parent?.addChildAt(this.game,index);this.borrowed=false;bg.destroy();box.destroy();this.setRuntimeView(this.lastView);this.selection(this.selected);this.render();if(ticking)this.app.ticker.start();}
  }
+ /** For scripts while the game runs: 3D picks under a world-pixel point (like game.pointer) and Model 3D states, across features. */
+ scripts3d() {
+  const ports = () => this.features.flatMap(f => f.scripts3d ? [f.scripts3d] : []);
+  return {
+   raycast: (x: number, y: number) => { const g = this.content.toGlobal({x, y}); for (const p of ports()) { const hit = p.raycast(g); if (hit) return hit; } return null; },
+   model: (id: string) => { for (const p of ports()) { const m = p.model(id); if (m) return m; } return {state: 'loading' as const}; },
+   stats: () => ports()[0]?.stats() ?? null,
+   // Shapes go to every 3D feature (one projection in practice); which Mesh 3D shows one is its own business.
+   defineGeometry: (id: string, data: unknown) => { for (const p of ports()) p.defineGeometry?.(id, data); },
+   setMeshGeometry: (entityId: string, id: string) => { for (const p of ports()) p.setMeshGeometry?.(entityId, id); },
+   setMorph: (entityId: string, weights: readonly number[]) => { for (const p of ports()) p.setMorph?.(entityId, weights); },
+   writeParticles: (entityId: string, data: Float32Array, count: number) => { for (const p of ports()) p.writeParticles?.(entityId, data, count); },
+   setBatchGeometries: (entityId: string, ids: readonly string[]) => { for (const p of ports()) p.setBatchGeometries?.(entityId, ids); },
+   writeBatch: (entityId: string, data: Float32Array, count: number) => { for (const p of ports()) p.writeBatch?.(entityId, data, count); },
+  };
+ }
  captureCamera() { return {zoom:this.zoom,pan:{...this.pan}}; }
  restoreCamera(camera:{zoom:number;pan:{x:number;y:number}}):void {this.zoom=camera.zoom;this.pan={...camera.pan};this.resize();}
  setTheme(background: string, accent: string): void { this.background = background; this.accent = accent; if (this.app.renderer) { this.app.renderer.background.color = background; this.selection(this.selected); } }
  sync(scene: Scene, selected: string | null): void {
+  const original=scene;scene=project2DScene(scene);
   if (this.disposed || !this.app.renderer) return;
   if(this.drag){if(scene===this.snapshot&&selected===this.drag.id&&!this.callbacks.playing()){this.selection(selected);return;}this.cancelGesture();}
   if(this.group){if(scene===this.snapshot&&!this.callbacks.playing()){this.selection(selected);return;}this.cancelGesture();}
@@ -372,17 +417,19 @@ export class SceneViewport {
   this.wanted=requested;
   for(const [url,load]of this.loading)if(!requested.has(url)){load.abort();this.loading.delete(url);}
   // Destroy old display objects before releasing a texture they may reference.
-  const stale=[...this.textures.keys()].some(url=>!requested.has(url));if(stale){this.clearVisuals();for(const layer of [this.content,this.ui])layer.removeChildren().forEach(child=>child.destroy({children:true,context:true}));this.nodes.clear();this.visualSignature='';for(const [url,value]of this.textures)if(!requested.has(url)){value.texture.destroy(true);value.bitmap.close();this.textures.delete(url);}}
+  const stale=[...this.textures.keys()].some(url=>!requested.has(url));if(stale){this.clearVisuals();for(const layer of [this.content,this.ui])layer.removeChildren().forEach(child=>child.destroy({children:true,context:true}));this.nodes.clear();this.texts.clear();this.visualSignature='';for(const [url,value]of this.textures)if(!requested.has(url)){value.texture.destroy(true);value.bitmap.close();this.textures.delete(url);}}
   for(const url of requested)this.loadTexture(url);
   const resourceSignature=[...requested].map(url=>[url,this.textures.has(url),this.failed.has(url),this.assetRefresh]);
   const adapters=this.callbacks.visuals?.()??[];
-  const signature=JSON.stringify([this.callbacks.visualEpoch?.(),this.rtl,resourceSignature,scene.entities.map(e=>({id:e.id,parentId:e.parentId,name:e.name,components:e.components.filter(c=>c.type!=='scene.transform2d').map(c=>{const adapter=adapters.find(a=>a.type===c.type&&a.version===c.version);return adapter?{id:c.id,type:c.type,version:c.version,key:adapter.key(c.data)}:c.type.startsWith('pixi.')&&c.data&&typeof c.data==='object'&&!Array.isArray(c.data)?{...c,data:{...c.data,alpha:undefined}}:c;})}))]);
+  const signature=JSON.stringify([this.callbacks.visualEpoch?.(),this.rtl,resourceSignature,scene.entities.map(e=>({id:e.id,parentId:e.parentId,name:e.name,components:e.components.filter(c=>c.type!=='scene.transform2d').map(c=>{const adapter=adapters.find(a=>a.type===c.type&&a.version===c.version);return adapter?{id:c.id,type:c.type,version:c.version,key:adapter.key(c.data)}:visualKey(c);})}))]);
   if(signature===this.visualSignature){
    for(const e of scene.entities){const n=this.nodes.get(e.id)!;const c=e.components.find(c=>c.type==='scene.transform2d');const t=c?.version===1?transform(e):{x:0,y:0,rotation:0,scaleX:1,scaleY:1};n.position.set(t.x,t.y);n.angle=t.rotation;n.scale.set(t.scaleX,t.scaleY);n.skew.set((t.skewX??0)*Math.PI/180,(t.skewY??0)*Math.PI/180);n.pivot.set(t.pivotX??0,t.pivotY??0);this.applyFlags(n,e);const visual=e.components.find(c=>['pixi.shape','pixi.text','pixi.bitmapText','pixi.sprite'].includes(c.type)&&c.version===1);if(visual&&n.children[0])n.children[0].alpha=Number((visual.data as {alpha?:number}).alpha??1);}
-   this.updateVisuals(scene);this.decorate(scene);this.selection(selected);this.sizeMarkers();return;
+   // Text content is outside the signature (Play rewrites templated text every change), so it updates in place.
+   for(const e of scene.entities)for(const c of e.components){const node=this.texts.get(c.id);if(!node)continue;const text=String((c.data as {text?:unknown}).text??''),next=node instanceof Text?bidiText(text):text;if(node.text!==next)node.text=next;}
+   this.updateVisuals(scene);this.decorate(scene);this.eachFeature(feature=>feature.sync(original,selected));this.selection(selected);this.sizeMarkers();return;
   }
   this.visualSignature=signature;
-  this.clearVisuals();for(const layer of [this.content,this.ui])layer.removeChildren().forEach(child => child.destroy({children:true,context:true})); this.nodes.clear();
+  this.clearVisuals();for(const layer of [this.content,this.ui])layer.removeChildren().forEach(child => child.destroy({children:true,context:true})); this.nodes.clear();this.texts.clear();
   this.drawFrame();
   for (const entity of scene.entities) {
    const node = new Container(), supported=entity.components.some(c=>c.type==='scene.transform2d'&&c.version===1), t = supported?transform(entity):{x:0,y:0,rotation:0,scaleX:1,scaleY:1};
@@ -390,8 +437,8 @@ export class SceneViewport {
    node.label = entity.id; node.cursor = 'pointer';
    for (const component of entity.components) {
     if (component.type === 'pixi.shape' && component.version===1) { const p = ShapeSchema.parse(component.data); node.addChild(drawShape(p));node.children[0].alpha=p.alpha; }
-    if (component.type === 'pixi.text' && component.version===1) { const p = TextSchema.parse(component.data); const text = new Text({ text: bidiText(p.text), style: textStyle(p, this.fontFor(p.font), this.rtl) }); text.anchor.set(.5); node.addChild(text);text.alpha=p.alpha; }
-    if (component.type === 'pixi.bitmapText' && component.version===1) { const p = BitmapTextSchema.parse(component.data); const text = new BitmapText({ text: p.text, style: bitmapTextStyle(p, this.fontFor(p.font)) }); text.anchor.set(.5); node.addChild(text);text.alpha=p.alpha; }
+    if (component.type === 'pixi.text' && component.version===1) { const p = TextSchema.parse(component.data); const text = new Text({ text: bidiText(p.text), style: textStyle(p, this.fontFor(p.font), this.rtl) }); text.anchor.set(.5); node.addChild(text);text.alpha=p.alpha;this.texts.set(component.id,text); }
+    if (component.type === 'pixi.bitmapText' && component.version===1) { const p = BitmapTextSchema.parse(component.data); const text = new BitmapText({ text: p.text, style: bitmapTextStyle(p, this.fontFor(p.font)) }); text.anchor.set(.5); node.addChild(text);text.alpha=p.alpha;this.texts.set(component.id,text); }
    }
    for(const component of entity.components)if(component.type==='pixi.sprite'&&component.version===1){
     const p=SpriteSchema.parse(component.data),url=this.callbacks.resolveAsset?.(p.assetId)?.url,resource=url?this.textures.get(url):undefined;
@@ -399,8 +446,8 @@ export class SceneViewport {
     else{const placeholder=new Graphics().rect(-p.anchorX*p.width,-p.anchorY*p.height,p.width,p.height).fill('#4d3747').stroke({color:'#d29bbd',width:1}).moveTo(-p.anchorX*p.width,-p.anchorY*p.height).lineTo((1-p.anchorX)*p.width,(1-p.anchorY)*p.height).stroke({color:'#d29bbd',width:1});node.addChild(placeholder);}
    }
    for(const component of entity.components){const adapter=adapters.find(a=>a.type===component.type&&a.version===component.version);if(adapter){const handle=adapter.create(component.data,{entityId:entity.id,componentId:component.id,frame:()=>this.customFrame(component.id),changed:()=>{if(!this.disposed)this.selection(this.selected);},event:event=>this.callbacks.visualEvent?.(event)});node.addChild(handle.view);this.custom.set(entity.id,{componentId:component.id,handle});}}
-   if (!node.children.length){const marker=createMarker(entity.name,entity.components.map(c=>c.type));marker.visible=!this.game.mask||this.sceneView;node.addChild(marker);}
-   node.on('pointertap',e=>{if(!this.callbacks.playing())return;e.stopPropagation();const clickable=this.callbacks.clickable,id=clickable?clickTarget(this.app.renderer.events,e.global,n=>{for(const [k,v] of this.nodes)if(v===n)return k;return undefined;},clickable):entity.id;if(id)this.callbacks.interact?.(id);});
+   if (!node.children.length&&!(this.callbacks.features?.()??[]).some(f=>f.ownsVisual?.(entity))){const marker=createMarker(entity.name,entity.components.map(c=>c.type));marker.visible=!this.game.mask||this.sceneView;node.addChild(marker);}
+   node.on('pointertap',e=>{if(!this.callbacks.playing())return;e.stopPropagation();const clickable=this.callbacks.clickable,id=clickable?clickTarget(this.app.renderer.events,e.global,n=>{for(const feature of this.features){const id=feature.hitEntity?.(n,e.global,clickable);if(id)return id;}for(const [k,v] of this.nodes)if(v===n)return k;return undefined;},clickable):entity.id;if(id)this.callbacks.interact?.(id);});
    node.on('pointerdown', e => {
     e.stopPropagation(); if (this.callbacks.playing()) return;
     if(e.button!==0)return;
@@ -412,7 +459,7 @@ export class SceneViewport {
    this.nodes.set(entity.id,node);
   }
   for (const e of scene.entities) { const node = this.nodes.get(e.id)!; (e.parentId ? this.nodes.get(e.parentId)! : screenSpace(e) ? this.ui : this.content).addChild(node); }
-  this.updateVisuals(scene);this.decorate(scene);this.selection(selected);this.sizeMarkers(); this.render();
+  this.updateVisuals(scene);this.decorate(scene);this.eachFeature(feature=>feature.sync(original,selected));this.selection(selected);this.sizeMarkers(); this.render();
  }
  private outline(node:Container){const b=node.getLocalBounds(),points=[[b.x,b.y],[b.x+b.width,b.y],[b.x+b.width,b.y+b.height],[b.x,b.y+b.height]].map(([x,y])=>this.stage.toLocal(node.toGlobal({x,y})));this.overlay.moveTo(points[0].x,points[0].y);for(const p of [...points.slice(1),points[0]])this.overlay.lineTo(p.x,p.y);this.overlay.stroke({color:this.background,width:4/Math.max(.01,this.scale)}).stroke({color:this.accent,width:1.5/Math.max(.01,this.scale)});}
  private visible(node:Container):boolean{let current:Container|null=node;while(current){if(!current.visible)return false;current=current.parent;}return true;}
@@ -515,7 +562,7 @@ export class SceneViewport {
   button.hidden=false;button.style.left=`${x}px`;button.style.top=`${y}px`;button.dataset.entity=id;
  }
  selection(id: string | null): void {
-  this.selected=id;if(this.borrowed)return;this.drawRulers();this.overlay.clear();for(const button of this.handleButtons.values())button.hidden=true;
+  this.selected=id;this.eachFeature(feature=>feature.selection?.(id));if(this.borrowed)return;this.drawRulers();this.overlay.clear();for(const button of this.handleButtons.values())button.hidden=true;
   const all=new Set(this.selectedSet);if(id)all.add(id);const single=all.size<=1;
   if(!this.callbacks.playing())for(const other of all){const n=other===id?undefined:this.nodes.get(other);if(n&&this.visible(n))this.outline(n);}
   const node=id?this.nodes.get(id):undefined,entity=this.snapshot?.entities.find(e=>e.id===id);
@@ -548,9 +595,19 @@ export class SceneViewport {
    for(const [from,to]of result.segments){const a=this.stage.toLocal(plane.toGlobal(from)),b=this.stage.toLocal(plane.toGlobal(to));if(![a.x,a.y,b.x,b.y].every(Number.isFinite))continue;this.grid.moveTo(a.x,a.y).lineTo(b.x,b.y);lines++;}if(lines)this.grid.stroke({color:this.accent,alpha:.18,width:1/this.scale});
   }this.host.dataset.grid=JSON.stringify({...this.gridSettings,visible,displayStep,lines,parentId:this.selected?this.snapshot?.entities.find(e=>e.id===this.selected)?.parentId??null:null});
  }
+ private drawQueued=false;private drawnThisFrame=false;private drawNextFrame=false;
+ /**
+  * At most one GPU draw per displayed frame, however many render() calls arrive. With the app ticker running (the studio starts it) the ticker's own render is that draw. Otherwise: effects that read the camera's previous
+  * frame (3D motion blur) need it, and extra draws are wasted work. A frame's first request draws at the end of the current
+  * task (no added latency); later ones in that frame collapse into one draw at the start of the next. Diagnostics stay synchronous.
+  */
+ private drawSoon(){// A running app ticker already draws once at the end of every frame.
+  if(this.app.ticker?.started)return;if(this.drawQueued)return;if(this.drawnThisFrame&&typeof requestAnimationFrame==='function'){this.drawNextFrame=true;return;}
+  this.drawQueued=true;queueMicrotask(()=>{this.drawQueued=false;if(this.disposed||!this.app.renderer)return;this.app.render();
+   if(typeof requestAnimationFrame!=='function')return;this.drawnThisFrame=true;requestAnimationFrame(()=>{this.drawnThisFrame=false;if(this.drawNextFrame){this.drawNextFrame=false;this.drawSoon();}});});}
  render(): void {
   if (this.disposed || !this.app.renderer) return;
-  this.drawGrid();this.drawDecorations();this.app.render();
+  this.drawGrid();this.drawDecorations();this.eachFeature(feature=>feature.frame?.());this.drawSoon();
   this.host.dataset.transforms = JSON.stringify(Object.fromEntries([...this.nodes].map(([id,n]) => [id,{x:n.x,y:n.y,rotation:n.angle,scaleX:n.scale.x,scaleY:n.scale.y,...(n.skew.x||n.skew.y?{skewX:n.skew.x*180/Math.PI,skewY:n.skew.y*180/Math.PI}:{}),...(n.pivot.x||n.pivot.y?{pivotX:n.pivot.x,pivotY:n.pivot.y}:{})}])));
   this.host.dataset.visuals=JSON.stringify(this.visualDiagnostics);
   this.host.dataset.opacities=JSON.stringify(Object.fromEntries([...this.nodes].map(([id,n])=>[id,n.children[0]?.alpha??1])));
@@ -560,7 +617,7 @@ export class SceneViewport {
   if (this.disposed) return;this.cancelGesture();this.disposed = true; this.observer?.disconnect();
   this.host.removeEventListener('wheel',this.wheel);this.host.removeEventListener('pointerdown',this.paintDown,{capture:true});this.host.removeEventListener('pointerdown',this.runtimeDown);window.removeEventListener('pointermove',this.runtimeMove);window.removeEventListener('pointerup',this.runtimeUp); window.removeEventListener('pointerup',this.endDrag);window.removeEventListener('pointermove',this.onPointerMove);window.removeEventListener('pointercancel',this.cancelPointer);window.removeEventListener('lostpointercapture',this.cancelPointer);window.removeEventListener('keydown',this.onKey);window.removeEventListener('blur',this.cancelGesture);this.handles.remove();
   for(const load of this.loading.values())load.abort();this.loading.clear();
-  this.clearVisuals();if (this.app.renderer) this.app.destroy(true,{children:true});
+  this.exitRuntime();this.clearVisuals();this.eachFeature(feature=>feature.dispose());this.features=[];if (this.app.renderer) destroyLocalApplication(this.app);
   for(const value of this.textures.values()){value.texture.destroy(true);value.bitmap.close();}this.textures.clear();
  }
 }

@@ -1,0 +1,17 @@
+// Independent two-material authoring/runtime fixture. Never run against an open fixture.
+import {createServer} from 'vite';
+import {createRequire} from 'node:module';
+const require=createRequire(new URL('../../modules/render-pixi3d/package.json',import.meta.url));
+import {readFile,writeFile,mkdir,mkdtemp,rm} from 'node:fs/promises';
+import {createHash,randomUUID} from 'node:crypto';
+import {resolve,join} from 'node:path';
+const out=resolve(process.argv[2]??'outputs/material3d-qa');await mkdir(out,{recursive:true});
+const server=await createServer({configFile:false,root:resolve('.'),optimizeDeps:{noDiscovery:true,include:[]},server:{middlewareMode:true},ssr:{noExternal:[/^@rewrite\//]}}),cache=await mkdtemp(join(out,'build-'));
+try{
+ const {NodeIO}=require('@gltf-transform/core'),{buildModel}=await server.ssrLoadModule('/modules/render-pixi3d/src/model.node.ts'),doc=await new NodeIO().readBinary(await readFile('modules/pixi3d-lab/src/fixtures/animated-cube.glb')),root=doc.getRoot(),paint=root.listMaterials()[0];paint.setName('Paint').setBaseColorFactor([.2,.45,.9,1]);root.listNodes()[0].setTranslation([-.7,0,0]);
+ const second=paint.clone().setName('Paint').setBaseColorFactor([.9,.35,.1,1]),mesh=doc.createMesh('Second mesh').addPrimitive(root.listMeshes()[0].listPrimitives()[0].clone().setMaterial(second));root.listScenes()[0].addChild(doc.createNode('Second cube').setMesh(mesh).setTranslation([.7,0,0]));
+ const bytes=Buffer.from(await new NodeIO().writeBinary(doc)),asset={id:randomUUID(),name:'Two paint slots',type:'pixi3d.model',revision:createHash('sha256').update(bytes).digest('hex'),source:{extension:'glb',bytes:bytes.length},metadata:{}};await mkdir(join(cache,'sources'));await writeFile(join(cache,'sources',`${asset.id}-${asset.revision}.glb`),bytes);asset.metadata=(await buildModel({root:cache,asset,importerId:'pixi3d-editor.glb'})).metadata;
+ const project=JSON.parse(await readFile('outputs/ready3d-qa/3D Startup QA.pixieditor','utf8'));project.name='3D Material Slots QA';const scene=project.scenes[0];project.scenes=[scene];scene.name='Material slots';scene.entities=scene.entities.filter(e=>e.components.some(c=>['pixi3d.viewport','pixi3d.camera','pixi3d.light','pixi3d.modelRenderer'].includes(c.type)));
+ const models=scene.entities.filter(e=>e.components.some(c=>c.type==='pixi3d.modelRenderer'));for(const [i,e]of models.entries()){e.name=i?'Original materials':'Custom material slots';e.components=e.components.filter(c=>!['editor.label','animation3d.model'].includes(c.type));Object.assign(e.components.find(c=>c.type==='scene3d.transform').data,{x:i?1.5:-1.5,y:0});Object.assign(e.components.find(c=>c.type==='pixi3d.modelRenderer').data,{assetId:asset.id,overrideMaterial:false,color:'#ffffff',materialSlots:i?[]:[{index:1,sourceRevision:asset.revision,color:'#e54070',roughness:.2,metallic:.7}]});}
+ project.extensions={'assets.registry':{version:1,items:[asset]}};const file=join(out,'3D Material Slots QA.pixieditor'),sources=join(file+'.assets','sources');await mkdir(sources,{recursive:true});await writeFile(join(sources,`${asset.id}-${asset.revision}.glb`),bytes);await writeFile(file,JSON.stringify(project,null,2)+'\n');await writeFile(join(out,'fixture.json'),JSON.stringify({file,assetId:asset.id,revision:asset.revision,custom:models[0].id,original:models[1].id,view:scene.entities.find(e=>e.components.some(c=>c.type==='pixi3d.viewport')).id},null,2)+'\n');console.log(file);
+}finally{await server.close();await rm(cache,{recursive:true,force:true});}

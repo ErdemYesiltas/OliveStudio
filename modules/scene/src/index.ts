@@ -1,9 +1,12 @@
+import {spatialType,spatialComponent,spatialDefinition,spatialParents,spatialBoundaryId,validateSpatial,is2DEntity,space2d} from './spatial';
+export * from './spatial';
+import {registerSceneAutomation} from './automation';
 import { z } from 'zod';
 import { DocumentSession, type DocumentPort } from '@rewrite/documents';
 import { components, commands, token, type ComponentDefinition, type EditorModule, type Json, type ModuleContext } from '@rewrite/sdk';
 
 const ComponentSchema = z.object({ id: z.string().min(1), type: z.string().min(1), version: z.number().int().positive(), data: z.json() }).strict();
-const EntitySchema = z.object({ id: z.string().min(1), name: z.string().trim().min(1).max(100), parentId: z.string().nullable(), active: z.boolean(), components: z.array(ComponentSchema) }).strict();
+const EntitySchema = z.object({ id: z.string().min(1), name: z.string().trim().min(1).max(100), parentId: z.string().nullable(), active: z.boolean(), spatial:z.string().min(1).optional(), components: z.array(ComponentSchema) }).strict();
 export const SceneSchema = z.object({ formatVersion: z.literal(1), id: z.string().min(1), name: z.string().min(1).max(100), entities: z.array(EntitySchema).max(10000) }).strict();
 export type Scene = z.infer<typeof SceneSchema>;
 export type Entity = Scene['entities'][number];
@@ -20,13 +23,13 @@ export const labelColors = ['red', 'orange', 'yellow', 'green', 'blue', 'purple'
 export type LabelColor = typeof labelColors[number];
 export const labelType = 'editor.label';
 export const LabelSchema = z.object({color: z.enum(labelColors)}).strict();
-export const labelDefinition: ComponentDefinition = {type: labelType, version: 1, titleKey: 'component.label', editorOnly: true, hiddenInInspector: true, addable: false, defaults: () => ({color: 'blue'}), parse: v => LabelSchema.parse(v), fields: []};
+export const labelDefinition: ComponentDefinition = {type: labelType, version: 1, titleKey: 'component.label', editorOnly: true, hiddenInInspector: true, addable: false, defaults: () => ({color: 'blue'}), get dataSchema(){return z.toJSONSchema(LabelSchema,{unrepresentable:'any'});},parse: v => LabelSchema.parse(v), fields: []};
 export const transformDefinition: ComponentDefinition = {
- type: 'scene.transform2d', version: 1, titleKey: 'component.transform', defaults: () => ({ x: 0, y: 0, rotation: 0, scaleX: 1, scaleY: 1 }), parse: v => TransformSchema.parse(v),
+ type: 'scene.transform2d', version: 1, spatial:{space:space2d,reparent:reparent2D,resetPosition:data=>({...TransformSchema.parse(data),x:0,y:0})}, titleKey: 'component.transform', defaults: () => ({ x: 0, y: 0, rotation: 0, scaleX: 1, scaleY: 1 }), parse: v => TransformSchema.parse(v),
  fields: ['x','y','rotation','scaleX','scaleY','skewX','skewY','pivotX','pivotY'].map(key => ({ key, titleKey: `field.${key}`, kind: 'number' })),
 };
-export function transform(entity: Entity) { return TransformSchema.parse(entity.components.find(c => c.type === transformDefinition.type)?.data); }
-export function parseScene(input: unknown, definitions: ReadonlyMap<string, ComponentDefinition>): Scene {
+export function transform(entity: Entity) { if(!is2DEntity(entity))throw Error(`${entity.name}: this operation needs Transform2D`);return TransformSchema.parse(entity.components.find(c => c.type === transformDefinition.type)?.data); }
+export function parseScene(input: unknown, definitions: ReadonlyMap<string, ComponentDefinition>,options:{allowDetachedSpatialRoots?:boolean}={}): Scene {
  const scene = SceneSchema.parse(input), ids = new Set<string>(), componentIds = new Set<string>(), unique = new Set<string>();
  for (const entity of scene.entities) {
   if (ids.has(entity.id)) throw Error('Duplicate entity ID'); ids.add(entity.id);
@@ -38,7 +41,7 @@ export function parseScene(input: unknown, definitions: ReadonlyMap<string, Comp
    if (def?.uniqueInScene) { if (unique.has(component.type)) throw Error(`A scene can have only one ${def.uniqueInScene}`); unique.add(component.type); }
    if (def && component.version === def.version) {def.parse(component.data);if(def.exclusiveGroup){if(groups.has(def.exclusiveGroup))throw Error(`Only one component in exclusive group ${def.exclusiveGroup} per entity`);groups.add(def.exclusiveGroup);}}
   }
-  if (!types.has(transformDefinition.type)) throw Error('Entity needs Transform2D');
+  if (!types.has(spatialType(entity))) throw Error('Entity needs its spatial transform (Transform2D by default)');
  }
  const byId = new Map(scene.entities.map(e => [e.id, e]));
  for (const entity of scene.entities) {
@@ -48,6 +51,7 @@ export function parseScene(input: unknown, definitions: ReadonlyMap<string, Comp
    const parent = byId.get(parentId); if (!parent) throw Error('Missing parent'); parentId = parent.parentId;
   }
  }
+ validateSpatial(scene,definitions,options.allowDetachedSpatialRoots);
  return scene;
 }
 export function makeEntity(name: string, x = 480, y = 270): Entity {
@@ -59,6 +63,14 @@ export class SceneService {
  constructor(readonly definitions: () => ReadonlyMap<string, ComponentDefinition>, document?:DocumentPort<Scene>) { this.document = document ?? new DocumentSession(blankScene(), v => parseScene(v, definitions())); }
  create(name = 'Entity'): string {
   const entity = makeEntity(name); this.document.transact('Create entity', d => { d.entities.push(entity); }); return entity.id;
+ }
+ createSpatial(name:string,type:string,parentId:string|null,data?:Json):string{
+  const def=this.definitions().get(type);if(!def?.spatial)throw Error('Spatial provider unavailable');
+  const entity:Entity={id:crypto.randomUUID(),name,parentId,active:true,...(type===transformDefinition.type?{}:{spatial:type}),components:[{id:crypto.randomUUID(),type,version:def.version,data:def.parse(data??def.defaults()) as Json}]};
+  this.document.transact('Create spatial entity',d=>{d.entities.push(entity);});return entity.id;
+ }
+ setSpatial(id:string,data:Json,expected?:Json,expectedParentId?:string|null):void{
+  this.document.transact('Transform entity',draft=>{const e=draft.entities.find(e=>e.id===id);if(!e)throw Error('Entity missing');spatialDefinition(e,this.definitions());const c=spatialComponent(e),def=this.definitions().get(c.type)!;if(expectedParentId!==undefined&&e.parentId!==expectedParentId)throw Error('Parent changed during manipulation');if(expected&&JSON.stringify(def.parse(c.data))!==JSON.stringify(def.parse(expected)))throw Error('Spatial transform changed during manipulation');const next=def.parse(data) as Json;if(JSON.stringify(def.parse(c.data))!==JSON.stringify(next))c.data=next;});
  }
  setField(id: string, type: string, key: string, value: Json): void {
   const def = this.definitions().get(type);
@@ -84,7 +96,7 @@ export class SceneService {
   this.document.transact('Add component', d => { const e = d.entities.find(e => e.id === id); if (!e) throw Error('Entity missing'); e.components.push({ id: crypto.randomUUID(), type, version: def.version, data: def.defaults() }); });
  }
  removeComponent(id: string, type: string): void {
-  if (type === transformDefinition.type) throw Error('Transform2D is required');
+  if (this.document.current.entities.some(e=>e.id===id&&spatialType(e)===type)) throw Error('Spatial transform is required');
   this.document.transact('Remove component', d => { const e = d.entities.find(e => e.id === id); if (e) e.components = e.components.filter(c => c.type !== type); });
  }
  remove(id: string): void {
@@ -188,7 +200,7 @@ export class SceneService {
   const moving = subtreeIds(next, roots);
   if (parentId && moving.has(parentId)) throw Error('Hierarchy cycle');
   if (beforeId && moving.has(beforeId)) beforeId = null;
-  for (const id of roots) if (next.entities.find(e => e.id === id)!.parentId !== parentId) next = reparentPreservingWorld(next, id, parentId);
+  for (const id of roots) if (next.entities.find(e => e.id === id)!.parentId !== parentId) next = reparentPreservingWorld(next, id, parentId, this.definitions());
   const moved = roots.map(id => next.entities.find(e => e.id === id)!), rest = next.entities.filter(e => !roots.includes(e.id));
   let index = beforeId ? rest.findIndex(e => e.id === beforeId) : -1;
   if (index < 0) { const lastSibling = rest.map(e => e.parentId).lastIndexOf(parentId); index = lastSibling < 0 ? rest.length : lastSibling + 1; }
@@ -196,19 +208,25 @@ export class SceneService {
   if (entities.every((e, i) => e === this.document.current.entities[i])) return;
   this.document.transact(roots.length > 1 ? 'Move entities' : 'Move entity', d => { d.entities = entities; });
  }
- /** Clipboard payload: subtrees with roots converted to scene-root space, so pasting keeps their world pose. */
+ /** Clipboard roots use their space origin (scene root in 2D, view boundary in 3D), preserving world pose on paste. */
  copy(ids: readonly string[]): EntityClipboard {
   let scene = this.document.current;
   const roots = subtreeRoots(scene, ids);
   if (!roots.length) throw Error('Nothing to copy');
-  for (const id of roots) if (scene.entities.find(e => e.id === id)!.parentId) scene = reparentPreservingWorld(scene, id, null);
+  for (const id of roots) {
+   const entity=scene.entities.find(e=>e.id===id)!;if(!entity.parentId)continue;
+   if(is2DEntity(entity))scene=reparentPreservingWorld(scene,id,null,this.definitions());
+   else{const spatial=spatialDefinition(entity,this.definitions()),next=structuredClone(scene),root=next.entities.find(e=>e.id===id)!;spatialComponent(root).data=spatial.reparent(spatialComponent(root).data,spatialParents(scene,entity.parentId,spatial.space,this.definitions()),[]);root.parentId=null;scene=next;}
+  }
   const members = subtreeIds(scene, roots);
   return {kind: 'pixi-editor/entities', version: 1, sourceSceneId: scene.id, roots, entities: structuredClone(scene.entities.filter(e => members.has(e.id)))};
  }
- /** Pastes as new root objects with new IDs. References outside the copied set are kept and counted when they do not exist here. */
- paste(clip: unknown): {ids: string[]; unresolved: number} {
+ /** Pastes with new IDs under an explicit compatible parent, preserving space-local world poses and external references. */
+ paste(clip: unknown,parentId:string|null=null): {ids: string[]; unresolved: number} {
   const payload = EntityClipboardSchema.parse(clip);
+  parseScene({formatVersion:1,id:'clipboard',name:'Clipboard',entities:payload.entities},this.definitions(),{allowDetachedSpatialRoots:true});
   const {copies, entityIds, external} = cloneEntities(payload.entities, this.definitions());
+  for(const id of payload.roots){const root=copies.find(e=>e.id===entityIds.get(id))!;if(parentId!==null){const spatial=spatialDefinition(root,this.definitions());spatialComponent(root).data=spatial.reparent(spatialComponent(root).data,[],spatialParents(this.document.current,parentId,spatial.space,this.definitions()));}root.parentId=parentId;}
   const here = new Set(this.document.current.entities.flatMap(e => [e.id, ...e.components.map(c => c.id)]));
   const unresolved = [...external].filter(id => !here.has(id)).length;
   this.document.transact(payload.roots.length > 1 ? 'Paste entities' : 'Paste entity', d => { d.entities.push(...copies); });
@@ -231,7 +249,7 @@ export class SceneService {
   group.components[0].data = {x: round((p[3] * dx - p[2] * dy) / det), y: round((-p[1] * dx + p[0] * dy) / det), rotation: 0, scaleX: 1, scaleY: 1};
   const at = Math.min(...roots.map(id => next.entities.findIndex(e => e.id === id)));
   next = {...next, entities: [...next.entities.slice(0, at), group, ...next.entities.slice(at)]};
-  for (const id of roots) next = reparentPreservingWorld(next, id, group.id);
+  for (const id of roots) next = reparentPreservingWorld(next, id, group.id, this.definitions());
   this.document.transact(roots.length > 1 ? 'Group objects' : 'Group object', d => { d.entities = next.entities; });
   return group.id;
  }
@@ -243,7 +261,7 @@ export class SceneService {
   const released: string[] = [];
   for (const g of groups) {
    const children = next.entities.filter(e => e.parentId === g.id).map(e => e.id);
-   for (const id of children) next = reparentPreservingWorld(next, id, g.parentId);
+   for (const id of children) next = reparentPreservingWorld(next, id, g.parentId, this.definitions());
    const moving = next.entities.filter(e => children.includes(e.id)), rest = next.entities.filter(e => !children.includes(e.id) && e.id !== g.id), at = next.entities.filter(e => !children.includes(e.id)).findIndex(e => e.id === g.id);
    next = {...next, entities: [...rest.slice(0, at), ...moving, ...rest.slice(at)]};
    released.push(...children);
@@ -275,16 +293,16 @@ export class SceneService {
   const e = this.document.current.entities.find(e => e.id === id); if (!e) throw Error('Entity missing');
   const from = e.components.findIndex(c => c.id === componentId), to = from + direction;
   if (from < 0 || to < 0 || to >= e.components.length) return;
-  if (e.components[from].type === transformDefinition.type || e.components[to].type === transformDefinition.type) return;
+  if (e.components[from].type === spatialType(e) || e.components[to].type === spatialType(e)) return;
   this.document.transact('Move component', d => { const x = d.entities.find(x => x.id === id)!; [x.components[from], x.components[to]] = [x.components[to], x.components[from]]; });
  }
  /** Pastes a copied component: replaces the values of the same component on the object, or adds it. */
  pasteComponent(id: string, copied: {type: string; version: number; data: Json}): 'replaced' | 'added' {
   const def = this.definitions().get(copied.type);
   if (!def || def.version !== copied.version) throw Error('This component cannot be pasted here');
-  if (def.addable === false && copied.type !== transformDefinition.type) throw Error('This component cannot be pasted');
-  const data = def.parse(structuredClone(copied.data)) as Json, e = this.document.current.entities.find(e => e.id === id);
-  if (!e) throw Error('Entity missing');
+  const e = this.document.current.entities.find(e => e.id === id);if(!e)throw Error('Entity missing');
+  if(def.addable===false&&copied.type!==spatialType(e))throw Error('This component cannot be pasted');
+  const data = def.parse(structuredClone(copied.data)) as Json;
   const existing = e.components.some(c => c.type === copied.type);
   if (!existing && def.uniqueInScene && this.document.current.entities.some(x => x.components.some(c => c.type === copied.type))) throw Error(`Only one ${def.uniqueInScene} per scene`);
   this.document.transact(existing ? 'Paste component values' : 'Paste component', d => {
@@ -303,7 +321,7 @@ export class SceneService {
   this.document.transact('Move sibling',d=>{[d.entities[from],d.entities[to]]=[d.entities[to],d.entities[from]];});
  }
  reparent(id: string, parentId: string|null): void {
-  const next=reparentPreservingWorld(this.document.current,id,parentId);
+  const next=reparentPreservingWorld(this.document.current,id,parentId,this.definitions());
   this.document.transact('Reparent entity',d=>{d.entities=next.entities;});
  }
  get diagnostics(): string[] {
@@ -359,7 +377,7 @@ function cloneEntities(source: readonly Entity[], definitions: ReadonlyMap<strin
 export function worldPosition(entities: readonly Entity[], id: string): {x: number; y: number} | undefined {
  const byId = new Map(entities.map(e => [e.id, e])), chain: Entity[] = [];
  for (let e = byId.get(id); e && chain.length < 128; e = e.parentId ? byId.get(e.parentId) : undefined) chain.push(e);
- if (!chain.length) return undefined;
+ if (!chain.length || chain.some(e=>!is2DEntity(e))) return undefined;
  let p = {x: transform(chain[0]).pivotX ?? 0, y: transform(chain[0]).pivotY ?? 0};
  for (const e of chain) { const t = transform(e), a = t.rotation * Math.PI / 180, x = (p.x - (t.pivotX ?? 0)) * t.scaleX, y = (p.y - (t.pivotY ?? 0)) * t.scaleY; p = {x: t.x + x * Math.cos(a) - y * Math.sin(a), y: t.y + x * Math.sin(a) + y * Math.cos(a)}; }
  return p;
@@ -401,7 +419,7 @@ export function referencePaths(data: Json, definition: ComponentDefinition | und
 /** Parents before their children (spawned objects attach to parents already in the world). */
 export function parentsFirst<T extends {id:string;parentId?:string|null}>(entities:readonly T[]):T[]{const byId=new Map(entities.map(e=>[e.id,e])),done=new Set<string>(),out:T[]=[];const visit=(e:T,depth:number)=>{if(done.has(e.id)||depth>entities.length)return;const parent=e.parentId?byId.get(e.parentId):undefined;if(parent)visit(parent,depth+1);if(done.has(e.id))return;done.add(e.id);out.push(e);};for(const e of entities)visit(e,0);return out;}
 export function spawnCopy(source: readonly Entity[], rootId: string, paths: (component: Entity['components'][number]) => readonly JsonPath[], at?: {x: number; y: number}, copied?: (original: Entity['components'][number], copy: Entity['components'][number]) => void): Entity[] {
- const root = source.find(e => e.id === rootId); if (!root) throw Error('Nothing to copy');
+ const root = source.find(e => e.id === rootId); if (!root) throw Error('Nothing to copy');if(at&&!is2DEntity(root))throw Error('2D spawn placement cannot target a non-2D entity');
  const order: Entity[] = [root];
  for (let i = 0; i < order.length; i++) for (const e of source) if (e.parentId === order[i].id) order.push(e);
  const entities = new Map(order.map(e => [e.id, crypto.randomUUID()])), components = new Map(order.flatMap(e => e.components.map(c => [c.id, crypto.randomUUID()] as const)));
@@ -429,7 +447,7 @@ function worldToLocalVector(scene: Scene, parentId: string | null, delta: {x: nu
 export const sceneToken = token<SceneService>('scene', 'scene.document');
 export function sceneModule(definitions: () => ReadonlyMap<string, ComponentDefinition>, backing?:{owner:string;get(context:ModuleContext):DocumentPort<Scene>}): EditorModule {
  return { manifest: { id: 'scene', version: '1.0.0', apiVersion: 1, requires:backing?{[backing.owner]:'^1'}:{} }, activate(c) {
-  const scene = new SceneService(definitions,backing?.get(c)); c.provide(sceneToken, scene);
+  const scene = new SceneService(definitions,backing?.get(c)); c.provide(sceneToken, scene);registerSceneAutomation(c,scene);
   c.contribute(components, 'scene.transform2d', transformDefinition);c.contribute(components, 'scene.label', labelDefinition);
   c.contribute(commands, 'scene.create', { titleKey: 'command.create', execute: () => scene.create() });
   c.contribute(commands, 'scene.undo', { titleKey: 'command.undo', execute: () => scene.document.undo() });
@@ -467,23 +485,31 @@ export function pivotKeepingPlace(t:z.infer<typeof TransformSchema>,pivotX:numbe
  const r=t.rotation*Math.PI/180,kx=(t.skewX??0)*Math.PI/180,ky=(t.skewY??0)*Math.PI/180,a=Math.cos(r+ky)*t.scaleX,b=Math.sin(r+ky)*t.scaleX,c=-Math.sin(r-kx)*t.scaleY,d=Math.cos(r-kx)*t.scaleY,dx=pivotX-(t.pivotX??0),dy=pivotY-(t.pivotY??0),round=(v:number)=>Math.round(v*1e6)/1e6||0;
  return{...t,x:round(t.x+a*dx+c*dy),y:round(t.y+b*dx+d*dy),pivotX:round(pivotX),pivotY:round(pivotY)};
 }
-export function reparentPreservingWorld(scene:Scene,id:string,parentId:string|null):Scene {
+const builtinSpatialDefinitions=()=>new Map([[transformDefinition.type,transformDefinition]]);
+export function reparentPreservingWorld(scene:Scene,id:string,parentId:string|null,definitions:ReadonlyMap<string,ComponentDefinition>=builtinSpatialDefinitions()):Scene {
  if(id===parentId)throw Error('Hierarchy cycle');
  const next=structuredClone(scene),entity=next.entities.find(e=>e.id===id);if(!entity)throw Error('Entity missing');
- let ancestor=parentId;while(ancestor){if(ancestor===id)throw Error('Hierarchy cycle');const e=scene.entities.find(e=>e.id===ancestor);if(!e)throw Error('Parent missing');ancestor=e.parentId;}
- const before=worldMatrix(scene,id),parent=worldMatrix(scene,parentId),det=parent[0]*parent[3]-parent[1]*parent[2];
+ let ancestor=parentId;const seen=new Set<string>();while(ancestor){if(ancestor===id||seen.has(ancestor))throw Error('Hierarchy cycle');seen.add(ancestor);const e=scene.entities.find(e=>e.id===ancestor);if(!e)throw Error('Parent missing');ancestor=e.parentId;}
+ const spatial=spatialDefinition(entity,definitions),oldBoundary=spatialBoundaryId(scene,id,definitions),oldParents=spatialParents(scene,entity.parentId,spatial.space,definitions);
+ entity.parentId=parentId;validateSpatial(next,definitions);
+ if(oldBoundary!==spatialBoundaryId(next,id,definitions))throw Error('Moving between spatial views is not supported');
+ spatialComponent(entity).data=spatial.reparent(spatialComponent(entity).data,oldParents,spatialParents(next,parentId,spatial.space,definitions));
+ return next;
+}
+function reparent2D(data:Json,oldParents:readonly Json[],newParents:readonly Json[]):Json{
+ const scene=(parents:readonly Json[],own?:Json):Scene=>({formatVersion:1,id:'pose',name:'Pose',entities:[...parents,...(own?[own]:[])].map((data,i)=>({id:String(i),name:'Pose',active:true,parentId:i?String(i-1):null,components:[{id:String(i),type:'scene.transform2d',version:1,data}]}))});
+ const before=worldMatrix(scene(oldParents,data),String(oldParents.length)),parent=worldMatrix(scene(newParents),newParents.length?String(newParents.length-1):null),det=parent[0]*parent[3]-parent[1]*parent[2];
  if(Math.abs(det)<1e-10)throw Error('Parent transform cannot be inverted');
  const inverse:Matrix=[parent[3]/det,-parent[1]/det,-parent[2]/det,parent[0]/det,(parent[2]*parent[5]-parent[3]*parent[4])/det,(parent[1]*parent[4]-parent[0]*parent[5])/det];
- const own=transform(entity),local=withPivot(decomposeMatrix(multiply(inverse,before),own.scaleX<0),own);
- if(Math.abs(local.skewX??0)>89)throw Error('This parent would need more than 89° of skew');
- entity.parentId=parentId;entity.components.find(c=>c.type==='scene.transform2d')!.data=local;return next;
+ const own=TransformSchema.parse(data),local=withPivot(decomposeMatrix(multiply(inverse,before),own.scaleX<0),own);
+ if(Math.abs(local.skewX??0)>89)throw Error('This parent would need more than 89° of skew');return local;
 }
 /** Migrations operate on a copy. A failing migration never changes the input. */
-export function migrateScene(input: unknown, definitions: ReadonlyMap<string, ComponentDefinition>): Scene {
+export function migrateScene(input: unknown, definitions: ReadonlyMap<string, ComponentDefinition>,options:{allowDetachedSpatialRoots?:boolean}={}): Scene {
  const candidate = SceneSchema.parse(structuredClone(input));
  for (const e of candidate.entities) for (const c of e.components) {
   const def=definitions.get(c.type);
   if(def&&c.version<def.version){if(!def.migrate)throw Error(`Migration unavailable: ${c.type} v${c.version}`);c.data=def.parse(def.migrate(c.data,c.version));c.version=def.version;}
  }
- return parseScene(candidate,definitions);
+ return parseScene(candidate,definitions,options);
 }

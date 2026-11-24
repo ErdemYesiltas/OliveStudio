@@ -1,6 +1,10 @@
+import {buildModel,prepareModel,buildEnvironment,prepareCubeLut,buildVideo} from '@rewrite/render-pixi3d/node';
+import {videoImporter} from '@rewrite/render-pixi3d/video-contracts';
+import {cubeLutImporter} from '@rewrite/render-pixi3d/cube-lut';
+import {modelImporter} from '@rewrite/render-pixi3d/model-contracts';
 import { buildImage } from '@rewrite/assetpack/node';
 import {buildAudio} from '@rewrite/audio/node';
 import {buildSpine,collectSpine} from '@rewrite/spine/node';
 import {buildFont} from '@rewrite/render-pixi/font.node';
 import type {BuildJob} from '@rewrite/assets/node';
-process.parentPort?.on('message',event=>{const job=event.data as BuildJob&{operation?:string;path?:string};const work=job.operation==='prepare'&&job.importerId==='spine.json'?collectSpine(job.path!):job.importerId==='spine.json'?buildSpine(job):job.importerId==='audio.files'?buildAudio(job):job.importerId==='pixi.fonts'?buildFont(job):buildImage(job);void work.then(result=>process.parentPort?.postMessage({ok:true,result}),error=>process.parentPort?.postMessage({ok:false,error:String(error)}));});
+process.parentPort?.on('message',event=>{const job=event.data as BuildJob&{operation?:string;path?:string};const work=job.operation==='prepare'&&job.importerId==='spine.json'?collectSpine(job.path!):job.operation==='prepare'&&job.importerId===modelImporter.id?prepareModel(job.path!):job.operation==='prepare'&&job.importerId===cubeLutImporter.id?prepareCubeLut(job.path!):job.importerId==='spine.json'?buildSpine(job):job.importerId===modelImporter.id?buildModel(job):job.importerId==='pixi3d-editor.hdr'?buildEnvironment(job):job.importerId===videoImporter.id?buildVideo(job):job.importerId==='audio.files'?buildAudio(job):job.importerId==='pixi.fonts'?buildFont(job):buildImage(job);void work.then(result=>process.parentPort?.postMessage({ok:true,result}),error=>process.parentPort?.postMessage({ok:false,error:String(error)}));});

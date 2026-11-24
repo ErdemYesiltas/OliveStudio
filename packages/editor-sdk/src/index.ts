@@ -93,13 +93,25 @@ export class SettingsStore implements SettingsService {
 }
 export interface MenuDefinition { titleKey: string; command: string }
 export interface DocumentType { extension: string; parse(value: unknown): Json }
+/** A feature-owned coordinate system; parent payloads run root → immediate parent, excluding the view boundary. */
+export interface SpatialDefinition {
+ space:string;
+ requiresBoundary?:boolean;
+ reparent(local:Json,oldParents:readonly Json[],newParents:readonly Json[]):Json;
+ resetPosition(local:Json):Json;
+}
 export interface ComponentDefinition<T = Json> {
   type: string; version: number; titleKey: string;
+  spatial?:SpatialDefinition;
+  /** This component opens a separate child coordinate system on its host entity. */
+  spatialBoundary?:{hostSpace:string;childSpace:string};
+  supportedSpaces?:readonly string[];
   exclusiveGroup?:string;editorOnly?:boolean;addable?:boolean;hiddenInInspector?:boolean;preserveLocalIdsOnDuplicate?:boolean;
   /** At most one entity per scene may carry this component (e.g. the camera); the value names it in errors. */
   uniqueInScene?:string;
+  dataSchema?:Record<string,unknown>;
   defaults(): T; parse(value: unknown): T;
-  fields: readonly { key: string; titleKey: string; kind: 'number' | 'string' | 'boolean' | 'color' | 'asset' | 'enum';options?:readonly {value:string;titleKey:string}[];assetType?:string;
+  fields: readonly { key: string; titleKey: string; kind: 'number' | 'string' | 'boolean' | 'color' | 'asset' | 'enum';options?:readonly {value:string;titleKey:string}[];assetType?:string;/** Empty asset uses a built-in fallback. */optionalAsset?:boolean;
     /** Hide a field that does not apply to the current value (e.g. star points on a rectangle). */
     visible?(value: Json): boolean }[];
   sceneReferences?(value:Json):readonly (string|null)[];
@@ -147,6 +159,8 @@ export const tools = slot<ToolDefinition>('editor.tools');
 /** One entry of the toolbar Add menu: a named entity with these components (data merges over component defaults). */
 export interface CreateItemDefinition {
   titleKey: string; category: string; icon?: string; order?: number; name: string;
+  /** Optional module-owned creation command; the host does not manufacture a Transform2D for it. */
+  command?:string;
   components: readonly { type: string; data?: { [key: string]: Json } }[];
 }
 export const createItems = slot<CreateItemDefinition>('editor.create');
@@ -156,3 +170,5 @@ export const settingsToken = token<SettingsService>('settings', 'settings.servic
 export const workspaces = slot<PanelDefinition>('editor.workspaces');
 
 export const overlays = slot<{view:unknown}>('editor.overlays');
+
+export * from './automation';
