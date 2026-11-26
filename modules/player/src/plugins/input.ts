@@ -1,17 +1,16 @@
-import {InputSession, InputMapSchema, defaultInputMap, inputSection} from '@rewrite/input';
+import {connectGameInput,InputMapSchema,defaultInputMap,inputSection} from '@rewrite/input';
 import type {PlayerPlugin} from '../plugin';
-/** Input map for exported games: listens after Start, polls gamepads every frame, releases everything when hidden. */
-export default {id: 'input', create(c) {
- const map = InputMapSchema.parse(c.bundle.project.extensions[inputSection] ?? defaultInputMap);
- let session: InputSession | undefined, detach: (() => void) | undefined;
+
+export default {id:'input',create(c){
+ const map=InputMapSchema.parse(c.bundle.project.extensions[inputSection]??defaultInputMap);
+ let input:ReturnType<typeof connectGameInput>|undefined;
  return {
-  unlock() {
-   if (session) return;
-   session = new InputSession(map, {emit: e => c.emit(e), setGlobal: (id, value) => { try { c.globals()?.set(id, value); } catch (e) { c.report(String(e)); } }});
-   c.services.set('input',session);
-   detach = session.attach(document.documentElement);
+  unlock(){
+   if(input)return;
+   input=connectGameInput(map,{target:document.documentElement,emit:c.emit,globals:c.globals,report:error=>c.report(String(error))});
+   c.services.set('input',input.session);
   },
-  systems: () => [{id: 'input', update: () => session?.update(), dispose() {}}],
-  dispose() { c.services.delete('input');detach?.(); detach = undefined; session = undefined; },
+  systems:()=>input?[input.system]:[],
+  dispose(){c.services.delete('input');input?.detach();input=undefined;},
  };
 }} satisfies PlayerPlugin;

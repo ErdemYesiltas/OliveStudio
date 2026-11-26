@@ -17,6 +17,10 @@ export interface TweenChannel {componentType:string;version:number;property:stri
  nonZero?:boolean;
  /** Rotation channel: tracks hold unit quaternions [x,y,z,w], sampled by slerp and written normalized to these four properties. */
  quaternion?:readonly [string,string,string,string]}
+export const transformTweenChannels:readonly TweenChannel[]=['x','y','rotation','scaleX','scaleY','skewX','skewY'].map(property=>({
+ componentType:'scene.transform2d',version:1,property,titleKey:`field.${property}`,
+ ...(property.startsWith('scale')?{min:-100,max:100,nonZero:true}:property.startsWith('skew')?{min:-89,max:89,defaultValue:0}:{}),
+}));
 export const tweenChannels=slot<TweenChannel>('tween.channels');
 export interface TweenSpec {duration:number;delay:number;repeat:number;yoyo:boolean;ease:TweenData['ease'];tracks:readonly {id:string;from:number;to:number}[]}
 export interface TweenSampler {sample(time:number):Readonly<Record<string,number>>;dispose():void}

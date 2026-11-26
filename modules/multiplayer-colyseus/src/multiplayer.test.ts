@@ -57,7 +57,10 @@ it('two clients: server-authoritative movement, remote smoothing, refused client
   const startX = serverPos(sa.sessionId).x;
 
   // Ada walks right; the server moves her, Bo sees her smoothly, prediction agrees with the server.
-  a.move(1, 0); const started = performance.now(); await wait(500); a.move(0, 0);
+  const started = performance.now();
+  a.move(1, 0);
+  await until(() => serverPos(sa.sessionId).x, x => x > startX + 200 * 0.3);
+  a.move(0, 0);
   const walked = performance.now() - started;
   await until(() => a.session.status().pending, n => n === 0);
   const ada = serverPos(sa.sessionId);
@@ -77,8 +80,9 @@ it('two clients: server-authoritative movement, remote smoothing, refused client
   await until(() => a.session.status(), s => s.status === 'connected' && a.events.includes('multiplayer.disconnected'), 8000);
   expect(a.session.status().sessionId).toBe(sa.sessionId);
   await until(() => room().players.find(p => p.sessionId === sa.sessionId)?.connected, c => c === true);
-  a.move(0, 1); await wait(300); a.move(0, 0);
+  a.move(0, 1);
   await until(() => serverPos(sa.sessionId).y, y => y > 220);
+  a.move(0, 0);
 
   // Leaving (consented) frees the seat: Bo's copy of Ada is destroyed and a left event fires.
   await a.stop(); expect(a.objects.size).toBe(0);

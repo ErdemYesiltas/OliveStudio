@@ -34,3 +34,35 @@ it('accepts a same-origin status-0 media body (Capacitor iOS) but rejects opaque
  for(const [status,type,bytes] of [[0,'opaque',[]],[0,'basic',[]],[404,'basic',[1]],[0,'opaque',[1]]] as [number,ResponseType,number[]][]){vi.stubGlobal('fetch',vi.fn(async()=>reply(status,type,bytes)));const rejected=howlerProvider.create(spec);await vi.waitFor(()=>expect(rejected.snapshot).toMatchObject({state:'error',error:'Error: Audio source unavailable'}));}
  expect(mocks.instances).toHaveLength(1);
 });
+
+it('plays overlapping effects up to the limit, steals the oldest and resumes surviving voices',async()=>{
+ vi.stubGlobal('fetch',vi.fn(async()=>new Response(new Uint8Array([1]))));
+ const voice=howlerProvider.create({...spec,loop:false,voiceLimit:2});
+ try{
+  voice.play();
+  voice.play();
+  await vi.waitFor(()=>expect(mocks.instances).toHaveLength(1));
+  const howl=mocks.instances[0];
+  howl.loaded=true;
+  howl.play.mockReturnValueOnce(11).mockReturnValueOnce(12).mockReturnValueOnce(13);
+  callback(0,'onload');
+  callback(0,'onplay',11);
+  callback(0,'onplay',12);
+  expect(voice.snapshot.starts).toBe(2);
+  voice.play();
+  callback(0,'onplay',13);
+  expect(howl.stop.mock.calls).toEqual([[11]]);
+  callback(0,'onend',11);
+  expect(voice.snapshot.state).toBe('playing');
+  voice.pause();
+  expect(howl.pause.mock.calls).toEqual([[12],[13]]);
+  voice.play();
+  expect(howl.play.mock.calls.slice(-2)).toEqual([[12],[13]]);
+  callback(0,'onplay',12);
+  callback(0,'onplay',13);
+  callback(0,'onend',12);
+  expect(voice.snapshot.state).toBe('playing');
+  callback(0,'onend',13);
+  expect(voice.snapshot.state).toBe('ended');
+ }finally{voice.dispose();}
+});

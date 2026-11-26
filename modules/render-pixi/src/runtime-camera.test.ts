@@ -1,5 +1,5 @@
 import {it, expect} from 'vitest';
-import {cameraView, cameraOutlines, idleCamera, sceneCamera, snapCamera, viewOffset, viewPlacement, CameraSchema, cameraType, type RuntimeCameraState} from './runtime-camera';
+import {cameraView, cameraOutlines, idleCamera, sceneCamera, snapCamera, viewOffset, viewPlacement, CameraSchema, CameraEffectSettingsSchema, migrateCameraProjection, cameraType, type RuntimeCameraState} from './runtime-camera';
 
 const stage = {width: 960, height: 540};
 const entity = (id: string, t: Partial<{x: number; y: number; rotation: number; scaleX: number; scaleY: number}>, extra: {type: string; data: unknown}[] = [], parentId: string | null = null, active = true) =>
@@ -67,6 +67,22 @@ it('keeps the view inside the limits (accounting for zoom) and centres an area s
  expect(cameraView(idleCamera(), 0, stage, rigAt(5000, 5000, limits))).toMatchObject({x: 1440, y: 810});
  expect(cameraView(idleCamera(), 0, stage, rigAt(100, 100, {...limits, zoom: 2}))).toMatchObject({x: 240, y: 135});
  expect(cameraView(idleCamera(), 0, stage, rigAt(9, 9, {...limits, limitRight: 400, limitBottom: 200}))).toMatchObject({x: 200, y: 100});
+});
+
+it('migrates camera zoom and bounds into effects and bypasses disabled effects', () => {
+ const camera = CameraEffectSettingsSchema.parse(migrateCameraProjection({
+  zoom: 2, minZoom: 1, maxZoom: 3, limit: true, limitLeft: 10, limitTop: 20, limitRight: 1110, limitBottom: 820,
+ }));
+ expect(camera.postFXs).toEqual([
+  {type: 'zoom', enabled: true, value: 2, min: 1, max: 3},
+  {type: 'limits', enabled: true, mode: 'rectangle', left: 10, top: 20, right: 1110, bottom: 820},
+ ]);
+ const pose = {x: 0, y: 0, rotation: 0};
+ expect(cameraView(idleCamera(), 0, stage, {camera, pose})).toMatchObject({x: 250, y: 155, zoom: 2});
+ const disabled = {...camera, postFXs: camera.postFXs?.map(effect => ({...effect, enabled: false}))};
+ expect(cameraView(idleCamera(), 0, stage, {camera: disabled, pose})).toMatchObject({x: 0, y: 0, zoom: 1});
+ expect(CameraEffectSettingsSchema.parse(migrateCameraProjection({edgeLock: true})).postFXs?.[0])
+  .toMatchObject({type: 'limits', enabled: true, mode: 'world'});
 });
 
 it('shakes in screen pixels, so a zoomed camera shakes as much on screen', () => {

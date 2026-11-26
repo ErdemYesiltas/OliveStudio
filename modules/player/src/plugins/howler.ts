@@ -1,5 +1,7 @@
 import {Howl,Howler} from 'howler';
-import {AudioSession,voiceSpec,MixerSchema,defaultMixer,mixerSection} from '@rewrite/audio';
+import {createSceneAudio,MixerSchema,defaultMixer,mixerSection} from '@rewrite/audio';
 import {howlerProvider} from '@rewrite/audio-howler';
 import type {PlayerPlugin} from '../plugin';
-export default{id:'howler',create(c){return{unlock(){const probe=new Howl({src:['data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQIAAAAAAA=='],preload:false});const result=Howler.ctx?.resume();probe.unload();return result;},systems(){const mixer=MixerSchema.parse(c.bundle.project.extensions[mixerSection]??defaultMixer),audio=new AudioSession(c.entities,s=>voiceSpec(s,c.assets.get(s.assetId),(a,file)=>c.assets.url(a,file),howlerProvider),howlerProvider,{mixer,listener:c.view});c.controllers.set('audio',audio);audio.events$.subscribe(e=>{if(e.kind==='ended')c.emit({type:'audio.ended',sourceId:e.key,silent:false});else{c.emit({type:'audio.beat',sourceId:e.key,event:'beat',silent:false});if(e.bar)c.emit({type:'audio.beat',sourceId:e.key,event:'bar',silent:false});}});return[audio.system];},dispose(){}};}}satisfies PlayerPlugin;
+export default{id:'howler',create(c){return{unlock(){const probe=new Howl({src:['data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQIAAAAAAA=='],preload:false});const result=Howler.ctx?.resume();probe.unload();return result;},systems(){const mixer=MixerSchema.parse(c.bundle.project.extensions[mixerSection]??defaultMixer),audio=createSceneAudio(c.entities,howlerProvider,{
+ asset:c.assets.get,url:(asset,file)=>c.assets.url(asset,file),mixer,listener:c.view,silent:()=>c.simulation.paused,emit:c.emit,
+ });c.controllers.set('audio',audio);return[audio.system];},dispose(){}};}}satisfies PlayerPlugin;

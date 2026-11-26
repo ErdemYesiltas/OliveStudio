@@ -5,6 +5,7 @@ import {GlowFilter} from 'pixi-filters/glow';
 import {OutlineFilter} from 'pixi-filters/outline';
 import {PixelateFilter} from 'pixi-filters/pixelate';
 import {z} from 'zod';
+import {BaseEffect, EffectScope, effectEntries} from '@olivestudio/engine';
 import type {ComponentDefinition, Json} from '@rewrite/sdk';
 import type {DecoratedEntity, SceneDecorator} from './visuals';
 import {createShaderFilter, resolveShader, shaderType} from './shaders';
@@ -46,6 +47,44 @@ export const maskDefinition: ComponentDefinition = {
 };
 
 export type EffectKind = 'color' | 'blur' | 'outline' | 'glow' | 'shadow' | 'pixelate' | 'noise';
+const visualSettings = {
+ blend: EffectsSchema.pick({blendMode: true}), color: EffectsSchema.pick({brightness: true, contrast: true, saturation: true, hue: true}),
+ blur: EffectsSchema.pick({blur: true}), outline: EffectsSchema.pick({outlineWidth: true, outlineColor: true}),
+ glow: EffectsSchema.pick({glowStrength: true, glowColor: true, glowDistance: true}),
+ shadow: EffectsSchema.pick({shadowAlpha: true, shadowColor: true, shadowX: true, shadowY: true, shadowBlur: true}),
+ pixelate: EffectsSchema.pick({pixelate: true}), noise: EffectsSchema.pick({noise: true}),
+};
+export const visualEffectTypes = ['blend', 'color', 'blur', 'outline', 'glow', 'shadow', 'pixelate', 'noise'] as const;
+function visualEffect<T extends keyof typeof visualSettings>(type: T) {
+ return z.strictObject({type: z.literal(type), effectId: z.string().min(1).optional(), enabled: z.boolean().default(true), settings: visualSettings[type]});
+}
+export const VisualEffectSchema = z.discriminatedUnion('type', [
+ visualEffect('blend'), visualEffect('color'), visualEffect('blur'), visualEffect('outline'),
+ visualEffect('glow'), visualEffect('shadow'), visualEffect('pixelate'), visualEffect('noise'),
+]);
+export type VisualEffect = z.output<typeof VisualEffectSchema>;
+
+function selectEffectSettings(type: VisualEffect['type'], settings: EffectsData) {
+ return Object.fromEntries(Object.keys(visualSettings[type].shape).map(key => [key, settings[key as keyof EffectsData]]));
+}
+
+export function makeVisualEffect(type: VisualEffect['type']): VisualEffect {
+ const settings: EffectsData = { ...effectsDefaults, blendMode: 'multiply', brightness: 1.2, blur: 4, outlineWidth: 2,
+  glowStrength: 2, shadowAlpha: 0.5, pixelate: 6, noise: 0.15 };
+ return VisualEffectSchema.parse({type, settings: selectEffectSettings(type, settings)});
+}
+
+export function migrateVisualEffects(input: unknown): unknown {
+ if (Array.isArray(input)) return input;
+ const old = EffectsSchema.safeParse(input);
+ if (!old.success) return input;
+ return visualEffectTypes.flatMap(type => {
+  const settings = selectEffectSettings(type, old.data);
+  return Object.entries(settings).some(([key, value]) => value !== effectsDefaults[key as keyof EffectsData]) ?
+   [{type, enabled: true, settings}] : [];
+ });
+}
+
 /** Filter kinds in a fixed order (colour → blur → outline/glow → shadow → pixelate → noise); neutral values add none. */
 export function effectPlan(p: EffectsData): EffectKind[] {
  const plan: EffectKind[] = [];
@@ -79,13 +118,54 @@ export function effectFilters(p: EffectsData): Filter[] {
  });
 }
 
+class ObjectFilterEffect extends BaseEffect<Container> {
+ constructor(private readonly filter: Filter) { super(); }
+
+ protected onAttach(view: Container) {
+  view.filters = [...view.filters ?? [], this.filter];
+  this.addTeardown(() => {
+   if (!view.destroyed) {
+    const remaining = view.filters?.filter(filter => filter !== this.filter);
+    view.filters = remaining?.length ? remaining : null;
+   }
+   this.filter.destroy();
+  });
+ }
+}
+
+const blendOwners = new WeakMap<Container, {effect: ObjectBlendEffect; mode: BLEND_MODES}>();
+class ObjectBlendEffect extends BaseEffect<Container> {
+ constructor(private readonly mode: BLEND_MODES) { super(); }
+
+ protected onAttach(view: Container) {
+  const previous = blendOwners.get(view)?.mode ?? view.blendMode;
+  blendOwners.set(view, {effect: this, mode: previous});
+  view.blendMode = this.mode;
+  this.addTeardown(() => {
+   if (blendOwners.get(view)?.effect !== this) return;
+   blendOwners.delete(view);
+   if (!view.destroyed && view.blendMode === this.mode) view.blendMode = previous;
+  });
+ }
+}
+
 /**
  * The decorator both hosts use. Filters are cached per node and destroyed on change or `clear()`. `shaders` reads the
  * project's shader library so a `pixi.shader` component adds its custom filter last (WebGL only).
  */
-export function createEffectsDecorator(options: {shaders?: () => unknown} = {}): SceneDecorator {
- let applied = new Map<Container, {key: string; filters: Filter[]; mask?: Graphics}>();
- const release = (entry: {filters: Filter[]; mask?: Graphics}) => { for (const f of entry.filters) f.destroy(); if (entry.mask && !entry.mask.destroyed) entry.mask.destroy(); };
+export function createEffectsDecorator(options: {shaders?: () => unknown; shaderTime?: () => number} = {}): SceneDecorator & {remove(view: Container): void} {
+ const applied = new Map<Container, {key: string; effects: string[]; mask?: Graphics}>();
+ const remove = (view: Container) => {
+  const entry = applied.get(view);
+  if (!entry) return;
+  applied.delete(view);
+  const scope = EffectScope.for(view);
+  for (const effect of entry.effects) scope.remove(effect);
+  if (entry.mask && !entry.mask.destroyed) {
+   if (!view.destroyed) view.mask = null;
+   entry.mask.destroy();
+  }
+ };
  return {
   apply(entities: readonly DecoratedEntity[], node: (id: string) => Container | undefined, renderer?) {
    const library = options.shaders?.(), gpu = renderer?.name === 'webgpu';
@@ -97,12 +177,21 @@ export function createEffectsDecorator(options: {shaders?: () => unknown} = {}):
     const shader = custom && !gpu && options.shaders ? resolveShader(library, custom.data) : null;
     const key = JSON.stringify([effects?.data ?? null, mask?.data ?? null, shader]), previous = applied.get(view);
     if (previous?.key === key) continue;
-    if (previous) release(previous);
-    const fx = effects ? EffectsSchema.safeParse(effects.data) : null, shape = mask ? MaskSchema.safeParse(mask.data) : null;
-    const filters = fx?.success ? effectFilters(fx.data) : [];
-    if (shader) filters.push(createShaderFilter(shader.source, shader.data));
-    view.filters = filters.length ? filters : null;
-    view.blendMode = (fx?.success ? fx.data.blendMode : 'normal') as BLEND_MODES;
+    if (previous) remove(view);
+    const fx = effects ? VisualEffectSchema.array().safeParse(migrateVisualEffects(effects.data)) : null;
+    const shape = mask ? MaskSchema.safeParse(mask.data) : null;
+    const scope = EffectScope.for(view);
+    const attached: string[] = [];
+    const attach = (id: string, effect: BaseEffect<Container>) => {
+     scope.attach(id, effect);
+     attached.push(id);
+    };
+    for (const {effect, key} of effectEntries(fx?.success ? fx.data : [])) {
+     if (!effect.enabled) continue;
+     if (effect.type === 'blend') attach(key, new ObjectBlendEffect(effect.settings.blendMode));
+     else for (const filter of effectFilters({...effectsDefaults, ...effect.settings})) attach(key, new ObjectFilterEffect(filter));
+    }
+    if (shader) attach(shaderType, new ObjectFilterEffect(createShaderFilter(shader.source, shader.data, options.shaderTime)));
     let graphic: Graphics | undefined;
     if (shape?.success) {
      const m = shape.data, x = m.offsetX - m.width / 2, y = m.offsetY - m.height / 2;
@@ -111,10 +200,11 @@ export function createEffectsDecorator(options: {shaders?: () => unknown} = {}):
      graphic.fill(0xffffff);
      view.addChild(graphic);
      view.setMask({mask: graphic, inverse: m.inverse});
-    } else view.mask = null;
-    applied.set(view, {key, filters, mask: graphic});
+    }
+    applied.set(view, {key, effects: attached, mask: graphic});
    }
   },
-  clear() { for (const [view, entry] of applied) { if (!view.destroyed) { view.filters = null; view.mask = null; } release(entry); } applied = new Map(); },
+  remove,
+  clear() { for (const view of applied.keys()) remove(view); },
  };
 }

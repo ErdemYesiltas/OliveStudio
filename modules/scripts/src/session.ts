@@ -1,6 +1,6 @@
 import {newQuickJSWASMModuleFromVariant, shouldInterruptAfterDeadline, type QuickJSContext, type QuickJSHandle, type QuickJSRuntime, type QuickJSWASMModule} from 'quickjs-emscripten-core';
 import type {RuntimeSystem} from '@rewrite/sdk';
-import {transform, type Entity} from '@rewrite/scene';
+import {transform, type Entity, type Scene} from '@rewrite/scene';
 import {isActive, typeOfGlobal, type ActionContext, type GlobalValue, type InteractionEvent} from '@rewrite/interactions';
 // The RxJS UMD bundle runs inside the sandbox (outside the package's exports map, so by path).
 import rxjsSource from '../node_modules/rxjs/dist/bundles/rxjs.umd.min.js?raw';
@@ -39,6 +39,8 @@ export interface ScriptPhysics {
  objectsAt(x: number, y: number): string[]; objectsIn(x: number, y: number, width: number, height: number): string[];
 }
 export interface ScriptHost extends Pick<ActionContext, 'setActive' | 'changeScene' | 'addScene' | 'removeScene' | 'invoke' | 'globals' | 'camera'> {
+ pushScene?(id: string): void;
+ popScene?(): void;
  /** Running physics, when the scene has bodies. */
  /** Optional replay seed for game.random and sandbox Math.random. */
  seed?:number;
@@ -73,6 +75,21 @@ export interface ScriptHost extends Pick<ActionContext, 'setActive' | 'changeSce
  extensions?: readonly ScriptExtension[];
  /** Interaction events raised from inside the sandbox by providers (e.g. a state machine entering a state). */
  emit?(event: InteractionEvent): void;
+}
+
+export {connectScriptServices,scriptLanguage} from './services';
+
+/** Build one sandbox for the live scene, including its optional scene-level behaviour. */
+export function createSceneScripts(
+ module:QuickJSWASMModule,
+ library:ScriptLibrary,
+ scene:Pick<Scene,'id'|'name'>,
+ host:Omit<ScriptHost,'scene'|'standby'>,
+ report:(message:string)=>void,
+){
+ return new ScriptSession(module,library,{
+  ...host,scene:{name:scene.name,behaviour:library.scenes?.[scene.id]},standby:library.items.length>0,
+ },report);
 }
 
 export interface ScriptExtension {
@@ -288,6 +305,8 @@ globalThis.game = Object.freeze({
   }),
   isDown(action) { return __h.isDown(String(action)); },
   changeScene(name) { __h.scene(String(name)); },
+  pushScene(name) { __h.sceneStack('push', String(name)); },
+  popScene() { __h.sceneStack('pop', ''); },
   addScene(name) { __h.additive('add', String(name)); },
   removeScene(name) { __h.additive('remove', String(name)); },
   /** A copy of the prefab (or else the scene object) with this name, at (x, y); its scripts start on the next frame. */
@@ -729,6 +748,11 @@ export class ScriptSession {
   fn('globalNames', () => JSON.stringify(this.host.names.globals.map(g => g.name)));
   fn('isDown', name => this.pressed.has(named(this.host.names.actions ?? [], String(name), 'input action')));
   fn('scene', name => this.host.changeScene(named(this.host.names.scenes, String(name), 'scene')));
+  fn('sceneStack', (op, name) => {
+   if (String(op) === 'pop' && this.host.popScene) return this.host.popScene();
+   if (String(op) === 'push' && this.host.pushScene) return this.host.pushScene(named(this.host.names.scenes, String(name), 'scene'));
+   throw Error('Scene stack is unavailable here');
+  });
   fn('additive', (op, name) => { const id = named(this.host.names.scenes, String(name), 'scene'), host = this.host; if (!host.addScene || !host.removeScene) throw Error('Adding scenes is unavailable here'); if (String(op) === 'add') host.addScene(id); else host.removeScene(id); });
   fn('phys', (op, id, a, b) => {
    const p = this.host.physics; if (!p) throw Error('Physics is not running in this scene');

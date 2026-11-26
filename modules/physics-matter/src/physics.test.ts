@@ -41,6 +41,22 @@ it('kinematic bodies follow their transform and push dynamic bodies; dynamic chi
  const world=g.diagnostics.bodies[0];expect(world.y).toBeGreaterThan(100);expect(transform(child).x).toBeCloseTo(world.y-100,3);expect(transform(child).y).toBeCloseTo(-(world.x-100),3);g.dispose();
 });
 
+it('writes a child body back through its parent pivot, rotation and scale', () => {
+ const parent = bare('pivoted', 140, 120);
+ Object.assign(parent.components[0].data!, {pivotX: 23, pivotY: -17, rotation: 90, scaleX: 2, scaleY: 3});
+ const child = bare('child', 45, 35, rb('child'), box('child'));
+ child.parentId = parent.id;
+ const session = new PhysicsSession(() => [parent, child], defaultPhysicsSettings, matterProvider);
+ try {
+  session.start();
+  run(session, 30);
+  const pose = session.diagnostics.bodies[0];
+  expect(pose.y).toBeGreaterThan(164);
+  expect(transform(child).x).toBeCloseTo((pose.y - 120) / 2 + 23, 5);
+  expect(transform(child).y).toBeCloseTo((140 - pose.x) / 3 - 17, 5);
+ } finally { session.dispose(); }
+});
+
 it('compound bodies take collider-only children as parts; tilemaps collide as merged rectangles; polygons use their convex hull',()=>{
  const car=bare('car',0,0,rb('car'),box('car',100,20)),wheel=bare('wheel',-40,20,{id:'c-w',type:'physics.circleCollider2d',version:1,data:{radius:10,offsetX:0,offsetY:0,sensor:false}});wheel.parentId='car';
  const plan=compilePhysics([car,wheel]).plans;expect(plan).toHaveLength(1);expect(plan[0].spec.parts.map(p=>[p.kind,p.x,p.y])).toEqual([['box',0,0],['circle',-40,20]]);

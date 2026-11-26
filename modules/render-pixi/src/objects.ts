@@ -2,7 +2,7 @@ import {Container, Graphics, Mesh, MeshPlane, NineSliceSprite, Particle, Particl
 import {z} from 'zod';
 import type {ComponentDefinition, Json} from '@rewrite/sdk';
 import type {VisualAdapter, VisualContext, VisualFrame} from './visuals';
-import {acquireTexture, releaseTexture} from './textures';
+import {standaloneTextures} from './textures';
 
 /**
  * Texture-backed Pixi objects beyond Sprite: tiling, nine-slice, plane mesh, rope and particles. Motion (scroll,
@@ -104,7 +104,8 @@ function textured(type: string, schema: z.ZodType, key: (p: never) => unknown, s
    view.addChild(placeholder);
    const drawPlaceholder = () => { placeholder.clear(); if (built) return; const b = size(p as never); placeholder.rect(b.x, b.y, b.width, b.height).fill('#4d3747').stroke({color: '#d29bbd', width: 1}); };
    const ready = (texture: Texture) => { if (dead) return; built = build(p as never, texture, context); view.addChild(built.view); drawPlaceholder(); built.update(p as never, context.frame()); context.changed(); };
-   if (src) void acquireTexture(src).then(({texture}) => ready(texture), e => { if (!dead) { error = String(e); context.changed(); } });
+   const lease=src?(context.textures??standaloneTextures).acquire(src):undefined;
+   if(lease)void lease.ready.then(texture=> ready(texture), e => { if (!dead) { error = String(e); context.changed(); } });
    else if(typeof optional==='function'){const texture=optional(p as never);if(texture!==Texture.WHITE)ownedTexture=texture;ready(texture);}else if (optional) ready(Texture.WHITE);
    else error = p.assetId ? 'Missing image' : null;
    drawPlaceholder();
@@ -112,7 +113,7 @@ function textured(type: string, schema: z.ZodType, key: (p: never) => unknown, s
     view,
     update(next, frame) { p = schema.parse(next) as typeof p; if (built) built.update(p as never, frame); else drawPlaceholder(); },
     diagnostics: () => ({ready: Boolean(built), error}),
-    dispose() { if (dead) return; dead = true; view.destroy({children: true, context: true}); built?.dispose(); if (src) releaseTexture(src);ownedTexture?.destroy(true); },
+    dispose() { if (dead) return; dead = true; view.destroy({children: true, context: true}); built?.dispose(); lease?.release();ownedTexture?.destroy(true); },
    };
   },
  };

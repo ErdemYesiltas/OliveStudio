@@ -1,1 +1,1 @@
-{"name":"@rewrite/build","version":"0.1.0","private":true,"type":"module","exports":{".":"./src/index.ts","./node":"./src/build.node.ts","./views":"./src/views.tsx"},"dependencies":{"@rewrite/sdk":"workspace:*","react":"19.3.1"}}
+{"name":"@rewrite/build","version":"0.1.0","private":true,"type":"module","exports":{".":"./src/index.ts","./node":"./src/build.node.ts","./views":"./src/views.tsx","./report-node":"./src/build-report.node.ts"},"dependencies":{"@rewrite/sdk":"workspace:*","react":"19.3.1"}}

@@ -1,4 +1,5 @@
-import type {DialogueSession, DialogueView} from './index';
+import {DialogueSession,type DialogueHost,type DialogueView} from './index';
+import type {RuntimeSystem} from '@rewrite/sdk';
 
 const css = `
 [data-dialogue-box]{position:absolute;left:50%;bottom:4%;transform:translateX(-50%);width:min(92%,760px);z-index:30;box-sizing:border-box;padding:14px 18px 12px;border-radius:12px;background:rgba(10,14,24,.88);border:1px solid rgba(255,255,255,.18);color:#f3f6fb;font:16px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif;box-shadow:0 10px 30px rgba(0,0,0,.45);cursor:pointer;user-select:none}
@@ -47,7 +48,7 @@ export function createDialogueBox(host: HTMLElement, session: DialogueSession, o
  };
  const next = () => { if (!current) return; if (typing()) { shown = current.text.length; paint(); return; } if (!current.choices.length) session.advance(); };
  const key = (e: KeyboardEvent) => {
-  if (!current || e.defaultPrevented || e.repeat) return;
+  if (!current || e.defaultPrevented || e.repeat || !box.getClientRects().length) return;
   const target = e.target as HTMLElement | null; if (target?.closest?.('input,textarea,select,[contenteditable=true]')) return;
   if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); next(); return; }
   const n = Number(e.key); if (Number.isInteger(n) && n >= 1 && n <= current.choices.length && !typing()) { e.preventDefault(); session.choose(current.choices[n - 1].index); }
@@ -56,4 +57,16 @@ export function createDialogueBox(host: HTMLElement, session: DialogueSession, o
  doc.defaultView?.addEventListener('keydown', key);
  const off = session.subscribe(show); show(session.view());
  return {element: box, dispose() { off(); if (frame) cancelAnimationFrame(frame); doc.defaultView?.removeEventListener('keydown', key); box.remove(); }};
+}
+
+/** Dialogue state and its overlay share the scene lifetime. */
+export function createSceneDialogue(host:DialogueHost,target?:HTMLElement){
+ const session=new DialogueSession(host);
+ let box:ReturnType<typeof createDialogueBox>|undefined;
+ const system:RuntimeSystem={
+  id:'dialogue',
+  start(){if(target)box=createDialogueBox(target,session);},
+  dispose(){box?.dispose();box=undefined;session.dispose();},
+ };
+ return {session,system};
 }

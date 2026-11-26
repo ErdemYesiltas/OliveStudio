@@ -1,7 +1,22 @@
 import '@pixi/layout';
 import {LayoutContainer} from '@pixi/layout/components';
-import type {Container, Renderer} from 'pixi.js';
+import {Ticker, type Container, type DestroyOptions, type Renderer} from 'pixi.js';
 import {LayoutContainerSchema, LayoutItemSchema, containerStyle, itemDefaults, itemStyle, type LayoutEntity} from './contracts';
+
+class SceneLayoutContainer extends LayoutContainer {
+ constructor(private readonly ticker?: Ticker) {
+  super({label: 'layout-root'});
+  if (ticker) {
+   Ticker.shared.remove(this.update, this);
+   ticker.add(this.update, this);
+  }
+ }
+ disconnectClock() { this.ticker?.remove(this.update, this); }
+ destroy(options?: DestroyOptions) {
+  this.disconnectClock();
+  super.destroy(options);
+ }
+}
 
 /**
  * Applies `layout.container` / `layout.item` to a built scene graph. Each layout entity gets an inner
@@ -12,9 +27,16 @@ import {LayoutContainerSchema, LayoutItemSchema, containerStyle, itemDefaults, i
  * system, so it must load before the Pixi application initialises.
  */
 export class SceneLayout {
- private roots = new Map<string, LayoutContainer>();
+ private roots = new Map<string, SceneLayoutContainer>();
  private managed = new Set<Container>();
  private styles = new WeakMap<Container, string>();
+ constructor(private readonly ticker?: Ticker) {}
+
+ setScrollEnabled(enabled: boolean) {
+  for (const root of this.roots.values()) {
+   if (!root.destroyed) root.eventMode = enabled ? 'static' : 'passive';
+  }
+ }
  private styled(target: Container, style: object) {
   const key = JSON.stringify(style);
   if (this.styles.get(target) === key) return;
@@ -33,7 +55,7 @@ export class SceneLayout {
    const p = parsed.data;
    let root = this.roots.get(e.id);
    if (!root || root.destroyed || root.parent !== host) {
-    const created = new LayoutContainer({label: 'layout-root'});
+    const created = new SceneLayoutContainer(this.ticker);
     created.on('layout', layout => { created.position.set(-p.anchorX * layout.computedLayout.width, -p.anchorY * layout.computedLayout.height); });
     created.position.set(-p.anchorX * p.width, -p.anchorY * p.height);
     host.addChild(created);
@@ -74,7 +96,10 @@ export class SceneLayout {
  /** Frees Yoga nodes; call before the host destroys the display objects (the roots go with their hosts). */
  clear() {
   for (const view of this.managed) if (!view.destroyed) view.layout = null;
-  for (const root of this.roots.values()) if (!root.destroyed) root.layout = null;
+  for (const root of this.roots.values()) {
+   root.disconnectClock();
+   if (!root.destroyed) root.layout = null;
+  }
   this.managed.clear(); this.roots.clear(); this.styles = new WeakMap();
  }
 }

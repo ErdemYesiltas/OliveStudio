@@ -1,11 +1,8 @@
 import type {ComponentDefinition,Json,SpatialDefinition} from '@rewrite/sdk';
 import type {Entity,Scene} from './index';
 export type Definitions=ReadonlyMap<string,ComponentDefinition>;
-export const transform2dType='scene.transform2d',space2d='scene.2d';
-/** Omitted in legacy 2D JSON. Explicit type preserves unsupported spatial data without inventing a 2D transform. */
-export function spatialType(entity:Entity):string{return entity.spatial??transform2dType;}
-export function is2DEntity(entity:Entity):boolean{return spatialType(entity)===transform2dType;}
-export function spatialComponent(entity:Entity){const c=entity.components.find(c=>c.type===spatialType(entity));if(!c)throw Error(`${entity.name}: spatial component ${spatialType(entity)} missing`);return c;}
+import {is2DEntity,space2d,spatialComponent,spatialType,transform2dType} from '@olivestudio/engine/scene';
+export {is2DEntity,space2d,spatialComponent,spatialType,transform2dType} from '@olivestudio/engine/scene';
 export function spatialDefinition(entity:Entity,definitions:Definitions):SpatialDefinition{const c=spatialComponent(entity),def=definitions.get(c.type);if(!def?.spatial||def.version!==c.version)throw Error(`${entity.name}: spatial provider unavailable for ${c.type} v${c.version}`);return def.spatial;}
 function space(entity:Entity,defs:Definitions){const c=spatialComponent(entity),def=defs.get(c.type);return def?.version===c.version?def.spatial?.space:is2DEntity(entity)?space2d:undefined;}
 function boundary(entity:Entity,defs:Definitions){const all=entity.components.flatMap(c=>{const d=defs.get(c.type);return d?.version===c.version&&d.spatialBoundary?[d.spatialBoundary]:[];});if(all.length>1)throw Error('Only one spatial boundary per entity');return all[0];}

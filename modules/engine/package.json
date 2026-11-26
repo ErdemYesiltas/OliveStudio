@@ -1,0 +1,50 @@
+{
+  "name": "@olivestudio/engine",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "description": "OliveStudio's standalone PixiJS 2D game runtime",
+  "exports": {
+    ".": "./src/index.ts",
+    "./runtime": "./src/runtime/index.ts",
+    "./scene": "./src/scene.ts",
+    "./game-application": "./src/game-application.ts",
+    "./core-clock": "./src/core-clock.ts",
+    "./widgets": "./src/widgets.ts",
+    "./game-scene": "./src/game-scene.ts",
+    "./scene-visuals": "./src/scene-visuals.ts",
+    "./display": "./src/display.ts",
+    "./contracts": "./src/contracts.ts",
+    "./visual-signature": "./src/visual-signature.ts",
+    "./runtime-camera": "./src/runtime-camera.ts",
+    "./camera": "./src/camera/index.ts",
+    "./scenes": "./src/scenes/index.ts",
+    "./screen": "./src/screen.ts",
+    "./textures": "./src/textures.ts",
+    "./click": "./src/click.ts",
+    "./fonts": "./src/fonts.ts",
+    "./lifecycle": "./src/lifecycle.ts",
+    "./visuals": "./src/visuals.ts",
+    "./particles": "./src/particles/index.ts",
+    "./aperion-director": "./src/aperion-director/index.ts",
+    "./scale-layout": "./src/resize/scale-layout.ts"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json && node build-package.mjs"
+  },
+  "dependencies": {
+    "@pixi/layout": "3.2.1",
+    "@pixi/ui": "2.4.1",
+    "gsap": "3.15.1",
+    "miniplex": "2.0.0",
+    "pixi-filters": "6.1.5",
+    "rxjs": "7.8.2",
+    "zod": "4.6.7"
+  },
+  "peerDependencies": {
+    "pixi.js": "^8.23.0"
+  },
+  "devDependencies": {
+    "pixi.js": "8.23.0"
+  }
+}

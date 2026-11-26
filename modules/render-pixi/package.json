@@ -11,10 +11,14 @@
     "./font.node": "./src/font.node.ts",
     "./fonts": "./src/fonts.ts",
     "./display": "./src/display.ts",
+    "./scene-visuals": "./src/scene-visuals.ts",
     "./objects": "./src/objects.ts",
+    "./object-visuals": "./src/object-visuals.ts",
     "./shaders": "./src/shaders.ts",
     "./effects": "./src/effects.ts",
     "./guides": "./src/guides.ts",
+    "./grid": "./src/grid.ts",
+    "./badges": "./src/badges.ts",
     "./tilemap": "./src/tilemap.ts",
     "./runtime-camera": "./src/runtime-camera.ts",
     "./screen": "./src/screen.ts",
@@ -22,6 +26,9 @@
     "./click": "./src/click.ts",
     "./device-frame": "./src/device-frame.ts",
     "./lifecycle": "./src/lifecycle.ts",
+    "./game-application": "./src/game-application.ts",
+    "./game-scene": "./src/game-scene.ts",
+    "./textures": "./src/textures.ts",
     "./viewport-features": "./src/viewport-features.ts"
   },
   "dependencies": {
@@ -33,6 +40,7 @@
     "zod": "4.6.7",
     "@rewrite/assets": "workspace:*",
     "pixi-filters": "6.1.5",
-    "rxjs": "7.8.2"
+    "rxjs": "7.8.2",
+    "@olivestudio/engine": "workspace:*"
   }
 }

@@ -73,3 +73,13 @@ it('cancels hung preparation immediately, rolls back failed spawned callbacks an
 it('rejects stale candidate membership and keeps nested holds independent',async()=>{
  let finish!:()=>void;const resumes:string[]=[],s=new RuntimeSession([],()=>[{id:'observe',resume:()=>resumes.push('resume'),dispose(){}}]);const release=s.hold(),pending=s.stageSpawn([{id:'candidate',active:true}],()=>new Promise<void>(r=>finish=r));await Promise.resolve();s.spawn([{id:'other',active:true}]);finish();await expect(pending).rejects.toThrow('world changed');expect(s.world.entities.map(e=>e.id)).toEqual(['other']);expect(s.paused).toBe(true);release();release();expect(s.paused).toBe(false);expect(resumes).toEqual(['resume']);s.dispose();
 });
+
+it('cleans up every installed system in reverse order when scene assembly fails',()=>{
+ const order:string[]=[];
+ expect(()=>new RuntimeSession([],(_world,install)=>{
+  install({id:'first',dispose:()=>order.push('first')});
+  install({id:'second',dispose:()=>order.push('second')});
+  throw Error('Later provider failed');
+ })).toThrow('Later provider failed');
+ expect(order).toEqual(['second','first']);
+});

@@ -1,12 +1,13 @@
+import type {InteractionEvent} from '@rewrite/interactions';
 import {z} from 'zod';
 import {components,createItems,settings,type ComponentDefinition,type EditorModule,type RuntimeSystem} from '@rewrite/sdk';
 import {assetImporters,type AssetRecord} from '@rewrite/assets';
 import {transform,type Entity} from '@rewrite/scene';
 import {BehaviorSubject,Subject,distinctUntilChanged,map,merge,of,scan,startWith,switchMap,takeWhile,type Observable as Stream,type Subscription} from 'rxjs';
 import {tweenChannels} from '@rewrite/tween/contracts';
-import {AudioSourceSchema,AudioListenerSchema,AudioMetadataSchema,spatialMix,MixerSchema,audioImporter,audioBuses,busGain,busEffects,noBusEffects,defaultMixer,type AudioBus,type AudioControls,type AudioEvent,type AudioState,type Mixer,type AudioController,type AudioProvider,type AudioSource,type AudioVoice,type VoiceSnapshot,type VoiceSpec,type Point} from './contracts';
+import {audioTweenChannels,AudioSourceSchema,AudioListenerSchema,AudioMetadataSchema,spatialMix,MixerSchema,audioImporter,audioBuses,busGain,busEffects,noBusEffects,defaultMixer,type AudioBus,type AudioControls,type AudioEvent,type AudioState,type Mixer,type AudioController,type AudioProvider,type AudioSource,type AudioVoice,type VoiceSnapshot,type VoiceSpec,type Point} from './contracts';
 export * from './contracts';
-export const audioSourceDefinition:ComponentDefinition={type:'audio.source',version:1,titleKey:'component.audioSource',defaults:()=>({assetId:'',volume:1,loop:false,rate:1,autoplay:false,bus:'sfx',bpm:0,beatOffset:0,pitchJitter:0,volumeJitter:0,pan:0,spatial:false,minDistance:100,maxDistance:1000,rolloff:'linear',panAmount:1}),get dataSchema(){return z.toJSONSchema(AudioSourceSchema,{unrepresentable:'any'});},parse:v=>AudioSourceSchema.parse(v),fields:[{key:'assetId',titleKey:'audio.clip',kind:'asset',assetType:'audio.clip'},...['volume','rate','bpm','beatOffset','pitchJitter','volumeJitter'].map(key=>({key,titleKey:`audio.${key}`,kind:'number'as const})),...['loop','autoplay'].map(key=>({key,titleKey:`audio.${key}`,kind:'boolean'as const})),{key:'bus',titleKey:'audio.bus',kind:'enum',options:audioBuses.map(value=>({value,titleKey:`audio.bus.${value}`}))},{key:'pan',titleKey:'audio.pan',kind:'number'},
+export const audioSourceDefinition:ComponentDefinition={type:'audio.source',version:1,titleKey:'component.audioSource',defaults:()=>({assetId:'',volume:1,loop:false,rate:1,autoplay:false,bus:'sfx',bpm:0,beatOffset:0,pitchJitter:0,volumeJitter:0,pan:0,spatial:false,minDistance:100,maxDistance:1000,rolloff:'linear',panAmount:1}),get dataSchema(){return z.toJSONSchema(AudioSourceSchema,{unrepresentable:'any'});},parse:v=>AudioSourceSchema.parse(v),fields:[{key:'assetId',titleKey:'audio.clip',kind:'asset',assetType:'audio.clip'},{key:'voiceLimit',titleKey:'audio.voiceLimit',kind:'number',visible:data=>!(data as {loop?:boolean}).loop},...['volume','rate','bpm','beatOffset','pitchJitter','volumeJitter'].map(key=>({key,titleKey:`audio.${key}`,kind:'number'as const})),...['loop','autoplay'].map(key=>({key,titleKey:`audio.${key}`,kind:'boolean'as const})),{key:'bus',titleKey:'audio.bus',kind:'enum',options:audioBuses.map(value=>({value,titleKey:`audio.bus.${value}`}))},{key:'pan',titleKey:'audio.pan',kind:'number'},
  {key:'spatial',titleKey:'audio.spatial',kind:'boolean'},...(['minDistance','maxDistance','panAmount'] as const).map(key=>({key,titleKey:`audio.${key}`,kind:'number' as const,visible:(d:unknown)=>(d as {spatial?:boolean}).spatial===true})),
  {key:'rolloff',titleKey:'audio.rolloff',kind:'enum',options:(['linear','inverse','exponential'] as const).map(value=>({value,titleKey:`audio.rolloff.${value}`})),visible:(d:unknown)=>(d as {spatial?:boolean}).spatial===true}]};
 /** Where spatial sources are heard from (one per scene is used: the first active one). */
@@ -32,11 +33,11 @@ export function audioRanges(entities:readonly Entity[],ids:readonly string[]){
  return ids.flatMap(id=>{const e=byId.get(id);if(!e)return[];return e.components.flatMap(c=>{if(c.type!=='audio.source'||c.version!==1)return[];const p=AudioSourceSchema.safeParse(c.data);if(!p.success||!p.data.spatial)return[];const k=scale(id);
   return[p.data.minDistance,Math.max(p.data.minDistance+1,p.data.maxDistance)].map((r,i)=>({entityId:id,points:Array.from({length:64},(_,j)=>({x:Math.cos(j/64*Math.PI*2)*r/k,y:Math.sin(j/64*Math.PI*2)*r/k})),color:i?'#6aa7d9':'#9fd96a'}));});});
 }
-export const audioModule:EditorModule={manifest:{id:'audio',version:'1.0.0',apiVersion:1,requires:{scene:'^1',assets:'^1'},entries:{worker:'@rewrite/audio/node',runtime:'@rewrite/audio'}},activate(c){c.contribute(createItems,'audio.sound',{titleKey:'create.sound',category:'audio',icon:'audio',name:'Sound',components:[{type:'audio.source'}]});c.contribute(settings,'audio.previewVolume',{titleKey:'setting.previewVolume',descriptionKey:'setting.previewVolumeHelp',kind:'number',default:25,min:0,max:100,step:1,unit:'%'});c.contribute(components,'audio.source',audioSourceDefinition);c.contribute(components,'audio.listener',audioListenerDefinition);c.contribute(createItems,'audio.listener',{titleKey:'create.audioListener',category:'audio',icon:'audio',name:'Audio listener',components:[{type:'audio.listener'}]});c.contribute(tweenChannels,'audio.volume',{componentType:'audio.source',version:1,property:'volume',titleKey:'audio.volume',min:0,max:1,defaultValue:1});c.contribute(tweenChannels,'audio.rate',{componentType:'audio.source',version:1,property:'rate',titleKey:'audio.rate',min:.25,max:4,defaultValue:1});c.contribute(assetImporters,audioImporter.id,audioImporter);}};
-export function voiceSpec(source:Pick<AudioSource,'volume'|'loop'|'rate'|'bus'>,asset:AssetRecord|undefined,url:(asset:AssetRecord,file:string)=>string,provider:AudioProvider,mixer?:Mixer):VoiceSpec{
+export const audioModule:EditorModule={manifest:{id:'audio',version:'1.0.0',apiVersion:1,requires:{scene:'^1',assets:'^1'},entries:{worker:'@rewrite/audio/node',runtime:'@rewrite/audio'}},activate(c){c.contribute(createItems,'audio.sound',{titleKey:'create.sound',category:'audio',icon:'audio',name:'Sound',components:[{type:'audio.source'}]});c.contribute(settings,'audio.previewVolume',{titleKey:'setting.previewVolume',descriptionKey:'setting.previewVolumeHelp',kind:'number',default:25,min:0,max:100,step:1,unit:'%'});c.contribute(components,'audio.source',audioSourceDefinition);c.contribute(components,'audio.listener',audioListenerDefinition);c.contribute(createItems,'audio.listener',{titleKey:'create.audioListener',category:'audio',icon:'audio',name:'Audio listener',components:[{type:'audio.listener'}]});for(const channel of audioTweenChannels)c.contribute(tweenChannels,`audio.${channel.property}`,channel);c.contribute(assetImporters,audioImporter.id,audioImporter);}};
+export function voiceSpec(source:Pick<AudioSource,'volume'|'loop'|'rate'|'bus'>&Partial<Pick<AudioSource,'voiceLimit'>>,asset:AssetRecord|undefined,url:(asset:AssetRecord,file:string)=>string,provider:AudioProvider,mixer?:Mixer):VoiceSpec{
  if(!asset||asset.type!=='audio.clip')throw Error('Audio clip is missing');const meta=AudioMetadataSchema.parse(asset.metadata);
  if(!provider.supports(meta.format))throw Error(`Audio format is unsupported: ${meta.format}`);
- return{url:url(asset,`audio.${meta.format}`),format:meta.format,volume:source.volume*busGain(mixer,source.bus),loop:source.loop,rate:source.rate,bus:source.bus};
+ return{url:url(asset,`audio.${meta.format}`),format:meta.format,volume:source.volume*busGain(mixer,source.bus),loop:source.loop,rate:source.rate,bus:source.bus,voiceLimit:source.loop?1:source.voiceLimit};
 }
 class Observable {
  private listeners=new Set<()=>void>();
@@ -142,7 +143,7 @@ export class AudioSession extends Observable implements AudioController, AudioCo
    for(const component of entity.components){if(component.type!=='audio.source'||component.version!==1)continue;const key=component.id;wanted.add(key);let source:AudioSource|undefined,spec:VoiceSpec|undefined,error:unknown;
     try{source=AudioSourceSchema.parse(component.data);spec=this.resolve(source);}catch(e){error=e;}
     // Only the clip, looping and errors need a new voice; volume, rate, bus, tempo and variation are live.
-    const signature=JSON.stringify([source?.assetId,source?.loop,spec?.url,spec?.format,error?String(error):null]),existing=this.entries.get(key);
+    const signature=JSON.stringify([source?.assetId,source?.loop,spec?.voiceLimit,spec?.url,spec?.format,error?String(error):null]),existing=this.entries.get(key);
     if(existing?.signature===signature){if(source&&JSON.stringify(source)!==JSON.stringify(existing.source)){existing.source=source;existing.spatial=this.place(existing,entities,listenerPoint(entities)??this.listener());this.apply(existing);this.recount();}continue;}
     this.remove(key);changed=true;
     const entry:Entry={key,entityId:entity.id,signature,wantsPlay:source?.autoplay??false,source:source??AudioSourceSchema.parse({assetId:'',volume:0,loop:false,rate:1,autoplay:false}),state$:new BehaviorSubject<AudioState>('loading'),fade$:new BehaviorSubject(1),fadeCommand$:new Subject(),jitter:{volume:1,rate:1},beat:-1,subscriptions:[],spatial:{gain:1,pan:0}};
@@ -160,4 +161,26 @@ export class AudioSession extends Observable implements AudioController, AudioCo
  pause(){if(this.dead||this.paused)return;this.paused=true;for(const e of this.entries.values())e.voice?.pause();}
  resume(){if(this.dead||!this.paused)return;this.paused=false;for(const e of this.entries.values())if(e.wantsPlay)e.voice?.play();}
  dispose(){if(this.dead)return;this.dead=true;this.duckSubscription?.unsubscribe();this.mixSubscription?.unsubscribe();this.effectsSubscription?.unsubscribe();for(const b of audioBuses)this.provider.setBusEffects?.(b,noBusEffects);for(const key of [...this.entries.keys()])this.remove(key);this.frame$.complete();this.events$.complete();this.changed();}
+}
+
+function emitAudioInteraction(
+ emit:(event:InteractionEvent)=>void,
+ event:{kind:'ended'|'beat';key:string;bar?:boolean},
+ silent:boolean,
+){
+ if(event.kind==='ended'){emit({type:'audio.ended',sourceId:event.key,silent});return;}
+ emit({type:'audio.beat',sourceId:event.key,event:'beat',silent});
+ if(event.bar)emit({type:'audio.beat',sourceId:event.key,event:'bar',silent});
+}
+
+/** Own the runtime voices and route completed sounds and beat events through the scene interaction bus. */
+export function createSceneAudio(entities:()=>readonly Entity[],provider:AudioProvider,ports:{
+ asset(id:string):AssetRecord|undefined;url(asset:AssetRecord,file:string):string;
+ mixer:Mixer;listener():Point|undefined;silent():boolean;emit(event:InteractionEvent):void;
+}){
+ const session=new AudioSession(entities,source=>voiceSpec(source,ports.asset(source.assetId),ports.url,provider),provider,{
+  mixer:ports.mixer,listener:ports.listener,
+ });
+ session.events$.subscribe(event=>emitAudioInteraction(ports.emit,event,ports.silent()));
+ return session;
 }

@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState, useSyncExternalStore} from 'react';
+import {useEffect, useRef, useState, useSyncExternalStore, type HTMLAttributes, type ReactNode} from 'react';
 import 'monaco-editor/editor/editor.main';
 import * as monaco from 'monaco-editor/editor/editor.api';
 import {typescriptDefaults, ScriptTarget, ModuleKind, ModuleResolutionKind} from 'monaco-editor/languages/features/typescript/register';
@@ -9,10 +9,18 @@ import TsWorker from 'monaco-editor/languages/features/typescript/ts.worker?work
 import {compileScript} from './compile';
 import {describeScript, loadScriptEngine, scriptEngineReady, type DebugInstance} from './session';
 import {scriptDebugger} from './debug';
+import {scriptConsole} from './console';
+export {scriptConsole} from './console';
 import {apiDeclarations, globalsDeclaration, BehaviourSchema, ScriptNameSchema, scriptTemplate, scriptTemplates, type Behaviour, type ParamField, type Script, type ScriptLibrary} from './contracts';
 
 /** What the panel and inspector need from the studio. */
 export interface ScriptsBridge {
+ templates?: readonly string[];
+ references?: {
+  source(script: Script): ReactNode;
+  target(kind: 'script' | 'object', accepts: (id: string) => boolean, assign: (id: string) => void):
+   Pick<HTMLAttributes<HTMLElement>, 'onDragOver' | 'onDragLeave' | 'onDrop'>;
+ };
  text(key: string): string; report(error: unknown): void; useEditable(): boolean;
  /** The source may also be edited while the game runs (live reload); defaults to useEditable. */
  useSourceEditable?(): boolean;
@@ -56,20 +64,9 @@ const currentListeners = new Set<() => void>();
 const setCurrent = (id: string) => { current = id; for (const fn of currentListeners) fn(); };
 const useCurrent = () => useSyncExternalStore(fn => { currentListeners.add(fn); return () => { currentListeners.delete(fn); }; }, () => current);
 
-/** Preview output of `game.log`/`console` and script errors, shown under the editor (last 200 lines). */
-export const scriptConsole = (() => {
- let lines: {level: 'info' | 'warn' | 'error'; message: string; at: number}[] = [], version = 0;
- const listeners = new Set<() => void>(), emit = () => { version++; for (const fn of listeners) fn(); };
- return {
-  log(level: 'info' | 'warn' | 'error', message: string) { lines = [...lines, {level, message, at: Date.now()}].slice(-200); emit(); },
-  clear() { lines = []; emit(); },
-  lines: () => lines,
-  use() { useSyncExternalStore(fn => { listeners.add(fn); return () => { listeners.delete(fn); }; }, () => version); return lines; },
- };
-})();
-
 export function ScriptConsole({text:t,standalone=false}:{text(key:string):string;standalone?:boolean}) {
-  const lines = scriptConsole.use(), end = useRef<HTMLDivElement>(null);
+  useSyncExternalStore(scriptConsole.subscribe, scriptConsole.snapshot);
+  const lines = scriptConsole.lines(), end = useRef<HTMLDivElement>(null);
   useEffect(() => { if(end.current)end.current.scrollTop=end.current.scrollHeight; }, [lines]);
   return <section className={standalone ? "scripts-console dock-console" : "scripts-console"} aria-label={t('scripts.console')}>
    <div className="scripts-console-head">{!standalone&&<span>{t('scripts.console')}</span>}<button disabled={!lines.length} onClick={() => scriptConsole.clear()}>{t('scripts.clearConsole')}</button></div>
@@ -96,7 +93,8 @@ const engineListeners = new Set<() => void>();
 function useScriptFields(script: Script | undefined, report: (error: unknown) => void) {
  useSyncExternalStore(fn => { engineListeners.add(fn); return () => { engineListeners.delete(fn); }; }, () => engineVersion);
  const engine = scriptEngineReady();
- useEffect(() => { if (!engine) void loadScriptEngine().then(() => { engineVersion++; for (const fn of engineListeners) fn(); }, report); }, [engine]);
+ const hasCode = !!script?.code;
+ useEffect(() => { if (!engine && hasCode) void loadScriptEngine().then(() => { engineVersion++; for (const fn of engineListeners) fn(); }, report); }, [engine, hasCode]);
  if (!script?.code || !engine) return null;
  let described = fieldCache.get(script.code);
  if (!described) { described = describeScript(engine, script.code, script.name); fieldCache.set(script.code, described); if (fieldCache.size > 200) fieldCache.delete(fieldCache.keys().next().value!); }
@@ -105,6 +103,7 @@ function useScriptFields(script: Script | undefined, report: (error: unknown) =>
 
 export function createScriptViews(bridge: ScriptsBridge) {
  const t = bridge.text;
+ const templates = scriptTemplates.filter(template => !bridge.templates || bridge.templates.includes(template.id));
  const create = (name?: string, source?: string) => { const lib = bridge.library(), script = newScript(lib, name, source); bridge.change('New script', l => { l.items.push(script); }); setCurrent(script.id); return script; };
 
  function ScriptsPanel() {
@@ -170,11 +169,12 @@ export function createScriptViews(bridge: ScriptsBridge) {
   const run = (work: () => void) => { try { work(); } catch (error) { bridge.report(error); } };
   return <div className="panel-body scripts-panel" data-testid="scripts-panel">
    <div className="scripts-toolbar">
+    {editable && script && renaming === null && bridge.references?.source(script)}
     {renaming !== null && script
      ? <input aria-label={t('scripts.name')} value={renaming} autoFocus onChange={e => setRenaming(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') run(() => rename(renaming)); if (e.key === 'Escape') setRenaming(null); }} onBlur={() => run(() => rename(renaming))}/>
      : <select aria-label={t('scripts.script')} value={script?.id ?? ''} disabled={!library.items.length} onChange={e => { flushScriptEdits(); setCurrent(e.target.value); }}>{!library.items.length && <option value="">{t('scripts.none')}</option>}{library.items.map(s => <option key={s.id} value={s.id}>{s.error ? `⚠ ${s.name}` : s.name}</option>)}</select>}
     <button disabled={!editable} onClick={() => run(() => { flushScriptEdits(); create(); })}>{t('scripts.new')}</button>
-    <select aria-label={t('scripts.fromTemplate')} value="" disabled={!editable} onChange={e => { const template = scriptTemplates.find(x => x.id === e.target.value); if (template) run(() => { flushScriptEdits(); create(uniqueScriptName(bridge.library(), template.name), template.source); }); }}><option value="">{t('scripts.fromTemplate')}</option>{scriptTemplates.map(x => <option key={x.id} value={x.id}>{x.title}</option>)}</select>
+    <select aria-label={t('scripts.fromTemplate')} value="" disabled={!editable} onChange={e => { const template = templates.find(x => x.id === e.target.value); if (template) run(() => { flushScriptEdits(); create(uniqueScriptName(bridge.library(), template.name), template.source); }); }}><option value="">{t('scripts.fromTemplate')}</option>{templates.map(x => <option key={x.id} value={x.id}>{x.title}</option>)}</select>
     <button disabled={!editable || !script} onClick={() => setRenaming(script?.name ?? '')}>{t('scripts.rename')}</button>
     <button disabled={!editable || !script} onClick={() => run(() => { if (!script) return; flushScriptEdits(); bridge.change('Delete script', l => { l.items = l.items.filter(s => s.id !== script.id); }); setCurrent(''); })}>{t('scripts.delete')}</button>
    </div>
@@ -245,6 +245,7 @@ export function createScriptViews(bridge: ScriptsBridge) {
    {!described.fields.length && <p className="panel-empty">{t('scripts.noParams')}</p>}
    {described.fields.map(f => {
     const label = f.label ?? f.name, overridden = f.kind === 'object' ? f.name in value.refs : f.name in value.params, current = f.kind === 'object' ? value.refs[f.name] ?? '' : value.params[f.name] ?? f.default;
+    const setRef = (id: string) => id ? save({...value, refs: {...value.refs, [f.name]: id}}) : reset(f.name);
     return <div className="field script-param" key={f.name} data-param={f.name} data-overridden={overridden}>
      <span title={f.name}>{label}</span>
      <span className="script-param-input">
@@ -253,7 +254,8 @@ export function createScriptViews(bridge: ScriptsBridge) {
       {f.kind === 'text' && <TextField label={label} value={String(current ?? '')} disabled={!editable} commit={v => set(f.name, v)}/>}
       {f.kind === 'color' && <TextField label={label} type="color" value={String(current ?? '#ffffff')} disabled={!editable} commit={v => set(f.name, v)}/>}
       {f.kind === 'choice' && <select aria-label={label} value={String(current)} disabled={!editable} onChange={e => set(f.name, e.target.value)}>{(f.options ?? []).map(o => <option key={o} value={o}>{o}</option>)}</select>}
-      {f.kind === 'object' && <select aria-label={label} value={String(current)} disabled={!editable} onChange={e => { if (!e.target.value) return reset(f.name); save({...value, refs: {...value.refs, [f.name]: e.target.value}}); }}><option value="">{t('scripts.noObject')}</option>{entities.map(e => <option key={e.id} value={e.id}>{e.name}</option>)}{current && !entities.some(e => e.id === current) && <option value={String(current)}>{t('scripts.missingObject')}</option>}</select>}
+      {f.kind === 'object' && <select aria-label={label} value={String(current)} disabled={!editable} onChange={e => setRef(e.target.value)}
+       {...bridge.references?.target('object', id => editable && id !== current && entities.some(entity => entity.id === id), setRef)}><option value="">{t('scripts.noObject')}</option>{entities.map(e => <option key={e.id} value={e.id}>{e.name}</option>)}{current && !entities.some(e => e.id === current) && <option value={String(current)}>{t('scripts.missingObject')}</option>}</select>}
       {overridden && <button aria-label={`${t('scripts.resetParam')} ${label}`} title={t('scripts.resetParam')} disabled={!editable} onClick={() => reset(f.name)}>↺</button>}
      </span>
     </div>;
@@ -279,9 +281,11 @@ export function createScriptViews(bridge: ScriptsBridge) {
  function SceneScript() {
   const library = bridge.useLibrary(), editable = bridge.useEditable(), scene = bridge.useScene(), value = library.scenes?.[scene.id], script = library.items.find(s => s.id === value?.scriptId);
   const save = (next: Behaviour | null) => { try { bridge.change(next ? 'Edit scene script' : 'Remove scene script', l => { const scenes = {...l.scenes}; if (next) scenes[scene.id] = BehaviourSchema.parse(next); else delete scenes[scene.id]; l.scenes = scenes; }); } catch (error) { bridge.report(error); } };
+  const choose = (id: string) => { flushScriptEdits(); save(id ? {scriptId: id, params: {}, refs: {}} : null); };
+  const drop = bridge.references?.target('script', id => editable && id !== value?.scriptId && library.items.some(item => item.id === id), choose);
   return <details className="scripts-scene" data-testid="scene-script" open={Boolean(value)}>
-   <summary>{`${t('scripts.sceneScript')} · ${scene.name}${script ? ` · ${script.name}` : ''}`}</summary>
-   <label className="field"><span>{t('scripts.sceneScript')}</span><select aria-label={t('scripts.sceneScript')} value={value?.scriptId ?? ''} disabled={!editable} onChange={e => { flushScriptEdits(); save(e.target.value ? {scriptId: e.target.value, params: {}, refs: {}} : null); }}><option value="">{t('scripts.noSceneScript')}</option>{library.items.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}</select></label>
+   <summary {...drop}>{`${t('scripts.sceneScript')} · ${scene.name}${script ? ` · ${script.name}` : ''}`}</summary>
+   <label className="field" {...drop}><span>{t('scripts.sceneScript')}</span><select aria-label={t('scripts.sceneScript')} value={value?.scriptId ?? ''} disabled={!editable} onChange={e => choose(e.target.value)}><option value="">{t('scripts.noSceneScript')}</option>{library.items.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}</select></label>
    {value?.scriptId && !script && <p className="component-warning">{t('scripts.missing')}</p>}
    {script?.error && <p className="component-warning">{script.error}</p>}
    {value && <ParamsEditor value={value} script={script} save={save} owner="scene"/>}
@@ -292,8 +296,9 @@ export function createScriptViews(bridge: ScriptsBridge) {
  function ScriptInspector({entityId, component}: {entityId: string; component: {id: string; data: unknown}}) {
   const library = bridge.useLibrary(), editable = bridge.useEditable(), value = BehaviourSchema.parse(component.data), script = library.items.find(s => s.id === value.scriptId);
   const save = (next: Behaviour) => { try { bridge.setBehaviour(entityId, component.id, BehaviourSchema.parse(next)); } catch (error) { bridge.report(error); } };
+  const choose = (scriptId: string) => save({...value, scriptId});
   return <div className="script-inspector" data-testid="script-inspector">
-   <label className="field"><span>{t('scripts.script')}</span><select aria-label={t('scripts.script')} value={value.scriptId} disabled={!editable} onChange={e => save({...value, scriptId: e.target.value})}><option value="">{t('scripts.choose')}</option>{library.items.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}</select></label>
+   <label className="field" {...bridge.references?.target('script', id => editable && id !== value.scriptId && library.items.some(item => item.id === id), choose)}><span>{t('scripts.script')}</span><select aria-label={t('scripts.script')} value={value.scriptId} disabled={!editable} onChange={e => choose(e.target.value)}><option value="">{t('scripts.choose')}</option>{library.items.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}</select></label>
    {!value.scriptId && <p className="component-warning">{t('scripts.noScript')}</p>}
    {value.scriptId && !script && <p className="component-warning">{t('scripts.missing')}</p>}
    {script?.error && <p className="component-warning">{script.error}</p>}

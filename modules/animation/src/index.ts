@@ -4,7 +4,7 @@ import {z} from 'zod';
 import {components,propertyKey,type ComponentDefinition,type EditorModule,type Json,type RuntimeSystem} from '@rewrite/sdk';
 import type {Entity} from '@rewrite/scene';
 import {Subject,skip} from 'rxjs';
-import {easings,compileTweens,type TweenChannel,type TweenProvider,type TweenSampler} from '@rewrite/tween';
+import {easings,compileTweens,TweenSession,type TweenChannel,type TweenProvider,type TweenSampler} from '@rewrite/tween';
 import {TimelineRunner,resolveChannel,mixColor,entityTarget,type ResolvedChannel,type TrackKind,type TrackValue,type TimelineControl} from './timeline';
 export * from './timeline';
 /** Custom easing: CSS-style cubic bezier (x within 0..1 keeps time monotonic; y may overshoot). */
@@ -87,6 +87,40 @@ export function compileAnimations(entities:readonly Entity[],channels:readonly T
 export function validateMotion(entities:readonly Entity[],channels:readonly TweenChannel[],writers=new Map<string,string>()){return[...compileTweens(entities,channels,undefined,writers).errors,...compileAnimations(entities,channels,undefined,writers).errors];}
 export interface AnimationEvent{kind:'marker'|'complete';ownerId:string;playerId:string;clipId:string;markerId?:string;name:string;time:number;reverse:boolean;silent:boolean;
  /** Marker payloads: a message for scripts, a media action to run. */message?:string;action?:AnimationClip['markers'][number]['action'];cue?:Cue}
+/** Scene playback uses one provider and one event route for both animation hosts. */
+export function createSceneMotion(
+ entities:()=>readonly Entity[],
+ channels:readonly TweenChannel[],
+ provider:TweenProvider,
+ ports:{
+  silent():boolean;
+  emit(event:{type:string;sourceId:string;event?:string;silent:boolean}):void;
+  invoke(service:string,method:'play'|'stop',id:string):void;
+  cue(action:unknown,silent:boolean,owner:string):void;
+  message(message:string,data:{marker:string}):void;
+  report(error:unknown):void;
+  observe?(event:AnimationEvent):void;
+ },
+){
+ const tween=new TweenSession(entities,channels,provider);
+ const animation=new AnimationSession(entities,channels,provider,{
+  silent:ports.silent,
+  event(event){
+   if(event.kind==='complete')ports.emit({type:'animation.complete',sourceId:event.playerId,silent:event.silent});
+   else{
+    ports.emit({type:'animation.marker',sourceId:event.playerId,event:event.name,silent:event.silent});
+    if(event.action&&!(event.silent&&event.action.service==='audio')){
+     try{ports.invoke(event.action.service,event.action.method,event.action.targetId);}
+     catch(error){ports.report(error);}
+    }
+    if(event.cue)ports.cue(event.cue,event.silent,event.ownerId);
+    if(event.message)ports.message(event.message,{marker:event.name});
+   }
+   ports.observe?.(event);
+  },
+ });
+ return {tween,animation};
+}
 export function crossedMarkers(clip:AnimationClip,from:number,to:number){const found=new Map<string,{marker:AnimationClip['markers'][number];time:number;reverse:boolean}>();for(let cycle=0;cycle<=clip.repeat;cycle++){const reverse=clip.yoyo&&cycle%2===1;for(const marker of clip.markers){const local=reverse?clip.duration-marker.time:marker.time,time=local===0||local===clip.duration?(cycle+(local===0?0:1))*clip.duration:cycle*clip.duration+local;if(time>from+1e-10&&time<=to+1e-10){const key=JSON.stringify([marker.id,time]);if(!found.has(key))found.set(key,{marker,time,reverse});}}}return [...found.values()].sort((a,b)=>a.time-b.time||a.marker.id.localeCompare(b.marker.id));}
 /** Markers crossed while playing from → to (either direction), in playing order. */
 function playedMarkers(clip:AnimationClip,from:number,to:number){if(to>=from)return crossedMarkers(clip,from,to);return crossedMarkers(clip,to-1e-9,from-1e-9).reverse();}

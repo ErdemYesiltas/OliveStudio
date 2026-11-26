@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <link rel="icon" href="data:,">
+  <title>OliveStudio Game</title>
+</head>
+<body>
+  <main id="game" tabindex="0"></main>
+  <div id="launch" role="status"><p id="status"></p><button id="start" type="button" hidden></button></div>
+  <details id="saves" hidden><summary></summary><div>
+    <label><span id="slot-label"></span> <select id="slot"></select></label>
+    <button id="save" type="button"></button><button id="load" type="button"></button>
+    <output id="save-status" role="status"></output>
+  </div></details>
+  <script type="module" src="/src/game.ts"></script>
+</body>
+</html>

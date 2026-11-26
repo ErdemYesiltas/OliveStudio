@@ -1,8 +1,8 @@
 import {Container, Graphics, Rectangle, Sprite, Texture} from 'pixi.js';
 import {z} from 'zod';
 import type {ComponentDefinition, Json} from '@rewrite/sdk';
-import type {VisualAdapter} from './visuals';
-import {acquireTexture as acquire, releaseTexture as release} from './textures';
+import type {VisualAdapter,VisualFeature} from './visuals';
+import {standaloneTextures} from './textures';
 
 /** Frame-by-frame animation from a grid sprite sheet (an imported image, sliced left-to-right, top-to-bottom). */
 export const FlipbookSchema = z.object({
@@ -26,6 +26,12 @@ export const flipbookDefinition: ComponentDefinition = {
   ...['width', 'height', 'anchorX', 'anchorY', 'alpha'].map(key => ({key, titleKey: `field.${key}`, kind: 'number' as const})),
  ],
 };
+export const flipbookVisuals={
+ id:'flipbook',
+ components:[flipbookDefinition],
+ createAdapters:url=>[createFlipbookAdapter(url)],
+ references:data=>[{id:FlipbookSchema.parse(data).assetId,type:'pixi.texture'}],
+} satisfies VisualFeature;
 /**
  * The shown frame at a runtime time (0 while editing): loops or holds the last frame. A play action restarts from
  * `startedAt`; a stop action freezes the frame reached at `stoppedAt`.
@@ -63,7 +69,8 @@ export function createFlipbookAdapter(url: (assetId: string) => string | undefin
     layout();
    };
    if (!src) error = 'Missing sprite sheet image';
-   else void acquire(src).then(({texture}) => { if (dead) return; base = texture; show(flipbookFrame(p, context.frame().time)); context.changed(); }, e => { if (!dead) { error = String(e); context.changed(); } });
+   const lease=src?(context.textures??standaloneTextures).acquire(src):undefined;
+   if(lease)void lease.ready.then(texture=> { if (dead) return; base = texture; show(flipbookFrame(p, context.frame().time)); context.changed(); }, e => { if (!dead) { error = String(e); context.changed(); } });
    layout();
    return {
     view,
@@ -74,7 +81,7 @@ export function createFlipbookAdapter(url: (assetId: string) => string | undefin
      dead = true;
      for (const f of frames) f?.destroy(false);
      view.destroy({children: true, context: true});
-     if (src) release(src);
+     lease?.release();
     },
    };
   },

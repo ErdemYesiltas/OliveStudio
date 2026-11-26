@@ -45,17 +45,17 @@ importers:
         specifier: 5.1.0
         version: 5.1.0(@types/node@22.19.0)(vite@7.3.1(@types/node@22.19.0)(jiti@2.7.0))
 
-  apps/editor-desktop:
+  apps/editor:
     dependencies:
-      '@assetpack/core':
-        specifier: 1.7.0
-        version: 1.7.0(@emnapi/core@2.0.0-beta.2)(@emnapi/runtime@2.0.0-beta.2)
-      '@dnd-kit/core':
-        specifier: 6.3.1
-        version: 6.3.1(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@esotericsoftware/spine-core':
         specifier: 4.2.120
         version: 4.2.120
+      '@esotericsoftware/spine-pixi-v8':
+        specifier: 4.2.120
+        version: 4.2.120(pixi.js@8.23.0)
+      '@olivestudio/engine':
+        specifier: workspace:*
+        version: link:../../modules/engine
       '@rewrite/achievements':
         specifier: workspace:*
         version: link:../../modules/achievements
@@ -71,15 +71,6 @@ importers:
       '@rewrite/ai-skills':
         specifier: workspace:*
         version: link:../../modules/ai-skills
-      '@rewrite/animation':
-        specifier: workspace:*
-        version: link:../../modules/animation
-      '@rewrite/assetpack':
-        specifier: workspace:*
-        version: link:../../modules/assetpack
-      '@rewrite/assets':
-        specifier: workspace:*
-        version: link:../../modules/assets
       '@rewrite/audio':
         specifier: workspace:*
         version: link:../../modules/audio
@@ -98,9 +89,6 @@ importers:
       '@rewrite/dialogue':
         specifier: workspace:*
         version: link:../../modules/dialogue
-      '@rewrite/documents':
-        specifier: workspace:*
-        version: link:../../packages/documents
       '@rewrite/html-export':
         specifier: workspace:*
         version: link:../../modules/html-export
@@ -110,9 +98,6 @@ importers:
       '@rewrite/interactions':
         specifier: workspace:*
         version: link:../../modules/interactions
-      '@rewrite/kernel':
-        specifier: workspace:*
-        version: link:../../packages/editor-kernel
       '@rewrite/layout':
         specifier: workspace:*
         version: link:../../modules/layout
@@ -125,78 +110,36 @@ importers:
       '@rewrite/multiplayer-colyseus':
         specifier: workspace:*
         version: link:../../modules/multiplayer-colyseus
-      '@rewrite/navigation':
-        specifier: workspace:*
-        version: link:../../modules/navigation
-      '@rewrite/particles':
-        specifier: workspace:*
-        version: link:../../modules/particles
       '@rewrite/physics':
         specifier: workspace:*
         version: link:../../modules/physics
       '@rewrite/physics-matter':
         specifier: workspace:*
         version: link:../../modules/physics-matter
-      '@rewrite/prefabs':
-        specifier: workspace:*
-        version: link:../../modules/prefabs
       '@rewrite/production-tools':
         specifier: workspace:*
         version: link:../../modules/production-tools
       '@rewrite/profiler':
         specifier: workspace:*
         version: link:../../modules/profiler
-      '@rewrite/project':
-        specifier: workspace:*
-        version: link:../../modules/project
-      '@rewrite/recovery':
-        specifier: workspace:*
-        version: link:../../modules/recovery
       '@rewrite/render-pixi':
         specifier: workspace:*
         version: link:../../modules/render-pixi
-      '@rewrite/runtime':
-        specifier: workspace:*
-        version: link:../../packages/runtime
       '@rewrite/scene':
         specifier: workspace:*
         version: link:../../modules/scene
       '@rewrite/scripts':
         specifier: workspace:*
         version: link:../../modules/scripts
-      '@rewrite/sdk':
-        specifier: workspace:*
-        version: link:../../packages/editor-sdk
-      '@rewrite/spine':
-        specifier: workspace:*
-        version: link:../../modules/spine
-      '@rewrite/spine-audio':
-        specifier: workspace:*
-        version: link:../../modules/spine-audio
-      '@rewrite/tween':
-        specifier: workspace:*
-        version: link:../../modules/tween
-      '@rewrite/tween-gsap':
-        specifier: workspace:*
-        version: link:../../modules/tween-gsap
-      '@rewrite/tween-pixi':
-        specifier: workspace:*
-        version: link:../../modules/tween-pixi
-      '@rewrite/ui':
-        specifier: workspace:*
-        version: link:../../packages/ui
-      dockview:
-        specifier: 4.13.1
-        version: 4.13.1(react@19.3.1)
+      howler:
+        specifier: 2.2.4
+        version: 2.2.4
       lucide-react:
         specifier: 1.72.0
         version: 1.72.0(@types/react@19.3.0)(react@19.3.1)
-      music-metadata:
-        specifier: 12.5.0
-        version: 12.5.0
-      radix-ui:
-        specifier: 1.8.1
-        version: 1.8.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      pixi.js:
+        specifier: 8.23.0
+        version: 8.23.0
       react:
         specifier: 19.3.1
         version: 19.3.1
@@ -206,16 +149,13 @@ importers:
       rxjs:
         specifier: 7.8.2
         version: 7.8.2
-      sharp:
-        specifier: 0.34.5
-        version: 0.34.5
       zod:
         specifier: 4.6.7
         version: 4.6.7
-      zustand:
-        specifier: 5.1.0
-        version: 5.1.0(@types/react@19.3.0)(immer@11.2.10)(react@19.3.1)
     devDependencies:
+      '@assetpack/core':
+        specifier: 1.7.0
+        version: 1.7.0(@emnapi/core@2.0.0-beta.2)(@emnapi/runtime@2.0.0-beta.2)
       '@vitejs/plugin-react':
         specifier: 5.1.4
         version: 5.1.4(vite@7.3.1(@types/node@24.19.2)(jiti@2.7.0))
@@ -225,18 +165,12 @@ importers:
       electron-builder:
         specifier: 26.18.0
         version: 26.18.0(electron-builder-squirrel-windows@26.18.0)
-      electron-vite:
-        specifier: 6.0.0
-        version: 6.0.0(vite@7.3.1(@types/node@24.19.2)(jiti@2.7.0))
-      gsap:
-        specifier: 3.15.1
-        version: 3.15.1
-      howler:
-        specifier: 2.2.4
-        version: 2.2.4
-      motion:
-        specifier: 14.13.0
-        version: 14.13.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      esbuild:
+        specifier: 0.27.7
+        version: 0.27.7
+      sharp:
+        specifier: 0.34.5
+        version: 0.34.5
       vite:
         specifier: 7.3.1
         version: 7.3.1(@types/node@24.19.2)(jiti@2.7.0)
@@ -408,6 +342,9 @@ importers:
       '@rewrite/assets':
         specifier: workspace:*
         version: link:../assets
+      '@rewrite/interactions':
+        specifier: workspace:*
+        version: link:../interactions
       '@rewrite/scene':
         specifier: workspace:*
         version: link:../scene
@@ -506,12 +443,43 @@ importers:
       '@rewrite/interactions':
         specifier: workspace:*
         version: link:../interactions
+      '@rewrite/sdk':
+        specifier: workspace:*
+        version: link:../../packages/editor-sdk
       react:
         specifier: 19.3.1
         version: 19.3.1
       zod:
         specifier: 4.6.7
         version: 4.6.7
+
+  modules/engine:
+    dependencies:
+      '@pixi/layout':
+        specifier: 3.2.1
+        version: 3.2.1(@types/react@19.3.0)(pixi.js@8.23.0)(react@19.3.1)(yoga-layout@3.2.1)
+      '@pixi/ui':
+        specifier: 2.4.1
+        version: 2.4.1(pixi.js@8.23.0)
+      gsap:
+        specifier: 3.15.1
+        version: 3.15.1
+      miniplex:
+        specifier: 2.0.0
+        version: 2.0.0
+      pixi-filters:
+        specifier: 6.1.5
+        version: 6.1.5(pixi.js@8.23.0)
+      rxjs:
+        specifier: 7.8.2
+        version: 7.8.2
+      zod:
+        specifier: 4.6.7
+        version: 4.6.7
+    devDependencies:
+      pixi.js:
+        specifier: 8.23.0
+        version: 8.23.0
 
   modules/html-export:
     dependencies:
@@ -629,6 +597,9 @@ importers:
 
   modules/interactions:
     dependencies:
+      '@olivestudio/engine':
+        specifier: workspace:*
+        version: link:../engine
       '@rewrite/scene':
         specifier: workspace:*
         version: link:../scene
@@ -821,6 +792,9 @@ importers:
 
   modules/physics:
     dependencies:
+      '@rewrite/interactions':
+        specifier: workspace:*
+        version: link:../interactions
       '@rewrite/project':
         specifier: workspace:*
         version: link:../project
@@ -876,6 +850,9 @@ importers:
 
   modules/player:
     dependencies:
+      '@olivestudio/engine':
+        specifier: workspace:*
+        version: link:../engine
       '@rewrite/achievements':
         specifier: workspace:*
         version: link:../achievements
@@ -1106,6 +1083,9 @@ importers:
 
   modules/render-pixi:
     dependencies:
+      '@olivestudio/engine':
+        specifier: workspace:*
+        version: link:../engine
       '@rewrite/assets':
         specifier: workspace:*
         version: link:../assets
@@ -1154,6 +1134,9 @@ importers:
 
   modules/scene:
     dependencies:
+      '@olivestudio/engine':
+        specifier: workspace:*
+        version: link:../engine
       '@rewrite/documents':
         specifier: workspace:*
         version: link:../../packages/documents
@@ -1325,6 +1308,9 @@ importers:
 
   modules/tween-pixi:
     dependencies:
+      '@rewrite/render-pixi':
+        specifier: workspace:*
+        version: link:../render-pixi
       '@rewrite/sdk':
         specifier: workspace:*
         version: link:../../packages/editor-sdk
@@ -1352,15 +1338,19 @@ importers:
 
   packages/editor-sdk:
     dependencies:
+      '@olivestudio/engine':
+        specifier: workspace:*
+        version: link:../../modules/engine
       zod:
         specifier: 4.6.7
         version: 4.6.7
 
   packages/runtime:
     dependencies:
-      '@rewrite/sdk':
+      '@olivestudio/engine':
         specifier: workspace:*
-        version: link:../editor-sdk
+        version: link:../../modules/engine
+    devDependencies:
       miniplex:
         specifier: 2.0.0
         version: 2.0.0
@@ -1444,12 +1434,6 @@ packages:
     resolution: {integrity: sha512-VL220vXuyO2z3rNIQwY7ftj9UwpqOt+33sH+sBWkOekbsSR2g7EEMnOx24ZlCH0xOA3DM/33SifVFGbnJD8r/w==}
     engines: {node: '>=6.0.0'}
     hasBin: true
-
-  '@babel/plugin-transform-arrow-functions@7.29.7':
-    resolution: {integrity: sha512-N7zArUXWzAMzm+/N0uPBeVB3Fam5lMxtUwMmDK5f/IBBS7a7p1qeUoxd/6CckXoxUdgsntq1Dh8xNW06maZbDQ==}
-    engines: {node: '>=6.9.0'}
-    peerDependencies:
-      '@babel/core': ^7.0.0-0
 
   '@babel/plugin-transform-react-jsx-self@7.29.7':
     resolution: {integrity: sha512-TL0hMc9xzy86VD31nUiwzd5otRAcyEPcsegCxolO0PvcXuH1v0kECe/UIznYFihpkvU5wg/jk4v0TTEFfm53fw==}
@@ -2579,9 +2563,6 @@ packages:
     resolution: {integrity: sha512-gOYKFwkojSdWrSmreCcGocRcAXSpRkNZYxv6nscmtddSWBKVGypdMbfLxu5qgmymdaCNApajuwZblYEfs7HswA==}
     engines: {node: '>= 10'}
 
-  '@oxc-project/types@0.156.0':
-    resolution: {integrity: sha512-1Duyg48TdJNdyhEB8Xn1L36bT9Pv6GUtlKjHxOys8xkaF/rQq3XJE+bAurSK/AgIz5mGFsb77cn9Pb20+WCScw==}
-
   '@peculiar/asn1-schema@2.11.1':
     resolution: {integrity: sha512-jaU9OaCcbZUdyXx9hMETZB9xoNmxTGjOGFqd3cOwKFkpKnyKd9WxF3uqj4PvX4cyOMP9bSdHg5YyML2qtx/d/g==}
     engines: {node: '>=14'}
@@ -2616,6 +2597,11 @@ packages:
   '@pixi/svg2ttf@6.1.0':
     resolution: {integrity: sha512-qT7P6F48lyWVWn6w0qxWtxLVVPEcXzAlo9/nimh4cflfKQWdApqfCZVOCgaaO0xHVpClbhCzApQXlJnLEs1oaw==}
     hasBin: true
+
+  '@pixi/ui@2.4.1':
+    resolution: {integrity: sha512-xA7TbeJlvY/5gA5sAgecNjHhmrREM/wPMQukTuZvN3OxU4BP6PwBGZ28PbNrbfaISxqMgmE6jOW2EPPb5qYn2Q==}
+    peerDependencies:
+      pixi.js: ^8.6.2
 
   '@playwright/test@1.65.0':
     resolution: {integrity: sha512-iGURLGuKDLakSEl7Pgfv8h7f+XLT+V861Wfhz0zlEl5nyFuKUopdkFBPKqTllTUp06aOwPuH8iuUEb3yp3MpbQ==}
@@ -3312,112 +3298,8 @@ packages:
   '@radix-ui/rect@1.1.3':
     resolution: {integrity: sha512-JtyZR+mqgBibTo8xea3B6ZRmzZiM/YeVBtUkas6zMuXjAlfIFIW2FgqeM9eLyvEaYX66vr6DJMK+4U6LV0KhNw==}
 
-  '@rolldown/binding-android-arm-eabi@1.2.19':
-    resolution: {integrity: sha512-e+Ebe0WT+9tbXmNKPIiC8YrWAHYwug3m6i4p3rZGGulfZri1jtI4HslT+OZnFf/OIHowWF71DTlHwXBP2SiA7A==}
-    engines: {node: ^20.19.0 || >=22.12.0}
-    cpu: [arm]
-    os: [android]
-
-  '@rolldown/binding-android-arm64@1.2.19':
-    resolution: {integrity: sha512-hOombrTJ+szt2ciEzS7oCA78lMPBgF5UMQWCJIyNfnrI7GLl8HYoFqCnpL2gcPOaXMqryGCU5ExdQKyDDcC+yA==}
-    engines: {node: ^20.19.0 || >=22.12.0}
-    cpu: [arm64]
-    os: [android]
-
-  '@rolldown/binding-darwin-arm64@1.2.19':
-    resolution: {integrity: sha512-XoMA2pwCKGTQzUjPgtRwkedH4WmXhdIPKT6l6oOxd1PUbNodGI6DcBekgN7EC//+x3pfBYX/qL1gNmZAqivw5g==}
-    engines: {node: ^20.19.0 || >=22.12.0}
-    cpu: [arm64]
-    os: [darwin]
-
-  '@rolldown/binding-darwin-x64@1.2.19':
-    resolution: {integrity: sha512-zo8EsSSwMZCY/e+fRnGaX02YGgvJD0yvhNi/9hpGPA2MJ9ZF8dPCw75UGfpI6OpQ/myR/dIYmogRvqiZD0TrXg==}
-    engines: {node: ^20.19.0 || >=22.12.0}
-    cpu: [x64]
-    os: [darwin]
-
-  '@rolldown/binding-freebsd-x64@1.2.19':
-    resolution: {integrity: sha512-O8ISAOfI1nj7AuBPd30FSF47z7f7lzlk5poQVGgiikvQuGEBFYvW8ki+UEnT+YJPnNGjQzn304klt4O9FUE7mA==}
-    engines: {node: ^20.19.0 || >=22.12.0}
-    cpu: [x64]
-    os: [freebsd]
-
-  '@rolldown/binding-linux-arm-gnueabihf@1.2.19':
-    resolution: {integrity: sha512-/lYCba5NO0yq4S0jGMH8QTBtkvQxoXjoQWzF5BcWp9MjB9jxVRD1GQDNofkVjcOj30DWyhLIN/4Oe60JKzaONw==}
-    engines: {node: ^20.19.0 || >=22.12.0}
-    cpu: [arm]
-    os: [linux]
-
-  '@rolldown/binding-linux-arm64-gnu@1.2.19':
-    resolution: {integrity: sha512-pm/apFMBnSbFb3O6nG5pHO1iqHhZrjGDFEjSm+ot9J17XXPvH9L90y5h+jgfHCE+Qdlsvy8qKEcU4VKxgjD+vA==}
-    engines: {node: ^20.19.0 || >=22.12.0}
-    cpu: [arm64]
-    os: [linux]
-    libc: [glibc]
-
-  '@rolldown/binding-linux-arm64-musl@1.2.19':
-    resolution: {integrity: sha512-K1SmQp3FFichn8oqrNIwvFoZ5wcvjC7goBzpaMNvLf9FZc+QB/QvLmnpJZgAAGHiD980tP8FZZnXk2K94rvlxg==}
-    engines: {node: ^20.19.0 || >=22.12.0}
-    cpu: [arm64]
-    os: [linux]
-    libc: [musl]
-
-  '@rolldown/binding-linux-ppc64-gnu@1.2.19':
-    resolution: {integrity: sha512-I0xwD57jP/3A7+5UPZin2w8Y7XHEmEM5zqpYZOcQ45MlNW6tUJUziymV3yRr7rL4vwyfEcRsRksC4a7Kc08p5Q==}
-    engines: {node: ^20.19.0 || >=22.12.0}
-    cpu: [ppc64]
-    os: [linux]
-    libc: [glibc]
-
-  '@rolldown/binding-linux-s390x-gnu@1.2.19':
-    resolution: {integrity: sha512-BrtEHT24SNXj9HiXqy+s/kXiSiQGt6EKCPUlRirAoIioVxKGnbXBUEkbZASAei7iZJB0/Ynm+0JP00Ipx7AnSw==}
-    engines: {node: ^20.19.0 || >=22.12.0}
-    cpu: [s390x]
-    os: [linux]
-    libc: [glibc]
-
-  '@rolldown/binding-linux-x64-gnu@1.2.19':
-    resolution: {integrity: sha512-rm75/9DkHKeU2WnA8w4X94WGYgLlDCFCfkQC+4bguVJmC/jvDRv2B+2wLOYhyE0fVuv7//Ckk39OoOufyCu76Q==}
-    engines: {node: ^20.19.0 || >=22.12.0}
-    cpu: [x64]
-    os: [linux]
-    libc: [glibc]
-
-  '@rolldown/binding-linux-x64-musl@1.2.19':
-    resolution: {integrity: sha512-irh/4+iYFM4GAzpluDErgjz89bj6NDtqqMAG/6O1LG38Ed3NpyebzCpcVNkFW8uhy+/3/BocUvnXDR33CXWe9A==}
-    engines: {node: ^20.19.0 || >=22.12.0}
-    cpu: [x64]
-    os: [linux]
-    libc: [musl]
-
-  '@rolldown/binding-openharmony-arm64@1.2.19':
-    resolution: {integrity: sha512-+KWTWNoPt+CfSq94CiceWu3yPE+QzkaG+phPyz9G60tmZLwfQkcA4AeksafzvJAw4pvg1mcd5a1TkUqVv0s4JA==}
-    engines: {node: ^20.19.0 || >=22.12.0}
-    cpu: [arm64]
-    os: [openharmony]
-
-  '@rolldown/binding-wasm32-wasi@1.2.19':
-    resolution: {integrity: sha512-7EH+skOsl5qpWnK0vzamgJFhOv1cwxQpsxm8tI883K9fur5c27p8q87fzEO6BbBPabA2/+s/zR63/pLc137iOg==}
-    engines: {node: ^20.19.0 || ^22.13.0 || >=23.5.0}
-    cpu: [wasm32]
-
-  '@rolldown/binding-win32-arm64-msvc@1.2.19':
-    resolution: {integrity: sha512-3Q1Yg1Q7tEvBWoZf5rFvG/GKZQPgwfru+p4wBajDfJFBs0SHCpL++dfTjW9gyAKd1T7ZpIYvdaUax7Pa/IhFVQ==}
-    engines: {node: ^20.19.0 || >=22.12.0}
-    cpu: [arm64]
-    os: [win32]
-
-  '@rolldown/binding-win32-x64-msvc@1.2.19':
-    resolution: {integrity: sha512-y/sqRRc6d7hECzOFc5n3LSeqctmIp9mMjY1Kq4s14uLPd/LZ4z7i1zrW6fMtp2mPeuQIC4e6ULMcwQzMomqQag==}
-    engines: {node: ^20.19.0 || >=22.12.0}
-    cpu: [x64]
-    os: [win32]
-
   '@rolldown/pluginutils@1.0.0-rc.3':
     resolution: {integrity: sha512-eybk3TjzzzV97Dlj5c+XrBFW57eTNhzod66y9HrBlzJ6NsCrWCp/2kaPS3K9wJmurBC0Tdw4yPjXKZqlznim3Q==}
-
-  '@rolldown/pluginutils@1.1.1':
-    resolution: {integrity: sha512-glFIJDvLNDtJhT9qrMFWLPbvS+skxgt4L0K8Ei2YtnhPysAJnsI7nyxSJxKj4ADeKX0OLjC4ntRkwpLOoS3rwA==}
 
   '@rollup/rollup-android-arm-eabi@4.68.3':
     resolution: {integrity: sha512-mqfypgH/liYjaSCoPI4erckUcROgZtmFUUmyOJ05oyayi/tVqOEYAzWP7ufqCoCT3xB31Fw4XIVO/jX42hYvKA==}
@@ -3972,10 +3854,6 @@ packages:
     resolution: {integrity: sha512-U1Z/ob71V/bXfVABvNr/Kumf5VyeQRBEm6Txb0PQ6S7V5GpBM3w4Cbqz/xPDicR5tN0uvDifng8C+5qECeGwyQ==}
     engines: {node: '>=6.0.0'}
 
-  cac@7.1.0:
-    resolution: {integrity: sha512-LMDU/U2yA4IPIY8KT0NsNPWEYZvAMkbgyspxJ6btJaYV+WMDOHAZCmB0lsTObiHaRS1V/ztKAl7+TSkTqXyeoA==}
-    engines: {node: '>=20.19.0'}
-
   cacheable-lookup@5.0.4:
     resolution: {integrity: sha512-2/kNscPhpcxrOigMZzbiWF7dz8ilhb/nIHU3EyZiXWXpeq/au8qJ8VhdftMkty3n7Gj6HIGalQG8oiBNB3AJgA==}
     engines: {node: '>=10.6.0'}
@@ -4194,14 +4072,6 @@ packages:
   dmg-builder@26.18.0:
     resolution: {integrity: sha512-ozCGC54wi2C1RkS2v69y9lQxvoQ1Coh+iT8CmWiyY8y1ZuOKVvuNson2Hd+HEOs9+EZNNsOBbzKgQZ4SNqWd0w==}
 
-  dockview-core@4.13.1:
-    resolution: {integrity: sha512-+7vR0ZEoL8CNck6NqDVUMqBT22niwBu5CMMI137dZ3c8NDc7c5Si+3dGEqQgM4lNtHBLAtvypo1C4p21J2wkiQ==}
-
-  dockview@4.13.1:
-    resolution: {integrity: sha512-K8xnYt3Rvkx8MYKHaEsb8aFaPyQclKRRkXS9JcpQPZUgqxumTLnSidgdd6uIfzEps6yJsXoZGQGJ9PtcaKyDcQ==}
-    peerDependencies:
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-
   dompurify@3.4.15:
     resolution: {integrity: sha512-EUBjM+B+lkDE41iE82DDSCfkoPGfXx8IxFxPMjNzm/Uk4xDet77rTN9wqlxlVg71kK7XGuUMv6wUxJUwwv+Xyw==}
 
@@ -4244,17 +4114,6 @@ packages:
 
   electron-to-chromium@1.5.485:
     resolution: {integrity: sha512-m3uadzR0Z+sR19HGWgfxoZcKv9hE/edVM9OZ+FJ4wNRyfuFtkwZJIDoehEty5sisYVwmge8lKV1tenWOyClVgw==}
-
-  electron-vite@6.0.0:
-    resolution: {integrity: sha512-zafg2uizgll7jdx0BNDkkzO/SowsUBsiHqYN3v9Ieq7XPDHreRGZ4G9IRY/+RslgBktpLOjLM4jlP+IVpV0BGw==}
-    engines: {node: ^20.19.0 || >=22.12.0}
-    hasBin: true
-    peerDependencies:
-      '@swc/core': ^1.0.0
-      vite: ^6.0.0 || ^7.0.0 || ^8.0.0
-    peerDependenciesMeta:
-      '@swc/core':
-        optional: true
 
   electron-winstaller@5.4.0:
     resolution: {integrity: sha512-bO3y10YikuUwUuDUQRM4KfwNkKhnpVO7IPdbsrejwN9/AABJzzTQ4GeHwyzNSrVO+tEH3/Np255a3sVZpZDjvg==}
@@ -4475,20 +4334,6 @@ packages:
   forwarded@0.2.0:
     resolution: {integrity: sha512-buRG0fpBtRHSTCOASe6hD258tEubFoRLb4ZNA6NxMVHNw2gOcwHo9wyablzMzOA5z9xA9L1KNjk/Nt6MT9aYow==}
     engines: {node: '>= 0.6'}
-
-  framer-motion@14.13.0:
-    resolution: {integrity: sha512-62FgGVeqEI3pgI5jG/d6yagg/hX9z7Vw3ytE0gGAsDXWBBruUCr74b5LQJXMSF1E62Zp7HKO88nDu/hhUdRSCQ==}
-    peerDependencies:
-      react: ^18.0.0 || ^19.0.0
-      react-dom: ^18.0.0 || ^19.0.0
-      remix: ^3.1.0
-    peerDependenciesMeta:
-      react:
-        optional: true
-      react-dom:
-        optional: true
-      remix:
-        optional: true
 
   fresh@2.0.0:
     resolution: {integrity: sha512-Rx/WycZ60HOaqLKAi6cHRKKI7zxWbJ31MhntmtwMoaTeF7XFH9hhBp8vITaMidfljRQ6eYWCKkaTK+ykVJHP2A==}
@@ -5070,26 +4915,6 @@ packages:
   monaco-editor@0.57.0:
     resolution: {integrity: sha512-5BkI9KGoqrNvBGUe15/QlZq3OooZ8WLg1AxTpaqHRCP3HNpzPPZKE2EDz8M7c+VRmCeUw1Brp4cx/PWm3kI/5A==}
 
-  motion-dom@14.13.0:
-    resolution: {integrity: sha512-nWrB6Psw7mFTBNL9r5hw9nm/a5+21WZ1LymOml/V2b43LdiIDO1oi+oBMSR3bcyuzEQKJoaa+t5qnsCWYhcNvA==}
-
-  motion-utils@14.7.0:
-    resolution: {integrity: sha512-woO0/Nb7ys75f94fjvQi/6leiHGvZUYkeHUPEZ3vxsV+9OpEVhkxp01x8MlRwX0zt31EqgXsKDAoBoJLC148Tw==}
-
-  motion@14.13.0:
-    resolution: {integrity: sha512-WFvmnDJ8h9b8QP9YeZ1KqjwbLdEnroYR3H0Gd6zyn14/olYruKBzeZcuivcgYdvmGWVoPe7YmfHVsy3ehQ2P0w==}
-    peerDependencies:
-      react: ^18.0.0 || ^19.0.0
-      react-dom: ^18.0.0 || ^19.0.0
-      remix: ^3.1.0
-    peerDependenciesMeta:
-      react:
-        optional: true
-      react-dom:
-        optional: true
-      remix:
-        optional: true
-
   ms@2.1.3:
     resolution: {integrity: sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==}
 
@@ -5531,11 +5356,6 @@ packages:
     resolution: {integrity: sha512-CHhPh+UNHD2GTXNYhPWLnU8ONHdI+5DI+4EYIAOaiD63rHeYlZvyh8P+in5999TTSFgUYuKUAjzRI4mdh/p+2A==}
     engines: {node: '>=8.0'}
 
-  rolldown@1.2.19:
-    resolution: {integrity: sha512-QIiV1J9d0pzN4jeeTH4sjPy0AZ6cAy2cG0ExeoE1+U8Rvj+hR3gYkokx0YbeUNGlZqiQJJ2utcETe0oKXwzsuA==}
-    engines: {node: ^20.19.0 || >=22.12.0}
-    hasBin: true
-
   rollup@4.68.3:
     resolution: {integrity: sha512-wd2gavj7CEQv52rdcVqfUupO/KPIKcoJKxyFWl4cOqYZGMQEOSijJRkliz0dRa7gpkj/h4TRqyWa+dJJi6T0OA==}
     engines: {node: '>=18.0.0', npm: '>=8.0.0'}
@@ -5818,6 +5638,9 @@ packages:
 
   tslib@2.9.1:
     resolution: {integrity: sha512-a4Ux9VKuIMHsOS7ENbEq6hK2ZGYIT27Rtl0E4eD9KqwxhKiQeMZE/9xb3IdYwWaSOyIBQLExhQgXDTYoiCxnWA==}
+
+  tweedle.js@2.1.0:
+    resolution: {integrity: sha512-0ReQgVjepoZkE6t0upWNgCRbplHkQJQYk1LStXugwSR728GLFmGDRuaQJlxeC/iBlxud6+P1RdODjaO25vHAqw==}
 
   type-check@0.4.0:
     resolution: {integrity: sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==}
@@ -6146,24 +5969,6 @@ packages:
   zod@4.6.7:
     resolution: {integrity: sha512-g8W2D2kU6a8untc053fX1uVBKzM7yqAxW/3zwk83+6RyF2+SKOuV+c0wBDhUwzV1PaGapmZH+rmcUzPf+3CGwg==}
 
-  zustand@5.1.0:
-    resolution: {integrity: sha512-ciJZlP48M1PTQbVQq81CGVFxHTLpZNrFjKqwjtCU34AWuXTZT/jrF3p9+fI84Cf1eSCMLapxqBy/SNTfwOBuqA==}
-    engines: {node: '>=12.20.0'}
-    peerDependencies:
-      '@types/react': '>=18.0.0'
-      immer: '>=9.0.6'
-      react: '>=18.0.0'
-      use-sync-external-store: '>=1.2.0'
-    peerDependenciesMeta:
-      '@types/react':
-        optional: true
-      immer:
-        optional: true
-      react:
-        optional: true
-      use-sync-external-store:
-        optional: true
-
 snapshots:
 
   '@assetpack/core@1.7.0(@emnapi/core@2.0.0-beta.2)(@emnapi/runtime@2.0.0-beta.2)':
@@ -6283,11 +6088,6 @@ snapshots:
   '@babel/parser@7.29.14':
     dependencies:
       '@babel/types': 7.29.14
-
-  '@babel/plugin-transform-arrow-functions@7.29.7(@babel/core@7.29.13)':
-    dependencies:
-      '@babel/core': 7.29.13
-      '@babel/helper-plugin-utils': 7.29.7
 
   '@babel/plugin-transform-react-jsx-self@7.29.7(@babel/core@7.29.13)':
     dependencies:
@@ -7346,8 +7146,6 @@ snapshots:
       '@node-rs/crc32-win32-ia32-msvc': 1.10.8
       '@node-rs/crc32-win32-x64-msvc': 1.10.8
 
-  '@oxc-project/types@0.156.0': {}
-
   '@peculiar/asn1-schema@2.11.1':
     dependencies:
       '@peculiar/utils': 2.0.3
@@ -7413,6 +7211,11 @@ snapshots:
       lodash: 4.18.1
       microbuffer: 1.0.0
       svgpath: 2.6.0
+
+  '@pixi/ui@2.4.1(pixi.js@8.23.0)':
+    dependencies:
+      pixi.js: 8.23.0
+      tweedle.js: 2.1.0
 
   '@playwright/test@1.65.0':
     dependencies:
@@ -8170,61 +7973,7 @@ snapshots:
 
   '@radix-ui/rect@1.1.3': {}
 
-  '@rolldown/binding-android-arm-eabi@1.2.19':
-    optional: true
-
-  '@rolldown/binding-android-arm64@1.2.19':
-    optional: true
-
-  '@rolldown/binding-darwin-arm64@1.2.19':
-    optional: true
-
-  '@rolldown/binding-darwin-x64@1.2.19':
-    optional: true
-
-  '@rolldown/binding-freebsd-x64@1.2.19':
-    optional: true
-
-  '@rolldown/binding-linux-arm-gnueabihf@1.2.19':
-    optional: true
-
-  '@rolldown/binding-linux-arm64-gnu@1.2.19':
-    optional: true
-
-  '@rolldown/binding-linux-arm64-musl@1.2.19':
-    optional: true
-
-  '@rolldown/binding-linux-ppc64-gnu@1.2.19':
-    optional: true
-
-  '@rolldown/binding-linux-s390x-gnu@1.2.19':
-    optional: true
-
-  '@rolldown/binding-linux-x64-gnu@1.2.19':
-    optional: true
-
-  '@rolldown/binding-linux-x64-musl@1.2.19':
-    optional: true
-
-  '@rolldown/binding-openharmony-arm64@1.2.19':
-    optional: true
-
-  '@rolldown/binding-wasm32-wasi@1.2.19':
-    dependencies:
-      '@emnapi/core': 2.0.0-beta.2
-      '@emnapi/runtime': 2.0.0-beta.2
-      '@napi-rs/wasm-runtime': 1.2.6(@emnapi/core@2.0.0-beta.2)(@emnapi/runtime@2.0.0-beta.2)
-    optional: true
-
-  '@rolldown/binding-win32-arm64-msvc@1.2.19':
-    optional: true
-
-  '@rolldown/binding-win32-x64-msvc@1.2.19':
-    optional: true
-
   '@rolldown/pluginutils@1.0.0-rc.3': {}
-
-  '@rolldown/pluginutils@1.1.1': {}
 
   '@rollup/rollup-android-arm-eabi@4.68.3':
     optional: true
@@ -8807,8 +8556,6 @@ snapshots:
 
   bytestreamjs@2.0.1: {}
 
-  cac@7.1.0: {}
-
   cacheable-lookup@5.0.4: {}
 
   cacheable-request@7.0.4:
@@ -9028,13 +8775,6 @@ snapshots:
       - electron-builder-squirrel-windows
       - supports-color
 
-  dockview-core@4.13.1: {}
-
-  dockview@4.13.1(react@19.3.1):
-    dependencies:
-      dockview-core: 4.13.1
-      react: 19.3.1
-
   dompurify@3.4.15:
     optionalDependencies:
       '@types/trusted-types': 2.0.7
@@ -9103,18 +8843,6 @@ snapshots:
       - supports-color
 
   electron-to-chromium@1.5.485: {}
-
-  electron-vite@6.0.0(vite@7.3.1(@types/node@24.19.2)(jiti@2.7.0)):
-    dependencies:
-      '@babel/core': 7.29.13
-      '@babel/plugin-transform-arrow-functions': 7.29.7(@babel/core@7.29.13)
-      cac: 7.1.0
-      magic-string: 1.4.5
-      picocolors: 1.1.1
-      rolldown: 1.2.19
-      vite: 7.3.1(@types/node@24.19.2)(jiti@2.7.0)
-    transitivePeerDependencies:
-      - supports-color
 
   electron-winstaller@5.4.0:
     dependencies:
@@ -9437,15 +9165,6 @@ snapshots:
       mime-types: 2.1.35
 
   forwarded@0.2.0: {}
-
-  framer-motion@14.13.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1):
-    dependencies:
-      motion-dom: 14.13.0
-      motion-utils: 14.7.0
-      tslib: 2.9.1
-    optionalDependencies:
-      react: 19.3.1
-      react-dom: 19.3.1(react@19.3.1)
 
   fresh@2.0.0: {}
 
@@ -10037,20 +9756,6 @@ snapshots:
       dompurify: 3.4.15
       marked: 14.0.0
 
-  motion-dom@14.13.0:
-    dependencies:
-      motion-utils: 14.7.0
-
-  motion-utils@14.7.0: {}
-
-  motion@14.13.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1):
-    dependencies:
-      framer-motion: 14.13.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
-      tslib: 2.9.1
-    optionalDependencies:
-      react: 19.3.1
-      react-dom: 19.3.1(react@19.3.1)
-
   ms@2.1.3: {}
 
   msgpackr-extract@3.0.7:
@@ -10548,28 +10253,6 @@ snapshots:
       sprintf-js: 1.1.3
     optional: true
 
-  rolldown@1.2.19:
-    dependencies:
-      '@oxc-project/types': 0.156.0
-      '@rolldown/pluginutils': 1.1.1
-    optionalDependencies:
-      '@rolldown/binding-android-arm-eabi': 1.2.19
-      '@rolldown/binding-android-arm64': 1.2.19
-      '@rolldown/binding-darwin-arm64': 1.2.19
-      '@rolldown/binding-darwin-x64': 1.2.19
-      '@rolldown/binding-freebsd-x64': 1.2.19
-      '@rolldown/binding-linux-arm-gnueabihf': 1.2.19
-      '@rolldown/binding-linux-arm64-gnu': 1.2.19
-      '@rolldown/binding-linux-arm64-musl': 1.2.19
-      '@rolldown/binding-linux-ppc64-gnu': 1.2.19
-      '@rolldown/binding-linux-s390x-gnu': 1.2.19
-      '@rolldown/binding-linux-x64-gnu': 1.2.19
-      '@rolldown/binding-linux-x64-musl': 1.2.19
-      '@rolldown/binding-openharmony-arm64': 1.2.19
-      '@rolldown/binding-wasm32-wasi': 1.2.19
-      '@rolldown/binding-win32-arm64-msvc': 1.2.19
-      '@rolldown/binding-win32-x64-msvc': 1.2.19
-
   rollup@4.68.3:
     dependencies:
       '@types/estree': 1.0.10
@@ -10955,6 +10638,8 @@ snapshots:
 
   tslib@2.9.1: {}
 
+  tweedle.js@2.1.0: {}
+
   type-check@0.4.0:
     dependencies:
       prelude-ls: 1.2.1
@@ -11216,9 +10901,3 @@ snapshots:
   zod@3.25.76: {}
 
   zod@4.6.7: {}
-
-  zustand@5.1.0(@types/react@19.3.0)(immer@11.2.10)(react@19.3.1):
-    optionalDependencies:
-      '@types/react': 19.3.0
-      immer: 11.2.10
-      react: 19.3.1

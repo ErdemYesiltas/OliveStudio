@@ -1,3 +1,6 @@
+import {AchievementSession,type AchievementHost} from './index';
+import type {RuntimeSystem} from '@rewrite/sdk';
+
 /** A short "Achievement unlocked" card over the game (DOM; stacks, fades after a few seconds). */
 export function createAchievementToasts(host: HTMLElement) {
  const doc = host.ownerDocument;
@@ -22,4 +25,16 @@ export function createAchievementToasts(host: HTMLElement) {
   },
   dispose() { for (const t of timers) clearTimeout(t); timers.clear(); stack.remove(); },
  };
+}
+
+/** Keep persistent progress in the host's storage and own transient toasts per scene. */
+export function createSceneAchievements(host:Omit<AchievementHost,'unlocked'>,target?:HTMLElement,title=()=> 'Achievement unlocked'){
+ let toasts:ReturnType<typeof createAchievementToasts>|undefined;
+ const session=new AchievementSession({...host,unlocked:achievement=>{
+  if(!target)return;
+  toasts??=createAchievementToasts(target);
+  toasts.show(title(),achievement.name,achievement.description);
+ }});
+ const system:RuntimeSystem={...session.system,dispose(){toasts?.dispose();toasts=undefined;}};
+ return {session,system};
 }

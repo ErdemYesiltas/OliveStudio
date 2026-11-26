@@ -10,6 +10,7 @@
     "./graph-views": "./src/graph-views.tsx"
   },
   "dependencies": {
+    "@olivestudio/engine": "workspace:*",
     "@rewrite/scene": "workspace:*",
     "@rewrite/sdk": "workspace:*",
     "i18next": "26.5.12",

@@ -5,7 +5,9 @@
   "type": "module",
   "exports": "./src/index.ts",
   "dependencies": {
-    "@rewrite/sdk": "workspace:*",
+    "@olivestudio/engine": "workspace:*"
+  },
+  "devDependencies": {
     "miniplex": "2.0.0"
   }
 }

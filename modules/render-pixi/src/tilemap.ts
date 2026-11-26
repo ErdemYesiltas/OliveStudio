@@ -2,7 +2,7 @@ import {Container, Graphics, Rectangle, Sprite, Texture} from 'pixi.js';
 import {z} from 'zod';
 import type {ComponentDefinition, Json} from '@rewrite/sdk';
 import type {VisualAdapter} from './visuals';
-import {acquireTexture, releaseTexture} from './textures';
+import {standaloneTextures} from './textures';
 
 /**
  * Grid of tiles cut from one tileset image (left-to-right, top-to-bottom). `tiles` holds one tileset index per cell,
@@ -60,12 +60,13 @@ export function createTilemapAdapter(url: (assetId: string) => string | undefine
     });
     ready = true; context.changed();
    };
-   if (src) void acquireTexture(src).then(({texture}) => { if (!dead) build(texture); }, e => { if (!dead) { error = String(e); context.changed(); } });
+   const lease=src?(context.textures??standaloneTextures).acquire(src):undefined;
+   if(lease)void lease.ready.then(texture=> { if (!dead) build(texture); }, e => { if (!dead) { error = String(e); context.changed(); } });
    return {
     view,
     update(next) { view.alpha = TilemapSchema.parse(next).alpha; },
     diagnostics: () => ({ready: ready || !src, error, tiles: p.tiles.filter(t => t >= 0).length}),
-    dispose() { if (dead) return; dead = true; for (const f of frames.values()) f.destroy(false); view.destroy({children: true}); if (src) releaseTexture(src); },
+    dispose() { if (dead) return; dead = true; for (const f of frames.values()) f.destroy(false); view.destroy({children: true}); lease?.release(); },
    };
   },
  };

@@ -1,5 +1,5 @@
 import {expect, it} from 'vitest';
-import {EffectsSchema, MaskSchema, effectPlan, effectsDefaults, effectsDefinition, maskDefinition} from './effects';
+import {EffectsSchema, MaskSchema, VisualEffectSchema, effectPlan, effectsDefaults, effectsDefinition, maskDefinition, migrateVisualEffects} from './effects';
 import {flipbookFrame} from './flipbook';
 import {ParticlesSchema, objectDefinitions, particleState} from './objects';
 
@@ -10,6 +10,10 @@ it('neutral effects add no filters; each enabled effect adds one in a fixed orde
  for (const d of [effectsDefinition, maskDefinition]) expect(d.parse(d.defaults())).toEqual(d.defaults());
  expect(() => EffectsSchema.parse({...effectsDefaults, blendMode: 'glow'})).toThrow();
  expect(() => MaskSchema.parse({...(maskDefinition.defaults() as object), width: 0})).toThrow();
+ expect(VisualEffectSchema.array().parse(migrateVisualEffects({...effectsDefaults, blur: 4, shadowColor: '#ffffff'}))).toEqual([
+  {type: 'blur', enabled: true, settings: {blur: 4}},
+  {type: 'shadow', enabled: true, settings: {shadowAlpha: 0, shadowColor: '#ffffff', shadowX: 4, shadowY: 4, shadowBlur: 2}},
+ ]);
 });
 
 it('sprite sheet play restarts from startedAt and stop freezes the reached frame', () => {

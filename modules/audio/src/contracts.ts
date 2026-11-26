@@ -1,10 +1,11 @@
+import type {TweenChannel} from '@rewrite/tween/contracts';
 import {z} from 'zod';
 import {slot} from '@rewrite/sdk';
 export const audioImporter={id:'audio.files',assetType:'audio.clip',titleKey:'audio.import',extensions:['wav','mp3']as const};
 export const audioBuses=['music','sfx','ui']as const;
 export type AudioBus=typeof audioBuses[number];
 /** `bus` is optional in stored data; older sources play on the effects bus. */
-export const AudioSourceSchema=z.object({assetId:z.uuid().or(z.literal('')),volume:z.number().min(0).max(1),loop:z.boolean(),rate:z.number().min(.25).max(4),autoplay:z.boolean(),bus:z.enum(audioBuses).default('sfx'),
+export const AudioSourceSchema=z.object({assetId:z.uuid().or(z.literal('')),volume:z.number().min(0).max(1),loop:z.boolean(),rate:z.number().min(.25).max(4),autoplay:z.boolean(),voiceLimit:z.number().int().min(1).max(16).default(1),bus:z.enum(audioBuses).default('sfx'),
  /** Beat sync: tempo of the clip (0 = none) and where its first beat starts (seconds). */
  bpm:z.number().min(0).max(400).default(0),beatOffset:z.number().min(0).max(60).default(0),
  /** Variation per play: random pitch (rate ± amount) and volume (down to 1 − amount). */
@@ -62,7 +63,7 @@ export type AudioSource=z.infer<typeof AudioSourceSchema>;
 export const AudioMetadataSchema=z.object({format:z.enum(['wav','mp3']),duration:z.number().positive().max(600),sampleRate:z.number().int().min(8000).max(192000),channels:z.number().int().min(1).max(2),codec:z.string().min(1),processedBytes:z.number().int().positive(),pipeline:z.string().min(1)}).strict();
 export type AudioState='loading'|'ready'|'playing'|'paused'|'stopped'|'ended'|'error';
 export interface VoiceSnapshot {state:AudioState;error?:string;starts:number}
-export interface VoiceSpec {url:string;format:'wav'|'mp3';volume:number;rate:number;loop:boolean;/** Stereo position −1…1. */pan?:number;/** Mixer bus whose effects the voice goes through. */bus?:AudioBus}
+export interface VoiceSpec {url:string;format:'wav'|'mp3';volume:number;rate:number;loop:boolean;voiceLimit?:number;/** Stereo position −1…1. */pan?:number;/** Mixer bus whose effects the voice goes through. */bus?:AudioBus}
 export interface AudioVoice {
  readonly snapshot:VoiceSnapshot;
  subscribe(listener:()=>void):()=>void;
@@ -92,3 +93,8 @@ export interface AudioControls {
 }
 /** Runtime audio events: a source ended, or crossed a beat (bar every 4 beats). */
 export interface AudioEvent {kind:'ended'|'beat';key:string;entityId:string;beat?:number;bar?:boolean}
+
+export const audioTweenChannels:readonly TweenChannel[]=[
+ {componentType:'audio.source',version:1,property:'volume',titleKey:'audio.volume',min:0,max:1,defaultValue:1},
+ {componentType:'audio.source',version:1,property:'rate',titleKey:'audio.rate',min:.25,max:4,defaultValue:1},
+];

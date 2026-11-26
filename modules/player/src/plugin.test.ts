@@ -1,6 +1,6 @@
 import {it,expect,vi} from 'vitest';
 vi.mock('pixi.js/unsafe-eval',()=>({}));
-vi.mock('pixi.js',()=>({Application:class{},Container:class{removeChildren(){return[];}},Graphics:class{},Text:class{},Sprite:class{},Texture:class{}}));
+vi.mock('pixi.js',async original=>({...await original<typeof import('pixi.js')>(),Application:class{},Container:class{removeChildren(){return[];}},Graphics:class{},Text:class{},Sprite:class{},Texture:class{}}));
 import {GamePlayer} from './index';
 import type {GameBundle,PlayerPlugin} from './plugin';
 const bundle:GameBundle={project:{formatVersion:1,name:'Test',entrySceneId:'scene',scenes:[{formatVersion:1,id:'scene',name:'Test',entities:[]}],modules:{},providers:{},extensions:{}},assets:[],files:{},runtimes:[]};

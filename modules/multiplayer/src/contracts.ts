@@ -112,7 +112,7 @@ export function ensureMovementActions(map: InputMap, player: NetworkPlayer): Inp
  return InputMapSchema.parse(next);
 }
 /** Movement axes from the pressed input actions (by ID): left/right and up/down cancel out. */
-export function movementAxes(player: NetworkPlayer, map: InputMap, pressed: ReadonlySet<string>) {
+export function movementAxes(player: NetworkPlayer, map: InputMap, pressed: Pick<ReadonlySet<string>,'has'>) {
  const down = (name: string) => map.actions.some(a => a.name === name && pressed.has(a.id));
  return {x: (down(player.right) ? 1 : 0) - (down(player.left) ? 1 : 0), y: (down(player.down) ? 1 : 0) - (down(player.up) ? 1 : 0)};
 }

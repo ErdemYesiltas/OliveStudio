@@ -123,15 +123,7 @@ export interface ProviderDescriptor {
   id: string; service: string; version: string; capabilities: readonly string[];
   targets: readonly string[]; runtimeEntry: string;
 }
-export interface RuntimeSystem {
-  id: string; after?: readonly string[]; before?: readonly string[];
-  start?(context?:{paused:boolean}): void; fixedUpdate?(dtSeconds: number): void; update?(dtSeconds: number): void;
-  pause?(): void; resume?(): void; dispose(): void;
-  /** Objects added to the running world (spawned by scripts): pick up their bodies, tweens, scripts… */
-  spawned?(ids: readonly string[]): void;
-  /** Objects removed from the running world (destroyed): release what belongs to them. */
-  removed?(ids: readonly string[]): void;
-}
+export type {RuntimeSystem} from '@olivestudio/engine/runtime';
 export interface ExportContext { signal: AbortSignal; profile: Json; report(message: string): void }
 export interface ExportTarget {
   id: string; titleKey: string;

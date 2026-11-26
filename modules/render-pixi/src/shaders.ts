@@ -117,16 +117,17 @@ export function parseShaderLog(log: string): ShaderProblem[] {
 const groupType = {float: 'f32', vec2: 'vec2<f32>', vec3: 'vec3<f32>', vec4: 'vec4<f32>'} as const;
 class ShaderFilter extends Filter {
  private readonly started = performance.now();
+ constructor(options: ConstructorParameters<typeof Filter>[0], private readonly clock?: () => number) { super(options); }
  override apply(filterManager: FilterSystem, input: Texture, output: RenderSurface, clearMode: boolean) {
-  (this.resources.shaderUniforms as UniformGroup).uniforms.uTime = (performance.now() - this.started) / 1000;
+  (this.resources.shaderUniforms as UniformGroup).uniforms.uTime = this.clock?.() ?? (performance.now() - this.started) / 1000;
   filterManager.applyFilter(this, input, output, clearMode);
  }
 }
 /** A Pixi filter for one shader with these values (WebGL). */
-export function createShaderFilter(source: string, data: ShaderData): Filter {
+export function createShaderFilter(source: string, data: ShaderData, clock?: () => number): Filter {
  const uniforms: Record<string, {value: number | Float32Array; type: string}> = {uTime: {value: 0, type: 'f32'}};
  for (const spec of parseUniforms(source)) { const v = uniformValue(spec, data.values); uniforms[spec.name] = {value: typeof v === 'number' ? v : new Float32Array(v), type: groupType[spec.type]}; }
- return new ShaderFilter({glProgram: GlProgram.from({vertex: defaultFilterVert, fragment: fragmentSource(source), name: 'olive-shader', preferredFragmentPrecision: 'highp'}), resources: {shaderUniforms: new UniformGroup(uniforms as never)}, padding: data.padding});
+ return new ShaderFilter({glProgram: GlProgram.from({vertex: defaultFilterVert, fragment: fragmentSource(source), name: 'olive-shader', preferredFragmentPrecision: 'highp'}), resources: {shaderUniforms: new UniformGroup(uniforms as never)}, padding: data.padding}, clock);
 }
 /** The shader an object's component points at, if it exists and compiles. */
 export function resolveShader(library: unknown, data: Json): {source: string; data: ShaderData} | null {

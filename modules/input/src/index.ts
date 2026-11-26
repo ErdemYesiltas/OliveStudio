@@ -1,6 +1,6 @@
 import {z} from 'zod';
-import {settings,type EditorModule} from '@rewrite/sdk';
-import {interactionTriggers, GlobalNameSchema, type InteractionCatalog, type InteractionEvent, type TriggerDefinition} from '@rewrite/interactions';
+import {settings,type EditorModule,type RuntimeSystem} from '@rewrite/sdk';
+import {interactionTriggers, GlobalNameSchema, type InteractionCatalog, type InteractionEvent,type GlobalStore, type TriggerDefinition} from '@rewrite/interactions';
 
 /** Project input map: named actions bound to keyboard, mouse, touch and gamepad. */
 export const inputSection = 'input.map';
@@ -130,6 +130,26 @@ export class InputSession {
    this.releaseAll();
   };
  }
+}
+/** The input connection lasts for a play session; its polling system joins each active scene. */
+export function connectGameInput(map:InputMap,ports:{
+ target:HTMLElement;keyboard?:()=>boolean;globals:()=>GlobalStore|undefined;
+ emit(event:InteractionEvent):void;report(error:unknown):void;
+}){
+ const session=new InputSession(map,{
+  emit:ports.emit,
+  setGlobal:(id,value)=>{try{ports.globals()?.set(id,value);}catch(error){ports.report(error);}},
+ });
+ const detach=session.attach(ports.target,ports.keyboard);
+ const system:RuntimeSystem={
+  id:'input',
+  start:context=>{session.paused=context?.paused??false;},
+  pause:()=>{session.paused=true;},
+  resume:()=>{session.paused=false;},
+  update:()=>{if(!session.paused)session.update();},
+  dispose(){},
+ };
+ return {session,system,detach};
 }
 /** Readable binding label for the editor UI. */
 export function bindingLabel(b: Binding): string {

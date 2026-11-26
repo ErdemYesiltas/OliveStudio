@@ -1,3 +1,4 @@
+import type {InteractionEvent} from '@rewrite/interactions';
 import {components,settings,token,propertyKey,type ComponentDefinition,type EditorModule,type Json,type RuntimeSystem} from '@rewrite/sdk';
 import {transform,type Entity} from '@rewrite/scene';
 import {projectToken,projectSections,type ProjectService} from '@rewrite/project';
@@ -154,10 +155,13 @@ export class PhysicsSession{
   const entities=new Map(this.entities().map(e=>[e.id,e]));
   for(const plan of this.plans)if(plan.spec.settings.bodyType==='kinematic'&&this.active.has(plan.entity.id)){const w=worldTransform(entities,plan.entity.id);this.world.setPose?.(plan.entity.id,w.x,w.y,w.rotation,dt);}
   this.world.step(dt);
+  this.projectPoses(entities);
+  this.count++;}
+ /** Copy current body poses after a renderer rebuild, without advancing the simulation. */
+ projectPoses(entities=new Map(this.entities().map(e=>[e.id,e]))){if(!this.world||this.dead)return;
   for(const pose of this.world.poses()){const entity=entities.get(pose.entityId),plan=this.byId.get(pose.entityId);if(!entity||!plan||plan.spec.settings.bodyType!=='dynamic')continue;const component=entity.components.find(c=>c.type==='scene.transform2d'&&c.version===1);if(!component||!component.data||typeof component.data!=='object'||Array.isArray(component.data))continue;
    if(!entity.parentId){Object.assign(component.data,{x:pose.x,y:pose.y,rotation:pose.rotation});continue;}
-   const parent=worldTransform(entities,entity.parentId),local=rot({x:pose.x-parent.x,y:pose.y-parent.y},-parent.rotation);Object.assign(component.data,{x:local.x/(parent.scaleX||1),y:local.y/(parent.scaleY||1),rotation:pose.rotation-parent.rotation});}
-  this.count++;}
+   const parent=worldTransform(entities,entity.parentId),local=rot({x:pose.x-parent.x,y:pose.y-parent.y},-parent.rotation);Object.assign(component.data,{x:local.x/(parent.scaleX||1)+parent.pivotX,y:local.y/(parent.scaleY||1)+parent.pivotY,rotation:pose.rotation-parent.rotation});}}
  private need(){if(!this.world)throw Error('Physics is not running in this scene');return this.world;}
  private method<K extends keyof PhysicsWorld>(name:K){const fn=this.need()[name];if(typeof fn!=='function')throw Error(`The physics provider cannot ${String(name)}`);return(fn as (...args:never[])=>unknown).bind(this.world) as NonNullable<PhysicsWorld[K]>;}
  /** Runtime control for rules and scripts (object IDs; px, px/s, degrees). */
@@ -180,4 +184,25 @@ export class PhysicsSession{
  }
  get diagnostics(){return{time:this.seconds,steps:this.count,bodies:this.world?.poses()??[],joints:[...this.joined],gravity:this.gravity,dragging:this.dragging,errors:this.errors};}
  dispose(){if(this.dead)return;this.dead=true;this.world?.dispose();this.world=undefined;this.active.clear();this.joined.clear();this.plans=[];this.byId.clear();}
+}
+
+function emitPhysicsInteraction(
+ emit:(event:InteractionEvent)=>void,
+ contact:{a:string;b:string;phase:'enter'|'exit';silent:boolean;contact?:InteractionEvent['data']},
+){
+ const {a,b,phase,silent}=contact;
+ const data=contact.contact?{data:contact.contact}:{};
+ emit({type:`physics.${phase}`,sourceId:a,event:b,silent,...data});
+ emit({type:`physics.${phase}`,sourceId:b,event:a,silent,...data});
+}
+
+/** Create the play world's physics and send its contacts to the common interaction bus. */
+export function createScenePhysics(entities:()=>readonly Entity[],settings:PhysicsSettings,provider:PhysicsProvider,ports:{
+ bounds():{width:number;height:number};silent():boolean;emit(event:InteractionEvent):void;
+ observe?(event:PhysicsEvent):void;
+}){
+ return new PhysicsSession(entities,settings,provider,{
+  bounds:ports.bounds,silent:ports.silent,
+  event(event){emitPhysicsInteraction(ports.emit,event);ports.observe?.(event);},
+ });
 }

@@ -1,3 +1,4 @@
+import type {ScreenRect} from '@olivestudio/engine/screen';
 import {ViewportRuntimeGate} from './runtime-features';
 import type {ViewportFeature,ViewportFeatureHandle,SpatialCommit} from './viewport-features';
 import {project2DScene} from '@rewrite/scene';
@@ -10,32 +11,33 @@ import {createMarker,rulerStep} from './badges';
 import {guideTargets,snapToGuides,type GuideLine,type GuideTargets} from './guides';
 export {guideTargets,snapToGuides,type GuideLine,type GuideBox,type GuideTargets} from './guides';
 import 'pixi.js/unsafe-eval';
-import {flipbookDefinition} from './flipbook';
+import {flipbookVisuals} from './flipbook';
 export {flipbookDefinition,createFlipbookAdapter,flipbookFrame,FlipbookSchema} from './flipbook';
-import type {VisualAdapter,VisualFrame,VisualHandle,SceneDecorator} from './visuals';
+import type {VisualAdapter,VisualFrame,SceneDecorator} from './visuals';
 import { BehaviorSubject } from 'rxjs';
-import { Application, BitmapText, Container, Graphics, Rectangle, Text, Sprite, Texture } from 'pixi.js';
-import { setTextureFiltering } from './textures';
+import {PixiGameApplication} from './game-application';
+import { Container, Graphics, Rectangle, Text, Sprite, Texture, TextureSource } from 'pixi.js';
+import type {TextureLease} from './textures';
 import { components, createItems, settings, type EditorModule, type ComponentDefinition,type CreateItemDefinition,type Json } from '@rewrite/sdk';
-import { objectDefinitions } from './objects';
+import {objectVisuals} from './object-visuals';
 import { effectsDefinition,maskDefinition,createEffectsDecorator } from './effects';
 import { shaderDefinition,shaderType,shadersSection } from './shaders';
 import { projectToken } from '@rewrite/project';
-import { tilemapDefinition } from './tilemap';
 export { tilemapDefinition,createTilemapAdapter,TilemapSchema,tileAt,cellsAlong,resizeTiles,tilesetSize,type Tilemap } from './tilemap';
-export { cameraView,idleCamera,snapCamera,sceneCamera,cameraOutlines,viewOffset,viewPlacement,CameraSchema,cameraType,type Camera,type CameraView,type RuntimeCameraState } from './runtime-camera';
+export { cameraView,cameraControls,resolveCameraFrame,idleCamera,snapCamera,sceneCamera,cameraOutlines,viewOffset,viewPlacement,CameraSchema,cameraType,type Camera,type CameraView,type RuntimeCameraState } from './runtime-camera';
 import { CameraSchema,cameraType,viewPlacement,viewOffset,type CameraView } from './runtime-camera';
 import { ScreenSpaceSchema,screenSpaceType,screenAnchors,screenSpace } from './screen';
 export { ScreenSpaceSchema,screenSpaceType,screenAnchors,screenSpace,screenOffset,type ScreenSpace } from './screen';
-import { sceneDecorators } from './visuals';
+import {clearSceneDecorators,decorateScene,sceneDecorators,textureUrl,visualAdapters} from './visuals';
 export { effectsDefinition,maskDefinition,createEffectsDecorator,effectFilters,EffectsSchema,MaskSchema,blendModes } from './effects';
 export { objectDefinitions,createObjectAdapters,particleState,particleBounds,waveAt,TilingSpriteSchema,NineSliceSchema,MeshPlaneSchema,RopeSchema,ParticlesSchema } from './objects';
 import { transform, type Scene } from '@rewrite/scene';
-import { SpriteSchema,TextureMetadataSchema,ShapeSchema,TextSchema,BitmapTextSchema,fontImporter,shapeKinds,textStyle,bitmapTextStyle,bidiText } from './contracts';
-import { drawShape } from './display';
+import { SpriteSchema,TextureMetadataSchema,ShapeSchema,TextSchema,BitmapTextSchema,fontImporter,shapeKinds,textFitModes } from './contracts';
+import {applyTransform2D} from './display';
+import {SceneVisualProjection} from './scene-visuals';
 import { visualKey } from './visual-signature';
 import { loadFont,fontStack } from './fonts';
-import { assetImporters } from '@rewrite/assets';
+import {assetImporters,assetToken,type AssetService} from '@rewrite/assets';
 import { angleStep,pointerAngle,evaluateTransform,type Transform2D,type TransformTool,type TransformAxis } from './gizmo';
 export type { TransformTool } from './gizmo';
 import { makeEntity } from '@rewrite/scene';
@@ -52,7 +54,9 @@ export const shapeDefinition: ComponentDefinition = { type: 'pixi.shape', versio
  {key:'strokeWidth',titleKey:'field.strokeWidth',kind:'number'},{key:'strokeColor',titleKey:'field.strokeColor',kind:'color',visible:v=>!shapeIs('line')(v)},
 ] };
 const wraps=(v:Json)=>Boolean((v as {wordWrap?:boolean}|null)?.wordWrap);
-const wrapFields:ComponentDefinition['fields']=[{key:'wordWrap',titleKey:'field.wordWrap',kind:'boolean'},{key:'wrapWidth',titleKey:'field.wrapWidth',kind:'number',visible:wraps},{key:'lineHeight',titleKey:'field.lineHeight',kind:'number'}];
+const wrapFields:ComponentDefinition['fields']=[{key:'wordWrap',titleKey:'field.wordWrap',kind:'boolean'},{key:'wrapWidth',titleKey:'field.wrapWidth',kind:'number',visible:wraps},{key:'lineHeight',titleKey:'field.lineHeight',kind:'number'},
+ {key:'fitMode',titleKey:'field.fitMode',kind:'enum',options:textFitModes.map(value=>({value,titleKey:`textFit.${value}`}))},
+ {key:'fitWidth',titleKey:'field.fitWidth',kind:'number',visible:data=>{const mode=(data as {fitMode?:string}).fitMode;return Boolean(mode&&mode!=='none');}},];
 export const textDefinition: ComponentDefinition = { type: 'pixi.text', version: 1, supportedSpaces:['scene.2d'], exclusiveGroup:'render.visual', titleKey: 'component.text', defaults: () => ({ alpha:1,text: 'Hello, world', fontSize: 40, color: '#e8e8e5', font: '', fontWeight:'normal', fontStyle:'normal', align:'center', letterSpacing:0, strokeColor:'#000000', strokeWidth:0, wordWrap:false, wrapWidth:400, lineHeight:0 }), get dataSchema(){return z.toJSONSchema(TextSchema,{unrepresentable:'any'});},parse: v => TextSchema.parse(v), fields: [{key:'alpha',titleKey:'field.alpha',kind:'number'},
  { key: 'text', titleKey: 'field.text', kind: 'string' }, { key: 'font', titleKey: 'field.font', kind: 'asset', assetType: 'font.face' }, { key: 'fontSize', titleKey: 'field.fontSize', kind: 'number' }, { key: 'color', titleKey: 'field.color', kind: 'color' },
  { key: 'fontWeight', titleKey: 'field.fontWeight', kind: 'enum', options: ['normal','bold'].map(value=>({value,titleKey:`fontWeight.${value}`})) }, { key: 'fontStyle', titleKey: 'field.fontStyle', kind: 'enum', options: ['normal','italic'].map(value=>({value,titleKey:`fontStyle.${value}`})) },
@@ -77,8 +81,15 @@ export const cameraDefinition:ComponentDefinition={type:cameraType,version:1, su
 export const screenSpaceDefinition:ComponentDefinition={type:screenSpaceType,version:1, supportedSpaces:['scene.2d'],titleKey:'component.screenSpace',defaults:()=>ScreenSpaceSchema.parse({}),get dataSchema(){return z.toJSONSchema(ScreenSpaceSchema,{unrepresentable:'any'});},parse:v=>ScreenSpaceSchema.parse(v),fields:[{key:'anchor',titleKey:'field.screenAnchor',kind:'enum',options:screenAnchors.map(value=>({value,titleKey:`anchor.${value}`}))}]};
 export const pixiModule: EditorModule = { manifest: { id: 'pixi', version: '1.0.0', apiVersion: 1, requires: { scene: '^1' },optional:{assets:'^1',project:'^1'} }, activate(c) {
  c.contribute(assetImporters,fontImporter.id,fontImporter);
- c.contribute(components,cameraType,cameraDefinition);c.contribute(components,screenSpaceType,screenSpaceDefinition); c.contribute(components,'pixi.sprite',spriteDefinition); c.contribute(components, 'pixi.shape', shapeDefinition); c.contribute(components, 'pixi.text', textDefinition); c.contribute(components,'pixi.bitmapText',bitmapTextDefinition); c.contribute(components,'pixi.flipbook',flipbookDefinition);
- for(const definition of [...objectDefinitions,effectsDefinition,maskDefinition,tilemapDefinition])c.contribute(components,definition.type,definition);
+ c.contribute(components,cameraType,cameraDefinition);c.contribute(components,screenSpaceType,screenSpaceDefinition); c.contribute(components,'pixi.sprite',spriteDefinition); c.contribute(components, 'pixi.shape', shapeDefinition); c.contribute(components, 'pixi.text', textDefinition); c.contribute(components,'pixi.bitmapText',bitmapTextDefinition);
+ const features=[flipbookVisuals,objectVisuals];
+ for(const definition of [...features.flatMap(feature=>feature.components),effectsDefinition,maskDefinition])c.contribute(components,definition.type,definition);
+ let assets:AssetService|undefined;
+ try{assets=c.get(assetToken);}catch{/* The asset registry is optional. */}
+ if(assets){
+  const registry=assets,url=textureUrl(id=>registry.get(id),asset=>registry.url(asset));
+  for(const feature of features)for(const adapter of feature.createAdapters(url))c.contribute(visualAdapters,adapter.type,adapter);
+ }
  {let shaders:(()=>unknown)|undefined;try{const project=c.get(projectToken);shaders=()=>project.document.current.extensions[shadersSection];}catch{shaders=undefined;}c.contribute(sceneDecorators,'pixi.effects',createEffectsDecorator({shaders}));}c.contribute(components,shaderType,shaderDefinition);
  for(const [id,item] of Object.entries(pixiCreateItems))c.contribute(createItems,`pixi.${id}`,item);
  c.contribute(settings,'pixi.gridVisible',{titleKey:'setting.gridVisible',section:'setting.section.viewport',kind:'boolean',default:false,order:1});
@@ -130,7 +141,7 @@ export class SceneViewport {
 
  private eachFeature(run:(feature:ViewportFeatureHandle)=>void){for(const feature of [...this.features])try{run(feature);}catch(error){this.features=this.features.filter(f=>f!==feature);try{feature.dispose();}catch{/* Preserve the original error. */}this.callbacks.report?.(error);}}
 
- readonly app = new Application();
+ readonly app = new PixiGameApplication(64*1024*1024);
  private stage = new Container();
  private content = new Container();
  /** Screen Space (HUD) objects: above the world, outside the game camera. `game` holds both and takes the Preview mask. */
@@ -176,8 +187,15 @@ export class SceneViewport {
  private grid=new Graphics();
  private gridSettings:GridSettings=readGridSettings(null);
  private nodes = new Map<string, Container>();
- private texts = new Map<string, Text|BitmapText>();
- private custom=new Map<string,{componentId:string;handle:VisualHandle}>();
+ private visuals=new SceneVisualProjection({
+  texture:id=>{const url=this.callbacks.resolveAsset?.(id)?.url;return url?this.textures.get(url)?.texture:undefined;},
+  missingSprite:p=>new Graphics().rect(-p.anchorX*p.width,-p.anchorY*p.height,p.width,p.height)
+   .fill('#4d3747').stroke({color:'#d29bbd',width:1}).moveTo(-p.anchorX*p.width,-p.anchorY*p.height)
+   .lineTo((1-p.anchorX)*p.width,(1-p.anchorY)*p.height).stroke({color:'#d29bbd',width:1}),
+  textures:this.app.textures,font:id=>this.fontFor(id),text:value=>this.callbacks.resolveText?.(value)??value,rtl:()=>this.rtl,
+  frame:id=>this.customFrame(id),changed:()=>{if(!this.disposed)this.selection(this.selected);},
+  event:event=>this.callbacks.visualEvent?.(event),
+ });
  private observer?: ResizeObserver;
  private drag?: Drag;
  /** Transforms of the objects being dragged on the canvas, before they are committed (empty when nothing is dragged). */
@@ -191,11 +209,17 @@ export class SceneViewport {
  /** Preview: false shows the game camera's view (masked); true is the free Scene view with the camera's frame drawn. */
  private sceneView=false;private lastView:CameraView|null=null;private cameraFrame=new Graphics();
  /** Device preview: what a screen of a chosen size shows of the stage (stage pixels); null hides it. Edit mode only. */
- private device:{x:number;y:number;width:number;height:number;label:string}|null=null;private deviceLayer=new Graphics();private deviceLabel=new Text({text:'',style:{fontSize:12,fill:'#f2a35c',fontFamily:'system-ui, sans-serif',stroke:{color:'#111417',width:3}}});
- setDeviceFrame(frame:{x:number;y:number;width:number;height:number;label:string}|null){this.device=frame;this.drawDevice();}
- private drawDevice(){const g=this.deviceLayer,f=this.device;g.clear();this.deviceLabel.visible=Boolean(f);if(!f){delete this.host.dataset.deviceFrame;return;}
+ private device:ScreenRect&{label:string;safeArea?:ScreenRect}|null=null;private deviceLayer=new Graphics();private deviceLabel=new Text({text:'',style:{fontSize:12,fill:'#f2a35c',fontFamily:'system-ui, sans-serif',stroke:{color:'#111417',width:3}}});
+ setDeviceFrame(frame:ScreenRect&{label:string;safeArea?:ScreenRect}|null){this.device=frame;this.drawDevice();}
+ private drawDevice(){const g=this.deviceLayer,f=this.device;g.clear();this.deviceLabel.visible=Boolean(f);if(!f){delete this.host.dataset.deviceFrame;delete this.host.dataset.safeArea;this.render();return;}
   const big=1e5,w=1/Math.max(.01,this.scale);g.rect(-big,-big,big*2,f.y+big).rect(-big,f.y+f.height,big*2,big).rect(-big,f.y,f.x+big,f.height).rect(f.x+f.width,f.y,big,f.height).fill({color:0x000000,alpha:.35});
-  g.rect(f.x,f.y,f.width,f.height).stroke({color:'#f2a35c',width:2*w});this.deviceLabel.text=f.label;this.deviceLabel.scale.set(w);this.deviceLabel.position.set(f.x+4*w,f.y+4*w);
+  g.rect(f.x,f.y,f.width,f.height).stroke({color:'#f2a35c',width:2*w});
+  if(f.safeArea){
+   const {x,y,width,height}=f.safeArea;
+   g.rect(x,y,width,height).stroke({color:'#69c7b2',width:w});
+   this.host.dataset.safeArea=JSON.stringify([x,y,width,height]);
+  }else delete this.host.dataset.safeArea;
+  this.deviceLabel.text=f.label;this.deviceLabel.scale.set(w);this.deviceLabel.position.set(f.x+4*w,f.y+4*w);
   this.host.dataset.deviceFrame=JSON.stringify([Math.round(f.x),Math.round(f.y),Math.round(f.width),Math.round(f.height)]);this.render();}
  setRulers(on:boolean){this.rulersOn=on;this.drawRulers();}
  setSceneView(on:boolean){if(this.sceneView===on)return;this.sceneView=on;this.host.dataset.sceneView=String(on);this.setRuntimeView(this.lastView);this.drawRulers();}
@@ -227,8 +251,8 @@ export class SceneViewport {
  private selected: string | null = null;
  private visualSignature = "";
  private snapshot?:Scene;
- private textures=new Map<string,{texture:Texture;bitmap:ImageBitmap}>();
- private loading=new Map<string,AbortController>();
+ private textures=new Map<string,{texture:Texture;lease:TextureLease}>();
+ private loading=new Map<string,TextureLease>();
  private failed=new Set<string>();
  private wanted=new Set<string>();
  private assetRefresh=0;
@@ -248,19 +272,23 @@ export class SceneViewport {
  private pan = { x: 0, y: 0 };
  private accent = '#7caef5';
  private background = '#17191c';
- private clearVisuals(){this.eachFeature(feature=>feature.clear());for(const e of this.custom.values())e.handle.dispose();this.custom.clear();for(const d of this.callbacks.decorators?.()??[]){try{d.clear();}catch(error){this.callbacks.report?.(error);}}}
- get visualDiagnostics():Record<string,Json>[]{return [...[...this.custom].map(([entityId,v])=>({entityId,componentId:v.componentId,...v.handle.diagnostics()})),...this.features.flatMap(f=>(f.diagnostics?.()??[]).map(d=>({entityId:d.entityId,ready:d.ready,...(d.error?{error:d.error}:{})})))];}
+ private clearVisuals(){this.eachFeature(feature=>feature.clear());this.visuals.clear(error=>this.callbacks.report?.(error));clearSceneDecorators(this.callbacks.decorators?.()??[],error=>this.callbacks.report?.(error));}
+ get visualDiagnostics():Record<string,Json>[]{return [...this.visuals.diagnostics(),...this.features.flatMap(f=>(f.diagnostics?.()??[]).map(d=>({entityId:d.entityId,ready:d.ready,...(d.error?{error:d.error}:{})})))];}
  private customFrame(id:string):VisualFrame{return this.callbacks.visualFrame?.(id)??{token:'edit',time:0,emit:false,silent:true};}
- private updateVisuals(scene:Scene){const byId=new Map(scene.entities.map(e=>[e.id,e]));for(const[id,v]of this.custom){const c=byId.get(id)?.components.find(c=>c.id===v.componentId);if(c)v.handle.update(c.data,this.customFrame(c.id));}}
+ private updateVisuals(scene:Scene){for(const entity of scene.entities)this.visuals.update(entity);}
  constructor(private host: HTMLElement, private callbacks: { select(id: string | null, mode?: SelectMode): void; selectMany?(ids:readonly string[],additive:boolean):void; commitTransform(id:string,value:Transform2D,original:Transform2D):void; commitTransforms?(changes:readonly {id:string;value:Transform2D;expected:Transform2D}[]):void; flags?(id:string):EditorFlags; report?(error:unknown):void; text?(key:string):string; playing(): boolean;interact?(entityId:string):void;
  /** While playing: whether anything reacts to clicks on this object (others let clicks through). Without it every object takes clicks. */
  clickable?(entityId:string):boolean;
  /** Preview pointer in scene pixels while playing (physics dragging, script pointer hooks): presses inside the stage, moves over the canvas or while pressed. */
- runtimePointer?(phase:'down'|'move'|'up',x:number,y:number):boolean|void;resolveAsset?(id:string):{url:string}|undefined;resolveFont?(id:string):{url:string}|undefined;visuals?():readonly VisualAdapter[];visualFrame?(id:string):VisualFrame;visualEpoch?():string;visualEvent?(event:unknown):void;decorators?():readonly SceneDecorator[];features?():readonly ViewportFeature[];runtimeEntities?():readonly Scene['entities'][number][]|undefined;runtimeTime?():number;runtimeSilent?():boolean;runtimeEvent?(event:{type:string;sourceId:string;silent:boolean;event?:string}):void;commitSpatial?(change:SpatialCommit):void }) {}
+ runtimePointer?(phase:'down'|'move'|'up',x:number,y:number):boolean|void;resolveAsset?(id:string):{url:string}|undefined;resolveFont?(id:string):{url:string}|undefined;resolveText?(text:string):string;visuals?():readonly VisualAdapter[];visualFrame?(id:string):VisualFrame;visualEpoch?():string;visualEvent?(event:unknown):void;decorators?():readonly SceneDecorator[];features?():readonly ViewportFeature[];runtimeEntities?():readonly Scene['entities'][number][]|undefined;runtimeTime?():number;runtimeSilent?():boolean;runtimeEvent?(event:{type:string;sourceId:string;silent:boolean;event?:string}):void;commitSpatial?(change:SpatialCommit):void }) {}
  private locked:ReadonlySet<string>=new Set();
  /** True when a decorator (e.g. a layout parent) owns this entity's position; the move tool skips it. */
  positionLocked(id:string){return this.locked.has(id);}
- private decorate(scene:Scene){const decorators=this.callbacks.decorators?.()??[],locked=new Set<string>();for(const d of decorators){try{d.apply(scene.entities,id=>this.nodes.get(id),this.app.renderer,{rtl:this.rtl});for(const id of d.positionLocked?.(scene.entities)??[])locked.add(id);}catch(error){this.callbacks.report?.(error);}}this.locked=locked;}
+ private decorate(scene:Scene){
+  const locked=new Set<string>();
+  decorateScene(this.callbacks.decorators?.()??[],scene.entities,id=>this.nodes.get(id),this.app.renderer,{rtl:this.rtl},{locked,report:error=>this.callbacks.report?.(error)});
+  this.locked=locked;
+ }
  async init(): Promise<void> {
   const prepared:ViewportFeature[]=[];for(const feature of this.callbacks.features?.()??[])try{await feature.prepare();prepared.push(feature);}catch(error){this.callbacks.report?.(error);}
   if(this.disposed)return;
@@ -312,12 +340,16 @@ export class SceneViewport {
  }
  private loadTexture(url:string){
   if(this.loading.has(url)||this.failed.has(url)||this.textures.has(url))return;
-  const abort=new AbortController();this.loading.set(url,abort);
-  void (async()=>{const response=await fetch(url,{signal:abort.signal});if(!response.ok)throw Error('Texture unavailable');const blob=await response.blob();if(blob.size>64*1024*1024)throw Error('Texture too large');const bitmap=await createImageBitmap(blob);
-   if(this.disposed||abort.signal.aborted||!this.wanted.has(url)){bitmap.close();return;}
-   this.textures.set(url,{texture:Texture.from(bitmap),bitmap});
-  })().catch(()=>{if(!abort.signal.aborted)this.failed.add(url);}).finally(()=>{
-   if(this.loading.get(url)===abort)this.loading.delete(url);
+  const lease=this.app.textures.acquire(url);
+  this.loading.set(url,lease);
+  void lease.ready.then(texture=>{
+   if(this.loading.get(url)===lease)this.textures.set(url,{texture,lease});
+  },()=>{
+   lease.release();
+   if(this.loading.get(url)===lease)this.failed.add(url);
+  }).finally(()=>{
+   if(this.loading.get(url)!==lease)return;
+   this.loading.delete(url);
    if(!this.disposed&&this.wanted.has(url)&&this.snapshot){this.visualSignature='';this.sync(this.snapshot,this.selected);}
   });
  }
@@ -328,7 +360,7 @@ export class SceneViewport {
  }
  /** Game look mirrored from the project's render settings: stage background and pixel-art filtering. */
  private stageBackground='#20272d';
- setGameLook(look:{background:string;pixelArt:boolean}){if(this.disposed)return;const mode=look.pixelArt?'nearest':'linear';setTextureFiltering(mode);for(const t of this.textures.values())t.texture.source.scaleMode=mode;if(look.background===this.stageBackground&&this.host.dataset.pixelArt===String(look.pixelArt))return;this.stageBackground=look.background;this.host.dataset.pixelArt=String(look.pixelArt);this.host.dataset.stageBackground=look.background;if(this.app.renderer){this.drawFrame();this.render();}}
+ setGameLook(look:{background:string;pixelArt:boolean}){if(this.disposed)return;const mode=look.pixelArt?'nearest':'linear';TextureSource.defaultOptions.scaleMode=mode;this.app.textures.setFiltering(mode);if(look.background===this.stageBackground&&this.host.dataset.pixelArt===String(look.pixelArt))return;this.stageBackground=look.background;this.host.dataset.pixelArt=String(look.pixelArt);this.host.dataset.stageBackground=look.background;if(this.app.renderer){this.drawFrame();this.render();}}
  private drawFrame(){this.frame.clear().rect(0,0,this.stageSize.width,this.stageSize.height).fill(this.stageBackground).stroke({ color: '#8a929b', width: 1 / Math.max(.01,this.scale) });this.stageMask.clear().rect(0,0,this.stageSize.width,this.stageSize.height).fill(0xffffff);}
  /** Project stage (game resolution); the camera fits and centres this rectangle. */
  setStage(size:{width:number;height:number}):void{if(size.width===this.stageSize.width&&size.height===this.stageSize.height)return;this.cancelGesture();this.stageSize={width:size.width,height:size.height};this.host.dataset.stage=`${size.width}x${size.height}`;this.resize();this.render();}
@@ -399,37 +431,31 @@ export class SceneViewport {
   this.snapshot=scene;
   const requested=new Set(scene.entities.flatMap(e=>e.components.flatMap(c=>{if(c.type!=='pixi.sprite'||c.version!==1)return[];const url=this.callbacks.resolveAsset?.(SpriteSchema.parse(c.data).assetId)?.url;return url?[url]:[];})));
   this.wanted=requested;
-  for(const [url,load]of this.loading)if(!requested.has(url)){load.abort();this.loading.delete(url);}
+  for(const [url,load]of this.loading)if(!requested.has(url)){load.release();this.loading.delete(url);}
   // Destroy old display objects before releasing a texture they may reference.
-  const stale=[...this.textures.keys()].some(url=>!requested.has(url));if(stale){this.clearVisuals();for(const layer of [this.content,this.ui])layer.removeChildren().forEach(child=>child.destroy({children:true,context:true}));this.nodes.clear();this.texts.clear();this.visualSignature='';for(const [url,value]of this.textures)if(!requested.has(url)){value.texture.destroy(true);value.bitmap.close();this.textures.delete(url);}}
+  const stale=[...this.textures.keys()].some(url=>!requested.has(url));if(stale){this.clearVisuals();for(const layer of [this.content,this.ui])layer.removeChildren().forEach(child=>child.destroy({children:true,context:true}));this.nodes.clear();this.visualSignature='';for(const [url,value]of this.textures)if(!requested.has(url)){value.lease.release();this.textures.delete(url);}}
   for(const url of requested)this.loadTexture(url);
   const resourceSignature=[...requested].map(url=>[url,this.textures.has(url),this.failed.has(url),this.assetRefresh]);
   const adapters=this.callbacks.visuals?.()??[];
   const signature=JSON.stringify([this.callbacks.visualEpoch?.(),this.rtl,resourceSignature,scene.entities.map(e=>({id:e.id,parentId:e.parentId,name:e.name,components:e.components.filter(c=>c.type!=='scene.transform2d').map(c=>{const adapter=adapters.find(a=>a.type===c.type&&a.version===c.version);return adapter?{id:c.id,type:c.type,version:c.version,key:adapter.key(c.data)}:visualKey(c);})}))]);
   if(signature===this.visualSignature){
-   for(const e of scene.entities){const n=this.nodes.get(e.id)!;const c=e.components.find(c=>c.type==='scene.transform2d');const t=c?.version===1?transform(e):{x:0,y:0,rotation:0,scaleX:1,scaleY:1};n.position.set(t.x,t.y);n.angle=t.rotation;n.scale.set(t.scaleX,t.scaleY);n.skew.set((t.skewX??0)*Math.PI/180,(t.skewY??0)*Math.PI/180);n.pivot.set(t.pivotX??0,t.pivotY??0);this.applyFlags(n,e);const visual=e.components.find(c=>['pixi.shape','pixi.text','pixi.bitmapText','pixi.sprite'].includes(c.type)&&c.version===1);if(visual&&n.children[0])n.children[0].alpha=Number((visual.data as {alpha?:number}).alpha??1);}
-   // Text content is outside the signature (Play rewrites templated text every change), so it updates in place.
-   for(const e of scene.entities)for(const c of e.components){const node=this.texts.get(c.id);if(!node)continue;const text=String((c.data as {text?:unknown}).text??''),next=node instanceof Text?bidiText(text):text;if(node.text!==next)node.text=next;}
+   for(const entity of scene.entities){
+    const node=this.nodes.get(entity.id)!;
+    const spatial=entity.components.find(component=>component.type==='scene.transform2d');
+    const pose=spatial?.version===1?transform(entity):{x:0,y:0,rotation:0,scaleX:1,scaleY:1};
+    applyTransform2D(node,pose);
+    this.applyFlags(node,entity);
+   }
    this.updateVisuals(scene);this.decorate(scene);this.eachFeature(feature=>feature.sync(original,selected));this.selection(selected);this.sizeMarkers();return;
   }
   this.visualSignature=signature;
-  this.clearVisuals();for(const layer of [this.content,this.ui])layer.removeChildren().forEach(child => child.destroy({children:true,context:true})); this.nodes.clear();this.texts.clear();
+  this.clearVisuals();for(const layer of [this.content,this.ui])layer.removeChildren().forEach(child => child.destroy({children:true,context:true})); this.nodes.clear();
   this.drawFrame();
   for (const entity of scene.entities) {
    const node = new Container(), supported=entity.components.some(c=>c.type==='scene.transform2d'&&c.version===1), t = supported?transform(entity):{x:0,y:0,rotation:0,scaleX:1,scaleY:1};
-   node.position.set(t.x,t.y); node.angle = t.rotation; node.scale.set(t.scaleX,t.scaleY);node.skew.set((t.skewX??0)*Math.PI/180,(t.skewY??0)*Math.PI/180);node.pivot.set(t.pivotX??0,t.pivotY??0); this.applyFlags(node,entity);
+   applyTransform2D(node,t); this.applyFlags(node,entity);
    node.label = entity.id; node.cursor = 'pointer';
-   for (const component of entity.components) {
-    if (component.type === 'pixi.shape' && component.version===1) { const p = ShapeSchema.parse(component.data); node.addChild(drawShape(p));node.children[0].alpha=p.alpha; }
-    if (component.type === 'pixi.text' && component.version===1) { const p = TextSchema.parse(component.data); const text = new Text({ text: bidiText(p.text), style: textStyle(p, this.fontFor(p.font), this.rtl) }); text.anchor.set(.5); node.addChild(text);text.alpha=p.alpha;this.texts.set(component.id,text); }
-    if (component.type === 'pixi.bitmapText' && component.version===1) { const p = BitmapTextSchema.parse(component.data); const text = new BitmapText({ text: p.text, style: bitmapTextStyle(p, this.fontFor(p.font)) }); text.anchor.set(.5); node.addChild(text);text.alpha=p.alpha;this.texts.set(component.id,text); }
-   }
-   for(const component of entity.components)if(component.type==='pixi.sprite'&&component.version===1){
-    const p=SpriteSchema.parse(component.data),url=this.callbacks.resolveAsset?.(p.assetId)?.url,resource=url?this.textures.get(url):undefined;
-    if(resource){const sprite=new Sprite(resource.texture);sprite.anchor.set(p.anchorX,p.anchorY);sprite.width=p.width;sprite.height=p.height;sprite.alpha=p.alpha;sprite.tint=p.tint;node.addChild(sprite);}
-    else{const placeholder=new Graphics().rect(-p.anchorX*p.width,-p.anchorY*p.height,p.width,p.height).fill('#4d3747').stroke({color:'#d29bbd',width:1}).moveTo(-p.anchorX*p.width,-p.anchorY*p.height).lineTo((1-p.anchorX)*p.width,(1-p.anchorY)*p.height).stroke({color:'#d29bbd',width:1});node.addChild(placeholder);}
-   }
-   for(const component of entity.components){const adapter=adapters.find(a=>a.type===component.type&&a.version===component.version);if(adapter){const handle=adapter.create(component.data,{entityId:entity.id,componentId:component.id,frame:()=>this.customFrame(component.id),changed:()=>{if(!this.disposed)this.selection(this.selected);},event:event=>this.callbacks.visualEvent?.(event)});node.addChild(handle.view);this.custom.set(entity.id,{componentId:component.id,handle});}}
+   this.visuals.build(entity,node,adapters);
    if (!node.children.length&&!(this.callbacks.features?.()??[]).some(f=>f.ownsVisual?.(entity))){const marker=createMarker(entity.name,entity.components.map(c=>c.type));marker.visible=!this.game.mask||this.sceneView;node.addChild(marker);}
    node.on('pointertap',e=>{if(!this.callbacks.playing())return;e.stopPropagation();const clickable=this.callbacks.clickable,id=clickable?clickTarget(this.app.renderer.events,e.global,n=>{for(const feature of this.features){const id=feature.hitEntity?.(n,e.global,clickable);if(id)return id;}for(const [k,v] of this.nodes)if(v===n)return k;return undefined;},clickable):entity.id;if(id)this.callbacks.interact?.(id);});
    node.on('pointerdown', e => {
@@ -473,7 +499,7 @@ export class SceneViewport {
  }
  setTool(tool:TransformTool){if(this.tool===tool)return;this.cancelGesture();this.tool=tool;this.selection(this.selected);}
  setEditing(editing:boolean){this.editing=editing;if(!editing)this.cancelGesture();this.selection(this.selected);}
- private apply(node:Container,t:Transform2D){node.position.set(t.x,t.y);node.angle=t.rotation;node.scale.set(t.scaleX,t.scaleY);node.skew.set((t.skewX??0)*Math.PI/180,(t.skewY??0)*Math.PI/180);node.pivot.set(t.pivotX??0,t.pivotY??0);}
+ private apply(node:Container,t:Transform2D){applyTransform2D(node,t);}
  private beginGesture(id:string,pointerId:number,clientX:number,clientY:number,tool:TransformTool,axis:TransformAxis,capture:HTMLElement){
   if(!this.editing||this.callbacks.playing()||this.drag||tool==='move'&&this.locked.has(id))return;
   const node=this.nodes.get(id),entity=this.snapshot?.entities.find(e=>e.id===id);
@@ -600,8 +626,8 @@ export class SceneViewport {
  dispose(): void {
   if (this.disposed) return;this.cancelGesture();this.disposed = true; this.observer?.disconnect();
   this.host.removeEventListener('wheel',this.wheel);this.host.removeEventListener('pointerdown',this.paintDown,{capture:true});this.host.removeEventListener('pointerdown',this.runtimeDown);window.removeEventListener('pointermove',this.runtimeMove);window.removeEventListener('pointerup',this.runtimeUp); window.removeEventListener('pointerup',this.endDrag);window.removeEventListener('pointermove',this.onPointerMove);window.removeEventListener('pointercancel',this.cancelPointer);window.removeEventListener('lostpointercapture',this.cancelPointer);window.removeEventListener('keydown',this.onKey);window.removeEventListener('blur',this.cancelGesture);this.handles.remove();
-  for(const load of this.loading.values())load.abort();this.loading.clear();
+  for(const load of this.loading.values())load.release();this.loading.clear();
   this.exitRuntime();this.clearVisuals();this.eachFeature(feature=>feature.dispose());this.features=[];if (this.app.renderer) destroyLocalApplication(this.app);
-  for(const value of this.textures.values()){value.texture.destroy(true);value.bitmap.close();}this.textures.clear();
+  for(const value of this.textures.values())value.lease.release();this.textures.clear();
  }
 }

@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@rewrite/sdk": "workspace:*",
+    "@rewrite/interactions": "workspace:*",
     "@rewrite/scene": "workspace:*",
     "@rewrite/assets": "workspace:*",
     "react": "19.3.1",

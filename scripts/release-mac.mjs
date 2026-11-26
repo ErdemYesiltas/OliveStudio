@@ -40,7 +40,7 @@ for (const p of problems) console.log(`todo ${p}`);
 if (check || problems.length) { console.log(problems.length ? `\nNot ready: ${problems.length} item(s).` : '\nReady to sign and notarize.'); process.exit(check && !problems.length ? 0 : problems.length ? 1 : 0); }
 
 const step = (label, cmd, argv, options = {}) => { console.log(`\n▶ ${label}`); const r = run(cmd, argv, {stdio: 'inherit', cwd: root, ...options}); if (r.status !== 0) { console.error(`✗ ${label} failed`); process.exit(1); } };
-step('Package, sign and notarize', 'pnpm', ['--filter', '@rewrite/desktop', 'package:mac:release']);
+step('Package, sign and notarize', 'pnpm', ['--filter', '@olivestudio/editor', 'package:mac:release']);
 const app=existsSync(appPath)?appPath:null;
 if (!app) { console.error('✗ Packaged app not found'); process.exit(1); }
 step('codesign verification', 'codesign', ['--verify', '--deep', '--strict', '--verbose=2', app]);

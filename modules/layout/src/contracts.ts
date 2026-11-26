@@ -13,6 +13,9 @@ export const directions = ['row', 'column', 'row-reverse', 'column-reverse'] as 
 export const justifications = ['flex-start', 'center', 'flex-end', 'space-between', 'space-around', 'space-evenly'] as const;
 export const alignments = ['flex-start', 'center', 'flex-end', 'stretch'] as const;
 export const fits = ['none', 'contain', 'cover', 'fill', 'scale-down'] as const;
+export const overflows = ['visible', 'hidden', 'scroll'] as const;
+export const objectPositions = ['center', 'left top', 'center top', 'right top', 'left center', 'right center',
+ 'left bottom', 'center bottom', 'right bottom'] as const;
 
 export const LayoutContainerSchema = z.object({
  width: Length, height: Length, anchorX: Unit, anchorY: Unit,
@@ -20,6 +23,7 @@ export const LayoutContainerSchema = z.object({
  gap: z.number().min(0).max(2000), padding: z.number().min(0).max(2000),
  background: Color, backgroundAlpha: Unit, borderColor: Color, borderWidth: z.number().min(0).max(200), borderRadius: z.number().min(0).max(2000),
  clip: z.boolean(),
+ overflow: z.enum(overflows).optional(),
 }).strict();
 export type LayoutContainerData = z.infer<typeof LayoutContainerSchema>;
 export const LayoutItemSchema = z.object({
@@ -29,6 +33,7 @@ export const LayoutItemSchema = z.object({
  position: z.enum(['flow', 'absolute']).default('flow'), left: z.number().min(-10000).max(10000).default(0), top: z.number().min(-10000).max(10000).default(0),
  /** Width/height unit when they are set: pixels or percent of the container. */
  widthUnit: z.enum(['px', '%']).default('px'), heightUnit: z.enum(['px', '%']).default('px'),
+ objectPosition: z.enum(objectPositions).optional(),
 }).strict();
 export type LayoutItemData = z.infer<typeof LayoutItemSchema>;
 
@@ -69,7 +74,7 @@ export function containerStyle(p: LayoutContainerData, rtl = false) {
   width: p.width || 'auto', height: p.height || 'auto', flexDirection: rtl && p.direction === 'row' ? 'row-reverse' as const : rtl && p.direction === 'row-reverse' ? 'row' as const : p.direction, justifyContent: p.justify, alignItems: p.align,
   flexWrap: p.wrap ? 'wrap' : 'nowrap', alignContent: p.align === 'stretch' ? 'stretch' : p.align, gap: p.gap, padding: p.padding,
   backgroundColor: p.backgroundAlpha > 0 ? hex(p.background, p.backgroundAlpha) : undefined, borderRadius: p.borderRadius,
-  borderWidth: p.borderWidth, borderColor: p.borderWidth > 0 ? p.borderColor : undefined, overflow: p.clip ? 'hidden' : 'visible',
+  borderWidth: p.borderWidth, borderColor: p.borderWidth > 0 ? p.borderColor : undefined, overflow: p.overflow ?? (p.clip ? 'hidden' : 'visible'),
   // A nested container's root must keep its own size inside the parent item's box.
   flexShrink: 0,
  } as const;
@@ -80,7 +85,7 @@ export function containerStyle(p: LayoutContainerData, rtl = false) {
  */
 export function itemStyle(p: LayoutItemData, content: {width: number; height: number}) {
  return {
-  isLeaf: true, objectFit: p.fit, objectPosition: 'center',
+  isLeaf: true, objectFit: p.fit, objectPosition: p.objectPosition ?? 'center',
   width: p.width ? (p.widthUnit === '%' ? `${p.width}%` : p.width) : Math.max(1, Math.round(content.width * 100) / 100),
   height: p.height ? (p.heightUnit === '%' ? `${p.height}%` : p.height) : Math.max(1, Math.round(content.height * 100) / 100),
   flexGrow: p.grow, flexShrink: p.shrink, alignSelf: p.alignSelf, margin: p.margin,

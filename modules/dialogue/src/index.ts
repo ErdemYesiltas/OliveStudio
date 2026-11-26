@@ -63,6 +63,7 @@ export class DialogueSession {
  private open: {dialogue: Dialogue; line: Line; choices: Choice[]} | null = null;
  private listeners = new Set<(view: DialogueView | null) => void>();
  constructor(host: DialogueHost) { this.host = host; }
+ name(id:string){return this.host.library().items.find(item=>item.id===id)?.name;}
  /** The line on screen, or null. */
  view(): DialogueView | null {
   const o = this.open; if (!o) return null;

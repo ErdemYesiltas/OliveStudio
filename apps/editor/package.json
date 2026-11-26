@@ -1,0 +1,90 @@
+{
+  "name": "@olivestudio/editor",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "pnpm run build && pnpm run build:native && electron .",
+    "build": "vite build",
+    "typecheck": "tsc --noEmit",
+    "test:e2e": "node --test test/browser.test.mjs",
+    "test:desktop": "pnpm run build && pnpm run build:native && node --test test/desktop.test.mjs",
+    "build:native": "node build-native.mjs",
+    "package:mac": "node ../../scripts/mac-app.mjs --mode local",
+    "package:mac:release": "node ../../scripts/mac-app.mjs --mode release"
+  },
+  "dependencies": {
+    "@esotericsoftware/spine-core": "4.2.120",
+    "@esotericsoftware/spine-pixi-v8": "4.2.120",
+    "@olivestudio/engine": "workspace:*",
+    "@rewrite/achievements": "workspace:*",
+    "@rewrite/ai-comfy": "workspace:*",
+    "@rewrite/ai-hub": "workspace:*",
+    "@rewrite/ai-lm": "workspace:*",
+    "@rewrite/ai-skills": "workspace:*",
+    "@rewrite/audio": "workspace:*",
+    "@rewrite/audio-howler": "workspace:*",
+    "@rewrite/behavior": "workspace:*",
+    "@rewrite/behavior-xstate": "workspace:*",
+    "@rewrite/build": "workspace:*",
+    "@rewrite/dialogue": "workspace:*",
+    "@rewrite/html-export": "workspace:*",
+    "@rewrite/input": "workspace:*",
+    "@rewrite/interactions": "workspace:*",
+    "@rewrite/layout": "workspace:*",
+    "@rewrite/lighting": "workspace:*",
+    "@rewrite/multiplayer": "workspace:*",
+    "@rewrite/multiplayer-colyseus": "workspace:*",
+    "@rewrite/physics": "workspace:*",
+    "@rewrite/physics-matter": "workspace:*",
+    "@rewrite/production-tools": "workspace:*",
+    "@rewrite/profiler": "workspace:*",
+    "@rewrite/render-pixi": "workspace:*",
+    "@rewrite/scene": "workspace:*",
+    "@rewrite/scripts": "workspace:*",
+    "howler": "2.2.4",
+    "lucide-react": "1.72.0",
+    "pixi.js": "8.23.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "rxjs": "7.8.2",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@assetpack/core": "1.7.0",
+    "@vitejs/plugin-react": "5.1.4",
+    "esbuild": "0.27.7",
+    "vite": "7.3.1",
+    "electron": "45.3.1",
+    "electron-builder": "26.18.0",
+    "sharp": "0.34.5"
+  },
+  "main": "desktop.mjs",
+  "build": {
+    "appId": "dev.olivestudio.app",
+    "productName": "OliveStudio",
+    "mac": {
+      "category": "public.app-category.developer-tools",
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "icon": "build/icon.png",
+      "minimumSystemVersion": "12.0",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist",
+      "notarize": true,
+      "extendInfo": {
+        "NSHighResolutionCapable": true
+      },
+      "artifactName": "${productName}-${version}-${arch}-mac.${ext}"
+    },
+    "copyright": "Copyright \u00a9 2026 OliveStudio",
+    "dmg": {
+      "title": "${productName} ${version}",
+      "artifactName": "${productName}-${version}-${arch}.${ext}"
+    }
+  }
+}

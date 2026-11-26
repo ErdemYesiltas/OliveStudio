@@ -212,6 +212,10 @@ declare const game: {
   isDown(action: string): boolean;
   /** Switch to the scene with this name at the end of the frame. */
   changeScene(name: string): void;
+  /** Open a scene and remember the previous scene for popScene. */
+  pushScene(name: string): void;
+  /** Return to the last scene saved by pushScene. */
+  popScene(): void;
   /** Load the scene with this name into the running one (its objects, rules and object scripts join; its scene script does not run). Once per scene; removeScene takes its objects out again. */
   addScene(name: string): void;
   /** Remove the objects addScene brought in (copies spawned from them stay). */

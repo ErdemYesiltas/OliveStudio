@@ -15,18 +15,39 @@ const curve = (a: {x: number; y: number}, b: {x: number; y: number}) => { const 
  * dot (or pick in "Connect to") to link, remove links at their × and nodes with their ×. While Preview runs, nodes
  * that just ran glow. Every change is one undo step.
  */
-export function createGraphPanel(bridge: {scene: SceneService; catalog(): InteractionCatalog; triggers(): readonly TriggerDefinition[]; actions(): readonly ActionDefinition[]; useEditable(): boolean; useSelection(): string | null; text(key: string): string; report(e: unknown): void; useActivity(componentId: string): {nodes: Record<string, number>; now: number} | undefined}) {
+export function createGraphPanel(bridge: ({scene: SceneService} | {
+ useEntity(): Entity | undefined;
+ addGraph(id: string): void;
+ editGraph(id: string, change: (graph: Graph) => void, label: string): void;
+}) & {catalog(): InteractionCatalog; triggers(): readonly TriggerDefinition[]; actions(): readonly ActionDefinition[]; useEditable(): boolean; useSelection?(): string | null; text(key: string): string; report(e: unknown): void; useActivity(componentId: string): {nodes: Record<string, number>; now: number} | undefined}) {
  const t = bridge.text;
+ const adapter = 'scene' in bridge ? {
+  useEntity() {
+   useSyncExternalStore(bridge.scene.document.subscribe, () => bridge.scene.document.version);
+   const id = bridge.useSelection?.();
+   return bridge.scene.document.current.entities.find(e => e.id === id);
+  },
+  addGraph: (id: string) => bridge.scene.addComponent(id, graphType),
+  editGraph: (id: string, fn: (graph: Graph) => void, label: string) => bridge.scene.document.transact(label, d => {
+   const c = d.entities.find(e => e.id === id)?.components.find(c => c.type === graphType && c.version === 1);
+   if (!c) return;
+   const next = GraphSchema.parse(c.data);
+   fn(next);
+   c.data = GraphSchema.parse(next) as never;
+  }),
+ } : bridge;
  return function GraphPanel() {
-  useSyncExternalStore(bridge.scene.document.subscribe, () => bridge.scene.document.version);
-  const editable = bridge.useEditable(), selected = bridge.useSelection(), entity = bridge.scene.document.current.entities.find(e => e.id === selected);
+  const editable = bridge.useEditable(), entity = adapter.useEntity();
+  const catalog = bridge.catalog(), triggers = bridge.triggers(), actions = bridge.actions();
   const component = entity?.components.find(c => c.type === graphType && c.version === 1), activity = bridge.useActivity(component?.id ?? '');
   const [moving, setMoving] = useState<{id: string; x: number; y: number} | null>(null), [wire, setWire] = useState<{from: string; port: string; x: number; y: number} | null>(null);
   const canvas = useRef<HTMLDivElement>(null);
   if (!entity) return <div className="panel-body graph-panel" data-testid="graph-panel"><p className="panel-empty">{t('graph.selectObject')}</p></div>;
-  if (!component) return <div className="panel-body graph-panel" data-testid="graph-panel"><p className="panel-empty">{t('graph.none').replace('{name}', entity.name)}</p><button disabled={!editable} onClick={() => { try { bridge.scene.addComponent(entity.id, graphType); } catch (e) { bridge.report(e); } }}>{t('graph.add')}</button></div>;
-  const graph = GraphSchema.parse(component.data), catalog = bridge.catalog(), triggers = bridge.triggers(), actions = bridge.actions();
-  const edit = (label: string, fn: (g: Graph) => void) => { try { bridge.scene.document.transact(label, d => { const c = d.entities.flatMap(e => e.components).find(c => c.id === component.id)!; const next = GraphSchema.parse(c.data); fn(next); c.data = GraphSchema.parse(next) as never; }); } catch (e) { bridge.report(e); } };
+  if (!component) return <div className="panel-body graph-panel" data-testid="graph-panel"><p className="panel-empty">{t('graph.none').replace('{name}', entity.name)}</p><button disabled={!editable} onClick={() => { try { adapter.addGraph(entity.id); } catch (e) { bridge.report(e); } }}>{t('graph.add')}</button></div>;
+  const graph = GraphSchema.parse(component.data);
+  const edit = (label: string, fn: (g: Graph) => void) => {
+   try { adapter.editGraph(entity.id, fn, label); } catch (e) { bridge.report(e); }
+  };
   const index = new Map(graph.nodes.map((n, i) => [n.id, i + 1])), label = (n: GraphNode) => `${t(`graph.kind.${n.kind}`)} ${index.get(n.id)}`;
   const position = (n: GraphNode) => moving?.id === n.id ? {...n, x: moving.x, y: moving.y} : n;
   const options = (items: readonly {id: string; name: string}[], value: string) => <>{!items.some(i => i.id === value) && <option value={value}>{value ? t('interaction.missing') : t('interaction.choose')}</option>}{items.map(i => <option value={i.id} key={i.id}>{i.name}</option>)}</>;
@@ -93,6 +114,7 @@ export function createGraphPanel(bridge: {scene: SceneService; catalog(): Intera
     <ActionValueEditor action={node.action} globals={catalog.globals ?? []} entities={catalog.entities} label={name} disabled={!editable} t={t} edit={fn => at(n => fn((n as Extract<GraphNode, {kind: 'action'}>).action))}/>
    </>; }
    if (node.kind === 'branch') return <ConditionEditor condition={node.condition} globals={catalog.globals ?? []} label={name} disabled={!editable} missing={t('interaction.missing')} edit={fn => at(n => fn((n as Extract<GraphNode, {kind: 'branch'}>).condition))}/>;
+   if (node.kind !== 'delay') return null;
    return <label className="field"><span>{t('graph.seconds')}</span><input type="number" min={0} max={3600} step="any" aria-label={`${name} ${t('graph.seconds')}`} disabled={!editable} defaultValue={node.seconds} key={node.seconds} onBlur={e => { const v = Number(e.target.value); if (Number.isFinite(v) && v !== node.seconds) at(n => { (n as Extract<GraphNode, {kind: 'delay'}>).seconds = Math.max(0, Math.min(3600, v)); }); }} onKeyDown={e => { if (e.key === 'Enter') e.currentTarget.blur(); }}/></label>;
   }
  };

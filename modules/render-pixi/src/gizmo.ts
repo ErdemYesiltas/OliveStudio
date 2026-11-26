@@ -1,6 +1,7 @@
 /** All pointer coordinates are in the selected entity's parent space. */
 export interface Point {x:number;y:number}
-export interface Transform2D {x:number;y:number;rotation:number;scaleX:number;scaleY:number;skewX?:number;skewY?:number;pivotX?:number;pivotY?:number}
+import type {Transform2D} from '@olivestudio/engine';
+export type {Transform2D} from '@olivestudio/engine';
 export type TransformTool='move'|'rotate'|'scale';
 export type TransformAxis='x'|'y'|'xy';
 export function angleStep(previous:number,next:number):number{return Math.atan2(Math.sin(next-previous),Math.cos(next-previous));}

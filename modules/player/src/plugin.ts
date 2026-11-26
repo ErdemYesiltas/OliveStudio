@@ -3,7 +3,7 @@ import type {RuntimeSystem,Json} from '@rewrite/sdk';
 import type {Entity,Scene} from '@rewrite/scene';
 import type {Project} from '@rewrite/project';
 import type {AssetRecord} from '@rewrite/assets';
-import type {VisualAdapter,VisualFrame} from '@rewrite/render-pixi/visuals';
+import type {SceneDecorator,VisualAdapter,VisualFrame} from '@rewrite/render-pixi/visuals';
 import type {InteractionEvent,ActionDefinition,GlobalStore,LanguageStore} from '@rewrite/interactions';
 /** Export-time atlas: sprite-only textures packed into pages; frames are pixel rectangles on a page. */
 export interface GameAtlas{pages:string[];frames:Record<string,{page:number;x:number;y:number;width:number;height:number}>}
@@ -59,7 +59,9 @@ export interface PlayerExtension{
  interaction?(event:InteractionEvent):void;
  /** Whether this plugin reacts to that event type from that object (clicks pass through objects nobody listens to). */
  listens?(type:string,sourceId:string):boolean;
- /** Post-build pass over the scene graph (after creation and every drawn frame), e.g. flexbox layout. */
+ /** Ordered Pixi passes shared with Preview. Their lifetime is owned by the player. */
+ decorators?:readonly SceneDecorator[];
+ /** Post-build pass for custom player plugins. */
  decorate?(entities:readonly Entity[],node:(id:string)=>Container|undefined,renderer:Renderer):void;
 }
 export interface PlayerPlugin{id:string;create(context:PlayerPluginContext):PlayerExtension}

@@ -1,8 +1,9 @@
+import type {LanguageStore} from './localization';
 import {z} from 'zod';
 import {ConditionSchema,ActionSchema,compareGlobal,operatorsFor,conditionValueKind,type Condition,type Action} from './schemas';
 import {formatGlobal,defaultValue,globalAt,typeOfGlobal,type GlobalStore,type GlobalType,type GlobalValue} from './globals';
 import {StateMachineSchema,stateMachineType,defaultStateMachine,nextTransition,type StateMachine} from './statemachine';
-import {timerType,timerDefinition} from './timers';
+import {TimerSession,timerType,timerDefinition} from './timers';
 import {GraphSchema,graphType,emptyGraph,nextNodes,type Graph} from './graph';
 export * from './graph';
 export * from './timers';
@@ -119,6 +120,19 @@ export function validateInteractions(catalog:InteractionCatalog,triggers:readonl
  for(const e of catalog.entities)for(const c of e.components){if(c.type!==stateMachineType||c.version!==1)continue;const m=StateMachineSchema.parse(c.data);for(const x of m.transitions){const trigger=triggers.find(t=>t.type===x.trigger.type),ref=trigger?.references(catalog).find(a=>a.id===x.trigger.sourceId);if(!ref||ref.events&&!ref.events.some(a=>a.id===x.trigger.event))errors.push(`${e.name}: State transition has a missing trigger/reference/event`);if(x.condition){const issue=conditionIssue(catalog,x.condition);if(issue)errors.push(`${e.name}: State transition condition ${issue}`);}}for(const s of m.states)for(const a of s.actions){const def=actions.find(d=>d.type===a.type);if(!def?.references(catalog).some(r=>r.id===a.targetId))errors.push(`${e.name}: State ${s.name} has a missing action/target`);{const issue=actionIssue(catalog,a);if(issue)errors.push(`${e.name}: State ${s.name} action ${issue}`);}}}
  return errors;}
 export function isActive(entity:Entity,entities:readonly Entity[]){const map=new Map(entities.map(e=>[e.id,e])),seen=new Set<string>();let e:Entity|undefined=entity;while(e){if(!e.active||seen.has(e.id))return false;seen.add(e.id);e=e.parentId?map.get(e.parentId):undefined;}return true;}
+/** The common scene rules and fixed-step timers. Host actions and storage are supplied by the caller. */
+export function createSceneInteractions(
+ entities:()=>readonly Entity[],
+ actions:readonly ActionDefinition[],
+ context:Omit<ActionContext,'silent'>,
+ report:(message:string)=>void,
+ silent:()=>boolean,
+){
+ const interactions=new InteractionSession(entities,actions,context,report);
+ const timers=new TimerSession(entities,(sourceId,silent)=>interactions.emit({type:'timer.done',sourceId,silent}),silent);
+ return {interactions,timers};
+}
+
 /** Queued dispatch, bounded per flush. No eval and no asynchronous callbacks survive disposal. */
 export class InteractionSession{
  private queue:InteractionEvent[]=[];private dead=false;private flushing=false;private budget=0;readonly diagnostics:string[]=[];
@@ -166,6 +180,7 @@ export class InteractionSession{
  emit(event:InteractionEvent){if(this.dead)return;if(this.queue.length>=256){this.fail('Interaction event queue limit reached');return;}this.queue.push({...event});}
  private fail(message:string){this.queue=[];if(this.diagnostics.at(-1)!==message){this.diagnostics.push(message);if(this.diagnostics.length>50)this.diagnostics.shift();this.report(message);}}
  flush(){if(this.dead||this.flushing)return;this.flushing=true;this.budget=512;try{if(!this.startMachines())return;if(!this.resumeDelays())return;while(this.queue.length&&!this.dead){const event=this.queue.shift()!,entities=this.entities(),origin=entities.find(e=>e.id===event.sourceId||e.components.some(c=>c.id===event.sourceId));if(origin&&!isActive(origin,entities))continue;for(const observer of this.observers){try{observer(event);}catch(error){this.fail(String(error));return;}}for(const entity of entities){if(!isActive(entity,entities))continue;for(const c of entity.components){if(c.type===graphType&&c.version===1){if(!this.graphEvent(c.id,c.data,event,entity.id))return;continue;}if(c.type!=='interactions.bindings'||c.version!==1)continue;for(const rule of BindingsSchema.parse(c.data).rules){if(rule.trigger.type!==event.type||rule.trigger.sourceId!==event.sourceId||rule.trigger.event&&rule.trigger.event!==event.event)continue;if(rule.condition){try{if(!conditionHolds(rule.condition,globals(this.context as ActionContext)))continue;}catch(error){this.fail(String(error));return;}}for(const action of rule.actions){if(--this.budget<0){this.fail('Interaction cycle/action limit reached');return;}const def=this.actions.find(a=>a.type===action.type);try{if(!def)throw Error(`Interaction action unavailable: ${action.type}`);def.execute(action,{...this.context,silent:event.silent,owner:entity.id});}catch(error){this.fail(String(error));return;}}}}}if(!this.stepMachines(event,entities))return;}}finally{this.flushing=false;}}
+ get eventsPending(){return this.queue.length>0;}
  /** Current state name per machine component (play diagnostics). */
  states():Record<string,string>{const out:Record<string,string>={};for(const {component,machine} of this.machineList(this.entities())){const id=this.machines.get(component.id);const s=machine.states.find(x=>x.id===id);if(s)out[component.id]=s.name;}return out;}
  private machineList(entities:readonly Entity[]){return entities.flatMap(e=>isActive(e,entities)?e.components.filter(c=>c.type===stateMachineType&&c.version===1).map(component=>({component,machine:StateMachineSchema.parse(component.data)})):[]);}
@@ -186,6 +201,13 @@ function actionIssue(catalog:InteractionCatalog,a:Action){if((a.type==='object.s
  */
 export function formatTemplate(text:string,value:(name:string)=>GlobalValue|undefined,localize?:(key:string,count?:number)=>string|undefined):string{const vars=(s:string)=>s.replace(/\{([A-Za-z_][A-Za-z0-9_]{0,39})((?:\.[A-Za-z0-9_$]{1,40}){0,6})\}/g,(match,name:string,path:string)=>{const v=globalAt(value(name),path?path.slice(1).split('.'):[]);return v===undefined?match:formatGlobal(v);});return vars(text.replace(/\{@([A-Za-z_][A-Za-z0-9_.]{0,63})(?::([A-Za-z_][A-Za-z0-9_]{0,39}))?\}/g,(match,key:string,count?:string)=>{const n=count?value(count):undefined;return localize?.(key,typeof n==='number'?n:undefined)??match;}));}
 export const hasTemplate=(text:string)=>/\{@?[A-Za-z_][A-Za-z0-9_.$]{0,280}(:[A-Za-z_][A-Za-z0-9_]{0,39})?\}/.test(text);
+export function formatRuntimeText(text:string,globals?:GlobalStore,language?:LanguageStore){
+ if(!hasTemplate(text))return text;
+ return formatTemplate(text,name=>globals?.byName(name),(key,count)=>language?.text(key,{
+  ...globals?.snapshot(),...(count===undefined?{}:{count}),
+ }));
+}
+
 export * from './localization';
 export * from './statemachine';
 

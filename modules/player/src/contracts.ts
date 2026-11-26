@@ -1,2 +1,8 @@
-import type {TweenChannel} from '@rewrite/tween/contracts';
-export const gameChannels:TweenChannel[]=[...['x','y','rotation','scaleX','scaleY','skewX','skewY'].map(property=>({componentType:'scene.transform2d',version:1,property,titleKey:property,...(property.startsWith('scale')?{min:-100,max:100,nonZero:true}:property.startsWith('skew')?{min:-89,max:89,defaultValue:0}:{})})),...['pixi.shape','pixi.text','pixi.bitmapText','pixi.sprite','spine.renderer'].map(componentType=>({componentType,version:1,property:'alpha',titleKey:'alpha',min:0,max:1,defaultValue:1}))];
+import {audioTweenChannels} from '@rewrite/audio/contracts';
+import {spineTweenChannel} from '@rewrite/spine/contracts';
+import {transformTweenChannels,type TweenChannel} from '@rewrite/tween/contracts';
+import {pixiTweenChannels} from '@olivestudio/engine/contracts';
+
+export const gameChannels:readonly TweenChannel[]=[
+ ...transformTweenChannels,...pixiTweenChannels,...audioTweenChannels,spineTweenChannel,
+];

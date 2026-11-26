@@ -1,6 +1,7 @@
 import {Client, type Room} from '@colyseus/sdk';
 import type {RuntimeSystem} from '@rewrite/sdk';
-import {type ReplicatedEntity,type MultiplayerSettings,type NetStatus} from '@rewrite/multiplayer/contracts';
+import type {Entity,Scene} from '@rewrite/scene';
+import {applyEntity,findNetworkPlayer,movementAxes,type ReplicatedEntity,type MultiplayerSettings,type NetStatus} from '@rewrite/multiplayer/contracts';
 import {Interpolator, Predictor, type MoveRules, type Vec} from '@rewrite/multiplayer/netcode';
 
 /** What a game runtime (exported player or editor Preview) gives the multiplayer session. */
@@ -20,6 +21,39 @@ export interface MultiplayerHost {
  now(): number;
  log(level: 'info' | 'warn' | 'error', message: string): void;
 }
+export interface NetworkScenePorts extends Pick<MultiplayerHost,'spawn'|'destroy'|'emit'|'log'>{
+ entities():readonly Entity[];
+ pressed(actionId:string):boolean;
+ endpoint:string|(()=>Promise<string>);
+ name:string;
+ bounds:MoveRules['bounds'];
+ now?():number;
+}
+
+/** Bind the network module to a live scene. The host chooses its endpoint and presentation. */
+export function createNetworkScene(
+ scene:Scene,
+ settings:MultiplayerSettings,
+ input:Parameters<typeof movementAxes>[1],
+ ports:NetworkScenePorts,
+){
+ const found=findNetworkPlayer({scenes:[scene]});
+ if(!settings.enabled||!found)return;
+ return new MultiplayerSession(settings,{speed:found.player.speed,bounds:ports.bounds},{
+  id:found.entity.id,name:found.entity.name,
+ },ports.endpoint,{
+  spawn:ports.spawn,destroy:ports.destroy,removeReplica:ports.destroy,
+  replica(patch){const entity=ports.entities().find(item=>item.id===patch.id);if(entity)applyEntity(entity,patch);},
+  setActive(id,value){const entity=ports.entities().find(item=>item.id===id);if(entity)entity.active=value;},
+  place(id,x,y){
+   const component=ports.entities().find(item=>item.id===id)?.components.find(item=>item.type==='scene.transform2d');
+   if(component)Object.assign(component.data as object,{x,y});
+  },
+  axes:()=>movementAxes(found.player,input,{has:ports.pressed}),now:ports.now??(()=>performance.now()),
+  emit:ports.emit,log:ports.log,
+ },ports.name);
+}
+
 interface RemoteState {sessionId: string; name: string; connected: boolean; x: number; y: number; lastSeq: number}
 interface Seat {objectId: string; local: boolean; interpolator?: Interpolator; name: string; connected: boolean; x: number; y: number}
 

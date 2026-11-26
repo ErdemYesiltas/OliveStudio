@@ -59,23 +59,51 @@ export function ComponentField({field,value,commit,disabled,options,label,missin
 }
 export function createSceneViews(scene:SceneService,bridge:SceneUiBridge) {
  let layersQuery='',viewVersion=0;const collapsedScopes=new Map<string,ReadonlySet<string>>(),emptyCollapsed=new Set<string>(),viewListeners=new Set<()=>void>();
+ const inspectedComponents=new Map<string,string|null>();
  const subscribeView=(listener:()=>void)=>{viewListeners.add(listener);return()=>{viewListeners.delete(listener);};},publishView=()=>{viewVersion++;for(const listener of viewListeners)listener();},setQuery=(next:string)=>{layersQuery=next;publishView();};
  const setCollapsed=(scope:string,next:ReadonlySet<string>)=>{collapsedScopes.set(scope,next);if(collapsedScopes.size>100)collapsedScopes.delete(collapsedScopes.keys().next().value!);publishView();};
  const change=(fn:()=>void)=>{try{fn();}catch(e){bridge.report(e);}};
  function Properties() {
-  const document=useScene(scene),selected=bridge.useSelection(),chosen=bridge.useSelectionSet?.()??[],editable=bridge.useEditable(),entity=document.entities.find(e=>e.id===selected),dragging=bridge.useDragging?.(),clip=useSyncExternalStore(subscribeClip,()=>componentClip);
-  const title=(type:string)=>{const d=scene.definitions().get(type);return d?(bridge.text?.(d.titleKey)??d.titleKey.replace('component.','')):type;};
+  const document=useScene(scene),selected=bridge.useSelection(),chosen=bridge.useSelectionSet?.()??[],entity=document.entities.find(e=>e.id===selected);
   if(chosen.length>1)return <MultiProperties ids={chosen}/>;
   if(!entity)return <div className="panel-body"><p className="panel-empty">Select an object to inspect its components.</p></div>;
-  return <div className="panel-body" data-testid="properties">
+  const scope=JSON.stringify([bridge.viewScope?.()??document.id,entity.id]);
+  return <ObjectProperties key={scope} scope={scope} document={document} entity={entity}/>;
+ }
+ function ObjectProperties({scope,document,entity}:{scope:string;document:ReturnType<typeof useScene>;entity:Entity}) {
+  const editable=bridge.useEditable(),dragging=bridge.useDragging?.(),clip=useSyncExternalStore(subscribeClip,()=>componentClip);
+  const [inspected,setInspected]=useState(()=>inspectedComponents.get(scope));
+  const scrollPanel=useRef<HTMLDivElement>(null),activeSummary=useRef<HTMLElement>(null);
+  const visible=entity.components.filter(c=>{const d=scene.definitions().get(c.type);return d?.version!==c.version||!d.hiddenInInspector;});
+  const remembered=visible.find(c=>c.id===inspected)?.id;
+  const active=inspected===null?null:remembered??visible.find(c=>c.type===spatialType(entity))?.id;
+  useLayoutEffect(()=>{
+   if(!remembered)return;
+   // Wait for Dockview and the selected component controls to finish laying out.
+   let frame=requestAnimationFrame(()=>{
+    frame=requestAnimationFrame(()=>{
+     const panel=scrollPanel.current,summary=activeSummary.current;
+     if(!panel||!summary)return;
+     panel.scrollTop+=summary.getBoundingClientRect().top-panel.getBoundingClientRect().top-panel.clientTop-10;
+    });
+   });
+   return ()=>cancelAnimationFrame(frame);
+  },[remembered]);
+  const chooseComponent=(id:string)=>{
+   const next=active===id?null:id;
+   inspectedComponents.set(scope,next);
+   setInspected(next);
+  };
+  const title=(type:string)=>{const d=scene.definitions().get(type);return d?(bridge.text?.(d.titleKey)??d.titleKey.replace('component.','')):type;};
+  return <div className="panel-body" data-testid="properties" ref={scrollPanel}>
    <label className="field"><span>Name</span><CommitInput label="Object name" key={entity.id} value={entity.name} disabled={!editable} commit={raw=>scene.rename(entity.id,raw)} onError={bridge.report}/></label>
    <label className="field"><span>Active</span><input aria-label="Object active" type="checkbox" checked={entity.active} disabled={!editable} onChange={e=>change(()=>scene.setActive(entity.id,e.target.checked))}/></label>
    <label className="field"><span>Parent</span><select aria-label="Object parent" value={entity.parentId??''} disabled={!editable} onChange={e=>change(()=>scene.reparent(entity.id,e.target.value||null))}><option value="">Scene root</option>{document.entities.filter(e=>e.id!==entity.id).map(e=><option key={e.id} value={e.id}>{e.name}</option>)}</select></label>
    {bridge.entityExtra?.(entity)}
-   {entity.components.filter(c=>{const d=scene.definitions().get(c.type);return d?.version!==c.version||!d.hiddenInInspector;}).map(c=>{
+   {visible.map(c=>{
     const definition=scene.definitions().get(c.type),supported=definition&&definition.version===c.version,Editor=bridge.componentEditors?.().find(e=>e.type===c.type&&e.version===c.version)?.view;
     const parsed=supported?definition.parse(c.data):c.data;const data={...(parsed&&typeof parsed==='object'&&!Array.isArray(parsed)?parsed:{}),...(c.type===transformDefinition.type?dragging?.get(entity.id):undefined)};
-    return <details key={c.id} className="component" open={c.type===spatialType(entity)}><summary>{definition?(bridge.text?.(definition.titleKey)??definition.titleKey.replace('component.','')):c.type}</summary>
+    return <details key={c.id} className="component" open={c.id===active}><summary ref={c.id===active?activeSummary:undefined} onClick={event=>{event.preventDefault();chooseComponent(c.id);}}>{title(c.type)}</summary>
      {!supported?<p className="component-warning">This component is preserved but cannot be edited: {c.type} v{c.version}.</p>:Editor?<Editor scene={scene} entityId={entity.id} editable={editable} text={key=>bridge.text?.(key)??key} report={bridge.report}/>:definition.fields.filter(field=>field.visible?.(c.data)??true).map(field=><ComponentField key={field.key} field={field} missingAssetLabel={bridge.text?.('asset.missingOption')} label={bridge.text?.(field.titleKey)??field.key} value={data[field.key]??null} disabled={!editable} options={field.kind==='asset'?bridge.assetOptions?.(field.assetType??''):field.options?.map(o=>({id:o.value,name:bridge.text?.(o.titleKey)??o.titleKey}))} commit={value=>scene.setField(entity.id,c.type,field.key,value)}/>)}
      {bridge.componentExtra?.(entity,c)}
      <div className="component-tools" role="group" aria-label={`${title(c.type)} tools`}><button aria-label={`Copy ${title(c.type)} component`} title="Copy component" onClick={()=>setClip({type:c.type,version:c.version,data:structuredClone(c.data),title:title(c.type)})}><Copy size={13}/></button>{c.type!==spatialType(entity)&&<><button aria-label={`Move ${title(c.type)} up`} title="Move up" disabled={!editable||entity.components.findIndex(x=>x.id===c.id)<=1} onClick={()=>change(()=>scene.moveComponent(entity.id,c.id,-1))}><ArrowUp size={13}/></button><button aria-label={`Move ${title(c.type)} down`} title="Move down" disabled={!editable||entity.components.findIndex(x=>x.id===c.id)===entity.components.length-1} onClick={()=>change(()=>scene.moveComponent(entity.id,c.id,1))}><ArrowDown size={13}/></button><button disabled={!editable} onClick={()=>change(()=>scene.removeComponent(entity.id,c.type))}>Remove component</button></>}</div>

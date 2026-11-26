@@ -1,0 +1,1965 @@
+{
+  "version": 1,
+  "config": {
+    "renderer": {
+      "width": 1200,
+      "height": 1212,
+      "background": "#111d1d"
+    }
+  },
+  "objects": [
+    {
+      "type": "Container",
+      "id": "gallery-83",
+      "label": "Container • Object Gallery",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "children": [
+        {
+          "type": "Text",
+          "id": "gallery-1",
+          "label": "Studio label",
+          "position": {
+            "x": 28,
+            "y": 22
+          },
+          "text": "OLIVE STUDIO",
+          "style": {
+            "fontFamily": "system-ui",
+            "fontSize": 13,
+            "fill": "#9ed6b6",
+            "fontWeight": "bold"
+          }
+        },
+        {
+          "type": "Text",
+          "id": "gallery-2",
+          "label": "Gallery title",
+          "position": {
+            "x": 27,
+            "y": 38
+          },
+          "text": "Object Gallery",
+          "style": {
+            "fontFamily": "system-ui",
+            "fontSize": 42,
+            "fill": "#eaf5df",
+            "fontWeight": "bold"
+          }
+        },
+        {
+          "type": "Text",
+          "id": "gallery-3",
+          "label": "Showcase count",
+          "position": {
+            "x": 1171,
+            "y": 36
+          },
+          "text": "18 OBJECT TYPES",
+          "style": {
+            "fontFamily": "system-ui",
+            "fontSize": 15,
+            "fill": "#f0cb8d",
+            "fontWeight": "bold"
+          },
+          "anchor": {
+            "x": 1,
+            "y": 0
+          }
+        },
+        {
+          "type": "Text",
+          "id": "gallery-4",
+          "label": "Container label",
+          "position": {
+            "x": 1171,
+            "y": 60
+          },
+          "text": "Container  /  Gallery root",
+          "style": {
+            "fontFamily": "system-ui",
+            "fontSize": 15,
+            "fill": "#99b5aa",
+            "fontWeight": "normal"
+          },
+          "anchor": {
+            "x": 1,
+            "y": 0
+          }
+        },
+        {
+          "type": "Graphics",
+          "id": "gallery-5",
+          "label": "Header rule",
+          "position": {
+            "x": 28,
+            "y": 96
+          },
+          "width": 1144,
+          "height": 1,
+          "fill": "#48675a"
+        },
+        {
+          "type": "Container",
+          "id": "gallery-11",
+          "label": "Sprite • sample",
+          "position": {
+            "x": 28,
+            "y": 114
+          },
+          "children": [
+            {
+              "type": "Graphics",
+              "id": "gallery-7",
+              "label": "Card background",
+              "position": {
+                "x": 0,
+                "y": 0
+              },
+              "width": 277,
+              "height": 202,
+              "fill": "#192b29"
+            },
+            {
+              "type": "Graphics",
+              "id": "gallery-8",
+              "label": "Divider",
+              "position": {
+                "x": 16,
+                "y": 43
+              },
+              "width": 245,
+              "height": 1,
+              "fill": "#34534b"
+            },
+            {
+              "type": "Text",
+              "id": "gallery-9",
+              "label": "Heading",
+              "position": {
+                "x": 16,
+                "y": 12
+              },
+              "text": "Sprite",
+              "style": {
+                "fontFamily": "system-ui",
+                "fontSize": 19,
+                "fill": "#eaf5df",
+                "fontWeight": "bold"
+              }
+            },
+            {
+              "type": "Text",
+              "id": "gallery-10",
+              "label": "Caption",
+              "position": {
+                "x": 16,
+                "y": 174
+              },
+              "text": "Texture with centered anchor",
+              "style": {
+                "fontFamily": "system-ui",
+                "fontSize": 13,
+                "fill": "#99b5aa",
+                "fontWeight": "normal"
+              }
+            },
+            {
+              "type": "Sprite",
+              "id": "gallery-6",
+              "label": "Olive Prism",
+              "position": {
+                "x": 138,
+                "y": 107
+              },
+              "texture": "project/00000000-0000-4000-8000-000000000001/olive-prism.png",
+              "anchor": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "scale": {
+                "x": 0.91,
+                "y": 0.91
+              }
+            }
+          ]
+        },
+        {
+          "type": "Container",
+          "id": "gallery-17",
+          "label": "Text • sample",
+          "position": {
+            "x": 317,
+            "y": 114
+          },
+          "children": [
+            {
+              "type": "Graphics",
+              "id": "gallery-13",
+              "label": "Card background",
+              "position": {
+                "x": 0,
+                "y": 0
+              },
+              "width": 277,
+              "height": 202,
+              "fill": "#192b29"
+            },
+            {
+              "type": "Graphics",
+              "id": "gallery-14",
+              "label": "Divider",
+              "position": {
+                "x": 16,
+                "y": 43
+              },
+              "width": 245,
+              "height": 1,
+              "fill": "#34534b"
+            },
+            {
+              "type": "Text",
+              "id": "gallery-15",
+              "label": "Heading",
+              "position": {
+                "x": 16,
+                "y": 12
+              },
+              "text": "Text",
+              "style": {
+                "fontFamily": "system-ui",
+                "fontSize": 19,
+                "fill": "#eaf5df",
+                "fontWeight": "bold"
+              }
+            },
+            {
+              "type": "Text",
+              "id": "gallery-16",
+              "label": "Caption",
+              "position": {
+                "x": 16,
+                "y": 174
+              },
+              "text": "System font, weight and fill",
+              "style": {
+                "fontFamily": "system-ui",
+                "fontSize": 13,
+                "fill": "#99b5aa",
+                "fontWeight": "normal"
+              }
+            },
+            {
+              "type": "Text",
+              "id": "gallery-12",
+              "label": "Typeset “Olive Grove”",
+              "position": {
+                "x": 138,
+                "y": 107
+              },
+              "text": "Olive Grove",
+              "style": {
+                "fontFamily": "system-ui",
+                "fontSize": 35,
+                "fill": "#eaf5df",
+                "fontWeight": "bold"
+              },
+              "anchor": {
+                "x": 0.5,
+                "y": 0.5
+              }
+            }
+          ]
+        },
+        {
+          "type": "Container",
+          "id": "gallery-23",
+          "label": "Bitmap Text • sample",
+          "position": {
+            "x": 606,
+            "y": 114
+          },
+          "children": [
+            {
+              "type": "Graphics",
+              "id": "gallery-19",
+              "label": "Card background",
+              "position": {
+                "x": 0,
+                "y": 0
+              },
+              "width": 277,
+              "height": 202,
+              "fill": "#192b29"
+            },
+            {
+              "type": "Graphics",
+              "id": "gallery-20",
+              "label": "Divider",
+              "position": {
+                "x": 16,
+                "y": 43
+              },
+              "width": 245,
+              "height": 1,
+              "fill": "#34534b"
+            },
+            {
+              "type": "Text",
+              "id": "gallery-21",
+              "label": "Heading",
+              "position": {
+                "x": 16,
+                "y": 12
+              },
+              "text": "Bitmap Text",
+              "style": {
+                "fontFamily": "system-ui",
+                "fontSize": 19,
+                "fill": "#eaf5df",
+                "fontWeight": "bold"
+              }
+            },
+            {
+              "type": "Text",
+              "id": "gallery-22",
+              "label": "Caption",
+              "position": {
+                "x": 16,
+                "y": 174
+              },
+              "text": "Bitmap glyph rendering",
+              "style": {
+                "fontFamily": "system-ui",
+                "fontSize": 13,
+                "fill": "#99b5aa",
+                "fontWeight": "normal"
+              }
+            },
+            {
+              "type": "BitmapText",
+              "id": "gallery-18",
+              "label": "Score Counter",
+              "position": {
+                "x": 138,
+                "y": 106
+              },
+              "text": "SCORE 042",
+              "anchor": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "style": {
+                "fontFamily": "Courier New",
+                "fontSize": 34,
+                "fontWeight": "bold",
+                "fill": "#f0cb8d"
+              }
+            }
+          ]
+        },
+        {
+          "type": "Container",
+          "id": "gallery-31",
+          "label": "Graphics • sample",
+          "position": {
+            "x": 895,
+            "y": 114
+          },
+          "children": [
+            {
+              "type": "Graphics",
+              "id": "gallery-27",
+              "label": "Card background",
+              "position": {
+                "x": 0,
+                "y": 0
+              },
+              "width": 277,
+              "height": 202,
+              "fill": "#192b29"
+            },
+            {
+              "type": "Graphics",
+              "id": "gallery-28",
+              "label": "Divider",
+              "position": {
+                "x": 16,
+                "y": 43
+              },
+              "width": 245,
+              "height": 1,
+              "fill": "#34534b"
+            },
+            {
+              "type": "Text",
+              "id": "gallery-29",
+              "label": "Heading",
+              "position": {
+                "x": 16,
+                "y": 12
+              },
+              "text": "Graphics",
+              "style": {
+                "fontFamily": "system-ui",
+                "fontSize": 19,
+                "fill": "#eaf5df",
+                "fontWeight": "bold"
+              }
+            },
+            {
+              "type": "Text",
+              "id": "gallery-30",
+              "label": "Caption",
+              "position": {
+                "x": 16,
+                "y": 174
+              },
+              "text": "Rectangle and ellipse",
+              "style": {
+                "fontFamily": "system-ui",
+                "fontSize": 13,
+                "fill": "#99b5aa",
+                "fontWeight": "normal"
+              }
+            },
+            {
+              "type": "Graphics",
+              "id": "gallery-24",
+              "label": "Rounded silhouette",
+              "position": {
+                "x": 77,
+                "y": 70
+              },
+              "width": 110,
+              "height": 80,
+              "fill": "#437c70",
+              "shape": "ellipse"
+            },
+            {
+              "type": "Graphics",
+              "id": "gallery-25",
+              "label": "Coral rectangle",
+              "position": {
+                "x": 139,
+                "y": 78
+              },
+              "width": 63,
+              "height": 63,
+              "fill": "#d7a18a",
+              "rotation": 14
+            },
+            {
+              "type": "Graphics",
+              "id": "gallery-26",
+              "label": "Gold disc",
+              "position": {
+                "x": 84,
+                "y": 85
+              },
+              "width": 19,
+              "height": 19,
+              "fill": "#efd692",
+              "shape": "ellipse"
+            }
+          ]
+        },
+        {
+          "type": "Container",
+          "id": "gallery-37",
+          "label": "Tiling Sprite • sample",
+          "position": {
+            "x": 28,
+            "y": 328
+          },
+          "children": [
+            {
+              "type": "Graphics",
+              "id": "gallery-33",
+              "label": "Card background",
+              "position": {
+                "x": 0,
+                "y": 0
+              },
+              "width": 277,
+              "height": 202,
+              "fill": "#192b29"
+            },
+            {
+              "type": "Graphics",
+              "id": "gallery-34",
+              "label": "Divider",
+              "position": {
+                "x": 16,
+                "y": 43
+              },
+              "width": 245,
+              "height": 1,
+              "fill": "#34534b"
+            },
+            {
+              "type": "Text",
+              "id": "gallery-35",
+              "label": "Heading",
+              "position": {
+                "x": 16,
+                "y": 12
+              },
+              "text": "Tiling Sprite",
+              "style": {
+                "fontFamily": "system-ui",
+                "fontSize": 19,
+                "fill": "#eaf5df",
+                "fontWeight": "bold"
+              }
+            },
+            {
+              "type": "Text",
+              "id": "gallery-36",
+              "label": "Caption",
+              "position": {
+                "x": 16,
+                "y": 174
+              },
+              "text": "One texture repeated across an area",
+              "style": {
+                "fontFamily": "system-ui",
+                "fontSize": 13,
+                "fill": "#99b5aa",
+                "fontWeight": "normal"
+              }
+            },
+            {
+              "type": "TilingSprite",
+              "id": "gallery-32",
+              "label": "Leaf Pattern",
+              "position": {
+                "x": 36,
+                "y": 63
+              },
+              "texture": "project/00000000-0000-4000-8000-000000000002/leaf-pattern.png",
+              "width": 205,
+              "height": 89,
+              "tilePosition": {
+                "x": 4,
+                "y": 3
+              },
+              "tileScale": {
+                "x": 0.73,
+                "y": 0.73
+              }
+            }
+          ]
+        },
+        {
+          "type": "Container",
+          "id": "gallery-44",
+          "label": "Nine-Slice Sprite • sample",
+          "position": {
+            "x": 317,
+            "y": 328
+          },
+          "children": [
+            {
+              "type": "Graphics",
+              "id": "gallery-40",
+              "label": "Card background",
+              "position": {
+                "x": 0,
+                "y": 0
+              },
+              "width": 277,
+              "height": 202,
+              "fill": "#192b29"
+            },
+            {
+              "type": "Graphics",
+              "id": "gallery-41",
+              "label": "Divider",
+              "position": {
+                "x": 16,
+                "y": 43
+              },
+              "width": 245,
+              "height": 1,
+              "fill": "#34534b"
+            },
+            {
+              "type": "Text",
+              "id": "gallery-42",
+              "label": "Heading",
+              "position": {
+                "x": 16,
+                "y": 12
+              },
+              "text": "Nine-Slice Sprite",
+              "style": {
+                "fontFamily": "system-ui",
+                "fontSize": 19,
+                "fill": "#eaf5df",
+                "fontWeight": "bold"
+              }
+            },
+            {
+              "type": "Text",
+              "id": "gallery-43",
+              "label": "Caption",
+              "position": {
+                "x": 16,
+                "y": 174
+              },
+              "text": "Same texture at two sizes",
+              "style": {
+                "fontFamily": "system-ui",
+                "fontSize": 13,
+                "fill": "#99b5aa",
+                "fontWeight": "normal"
+              }
+            },
+            {
+              "type": "NineSliceSprite",
+              "id": "gallery-38",
+              "label": "Wide Frame",
+              "position": {
+                "x": 32,
+                "y": 75
+              },
+              "texture": "project/00000000-0000-4000-8000-000000000003/corner-frame.png",
+              "width": 124,
+              "height": 70,
+              "leftWidth": 12,
+              "topHeight": 12,
+              "rightWidth": 12,
+              "bottomHeight": 12
+            },
+            {
+              "type": "NineSliceSprite",
+              "id": "gallery-39",
+              "label": "Tall Frame",
+              "position": {
+                "x": 174,
+                "y": 59
+              },
+              "texture": "project/00000000-0000-4000-8000-000000000003/corner-frame.png",
+              "width": 69,
+              "height": 98,
+              "leftWidth": 12,
+              "topHeight": 12,
+              "rightWidth": 12,
+              "bottomHeight": 12
+            }
+          ]
+        },
+        {
+          "type": "Container",
+          "id": "gallery-50",
+          "label": "Tilemap • sample",
+          "position": {
+            "x": 606,
+            "y": 328
+          },
+          "children": [
+            {
+              "type": "Graphics",
+              "id": "gallery-46",
+              "label": "Card background",
+              "position": {
+                "x": 0,
+                "y": 0
+              },
+              "width": 277,
+              "height": 202,
+              "fill": "#192b29"
+            },
+            {
+              "type": "Graphics",
+              "id": "gallery-47",
+              "label": "Divider",
+              "position": {
+                "x": 16,
+                "y": 43
+              },
+              "width": 245,
+              "height": 1,
+              "fill": "#34534b"
+            },
+            {
+              "type": "Text",
+              "id": "gallery-48",
+              "label": "Heading",
+              "position": {
+                "x": 16,
+                "y": 12
+              },
+              "text": "Tilemap",
+              "style": {
+                "fontFamily": "system-ui",
+                "fontSize": 19,
+                "fill": "#eaf5df",
+                "fontWeight": "bold"
+              }
+            },
+            {
+              "type": "Text",
+              "id": "gallery-49",
+              "label": "Caption",
+              "position": {
+                "x": 16,
+                "y": 174
+              },
+              "text": "A 7 × 5 garden from eight tiles",
+              "style": {
+                "fontFamily": "system-ui",
+                "fontSize": 13,
+                "fill": "#99b5aa",
+                "fontWeight": "normal"
+              }
+            },
+            {
+              "type": "Tilemap",
+              "id": "gallery-45",
+              "label": "Garden Tiles",
+              "position": {
+                "x": 76,
+                "y": 64
+              },
+              "texture": "project/00000000-0000-4000-8000-000000000004/garden-tiles.png",
+              "columns": 7,
+              "rows": 5,
+              "tileWidth": 18,
+              "tileHeight": 18,
+              "tiles": [
+                0,
+                1,
+                0,
+                4,
+                0,
+                6,
+                0,
+                1,
+                6,
+                0,
+                4,
+                0,
+                2,
+                3,
+                0,
+                0,
+                5,
+                4,
+                1,
+                3,
+                2,
+                6,
+                0,
+                4,
+                4,
+                5,
+                2,
+                3,
+                0,
+                0,
+                4,
+                7,
+                0,
+                0,
+                6
+              ]
+            }
+          ]
+        },
+        {
+          "type": "Container",
+          "id": "gallery-56",
+          "label": "Mesh Plane • sample",
+          "position": {
+            "x": 895,
+            "y": 328
+          },
+          "children": [
+            {
+              "type": "Graphics",
+              "id": "gallery-52",
+              "label": "Card background",
+              "position": {
+                "x": 0,
+                "y": 0
+              },
+              "width": 277,
+              "height": 202,
+              "fill": "#192b29"
+            },
+            {
+              "type": "Graphics",
+              "id": "gallery-53",
+              "label": "Divider",
+              "position": {
+                "x": 16,
+                "y": 43
+              },
+              "width": 245,
+              "height": 1,
+              "fill": "#34534b"
+            },
+            {
+              "type": "Text",
+              "id": "gallery-54",
+              "label": "Heading",
+              "position": {
+                "x": 16,
+                "y": 12
+              },
+              "text": "Mesh Plane",
+              "style": {
+                "fontFamily": "system-ui",
+                "fontSize": 19,
+                "fill": "#eaf5df",
+                "fontWeight": "bold"
+              }
+            },
+            {
+              "type": "Text",
+              "id": "gallery-55",
+              "label": "Caption",
+              "position": {
+                "x": 16,
+                "y": 174
+              },
+              "text": "Textured grid deformed into an arc",
+              "style": {
+                "fontFamily": "system-ui",
+                "fontSize": 13,
+                "fill": "#99b5aa",
+                "fontWeight": "normal"
+              }
+            },
+            {
+              "type": "MeshPlane",
+              "id": "gallery-51",
+              "label": "Bent Silk",
+              "position": {
+                "x": 49,
+                "y": 96
+              },
+              "texture": "project/00000000-0000-4000-8000-000000000005/silk-banner.png",
+              "width": 179,
+              "height": 44,
+              "columns": 14,
+              "rows": 6,
+              "bend": -31
+            }
+          ]
+        },
+        {
+          "type": "Container",
+          "id": "gallery-62",
+          "label": "Mesh Rope • sample",
+          "position": {
+            "x": 28,
+            "y": 542
+          },
+          "children": [
+            {
+              "type": "Graphics",
+              "id": "gallery-58",
+              "label": "Card background",
+              "position": {
+                "x": 0,
+                "y": 0
+              },
+              "width": 277,
+              "height": 202,
+              "fill": "#192b29"
+            },
+            {
+              "type": "Graphics",
+              "id": "gallery-59",
+              "label": "Divider",
+              "position": {
+                "x": 16,
+                "y": 43
+              },
+              "width": 245,
+              "height": 1,
+              "fill": "#34534b"
+            },
+            {
+              "type": "Text",
+              "id": "gallery-60",
+              "label": "Heading",
+              "position": {
+                "x": 16,
+                "y": 12
+              },
+              "text": "Mesh Rope",
+              "style": {
+                "fontFamily": "system-ui",
+                "fontSize": 19,
+                "fill": "#eaf5df",
+                "fontWeight": "bold"
+              }
+            },
+            {
+              "type": "Text",
+              "id": "gallery-61",
+              "label": "Caption",
+              "position": {
+                "x": 16,
+                "y": 174
+              },
+              "text": "Texture follows a curved path",
+              "style": {
+                "fontFamily": "system-ui",
+                "fontSize": 13,
+                "fill": "#99b5aa",
+                "fontWeight": "normal"
+              }
+            },
+            {
+              "type": "MeshRope",
+              "id": "gallery-57",
+              "label": "Hanging Braid",
+              "position": {
+                "x": 43,
+                "y": 82
+              },
+              "texture": "project/00000000-0000-4000-8000-000000000006/copper-braid.png",
+              "thickness": 23,
+              "length": 191,
+              "segments": 28,
+              "bend": 44
+            }
+          ]
+        },
+        {
+          "type": "Container",
+          "id": "gallery-68",
+          "label": "Animated Sprite • sample",
+          "position": {
+            "x": 317,
+            "y": 542
+          },
+          "children": [
+            {
+              "type": "Graphics",
+              "id": "gallery-64",
+              "label": "Card background",
+              "position": {
+                "x": 0,
+                "y": 0
+              },
+              "width": 277,
+              "height": 202,
+              "fill": "#192b29"
+            },
+            {
+              "type": "Graphics",
+              "id": "gallery-65",
+              "label": "Divider",
+              "position": {
+                "x": 16,
+                "y": 43
+              },
+              "width": 245,
+              "height": 1,
+              "fill": "#34534b"
+            },
+            {
+              "type": "Text",
+              "id": "gallery-66",
+              "label": "Heading",
+              "position": {
+                "x": 16,
+                "y": 12
+              },
+              "text": "Animated Sprite",
+              "style": {
+                "fontFamily": "system-ui",
+                "fontSize": 19,
+                "fill": "#eaf5df",
+                "fontWeight": "bold"
+              }
+            },
+            {
+              "type": "Text",
+              "id": "gallery-67",
+              "label": "Caption",
+              "position": {
+                "x": 16,
+                "y": 174
+              },
+              "text": "Eight-frame lantern hover loop",
+              "style": {
+                "fontFamily": "system-ui",
+                "fontSize": 13,
+                "fill": "#99b5aa",
+                "fontWeight": "normal"
+              }
+            },
+            {
+              "type": "AnimatedSprite",
+              "id": "gallery-63",
+              "label": "Lantern Flight",
+              "position": {
+                "x": 138,
+                "y": 105
+              },
+              "asset": "project/00000000-0000-4000-8000-000000000008/lantern-flight.json",
+              "animation": "hover",
+              "speed": 9,
+              "anchor": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "scale": {
+                "x": 1.28,
+                "y": 1.28
+              }
+            }
+          ]
+        },
+        {
+          "type": "Container",
+          "id": "gallery-74",
+          "label": "Spine • sample",
+          "position": {
+            "x": 606,
+            "y": 542
+          },
+          "children": [
+            {
+              "type": "Graphics",
+              "id": "gallery-70",
+              "label": "Card background",
+              "position": {
+                "x": 0,
+                "y": 0
+              },
+              "width": 277,
+              "height": 202,
+              "fill": "#192b29"
+            },
+            {
+              "type": "Graphics",
+              "id": "gallery-71",
+              "label": "Divider",
+              "position": {
+                "x": 16,
+                "y": 43
+              },
+              "width": 245,
+              "height": 1,
+              "fill": "#34534b"
+            },
+            {
+              "type": "Text",
+              "id": "gallery-72",
+              "label": "Heading",
+              "position": {
+                "x": 16,
+                "y": 12
+              },
+              "text": "Spine",
+              "style": {
+                "fontFamily": "system-ui",
+                "fontSize": 19,
+                "fill": "#eaf5df",
+                "fontWeight": "bold"
+              }
+            },
+            {
+              "type": "Text",
+              "id": "gallery-73",
+              "label": "Caption",
+              "position": {
+                "x": 16,
+                "y": 174
+              },
+              "text": "Garden Scout with animated wing bones",
+              "style": {
+                "fontFamily": "system-ui",
+                "fontSize": 13,
+                "fill": "#99b5aa",
+                "fontWeight": "normal"
+              }
+            },
+            {
+              "type": "Spine",
+              "id": "gallery-69",
+              "label": "Garden Scout",
+              "position": {
+                "x": 138,
+                "y": 106
+              },
+              "asset": "project/00000000-0000-4000-8000-000000000009/garden-scout.json",
+              "animation": "flutter",
+              "skin": "amber",
+              "speed": 0.85,
+              "scale": {
+                "x": 1.19,
+                "y": 1.19
+              }
+            }
+          ]
+        },
+        {
+          "type": "Container",
+          "id": "gallery-81",
+          "label": "Particles • sample",
+          "position": {
+            "x": 895,
+            "y": 542
+          },
+          "children": [
+            {
+              "type": "Graphics",
+              "id": "gallery-77",
+              "label": "Card background",
+              "position": {
+                "x": 0,
+                "y": 0
+              },
+              "width": 277,
+              "height": 202,
+              "fill": "#192b29"
+            },
+            {
+              "type": "Graphics",
+              "id": "gallery-78",
+              "label": "Divider",
+              "position": {
+                "x": 16,
+                "y": 43
+              },
+              "width": 245,
+              "height": 1,
+              "fill": "#34534b"
+            },
+            {
+              "type": "Text",
+              "id": "gallery-79",
+              "label": "Heading",
+              "position": {
+                "x": 16,
+                "y": 12
+              },
+              "text": "Particles",
+              "style": {
+                "fontFamily": "system-ui",
+                "fontSize": 19,
+                "fill": "#eaf5df",
+                "fontWeight": "bold"
+              }
+            },
+            {
+              "type": "Text",
+              "id": "gallery-80",
+              "label": "Caption",
+              "position": {
+                "x": 16,
+                "y": 174
+              },
+              "text": "Continuous Aperion particle emitter",
+              "style": {
+                "fontFamily": "system-ui",
+                "fontSize": 13,
+                "fill": "#99b5aa",
+                "fontWeight": "normal"
+              }
+            },
+            {
+              "type": "Graphics",
+              "id": "gallery-75",
+              "label": "Emitter ring",
+              "position": {
+                "x": 120,
+                "y": 145
+              },
+              "width": 36,
+              "height": 8,
+              "fill": "#885c47",
+              "shape": "ellipse"
+            },
+            {
+              "type": "Particles",
+              "id": "gallery-76",
+              "label": "Amber Embers",
+              "position": {
+                "x": 138,
+                "y": 148
+              },
+              "texture": "project/00000000-0000-4000-8000-000000000007/particle-glow.png",
+              "count": 56,
+              "lifetime": 1.35,
+              "speed": 56,
+              "size": 19,
+              "direction": -90,
+              "spread": 61,
+              "frequency": 0.072,
+              "waveSize": 3,
+              "gravity": 16,
+              "rotationSpeed": 36,
+              "spawnShape": "circle",
+              "spawnRadius": 15,
+              "startColor": "#ffe3a1",
+              "endColor": "#de6c4f",
+              "endScale": 0.16
+            }
+          ]
+        },
+        {
+          "id": "gallery-audio-source",
+          "type": "Container",
+          "label": "Audio Source • sample",
+          "position": {
+            "x": 28,
+            "y": 756
+          },
+          "children": [
+            {
+              "id": "gallery-audio-source-background",
+              "type": "Graphics",
+              "label": "Card background",
+              "position": {
+                "x": 0,
+                "y": 0
+              },
+              "width": 277,
+              "height": 202,
+              "fill": "#192b29",
+              "shape": "rectangle"
+            },
+            {
+              "id": "gallery-audio-source-divider",
+              "type": "Graphics",
+              "label": "Divider",
+              "position": {
+                "x": 16,
+                "y": 43
+              },
+              "width": 245,
+              "height": 1,
+              "fill": "#34534b",
+              "shape": "rectangle"
+            },
+            {
+              "id": "gallery-audio-source-heading",
+              "type": "Text",
+              "label": "Heading",
+              "position": {
+                "x": 16,
+                "y": 12
+              },
+              "text": "Audio Source",
+              "style": {
+                "fontFamily": "system-ui",
+                "fontSize": 19,
+                "fill": "#eaf5df",
+                "fontWeight": "bold"
+              }
+            },
+            {
+              "id": "gallery-audio-source-caption",
+              "type": "Text",
+              "label": "Caption",
+              "position": {
+                "x": 16,
+                "y": 174
+              },
+              "text": "2D chime at the start of Play",
+              "style": {
+                "fontFamily": "system-ui",
+                "fontSize": 13,
+                "fill": "#99b5aa",
+                "fontWeight": "normal"
+              }
+            },
+            {
+              "id": "gallery-source-disc",
+              "type": "Graphics",
+              "label": "Speaker background",
+              "position": {
+                "x": 98,
+                "y": 68
+              },
+              "width": 80,
+              "height": 80,
+              "fill": "#27464a",
+              "shape": "ellipse"
+            },
+            {
+              "id": "gallery-source-note",
+              "type": "Text",
+              "label": "Chime symbol",
+              "position": {
+                "x": 124,
+                "y": 82
+              },
+              "text": "♪",
+              "style": {
+                "fontFamily": "system-ui",
+                "fontSize": 32,
+                "fill": "#a9dbe8",
+                "fontWeight": "bold"
+              }
+            },
+            {
+              "id": "gallery-chime",
+              "type": "AudioSource",
+              "label": "Positional Chime",
+              "position": {
+                "x": 138,
+                "y": 108
+              },
+              "asset": "sounds/chime.wav",
+              "spatial": true,
+              "autoplay": true,
+              "volume": 0.35,
+              "minDistance": 200,
+              "maxDistance": 650
+            }
+          ]
+        },
+        {
+          "id": "gallery-audio-listener",
+          "type": "Container",
+          "label": "Audio Listener • sample",
+          "position": {
+            "x": 317,
+            "y": 756
+          },
+          "children": [
+            {
+              "id": "gallery-audio-listener-background",
+              "type": "Graphics",
+              "label": "Card background",
+              "position": {
+                "x": 0,
+                "y": 0
+              },
+              "width": 277,
+              "height": 202,
+              "fill": "#192b29",
+              "shape": "rectangle"
+            },
+            {
+              "id": "gallery-audio-listener-divider",
+              "type": "Graphics",
+              "label": "Divider",
+              "position": {
+                "x": 16,
+                "y": 43
+              },
+              "width": 245,
+              "height": 1,
+              "fill": "#34534b",
+              "shape": "rectangle"
+            },
+            {
+              "id": "gallery-audio-listener-heading",
+              "type": "Text",
+              "label": "Heading",
+              "position": {
+                "x": 16,
+                "y": 12
+              },
+              "text": "Audio Listener",
+              "style": {
+                "fontFamily": "system-ui",
+                "fontSize": 19,
+                "fill": "#eaf5df",
+                "fontWeight": "bold"
+              }
+            },
+            {
+              "id": "gallery-audio-listener-caption",
+              "type": "Text",
+              "label": "Caption",
+              "position": {
+                "x": 16,
+                "y": 174
+              },
+              "text": "Stereo position for the 2D chime",
+              "style": {
+                "fontFamily": "system-ui",
+                "fontSize": 13,
+                "fill": "#99b5aa",
+                "fontWeight": "normal"
+              }
+            },
+            {
+              "id": "gallery-listener-disc",
+              "type": "Graphics",
+              "label": "Listener background",
+              "position": {
+                "x": 98,
+                "y": 68
+              },
+              "width": 80,
+              "height": 80,
+              "fill": "#27464a",
+              "shape": "ellipse"
+            },
+            {
+              "id": "gallery-listener-symbol",
+              "type": "Text",
+              "label": "Listener symbol",
+              "position": {
+                "x": 111,
+                "y": 95
+              },
+              "text": "L  ·  R",
+              "style": {
+                "fontFamily": "system-ui",
+                "fontSize": 19,
+                "fill": "#a9dbe8",
+                "fontWeight": "bold"
+              }
+            },
+            {
+              "id": "gallery-listener",
+              "type": "AudioListener",
+              "label": "Gallery Listener",
+              "position": {
+                "x": 138,
+                "y": 108
+              }
+            }
+          ]
+        },
+        {
+          "id": "gallery-camera-card",
+          "type": "Container",
+          "label": "Camera 2D • sample",
+          "position": {
+            "x": 606,
+            "y": 756
+          },
+          "children": [
+            {
+              "id": "gallery-camera-card-background",
+              "type": "Graphics",
+              "label": "Card background",
+              "position": {
+                "x": 0,
+                "y": 0
+              },
+              "width": 277,
+              "height": 202,
+              "fill": "#192b29",
+              "shape": "rectangle"
+            },
+            {
+              "id": "gallery-camera-card-divider",
+              "type": "Graphics",
+              "label": "Divider",
+              "position": {
+                "x": 16,
+                "y": 43
+              },
+              "width": 245,
+              "height": 1,
+              "fill": "#34534b",
+              "shape": "rectangle"
+            },
+            {
+              "id": "gallery-camera-card-heading",
+              "type": "Text",
+              "label": "Heading",
+              "position": {
+                "x": 16,
+                "y": 12
+              },
+              "text": "Camera 2D",
+              "style": {
+                "fontFamily": "system-ui",
+                "fontSize": 19,
+                "fill": "#eaf5df",
+                "fontWeight": "bold"
+              }
+            },
+            {
+              "id": "gallery-camera-card-caption",
+              "type": "Text",
+              "label": "Caption",
+              "position": {
+                "x": 16,
+                "y": 174
+              },
+              "text": "Gallery Camera frames the board",
+              "style": {
+                "fontFamily": "system-ui",
+                "fontSize": 13,
+                "fill": "#99b5aa",
+                "fontWeight": "normal"
+              }
+            },
+            {
+              "id": "gallery-camera-border",
+              "type": "Graphics",
+              "label": "Frame outline",
+              "position": {
+                "x": 73,
+                "y": 67
+              },
+              "width": 131,
+              "height": 83,
+              "fill": "#637c64",
+              "shape": "rectangle"
+            },
+            {
+              "id": "gallery-camera-screen",
+              "type": "Graphics",
+              "label": "Frame interior",
+              "position": {
+                "x": 75,
+                "y": 69
+              },
+              "width": 127,
+              "height": 79,
+              "fill": "#253c36",
+              "shape": "rectangle"
+            },
+            {
+              "id": "gallery-camera-center",
+              "type": "Graphics",
+              "label": "Frame center",
+              "position": {
+                "x": 133,
+                "y": 103
+              },
+              "width": 11,
+              "height": 11,
+              "fill": "#cce797",
+              "shape": "ellipse"
+            }
+          ]
+        },
+        {
+          "id": "gallery-light-card",
+          "type": "Container",
+          "label": "Light 2D • sample",
+          "position": {
+            "x": 895,
+            "y": 756
+          },
+          "children": [
+            {
+              "id": "gallery-light-card-background",
+              "type": "Graphics",
+              "label": "Card background",
+              "position": {
+                "x": 0,
+                "y": 0
+              },
+              "width": 277,
+              "height": 202,
+              "fill": "#192b29",
+              "shape": "rectangle"
+            },
+            {
+              "id": "gallery-light-card-divider",
+              "type": "Graphics",
+              "label": "Divider",
+              "position": {
+                "x": 16,
+                "y": 43
+              },
+              "width": 245,
+              "height": 1,
+              "fill": "#34534b",
+              "shape": "rectangle"
+            },
+            {
+              "id": "gallery-light-card-heading",
+              "type": "Text",
+              "label": "Heading",
+              "position": {
+                "x": 16,
+                "y": 12
+              },
+              "text": "Light 2D",
+              "style": {
+                "fontFamily": "system-ui",
+                "fontSize": 19,
+                "fill": "#eaf5df",
+                "fontWeight": "bold"
+              }
+            },
+            {
+              "id": "gallery-light-card-caption",
+              "type": "Text",
+              "label": "Caption",
+              "position": {
+                "x": 16,
+                "y": 174
+              },
+              "text": "Warm point light with subtle flicker",
+              "style": {
+                "fontFamily": "system-ui",
+                "fontSize": 13,
+                "fill": "#99b5aa",
+                "fontWeight": "normal"
+              }
+            },
+            {
+              "id": "gallery-light-backdrop",
+              "type": "Graphics",
+              "label": "Lantern backdrop",
+              "position": {
+                "x": 81,
+                "y": 61
+              },
+              "width": 115,
+              "height": 91,
+              "fill": "#23312e",
+              "shape": "rectangle"
+            },
+            {
+              "id": "gallery-light-lantern",
+              "type": "Graphics",
+              "label": "Lantern silhouette",
+              "position": {
+                "x": 115,
+                "y": 89
+              },
+              "width": 47,
+              "height": 47,
+              "fill": "#a27444",
+              "shape": "rectangle"
+            },
+            {
+              "id": "gallery-light-flame",
+              "type": "Graphics",
+              "label": "Lantern flame",
+              "position": {
+                "x": 130,
+                "y": 96
+              },
+              "width": 17,
+              "height": 28,
+              "fill": "#f6c783",
+              "shape": "ellipse"
+            },
+            {
+              "id": "gallery-point-light",
+              "type": "Light2D",
+              "label": "Amber Lantern Light",
+              "position": {
+                "x": 138,
+                "y": 108
+              },
+              "light": {
+                "color": "#ffce86",
+                "radius": 69,
+                "intensity": 0.85,
+                "flicker": 0.2,
+                "shadows": false
+              }
+            }
+          ]
+        },
+        {
+          "id": "gallery-ui-card",
+          "type": "Container",
+          "label": "UI Widget • sample",
+          "position": {
+            "x": 28,
+            "y": 970
+          },
+          "children": [
+            {
+              "id": "gallery-ui-card-background",
+              "type": "Graphics",
+              "label": "Card background",
+              "position": {
+                "x": 0,
+                "y": 0
+              },
+              "width": 1144,
+              "height": 202,
+              "fill": "#192b29",
+              "shape": "rectangle"
+            },
+            {
+              "id": "gallery-ui-card-divider",
+              "type": "Graphics",
+              "label": "Divider",
+              "position": {
+                "x": 16,
+                "y": 43
+              },
+              "width": 1112,
+              "height": 1,
+              "fill": "#34534b",
+              "shape": "rectangle"
+            },
+            {
+              "id": "gallery-ui-card-heading",
+              "type": "Text",
+              "label": "Heading",
+              "position": {
+                "x": 16,
+                "y": 12
+              },
+              "text": "UI Widget",
+              "style": {
+                "fontFamily": "system-ui",
+                "fontSize": 19,
+                "fill": "#eaf5df",
+                "fontWeight": "bold"
+              }
+            },
+            {
+              "id": "gallery-ui-card-caption",
+              "type": "Text",
+              "label": "Caption",
+              "position": {
+                "x": 16,
+                "y": 174
+              },
+              "text": "Interactive controls in Live",
+              "style": {
+                "fontFamily": "system-ui",
+                "fontSize": 13,
+                "fill": "#99b5aa",
+                "fontWeight": "normal"
+              }
+            },
+            {
+              "id": "gallery-widget-slider",
+              "type": "UIWidget",
+              "label": "Gallery Slider",
+              "position": {
+                "x": 32,
+                "y": 89
+              },
+              "widget": {
+                "kind": "slider",
+                "width": 295,
+                "height": 34,
+                "value": 64,
+                "accent": "#b9df79",
+                "background": "#273c3a"
+              }
+            },
+            {
+              "id": "gallery-widget-checkbox",
+              "type": "UIWidget",
+              "label": "Gallery Checkbox",
+              "position": {
+                "x": 441,
+                "y": 86
+              },
+              "widget": {
+                "kind": "checkbox",
+                "width": 226,
+                "height": 40,
+                "text": "Show details",
+                "checked": true,
+                "accent": "#b9df79",
+                "background": "#273c3a"
+              }
+            },
+            {
+              "id": "gallery-widget-button",
+              "type": "UIWidget",
+              "label": "Gallery Button",
+              "position": {
+                "x": 820,
+                "y": 84
+              },
+              "widget": {
+                "kind": "button",
+                "width": 290,
+                "height": 44,
+                "text": "Continue",
+                "accent": "#b9df79",
+                "background": "#315149"
+              }
+            }
+          ]
+        },
+        {
+          "id": "gallery-camera",
+          "type": "Camera2D",
+          "label": "Gallery Camera",
+          "position": {
+            "x": 600,
+            "y": 606
+          },
+          "scale": {
+            "x": 1,
+            "y": 1
+          },
+          "camera": {
+            "zoom": 1,
+            "priority": 10
+          }
+        },
+        {
+          "type": "Text",
+          "id": "gallery-82",
+          "label": "Gallery footer",
+          "position": {
+            "x": 28,
+            "y": 1188
+          },
+          "text": "Press Play to run animations, particles, positional audio and UI controls.",
+          "style": {
+            "fontFamily": "system-ui",
+            "fontSize": 12,
+            "fill": "#99b5aa",
+            "fontWeight": "normal"
+          }
+        }
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "alias": "project/00000000-0000-4000-8000-000000000001/olive-prism.png",
+      "data": "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"
+    },
+    {
+      "alias": "project/00000000-0000-4000-8000-000000000002/leaf-pattern.png",
+      "data": "iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAACXBIWXMAAAsTAAALEwEAmpwYAAACLklEQVR42tXZ/StDURgH8Oe/8SO/kLuQXzRKUl7SpDDWndHcO2zzMoaE0Ih5m5ekkCJKKHl/+bMeOycrm3u595xnzA9P7afTp849z/meZ5BXXYm5XEC5WH5zA6+cBDKYcyLEixJJAsx31SdhQXRoXnT0qvx3ARESKHGF3nZelEigxlEjIRs4SiRkC0eFBEpcXWwYPUfzWBJQyZBAhasaD+DI6w5G3nYxdLuJzlGNBAkUuPKgDwcfEhyXquHnLY6WRYIsrrinEwPXq2m4VA0+JrB8wCeFBNkD0bo7ZYhLVfdpTOrggAyuIuLHyMd3x0q7WOGViXSO6cJIkGklPedLaRDXWpRXJrBtb1q4BYEozhnVv0DMgPplXLhPgmgT9hzOWQYOPW4JN3MQwbGTO/S0bRk48rIjfOOAyPXFPnqjE2sGDN1t/LimGRI+h02HplpaiF1pdoDdZ4uW1uVITU0LvULApviYLWBLYlIOaHeLG5cjtoCVUd0STjHbYrvImumgZeDA7QYWdbmFcMJtplRXk8nFGtC1Ni6Mk2rUvpPYj8BwMiwofo8wTuqqM2o1mUB2mGRw0mGh42DWFMhCq5Js6DI46bil+DtRv4obAmvnwtI4ksBa1ufF/pv1tLilHi+Q4MgiPzvVqRwYvt/EEl0lwZE+mliAcO/PYM1MiAxH/uyk2tZffbgrv/1wt4NU/mr0YakF/fXw6DukkivjNyOkkmsDzH8xAv4XQ/Rs/Q3xDpDuQuVu/NmDAAAAAElFTkSuQmCC"
+    },
+    {
+      "alias": "project/00000000-0000-4000-8000-000000000003/corner-frame.png",
+      "data": "iVBORw0KGgoAAAANSUhEUgAAADYAAAA2CAYAAACMRWrdAAAACXBIWXMAAAsTAAALEwEAmpwYAAAC0ElEQVR42u2aTU8TURSG52fIxkL8WluUSlqooGzoUisxtYkJStQaV9CPBTZBKkQbIiJ2ShuZO4M/w2hcyRpm6o9QiYH9dd7p3HFaZ9qYmPSanEnOYtq5yfvknntmMY+iBFy6pc/oJmvopvbVsLQTw2JcrtJO7HwtO98OM9l1pd/FLHZet7TP8oH0KVP79N58dy4MKmlD/cCDtX2VZ1Yf8Wh6lp+ejPNTsTGpCpmi6ZSTUf2iOnBOdtOY6IAyWsYF+88jPLDElnkkGeerlQX+4uUD6aBEiXzDVxM8r5ddOPa9Y+dE+wFq6ErMWXR0sO2UjHDd+ZC5YDxtw5nsozcoRPuJnRKLZIQLyzcylfDa0jB3rymYfrhBvwYtEvW2kecXMzcGWq9qi6H5AJd9nnPBWF1pj3TGozdn+XJ5PnThm2aJjy9kB1obajE037PKfWeguO3Ywvk6xk3EnX5BcOvVHB+ZmZaiVtYeBkIhO46SOyGPFfEu8PexH04mqCA4ASVK8ASCoTbVJb7VLEoHJQrZkLE7d1+w0Wyax+5lpAVDNmQkMAIjMAIjMAIjMAIjMAIjMAIjMAIjMAIjMAIjMAIjMAIjMAIjMAL7F2D4qFbXSlJ/+Ks1C38H5rcHNjafSAe1Xn0cqmp4YN7H9WQ81KOQCc4P1Q0HS6dtDWg/f+sQtjfVy/NQd0t8bP72QGurUejpeYzeSgk7zgLYDm7uVHI9PY/X9Ty/fHduoFXdXuzpeWTXcsKpUhX4friBroOtDILrVg4GWWH5hqcmuLrvmnCH+nTbfrN9P/wAiwzClX+xTFBBcMg3NA5JrCza8INnv0GFgxIn4CBc4byhZNb6UNip4l5ZCJnftAPtTIezuGdqkwIOW4ozh8MYkVDExAS/NJdypDCv/ezs7JAlAi1TuzfPwvf779RZu/3+2KmgC74f1DiMTfGek6namTQLGb1B0XX9AsvIiKPSGe6LAAAAAElFTkSuQmCC"
+    },
+    {
+      "alias": "project/00000000-0000-4000-8000-000000000004/garden-tiles.png",
+      "data": "iVBORw0KGgoAAAANSUhEUgAAAEgAAAAkCAYAAAAq23xmAAAACXBIWXMAAAsTAAALEwEAmpwYAAACxElEQVR42u2Xz2sTQRTH858oHsSD54IIiqCtP4oVrKuFVDSmEVIbF0TXhiKRqFjctmQpTUulYhra4MHGoIVgKuhFWNGDHhQ9ePAQ8Z949o0sbHYnu7P7bNMNc/iww+xc3of3vrMbO3HrAlA5NHIaUgU657K9sOemRmZ3MgX7E6Nk9inDEJOCpCApqGOC1MU0FOq3GbgOK2h6LQ3P3+cYuJaCulHQlemk8EhpT8dahNkF5cqXhEdq9mWmRZgl6PDMI1DKi1zwnaigvok8XDSKXPBdIEGzG1m4U1F95eCZVz8egla6xhVUM/PwuH7DVw6e+fxrgUmKjCAs3EtStjzGPeMUhIV7SSquq9wzO3rEUNDa1weu7rCDZxbeTnhmEAr6+HPO1R128Mz6p/vRyiAsHnHmi1MQ4icIceaLUxASVpDfCIoK8htBriCv/AkiyCt/IikIu8brKhcVhF3jdZWLCnJKEAln3og5JYiEc+gvaRFBInStoHZdFlRQuy6T/2LyZ7ULBWFxVA4MH2fFUem/foQVR2VXPM6Ko7L3zCDEnt1TgMqk2g/a2QSZxEkFjqqDZA5ePgWjdzUyQ5mUFCQFRUVQQ59kUAXlqgZDCoqKoHdP0vClNu4C90UE6cmMS5C1F0SQkr/qEmTthRE0VTJgtb7iAve3TZA+koHmi2X4MG9As7rMMDfXvzf38J2oIBSx8q0OU2+W2BPRN/6teZK2VRB1xFDOn1q5BbNYCNxBKGf1+2uo2NAbS9HMIGucEOwap6BmtdRypp0ga5wQ7JaKQxDu2c9IQZ0UxMsae86EHTFzvuAesTkj8Ihh5lRCjBgva+w501FBVkibLKRLDJQTNqStYGbrhlhI/zdBWxXSO/Wa3xJB9i4T/Q6KwoeivctI17wUJH9W5d98YEFYHJXxVB8rjsr53gFWHJWeoWOsOCoDyTj8BaXS2+jUj21JAAAAAElFTkSuQmCC"
+    },
+    {
+      "alias": "project/00000000-0000-4000-8000-000000000005/silk-banner.png",
+      "data": "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"
+    },
+    {
+      "alias": "project/00000000-0000-4000-8000-000000000006/copper-braid.png",
+      "data": "iVBORw0KGgoAAAANSUhEUgAAALQAAAAaCAYAAAAe23asAAAACXBIWXMAAAsTAAALEwEAmpwYAAAC80lEQVR42u3b20+ScRzH8d9VXnvtn5KrraOntbLMPEJoKAoIJB5QyEOmmZKAKaJWlugGnsBJcx4nEzRLWMvWumjNZnPLm2b3nx7Y3JAe9NLfxfe7vcfh97r87tnzbMAYDQ0NDQ3n41OlJbm1+WqXNn9DeP3r1hWAorhN2NHIrrp0BarI7h5b5llDcYrHKAsHnusg1lyTAlOGUiy0VSKRIU/+rHyvLHtXn3bRrrmceoX5LKqk+SeK8Hy7Au9f1PxXwFINj6kMXqGNXr2oIU/+LL1FdgtmyY39dkVmMlu1VqlXLRokyllTjF75HYzXS3GSI0/+rP1Kj1rJNoZqN4Uglr+/GgPK3GhrfdVI5MiT58EHh2qDbNtpPAyNmSCWt6MCDk0+ph+XI5EhT54XH9ll9sXTBrE+TbZgpE6Cl/oifBgzIpEjT54nz74vdEGsVUcNRoT7ktkuNRIZ8uR582xv3Yb4fvqtcAmX8VFTCXZm2yFmyJPn0bODsAPxhWbaMN4qh8+qhdg5efK8enYQGkBsv7cH4O1WYbxFjh1fB+LPyZPn2bNfAStiC0+1wClcyqeEJ8i99eNnYpEnz5NnP5afIbbppwq8aZAi+LYe8WdikSfPk2ff5lpx1NaoAa9qC+FskOCrtxmxZ2KRJ8+bZ58nGnHUZGsJhh/mYb6nErHfJ4o8ed48C43qESkwqMGg5i6GtbnYGtHh6PtEkSfPo2ebg+pDIbiNRbBX3sZUUzEin0+LPHnuvEP9h/lt8s0V8wP0ld+Mtiy899vKTow8eR79mk0eZEudEpWzOgfWkiwsCr+J/tivObUl4UnTYyolT54Lv9QpjbbYIVWydkVqsrno+n6PJB3r5gpsWpQnFhRuyL1GGWYaZeTJc+HfNecJ3Qu5HuWcY+pL56/q0y7YbffTd7312Tit1xVZ6C68BntpBsiT58F76rJDs4aclGP/K4xs94Q6U+muygxOaDIOJzSZoCh+i+xoRiCys9ErMw0NDQ0N5/MPaYiENXXjrRMAAAAASUVORK5CYII="
+    },
+    {
+      "alias": "project/00000000-0000-4000-8000-000000000007/particle-glow.png",
+      "data": "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAAsTAAALEwEAmpwYAAACt0lEQVR42s2XwWoaURSGVVRImBJDTAU1VCJiEMUQKySkupyFZBOyKdkFBJmNS6HQVVZCNhUidFNc5gGyyAOUIIRu2lcoNFC6sZSC3dh/4LOdWgtOtR0HPpDrOf9/z7l37sz4fC6v0WjkFwEREmEIMeb3/YsLU9toRRhiTUTEOkQYM4gJL2QyDmMDk6iIibhIThDnvyixxlwToaWriD0UCfFIbIuMyIodyDK2TUyCnAgaAbfmISrYoLIUBjlRELtiT5Rgj7ECMRly4mjYWkE35g/EJq1NI1oUj8W+OBQVUYUKY/vEFMlJo7GJZnCWthskbFFJnioPMDPFkTgWJ3DMmEnMATl5NLbQNP64HGy4VVqWJNFuaVk8Qdw2OhVnoiEsaDB2SoxJThmNDJobePinTSDMponTujwCdntr4qmoi6ZoieeiKy753eK/OrE1cstopdG2PcLTqjfYuSnWr0QVNSqzMDkXF6Ij7qDD2DkxFjk1NEpopvAwfumCo/oE7SqyjibV2ILPRJuqe+JKDMRnfvf4r02sRa6JVhHtxG9d4PSKcg/n2MlV1rNOVbbwS8yuRX/08+ozdkVMm5w6GlU0c3jYXiuT7Y9xkBS4nUza2KS1XQxuxK24d0zgnrEbYrrkNNEw0SzgEfuxDNx6a2yQDAfKIbfVGZVc0OJrjN6JoWMCQ8ZuiemR00LjCM1dPOJ4BsYHT4TbJMupVqF1DXZ4h8r6VOs0H1/fxEfxhtgOuQ20Kmhn8bI9Q+MNuM7gDju2ygFj0c47Ntys1xfxVrxC4wTNEh5JPMOzTOCFeC0+uZjAgElfzjIBN0tgr/F78XWK6ZDl6btdAs834SJuww9/fRt6fhAt4CgeLOIo9vZhNOfjuDv343gpXkg8fyVzTCLo2UvpxCS8eS1fig+Tpfg0W4qP0//xef4dgqpz1A4vAA0AAAAASUVORK5CYII="
+    },
+    {
+      "alias": "project/00000000-0000-4000-8000-000000000008/lantern-flight.json",
+      "data": "eyJmcmFtZXMiOnsiZmxpZ2h0LTEiOnsiZnJhbWUiOnsieCI6MCwieSI6MCwidyI6ODAsImgiOjgwfSwicm90YXRlZCI6ZmFsc2UsInRyaW1tZWQiOmZhbHNlLCJzb3VyY2VTaXplIjp7InciOjgwLCJoIjo4MH0sInNwcml0ZVNvdXJjZVNpemUiOnsieCI6MCwieSI6MCwidyI6ODAsImgiOjgwfX0sImZsaWdodC0yIjp7ImZyYW1lIjp7IngiOjgwLCJ5IjowLCJ3Ijo4MCwiaCI6ODB9LCJyb3RhdGVkIjpmYWxzZSwidHJpbW1lZCI6ZmFsc2UsInNvdXJjZVNpemUiOnsidyI6ODAsImgiOjgwfSwic3ByaXRlU291cmNlU2l6ZSI6eyJ4IjowLCJ5IjowLCJ3Ijo4MCwiaCI6ODB9fSwiZmxpZ2h0LTMiOnsiZnJhbWUiOnsieCI6MTYwLCJ5IjowLCJ3Ijo4MCwiaCI6ODB9LCJyb3RhdGVkIjpmYWxzZSwidHJpbW1lZCI6ZmFsc2UsInNvdXJjZVNpemUiOnsidyI6ODAsImgiOjgwfSwic3ByaXRlU291cmNlU2l6ZSI6eyJ4IjowLCJ5IjowLCJ3Ijo4MCwiaCI6ODB9fSwiZmxpZ2h0LTQiOnsiZnJhbWUiOnsieCI6MjQwLCJ5IjowLCJ3Ijo4MCwiaCI6ODB9LCJyb3RhdGVkIjpmYWxzZSwidHJpbW1lZCI6ZmFsc2UsInNvdXJjZVNpemUiOnsidyI6ODAsImgiOjgwfSwic3ByaXRlU291cmNlU2l6ZSI6eyJ4IjowLCJ5IjowLCJ3Ijo4MCwiaCI6ODB9fSwiZmxpZ2h0LTUiOnsiZnJhbWUiOnsieCI6MCwieSI6ODAsInciOjgwLCJoIjo4MH0sInJvdGF0ZWQiOmZhbHNlLCJ0cmltbWVkIjpmYWxzZSwic291cmNlU2l6ZSI6eyJ3Ijo4MCwiaCI6ODB9LCJzcHJpdGVTb3VyY2VTaXplIjp7IngiOjAsInkiOjAsInciOjgwLCJoIjo4MH19LCJmbGlnaHQtNiI6eyJmcmFtZSI6eyJ4Ijo4MCwieSI6ODAsInciOjgwLCJoIjo4MH0sInJvdGF0ZWQiOmZhbHNlLCJ0cmltbWVkIjpmYWxzZSwic291cmNlU2l6ZSI6eyJ3Ijo4MCwiaCI6ODB9LCJzcHJpdGVTb3VyY2VTaXplIjp7IngiOjAsInkiOjAsInciOjgwLCJoIjo4MH19LCJmbGlnaHQtNyI6eyJmcmFtZSI6eyJ4IjoxNjAsInkiOjgwLCJ3Ijo4MCwiaCI6ODB9LCJyb3RhdGVkIjpmYWxzZSwidHJpbW1lZCI6ZmFsc2UsInNvdXJjZVNpemUiOnsidyI6ODAsImgiOjgwfSwic3ByaXRlU291cmNlU2l6ZSI6eyJ4IjowLCJ5IjowLCJ3Ijo4MCwiaCI6ODB9fSwiZmxpZ2h0LTgiOnsiZnJhbWUiOnsieCI6MjQwLCJ5Ijo4MCwidyI6ODAsImgiOjgwfSwicm90YXRlZCI6ZmFsc2UsInRyaW1tZWQiOmZhbHNlLCJzb3VyY2VTaXplIjp7InciOjgwLCJoIjo4MH0sInNwcml0ZVNvdXJjZVNpemUiOnsieCI6MCwieSI6MCwidyI6ODAsImgiOjgwfX19LCJhbmltYXRpb25zIjp7ImhvdmVyIjpbImZsaWdodC0xIiwiZmxpZ2h0LTIiLCJmbGlnaHQtMyIsImZsaWdodC00IiwiZmxpZ2h0LTUiLCJmbGlnaHQtNiIsImZsaWdodC03IiwiZmxpZ2h0LTgiXX0sIm1ldGEiOnsiaW1hZ2UiOiJsYW50ZXJuLWZsaWdodC5wbmciLCJzY2FsZSI6IjEiLCJzaXplIjp7InciOjMyMCwiaCI6MTYwfX19",
+      "media": {
+        "kind": "sheet",
+        "files": [
+          {
+            "name": "lantern-flight.png",
+            "data": "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"
+          }
+        ]
+      }
+    },
+    {
+      "alias": "project/00000000-0000-4000-8000-000000000009/garden-scout.json",
+      "data": "eyJza2VsZXRvbiI6eyJoYXNoIjoib2xpdmUtb2JqZWN0LWdhbGxlcnkiLCJzcGluZSI6IjQuMi4wMCIsIngiOi02OCwieSI6LTMyLCJ3aWR0aCI6MTM2LCJoZWlnaHQiOjY0fSwiYm9uZXMiOlt7Im5hbWUiOiJyb290In0seyJuYW1lIjoibGVmdC13aW5nIiwicGFyZW50Ijoicm9vdCIsIngiOi0xMiwieSI6MCwibGVuZ3RoIjozOH0seyJuYW1lIjoicmlnaHQtd2luZyIsInBhcmVudCI6InJvb3QiLCJ4IjoxMiwieSI6MCwibGVuZ3RoIjozOH1dLCJzbG90cyI6W3sibmFtZSI6ImxlZnQiLCJib25lIjoibGVmdC13aW5nIiwiYXR0YWNobWVudCI6ImxlYWYifSx7Im5hbWUiOiJyaWdodCIsImJvbmUiOiJyaWdodC13aW5nIiwiYXR0YWNobWVudCI6ImxlYWYifSx7Im5hbWUiOiJib2R5IiwiYm9uZSI6InJvb3QiLCJhdHRhY2htZW50Ijoic2hlbGwifV0sInNraW5zIjpbeyJuYW1lIjoiZGVmYXVsdCIsImF0dGFjaG1lbnRzIjp7ImxlZnQiOnsibGVhZiI6eyJ0eXBlIjoicmVnaW9uIiwicGF0aCI6IndpbmciLCJ4IjotMjEsInkiOjAsIndpZHRoIjo1MSwiaGVpZ2h0IjozOCwic2NhbGVYIjotMSwiY29sb3IiOiJmZmZmZmZmZiJ9fSwicmlnaHQiOnsibGVhZiI6eyJ0eXBlIjoicmVnaW9uIiwicGF0aCI6IndpbmciLCJ4IjoyMSwieSI6MCwid2lkdGgiOjUxLCJoZWlnaHQiOjM4LCJjb2xvciI6ImZmZmZmZmZmIn19LCJib2R5Ijp7InNoZWxsIjp7InR5cGUiOiJyZWdpb24iLCJwYXRoIjoic2NvdXQiLCJ3aWR0aCI6NTgsImhlaWdodCI6NTh9fX19LHsibmFtZSI6ImFtYmVyIiwiYXR0YWNobWVudHMiOnsibGVmdCI6eyJsZWFmIjp7InR5cGUiOiJyZWdpb24iLCJwYXRoIjoid2luZyIsIngiOi0yMSwieSI6MCwid2lkdGgiOjUxLCJoZWlnaHQiOjM4LCJzY2FsZVgiOi0xLCJjb2xvciI6ImZmY2E5MWZmIn19LCJyaWdodCI6eyJsZWFmIjp7InR5cGUiOiJyZWdpb24iLCJwYXRoIjoid2luZyIsIngiOjIxLCJ5IjowLCJ3aWR0aCI6NTEsImhlaWdodCI6MzgsImNvbG9yIjoiZmZjYTkxZmYifX0sImJvZHkiOnsic2hlbGwiOnsidHlwZSI6InJlZ2lvbiIsInBhdGgiOiJzY291dCIsIndpZHRoIjo1OCwiaGVpZ2h0Ijo1OH19fX1dLCJhbmltYXRpb25zIjp7ImZsdXR0ZXIiOnsiYm9uZXMiOnsibGVmdC13aW5nIjp7InJvdGF0ZSI6W3sidmFsdWUiOi0xM30seyJ0aW1lIjowLjQ4LCJ2YWx1ZSI6MTl9LHsidGltZSI6MC45NiwidmFsdWUiOi0xM31dfSwicmlnaHQtd2luZyI6eyJyb3RhdGUiOlt7InZhbHVlIjoxM30seyJ0aW1lIjowLjQ4LCJ2YWx1ZSI6LTE5fSx7InRpbWUiOjAuOTYsInZhbHVlIjoxM31dfX19LCJnbGlkZSI6eyJib25lcyI6eyJsZWZ0LXdpbmciOnsicm90YXRlIjpbeyJ2YWx1ZSI6LTZ9LHsidGltZSI6MC40OCwidmFsdWUiOjJ9LHsidGltZSI6MC45NiwidmFsdWUiOi02fV19LCJyaWdodC13aW5nIjp7InJvdGF0ZSI6W3sidmFsdWUiOjZ9LHsidGltZSI6MC40OCwidmFsdWUiOi0yfSx7InRpbWUiOjAuOTYsInZhbHVlIjo2fV19fX19fQ==",
+      "media": {
+        "kind": "spine",
+        "files": [
+          {
+            "name": "garden-scout.atlas",
+            "data": "Z2FyZGVuLXNjb3V0LnBuZwpzaXplOiAxMjgsNjQKZm9ybWF0OiBSR0JBODg4OApmaWx0ZXI6IExpbmVhcixMaW5lYXIKcmVwZWF0OiBub25lCnBtYTogZmFsc2UKc2NvdXQKYm91bmRzOiAwLDAsNjQsNjQKd2luZwpib3VuZHM6IDY0LDAsNjQsNDgK"
+          },
+          {
+            "name": "garden-scout.png",
+            "data": "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"
+          }
+        ]
+      }
+    }
+  ],
+  "assetLibrary": {
+    "folders": [
+      {
+        "id": "00000000-0000-4000-8000-000000000101",
+        "name": "Textures",
+        "parentId": null
+      },
+      {
+        "id": "00000000-0000-4000-8000-000000000102",
+        "name": "Animation",
+        "parentId": null
+      }
+    ],
+    "entries": [
+      {
+        "alias": "project/00000000-0000-4000-8000-000000000001/olive-prism.png",
+        "name": "olive-prism.png",
+        "folderId": "00000000-0000-4000-8000-000000000101",
+        "bundleId": "00000000-0000-4000-8000-000000000201"
+      },
+      {
+        "alias": "project/00000000-0000-4000-8000-000000000002/leaf-pattern.png",
+        "name": "leaf-pattern.png",
+        "folderId": "00000000-0000-4000-8000-000000000101",
+        "bundleId": "00000000-0000-4000-8000-000000000201"
+      },
+      {
+        "alias": "project/00000000-0000-4000-8000-000000000003/corner-frame.png",
+        "name": "corner-frame.png",
+        "folderId": "00000000-0000-4000-8000-000000000101",
+        "bundleId": "00000000-0000-4000-8000-000000000201"
+      },
+      {
+        "alias": "project/00000000-0000-4000-8000-000000000004/garden-tiles.png",
+        "name": "garden-tiles.png",
+        "folderId": "00000000-0000-4000-8000-000000000101",
+        "bundleId": "00000000-0000-4000-8000-000000000201"
+      },
+      {
+        "alias": "project/00000000-0000-4000-8000-000000000005/silk-banner.png",
+        "name": "silk-banner.png",
+        "folderId": "00000000-0000-4000-8000-000000000101",
+        "bundleId": "00000000-0000-4000-8000-000000000201"
+      },
+      {
+        "alias": "project/00000000-0000-4000-8000-000000000006/copper-braid.png",
+        "name": "copper-braid.png",
+        "folderId": "00000000-0000-4000-8000-000000000101",
+        "bundleId": "00000000-0000-4000-8000-000000000201"
+      },
+      {
+        "alias": "project/00000000-0000-4000-8000-000000000007/particle-glow.png",
+        "name": "particle-glow.png",
+        "folderId": "00000000-0000-4000-8000-000000000101",
+        "bundleId": "00000000-0000-4000-8000-000000000201"
+      },
+      {
+        "alias": "project/00000000-0000-4000-8000-000000000008/lantern-flight.json",
+        "name": "lantern-flight.json",
+        "folderId": "00000000-0000-4000-8000-000000000102",
+        "bundleId": "00000000-0000-4000-8000-000000000202"
+      },
+      {
+        "alias": "project/00000000-0000-4000-8000-000000000009/garden-scout.json",
+        "name": "garden-scout.json",
+        "folderId": "00000000-0000-4000-8000-000000000102",
+        "bundleId": "00000000-0000-4000-8000-000000000202"
+      }
+    ],
+    "bundles": [
+      {
+        "id": "00000000-0000-4000-8000-000000000201",
+        "name": "gallery-textures"
+      },
+      {
+        "id": "00000000-0000-4000-8000-000000000202",
+        "name": "gallery-animation"
+      }
+    ]
+  },
+  "lighting": {
+    "enabled": true,
+    "ambient": "#eeeeee"
+  }
+}
