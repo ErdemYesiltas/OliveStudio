@@ -51,7 +51,7 @@ export async function runSceneTest(project: Project, assets: Map<string, Asset>,
       changeScene, debug: false, seed: test.seed,
     }, project.content, surface);
     await runtime.app.scripts.ready;
-    stopTimeline = playCinematic(runtime, project, id, target => changeScene(target, 'replace'));
+    stopTimeline = playCinematic(runtime, project, id);
   }
   try {
     runtime.app.pause();

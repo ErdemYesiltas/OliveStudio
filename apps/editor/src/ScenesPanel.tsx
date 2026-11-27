@@ -1,4 +1,4 @@
-import { ArrowLeft, ArrowRight, Copy, Layers3, Minus, Play, Plus, Square, Star, Trash2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Clapperboard, Copy, Layers3, Minus, Play, Plus, Square, Star, Trash2 } from 'lucide-react';
 import { useState, type ReactNode } from 'react';
 import { IconButton, PanelHeader } from './chrome';
 import { RequiredText } from './Inspector';
@@ -32,13 +32,14 @@ function TransitionFields({ value, change, disabled, back, linkName }: {
   </div>;
 }
 
-export function ScenesPanel({ project, sceneId, editable, playback, open, add, rename, setStartup, remove, setLinks, preview, navigate, goBack, changeWorld, gameplay }: {
+export function ScenesPanel({ project, sceneId, editable, playback, open, add, rename, setStartup, remove, setLinks, preview, navigate, goBack, changeWorld, gameplay, addDirectorCue }: {
   project: Project; sceneId: string; editable: boolean; playback?: ScenePlayback;
   open: (id: string) => void; add: (copy: boolean) => void; rename: (name: string) => void;
   setStartup: () => void; remove: () => void; setLinks: (update: (links: SceneLink[]) => SceneLink[]) => void;
   preview: () => void; navigate: (link: SceneLink) => void; goBack: () => void;
   changeWorld: (world: World) => void;
   gameplay: ReactNode;
+  addDirectorCue?: (link: SceneLink) => void;
 }) {
   const [mode, setMode] = useState<SceneLink['mode']>('replace');
   const [targetId, setTargetId] = useState('');
@@ -115,6 +116,8 @@ export function ScenesPanel({ project, sceneId, editable, playback, open, add, r
             return <div className="scenes-link" key={JSON.stringify([link.mode, link.target])}>
               <div className="scenes-link-heading">
                 <span>{name}</span>
+                {addDirectorCue && <IconButton icon={Clapperboard} label={t('directorAddCue')} description={name}
+                  onClick={() => addDirectorCue(link)} />}
                 <IconButton icon={Minus} label={t('removeSceneLink')} description={name} disabled={!editable}
                   onClick={() => setLinks(links => links.filter(item => !matches(item)))} />
               </div>

@@ -4,7 +4,7 @@ export { CameraService } from './CameraService.js';
 export { CameraStrategy, type CameraStep } from './CameraStrategy.js';
 export type { CameraCurveOptions, CameraDepthOptions, CameraLayerEffects, CameraTheaterCurvature, CameraTheaterOptions } from './CameraDepth.js';
 export { BaseEffect, EffectScope, type EffectDependency, type EffectKey } from '../effects/BaseEffect.js';
-export { CameraPostFX, CameraPostFXs, CameraShakeFX, CameraZoomFX, CameraLimitsFX, CurveFX, DepthBlurFX, LayerPerspectiveFX } from './CameraPostFXs.js';
+export { CameraEffect, CameraPostFX, CameraPostFXs, createCameraPostFX, CameraShakeFX, CameraZoomFX, CameraLimitsFX, CameraMotionFX, CurveFX, DepthBlurFX, TiltShiftFX } from './CameraPostFXs.js';
 export type {
   CameraOptions,
   CameraTweenOptions,
@@ -13,3 +13,5 @@ export type {
   CameraFollowOptions,
   CameraMoveResult,
 } from './types.js';
+
+export { CameraFrameClip } from './CameraFrameClip.js';

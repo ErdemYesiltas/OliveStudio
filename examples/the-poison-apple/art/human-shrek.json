@@ -1,0 +1,123 @@
+{
+  "frames": {
+    "pose-0": {
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 656,
+        "h": 599
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 656,
+        "h": 599
+      },
+      "sourceSize": {
+        "w": 656,
+        "h": 599
+      }
+    },
+    "pose-1": {
+      "frame": {
+        "x": 656,
+        "y": 0,
+        "w": 656,
+        "h": 599
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 656,
+        "h": 599
+      },
+      "sourceSize": {
+        "w": 656,
+        "h": 599
+      }
+    },
+    "pose-2": {
+      "frame": {
+        "x": 0,
+        "y": 599,
+        "w": 656,
+        "h": 599
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 656,
+        "h": 599
+      },
+      "sourceSize": {
+        "w": 656,
+        "h": 599
+      }
+    },
+    "pose-3": {
+      "frame": {
+        "x": 656,
+        "y": 599,
+        "w": 656,
+        "h": 599
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 656,
+        "h": 599
+      },
+      "sourceSize": {
+        "w": 656,
+        "h": 599
+      }
+    }
+  },
+  "animations": {
+    "idle": [
+      "pose-0"
+    ],
+    "watch": [
+      "pose-0",
+      "pose-0",
+      "pose-1",
+      "pose-1",
+      "pose-1"
+    ],
+    "regret": [
+      "pose-0",
+      "pose-0",
+      "pose-1",
+      "pose-2",
+      "pose-2",
+      "pose-3",
+      "pose-2",
+      "pose-2",
+      "pose-3",
+      "pose-2",
+      "pose-1",
+      "pose-2",
+      "pose-2",
+      "pose-3",
+      "pose-3",
+      "pose-1",
+      "pose-0"
+    ]
+  },
+  "meta": {
+    "image": "human-shrek-poses.webp",
+    "size": {
+      "w": 1312,
+      "h": 1198
+    },
+    "scale": "1"
+  }
+}

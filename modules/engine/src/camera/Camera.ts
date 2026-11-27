@@ -4,6 +4,7 @@ import type { Application, Container, Rectangle, Size } from 'pixi.js';
 import { tweenOnClock } from '../clock-tween.js';
 import { CameraDepth, type CameraCurveOptions, type CameraDepthOptions, type CameraLayerEffects, type CameraTheaterOptions } from './CameraDepth.js';
 import { CameraPostFXs } from './CameraPostFXs.js';
+import { resolveCameraEase } from './easing.js';
 import type {
   CameraFocusOptions,
   CameraFollowOptions,
@@ -96,8 +97,8 @@ export class Camera {
 
   constructor(target: Container, options: CameraOptions = {}) {
     this._target = target;
-    this.depth = new CameraDepth(target, options.app);
     this._viewport = options.viewport;
+    this.depth = new CameraDepth(target, options.app, () => options.app?.screen ?? this._viewportSize());
     this._opts = options;
     this._state = {
       x: target.x,
@@ -227,9 +228,13 @@ export class Camera {
   }
 
   /** Compose perspective, curve and background blur on the supplied top-level layers. */
-  applyLayerEffects({ perspective, curve, blur, blurs = [] }: CameraLayerEffects,
+  applyLayerEffects({ perspective, curve, blur, blurs = [], optics, shakeLayers, filters }: CameraLayerEffects,
     layers?: readonly Container[], perspectiveLayers?: readonly Container[]) {
     if (this._disposed) return;
+    if (optics?.length || shakeLayers || filters?.previews?.length) {
+      this.depth.applyOptics(optics ?? [], layers, shakeLayers, filters);
+      return;
+    }
     if (curve && (!Number.isFinite(curve.angle) || curve.angle < 0 || curve.angle > 90)) {
       throw new RangeError('Camera curve angle must be between 0 and 90 degrees');
     }
@@ -318,9 +323,9 @@ export class Camera {
       this._shakeTween = tweenOnClock(this._app?.ticker, progress, {
         t: 1,
         duration: ms / 1000,
-        ease: 'none',
+        ease: opts.ease ? resolveCameraEase(opts.ease) : 'none',
         onUpdate: () => {
-          const decay = 1 - progress.t;
+          const decay = Math.max(0, 1 - progress.t);
           this._shake.x = jitter(intensity * decay);
           this._shake.y = jitter(intensity * decay);
           this._shake.rotation = rotation ? jitter(rotation * decay) : 0;

@@ -24,7 +24,7 @@ export interface DirectorStep {
     /** Strategy canonical type or registered alias. */
     type: string;
     /** Strategy-specific payload. Variable references like `"$payout"` are resolved at run time. */
-    [key: string]: unknown;
+    [key: string]: any;
 }
 
 /** Run-time variable bag — strategy-specific payload may reference these as `"$name"`. */

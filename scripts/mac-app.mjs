@@ -31,11 +31,15 @@ async function buildEditor(stage, mode) {
  run('pnpm',['--filter','@olivestudio/editor','build','--outDir',join(appDir,'renderer'),'--emptyOutDir']);
  run('pnpm',['--filter','@olivestudio/editor','build:native',join(appDir,'asset-import.cjs')]);
  await cp(join(source,'desktop.mjs'),join(appDir,'main.mjs'));
- await cp(join(source,'preload.cjs'),join(appDir,'preload.cjs'));
  await cp(join(source,'network-desktop.mjs'),join(appDir,'network-desktop.mjs'));
+ await cp(join(source,'editor-host.mjs'),join(appDir,'editor-host.mjs'));
  await cp(join(source,'locales'),join(appDir,'locales'),{recursive:true});
  await mkdir(join(appDir,'examples'));
  await cp(join(root,'examples/object-gallery/object-gallery.json'),join(appDir,'examples/object-gallery.json'));
+ await cp(join(root,'examples/moonlight-theatre/moonlight-theatre.json'),join(appDir,'examples/moonlight-theatre.json'));
+ await cp(join(root,'examples/the-poison-apple/the-poison-apple.json'),join(appDir,'examples/the-poison-apple.json'));
+ await cp(join(root,'examples/3d-photo/3d-photo.json'),join(appDir,'examples/3d-photo.json'));
+ await cp(join(root,'examples/skeleton2d/skeleton2d.json'),join(appDir,'examples/skeleton2d.json'));
  const manifest=JSON.parse(await readFile(join(source,'package.json'),'utf8'));
  await writeFile(join(appDir,'package.json'),JSON.stringify({
   name:'olivestudio',productName:'OliveStudio',version:manifest.version,type:'module',main:'main.mjs',
@@ -53,7 +57,7 @@ async function buildEditor(stage, mode) {
   electronVersion:devDependencies.electron,
   electronDist:resolve(electron,'../../../..'),
   directories:{output:stage},
-  files:['main.mjs','preload.cjs','asset-import.cjs','game-export.cjs','localhub.cjs','network-server/server.mjs','network-desktop.mjs','renderer/**/*','locales/**/*.{mjs,json}','examples/*.json','package.json'],
+  files:['main.mjs','preload.cjs','asset-import.cjs','game-export.cjs','localhub.cjs','network-server/server.mjs','network-desktop.mjs','editor-host.mjs','renderer/**/*','locales/**/*.{mjs,json}','examples/*.json','package.json'],
   extraResources:[{from:join(root,'third-party/SPINE-RUNTIMES-LICENSE.txt'),to:'licenses/SPINE-RUNTIMES-LICENSE.txt'}],
   npmRebuild:false,
  }));

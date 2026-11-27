@@ -1,5 +1,6 @@
 import { Howl } from 'howler';
 import { z } from 'zod';
+import { DirectorAudio } from './directorAudio';
 import { t } from './i18n';
 import { busEffects, type Mixer } from '@rewrite/audio/contracts';
 import { howlerProvider, routeHowlerVoice } from '@rewrite/audio-howler';
@@ -203,11 +204,15 @@ export class SceneAudio {
   private clockSpeed = 1;
   private mixer?: Mixer;
   private readonly duckGain = new Map<string, number>();
+  private readonly sourceGain = new Map<string, number>();
+  private readonly pausedSources = new Set<string>();
 
   constructor(private readonly options: () => Options, private readonly publish: (id: string, status?: SourceStatus) => void) {}
 
   sync(sources: PositionedSource[], listener: Point) {
     this.sources = new Map(sources.map(source => [source.id, source]));
+    for (const id of this.sourceGain.keys()) if (!this.sources.has(id)) this.sourceGain.delete(id);
+    for (const id of this.pausedSources) if (!this.sources.has(id)) this.pausedSources.delete(id);
     this.listener = listener;
     for (const [id, voice] of this.voices) {
       const source = this.sources.get(id);
@@ -216,10 +221,10 @@ export class SceneAudio {
     }
   }
 
-  private mix({ source, position }: PositionedSource): Mix {
+  private mix({ id, source, position }: PositionedSource): Mix {
     const options = this.options();
     const { gain, pan } = spatialMix(source, position, this.listener);
-    return { volume: source.volume * this.busVolume(source.bus) * gain, pan, bus: source.bus,
+    return { volume: source.volume * (this.sourceGain.get(id) ?? 1) * this.busVolume(source.bus) * gain, pan, bus: source.bus,
       rate: Math.max(0.25, Math.min(4, source.rate * this.clockSpeed)), loop: source.loop, muted: options.muted,
       limit: source.loop ? 1 : source.voiceLimit };
   }
@@ -264,7 +269,7 @@ export class SceneAudio {
 
   play(id: string) {
     const source = this.sources.get(id);
-    if (!source || this.transport === 'paused') return;
+    if (!source || this.transport === 'paused' || this.pausedSources.has(id)) return;
     let voice = this.voices.get(id);
     if (!voice || voice.failed) {
       voice = new SourceVoice(source.url, this.mix(source), status => this.publish(id, status));
@@ -282,10 +287,29 @@ export class SceneAudio {
     this.publish(id);
   }
 
+  pauseSource(id: string) {
+    if (!this.sources.has(id)) return;
+    this.pausedSources.add(id);
+    this.voices.get(id)?.pause();
+  }
+
+  resumeSource(id: string) {
+    this.pausedSources.delete(id);
+    if (!this.clockPaused && this.transport !== 'paused') this.voices.get(id)?.resume();
+  }
+
+  setSourceGain(id: string, gain: number) {
+    const source = this.sources.get(id);
+    if (!source) return;
+    this.sourceGain.set(id, gain);
+    const voice = this.voices.get(id);
+    if (voice && !voice.failed) voice.update(this.mix(source));
+  }
+
   playScene(): AudioTransport {
     if (this.transport === 'paused') {
       this.transport = 'playing';
-      if (!this.clockPaused) for (const voice of this.voices.values()) if (!voice.failed) voice.resume();
+      if (!this.clockPaused) for (const [id, voice] of this.voices) if (!voice.failed && !this.pausedSources.has(id)) voice.resume();
     } else if (this.transport === 'stopped') {
       this.transport = 'playing';
       for (const { id, source } of this.sources.values()) if (source.autoplay) this.play(id);
@@ -302,6 +326,8 @@ export class SceneAudio {
   stopScene(): AudioTransport {
     for (const id of this.voices.keys()) this.stop(id);
     this.duckGain.clear();
+    this.sourceGain.clear();
+    this.pausedSources.clear();
     return this.transport = 'stopped';
   }
 
@@ -309,10 +335,10 @@ export class SceneAudio {
     if (this.clockPaused === paused) return;
     this.clockPaused = paused;
     if (this.transport === 'paused') return;
-    for (const voice of this.voices.values()) {
+    for (const [id, voice] of this.voices) {
       if (voice.failed) continue;
       if (paused) voice.pause();
-      else voice.resume();
+      else if (!this.pausedSources.has(id)) voice.resume();
     }
   }
 
@@ -328,7 +354,7 @@ export class SceneAudio {
     if (!this.clockPaused || this.transport === 'paused') return;
     for (const [id, voice] of this.voices) {
       const source = this.sources.get(id);
-      if (source && !voice.failed) voice.step(ms, source.source.rate);
+      if (source && !voice.failed && !this.pausedSources.has(id)) voice.step(ms, source.source.rate);
     }
   }
 
@@ -342,6 +368,7 @@ export class SceneAudio {
 export class EditorAudio {
   private active?: Howl;
   readonly sources: SceneAudio;
+  readonly director: DirectorAudio;
 
   constructor(
     private options: Options,
@@ -350,12 +377,17 @@ export class EditorAudio {
     publishSource: (id: string, status?: SourceStatus) => void,
   ) {
     this.sources = new SceneAudio(() => this.options, publishSource);
+    this.director = new DirectorAudio(sourceFor, layer => ({
+      muted: this.options.muted,
+      volume: this.options.volume * (audioBuses.find(bus => bus === layer) ? this.options[layer as Source['bus']] : 1),
+    }));
   }
 
   configure(options: Options) {
     if (options.volume !== this.options.volume) this.active?.volume(options.volume);
     if (options.muted !== this.options.muted) this.active?.mute(options.muted);
     this.options = options;
+    this.director.refresh();
   }
 
   play(alias: string) {
@@ -402,6 +434,7 @@ export class EditorAudio {
 
   destroy() {
     this.release();
+    this.director.reset();
     this.sources.destroy();
   }
 

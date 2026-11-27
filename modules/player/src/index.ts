@@ -2,6 +2,7 @@ import type {Json} from '@rewrite/sdk';
 import {is2DEntity,spatialComponent,spatialType} from '@rewrite/scene';
 import {destroyLocalApplication} from '@olivestudio/engine/lifecycle';
 import {PixiGameApplication} from '@olivestudio/engine/game-application';
+import {CameraFrameClip} from '@olivestudio/engine/camera';
 import {GameSceneObjects,GameSceneTransitions} from '@olivestudio/engine/game-scene';
 import {clientEntity} from '@rewrite/multiplayer/contracts';
 import 'pixi.js/unsafe-eval';
@@ -16,7 +17,7 @@ import {SceneVisualProjection} from '@olivestudio/engine/scene-visuals';
 import {screenSpace,screenOffset} from '@olivestudio/engine/screen';
 import {createDebugOverlay,type DebugStats} from '@rewrite/render-pixi/overlay';
 import {clickTarget} from '@olivestudio/engine/click';
-import {cameraControls,idleCamera,snapCamera,resolveCameraFrame,viewPlacement,viewOffset,type CameraView,type RuntimeCameraState} from '@olivestudio/engine/runtime-camera';
+import {cameraControls,cameraSubjectFromDisplay,idleCamera,snapCamera,resolveCameraFrame,viewPlacement,viewOffset,type CameraView,type RuntimeCameraState} from '@olivestudio/engine/runtime-camera';
 import {clearSceneDecorators,decorateScene} from '@rewrite/render-pixi/visuals';
 import type {TextureLease} from '@olivestudio/engine/textures';
 import {isActive,createSceneInteractions,type TimerSession,type InteractionSession,builtinActions,mediaActions,visualActions,languageActions,cameraActions,saveActions,LocalizationSchema,localizationSection,createLanguageStore,matchLanguage,type LanguageStore,GlobalStore,formatRuntimeText,GlobalsSchema,defaultGlobals,globalsSection} from '@rewrite/interactions';
@@ -25,6 +26,7 @@ export type {GameBundle} from './plugin';
 /** Runtime-only Pixi projection. This package imports no React or Electron APIs. */
 export class GamePlayer{
  readonly app=new PixiGameApplication();private root=new Container();
+ private readonly cameraClip=new CameraFrameClip(this.app.stage,this.root);
  /** Screen Space (HUD) objects: above the world, outside the camera, anchored when the screen size changes. */
  private ui=new Container();private timers:TimerSession|null=null;
  /** F3 debug overlay when the project turns it on for exported games. */
@@ -81,7 +83,7 @@ export class GamePlayer{
   // The project stage (default 960x540) is drawn at device density and scaled by CSS to whatever box the host gives it; Pixi maps pointers through the canvas rect.
   Object.assign(this.app.canvas.style,{display:'block',width:'100%',height:'100%',touchAction:'none'});if(RenderSettingsSchema.parse(this.bundle.project.extensions[renderSettingsSection]??{version:1}).debugOverlay){this.overlay=createDebugOverlay(this.host,()=>this.debugStats());window.addEventListener('keydown',this.toggleOverlay);}this.host.appendChild(this.app.canvas);this.app.stage.addChild(this.root,this.ui);window.addEventListener('resize',this.resizePresentation);
   // World-space pointer for plugins (physics dragging); object clicks go to the topmost object that listens (clickTarget).
-  this.app.stage.eventMode='static';this.app.stage.hitArea=this.app.screen;const point=(phase:'down'|'move'|'up')=>(e:{global:{x:number;y:number}})=>{if(!this.session||this.loading||this.additions?.active)return;const p=this.root.toLocal(e.global);for(const fn of this.pointers)fn(phase,p.x,p.y);};this.app.stage.on('pointerdown',point('down'));this.app.stage.on('globalpointermove',point('move'));this.app.stage.on('pointerup',point('up'));this.app.stage.on('pointerupoutside',point('up'));this.app.stage.on('pointertap',e=>{if(!this.session||this.loading||this.additions?.active||!this.interactions)return;const id=clickTarget(this.app.renderer.events,e.global,n=>{for(const x of this.extensions){const id=x.hitEntity?.(n,e.global,id=>this.interactions?.listens('pointer.click',id)??false);if(id)return id;}return this.nodes.get(n.label)===n?n.label:undefined;},id=>this.interactions?.listens('pointer.click',id)??false);if(!id)return;this.interactions.emit({type:'pointer.click',sourceId:id,silent:this.session.paused});this.app.game.present();});const atlas=this.bundle.atlas;
+  this.app.stage.eventMode='static';this.app.stage.hitArea=this.app.screen;const point=(phase:'down'|'move'|'up')=>(e:{global:{x:number;y:number}})=>{if(!this.session||this.loading||this.additions?.active||(phase==='down'&&!this.cameraClip.contains(e.global)))return;const p=this.root.toLocal(e.global);for(const fn of this.pointers)fn(phase,p.x,p.y);};this.app.stage.on('pointerdown',point('down'));this.app.stage.on('globalpointermove',point('move'));this.app.stage.on('pointerup',point('up'));this.app.stage.on('pointerupoutside',point('up'));this.app.stage.on('pointertap',e=>{if(!this.session||this.loading||this.additions?.active||!this.interactions)return;const id=clickTarget(this.app.renderer.events,e.global,n=>{for(const x of this.extensions){const id=x.hitEntity?.(n,e.global,id=>this.interactions?.listens('pointer.click',id)??false);if(id)return id;}return this.nodes.get(n.label)===n?n.label:undefined;},id=>this.interactions?.listens('pointer.click',id)??false);if(!id)return;this.interactions.emit({type:'pointer.click',sourceId:id,silent:this.session.paused});this.app.game.present();});const atlas=this.bundle.atlas;
   if(atlas){
    const pages:Texture[]=[];
    for(const url of atlas.pages){const texture=await this.loadImage(url,'Atlas page unavailable');if(!texture)return;pages.push(texture);}
@@ -190,7 +192,14 @@ export class GamePlayer{
    extension.decorate?.(entities,node,renderer);
   }
  }
- private projectFrame(){if(!this.session)return;const entities=this.session.world.entities as unknown as Entity[];for(const e of entities){const node=this.nodes.get(e.id);if(!node)continue;const t=transform(e),screen=screenSpace(e),shift=screen?screenOffset(screen.anchor,this.bundle.project.stage??this.authoredStage,this.authoredStage):{x:0,y:0};applyTransform2D(node,t,shift);node.visible=e.active;this.visuals.update(e);}this.decorate(entities);{const stage=this.bundle.project.stage??{width:960,height:540},view=this.currentView=resolveCameraFrame(this.camera,this.session.time,stage,entities,id=>{const follow=this.nodes.get(id);return follow?this.root.toLocal(follow.toGlobal({x:0,y:0})):undefined;}),p=viewPlacement(view,stage);this.root.pivot.set(p.pivot.x,p.pivot.y);this.root.position.set(p.position.x,p.position.y);this.root.scale.set(p.scale);this.root.angle=p.angle;this.host.dataset.camera=JSON.stringify(viewOffset(view,stage));this.host.dataset.view=JSON.stringify(view);}}
+ private cameraSubject=(id:string,measureBounds:boolean)=>{
+  const target=this.nodes.get(id);
+  if(!target)return;
+  for(let parent:Container|null=target;parent?.visible;parent=parent.parent){
+   if(parent===this.root)return cameraSubjectFromDisplay(target,this.root,measureBounds);
+  }
+ };
+ private projectFrame(){if(!this.session)return;const entities=this.session.world.entities as unknown as Entity[];for(const e of entities){const node=this.nodes.get(e.id);if(!node)continue;const t=transform(e),screen=screenSpace(e),shift=screen?screenOffset(screen.anchor,this.bundle.project.stage??this.authoredStage,this.authoredStage):{x:0,y:0};applyTransform2D(node,t,shift);node.visible=e.active;this.visuals.update(e);}this.decorate(entities);{const stage=this.bundle.project.stage??{width:960,height:540},view=this.currentView=resolveCameraFrame(this.camera,this.session.time,stage,entities,this.cameraSubject,this.authoredStage),p=viewPlacement(view,stage);this.cameraClip.update(view.frame);this.root.pivot.set(p.pivot.x,p.pivot.y);this.root.position.set(p.position.x,p.position.y);this.root.scale.set(p.scale);this.root.angle=p.angle;this.host.dataset.camera=JSON.stringify(viewOffset(view,stage));this.host.dataset.view=JSON.stringify(view);}}
  private publishFrame(){
   if(!this.session)return;
   const entities=this.session.world.entities as unknown as readonly Entity[];

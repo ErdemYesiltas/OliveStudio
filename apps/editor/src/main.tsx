@@ -1,3 +1,9 @@
+import { effectPreviewKey, type EffectPreviewMode } from './effectPreview';
+import { effectEntries } from '@olivestudio/engine';
+import { CameraPostFXSchema, type CameraPostFXData } from '@olivestudio/engine/runtime-camera';
+import { ObjectEffectsSchema, withEffectSettings, type ObjectEffectData } from './objectEffects';
+import type { CanvasAction } from './vscodeCanvas';
+import type { ReactNode } from 'react';
 import { defaultNetworkPlayer, ensureMovementActions, MultiplayerSettingsSchema, type NetStatus, type ServerStatus, type MultiplayerSettings } from '@rewrite/multiplayer/contracts';
 import { networkPlan } from './networkModel';
 import { MultiplayerPanel } from './MultiplayerPanel';
@@ -10,11 +16,13 @@ import { AiStudio } from './AiStudio';
 import { applyAssistantEdits } from './assistantEdits';
 import { emptySkills } from '@rewrite/ai-skills';
 import { GameplayLab, type Character } from './GameplayLab';
+import { runSceneTest, type TestReport } from './sceneTests';
+import { testFingerprint } from './project';
 import { TestStudio } from './TestStudio';
 import { ProjectHistoryPanel } from './ProjectHistory';
 import { ProjectSearch } from './ProjectSearch';
 import { Brushes } from './Brushes';
-import { BrushesSchema } from '@rewrite/production-tools/contracts';
+import { BrushesSchema, CharacterSchema } from '@rewrite/production-tools/contracts';
 import { scatter, terrainStroke } from '@rewrite/production-tools/models';
 import { InputMapSchema } from '@rewrite/input';
 import { AudioStudioPanel } from './AudioStudioPanel';
@@ -22,7 +30,7 @@ import { ShaderLibraryPanel } from './ShaderLibraryPanel';
 import { emptyShaderLibrary, ShaderLibrarySchema, type ShaderLibrary } from '@rewrite/render-pixi/shaders';
 import { defaultMixer, MixerSchema, type Mixer } from '@rewrite/audio/contracts';
 import { contentSchema, emptyContent, type GameContent } from './gameContent';
-import { cinematicsSchema, pruneCinematics, type ClipData } from './cinematics';
+import { changeClip, cinematicsSchema, cueLimit, mainClip, pruneCinematics, type ClipData, type Cue } from './cinematics';
 import { recordTransforms, type RecordTarget } from './timelineRecording';
 import { defaultPhysicsSettings } from '@rewrite/physics/contracts';
 import { PhysicsPanel } from './PhysicsPanel';
@@ -33,32 +41,37 @@ import { BehaviorSchema, type Behavior } from '@rewrite/behavior/contracts';
 import { GraphsSchema } from '@rewrite/production-tools/contracts';
 import { compileGraph, type Graph } from '@rewrite/production-tools/models';
 import { ScriptLibrarySchema, type ScriptLibrary } from '@rewrite/scripts/contracts';
+import { summarize } from '@rewrite/profiler';
 import { DiagnosticsPanel, previewProfileRecorder, revealScript, ScriptsPanel, ScriptsProvider } from './ScriptsPanel';
-import { useCallback, useEffect, useEffectEvent, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useEffectEvent, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import { createRoot } from 'react-dom/client';
 import { emptyGraph, GraphSchema as LogicGraphSchema, localizeText, type Graph as LogicGraph, type Globals } from '@rewrite/interactions';
 import { logicCatalog } from './sceneLogic';
 import { Download,
-  Camera, CircleHelp, Columns2, Ellipsis, FilePlus2, Home, FolderOpen, Frame, Grid2X2, Layers3, Pause, Play, Redo2, Rows2,
-  Save, Search, Settings2, SlidersHorizontal, Square, StepForward, Trash2, Undo2, X,
+  Bone, Camera, CircleHelp, Columns2, Ellipsis, FilePlus2, Home, FolderOpen, Frame, Grid2X2, Layers3, Pause, Play, Redo2, Rows2,
+  Save, Scan, Search, Settings2, SlidersHorizontal, Square, StepForward, Trash2, Undo2, X,
 } from 'lucide-react';
 import { type Asset, type AssetBundle, importedAssetsSchema, projectBundle, readManifest } from './assets';
 import type { AudioStatus, AudioTransport, SourceStatus } from './audio';
-import { hint, IconButton, PanelHeader, Tooltips } from './chrome';
+import { hint, IconButton, PanelHeader, PreviewMode, Tooltips } from './chrome';
 import { locale, objectTypeKey, t } from './i18n';
 import { addLibraryEntries, assignObjectAsset, changeLibrary, createCatalog, extension, type CatalogEntry, type LibraryAction } from './assetLibrary';
 import { sliceAsset } from './sliceAsset';
+import { loadAnimation } from './animationAssets';
+import { createSpineAsset, remapProjectSpineReferences, replaceProjectSpineBinary } from './spineAssets';
 import { valueDrop } from './valueDrag';
 import { AssetsPanel, type AssetsPanelHandle } from './AssetsPanel';
 import { AssetBundles } from './AssetBundles';
 import { DockWorkspace, PanelsMenu } from './DockWorkspace';
-import { activeTab, defaultLayout, panelIds, readPanelLayout, savePanelLayout, setPanelOpen } from './panelLayout';
+import { activeTab, defaultLayout, panelIds, readPanelLayout, savePanelLayout, setPanelOpen, type PanelId } from './panelLayout';
+import { AnimatedAssetPreview, type AnimationPreviewSelection } from './AnimatedAssetPreview';
 import { AssetInspector } from './AssetInspector';
+import { SpineStudio } from './SpineStudio';
 import { Inspector, MultiInspector } from './Inspector';
 import { Hub, showHubAtStartup } from './Hub';
 import { Settings, editSetting, type PreviewProfile } from './Settings';
 import { Hierarchy, objectIcons } from './Hierarchy';
-import { SceneView, type EditView, type ObjectTransform } from './runtime';
+import { SceneView, type CameraRequirements, type EditView, type ObjectTransform } from './runtime';
 import { supportsSkew, Viewport, ViewportProfiles, ViewportTabs, type Tool, type ViewportMode } from './Viewport';
 import { ViewportQuickTools } from './ViewportQuickTools';
 import { EditViewMenu, PlayMenu } from './ViewportMenus';
@@ -83,23 +96,40 @@ import {
   changeObject, configRegistry, configSchema, createObject, emptyScene, findObject, moveObject, sampleScene, validationMessage,
   type Scene, type SceneConfig, type SceneObject,
 } from './scene';
+import { connectScriptDebug } from './vscodeDebug';
 import './style.css';
 
-const packRoot = new URL(import.meta.env.BASE_URL + 'assetpack/', window.location.href).href;
+const packRoot = document.querySelector<HTMLMetaElement>('meta[name="olive-asset-root"]')?.content ?? new URL(import.meta.env.BASE_URL + 'assetpack/', window.location.href).href;
+function projectFromFile(file: OpenedScene) {
+  const raw: unknown = JSON.parse(file.text);
+  return parseProject(file.configText !== undefined && raw && typeof raw === 'object' ?
+    { ...raw, config: configSchema.parse(JSON.parse(file.configText)) } : raw, file.name.replace(/\.json$/i, ''));
+}
+
 declare const __ASSETPACK_REBUILD__: boolean;
 
 const development = __ASSETPACK_REBUILD__;
+const emptyRequirements: CameraRequirements = new Map();
+const getEmptyRequirements = () => emptyRequirements;
+const subscribeEmptyRequirements = () => () => {};
+const vscodeCanvas = document.querySelector('meta[name="olive-vscode-canvas"]') !== null || !!window.oliveHost;
 const quickObjectTypes = ['Container', 'Sprite', 'Text'] as const;
 const additionalObjectTypes = ['Graphics', 'BitmapText', 'TilingSprite', 'NineSliceSprite', 'Tilemap',
   'MeshPlane', 'MeshRope', 'Particles', 'AnimatedSprite', 'Spine', 'AudioSource', 'AudioListener', 'Light2D', 'UIWidget'] as const;
 
-function objectFromAsset(asset: Asset, position?: { x: number; y: number }) {
+function objectFromAsset(asset: Asset, position?: { x: number; y: number }, selection?: AnimationPreviewSelection) {
   const label = asset.name ?? asset.alias;
   const placement = position ? { position: { x: Math.round(position.x), y: Math.round(position.y) } } : {};
   const anchor = { x: 0.5, y: 0.5 };
   if (asset.kind === 'image') return { ...createObject('Sprite'), label, ...placement, anchor, texture: asset.alias };
   if (asset.kind === 'sheet') return { ...createObject('AnimatedSprite'), label, ...placement, anchor, asset: asset.alias };
-  if (asset.kind === 'spine') return { ...createObject('Spine'), label, ...placement, asset: asset.alias };
+  if (asset.kind === 'spine') {
+    const playback = selection ? {
+      animation: selection.animation, loop: selection.loop, skin: selection.skin,
+      ...(selection.skinLayers.length && { skinLayers: selection.skinLayers }),
+    } : {};
+    return { ...createObject('Spine'), label, ...placement, ...playback, asset: asset.alias };
+  }
   return { ...createObject('AudioSource'), label, ...placement, asset: asset.alias };
 }
 
@@ -168,6 +198,10 @@ type Snapshot = { project: Project; sceneId: string; selection: string[] };
 type History = { active: Snapshot; past: Snapshot[]; future: Snapshot[] };
 const sampleProject = projectFromScene(sampleScene, 'Olive Grove');
 function Editor() {
+  useEffect(() => {
+    const host = window.oliveHost;
+    if (host?.bound) return connectScriptDebug(host);
+  }, []);
   const [history, setHistory] = useState<History>({
     active: { project: sampleProject, sceneId: sampleProject.startup, selection: ['sample-sprite'] }, past: [], future: [],
   });
@@ -208,8 +242,23 @@ function Editor() {
     try { return localStorage.getItem('olivestudio:colliders') === 'true'; }
     catch { return false; }
   });
+  const [spineBounds, setSpineBounds] = useState(false);
   const displayedObjects = useMemo(() => playback ?
     [playback.main, ...playback.added].flatMap(id => sceneRecord(gameProject, id).objects) : [], [playback, gameProject]);
+  const liveEffectSources = useMemo(() => {
+    const sources = new Map<string, { sceneId: string; node: SceneObject; locked: boolean }>();
+    if (!playback || !liveSnapshot) return sources;
+    for (const id of [playback.main, ...playback.added]) {
+      const authored = selectionTree(project.scenes.find(scene => scene.id === id)?.objects ?? []);
+      for (const { node } of selectionTree(sceneRecord(gameProject, id).objects).values()) {
+        const current = authored.get(node.id);
+        if (current?.node.type === node.type) {
+          sources.set(node.id, { sceneId: id, node: current.node, locked: !!(current.node.locked || current.inheritedLock) });
+        } else sources.set(node.id, { sceneId: id, node, locked: true });
+      }
+    }
+    return sources;
+  }, [playback, liveSnapshot, gameProject, project.scenes]);
   const gameScene = useMemo(() => playback ? {
     id: playback.main, cameraId: cameraInScene(sceneRecord(gameProject, playback.main).objects)?.id,
     transition: playback.transition,
@@ -228,7 +277,6 @@ function Editor() {
   function select(selection: string[]) {
     setInspection([]);
     if (playback && liveActive) {
-      liveView.current?.stopEffectPreview();
       setLiveSelection(selection);
       return;
     }
@@ -244,6 +292,10 @@ function Editor() {
     try { return localStorage.getItem('olive.recovery.auto') !== 'off'; } catch { return true; }
   });
   const configDocument = useRef({ token: undefined as string | undefined, draft: '' });
+  const publishedProject = useRef<Project | undefined>(undefined);
+  const publishedWorkspace = useRef<string | undefined>(undefined);
+  const pendingWorkspace = useRef<HostWorkspaceState | undefined>(undefined);
+  const currentDocument = useRef<string | undefined>(undefined);
   const queuedConfig = useRef(project.config);
   const appliedConfig = useRef(project.config);
   const configWrites = useRef<Promise<void>>(Promise.resolve());
@@ -254,6 +306,7 @@ function Editor() {
   const [busy, setBusy] = useState(true);
   const [ready, setReady] = useState(false);
   const [fileError, setFileError] = useState<{ title: string; detail: string }>();
+  const [importingAssets, setImportingAssets] = useState(false);
   const checkpoint = useEffectEvent(async () => {
     const recovery = window.oliveFiles?.recovery;
     if (!recovery || busy || prefabEdit || recoveryProject.current === project) return;
@@ -278,18 +331,43 @@ function Editor() {
   const [hubOpen, setHubOpen] = useState(showHubAtStartup);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [exportOpen, setExportOpen] = useState(false);
+  const assetPreviewDialog = useRef<HTMLDialogElement>(null);
+  const [nativeAssetPreview, setNativeAssetPreview] = useState<Asset>();
+  const [spineStudio, setSpineStudio] = useState<{
+    asset: Asset; initialClip?: { animation: string | null; skin: string | null };
+  }>();
+  useEffect(() => { if (nativeAssetPreview) assetPreviewDialog.current?.showModal(); }, [nativeAssetPreview]);
   const [searchOpen, setSearchOpen] = useState(false);
   const [contentTabRequest, requestContentTab] = useState<{ tab: 'dialogues' | 'achievements' | 'data' }>();
   const [previewProfile, setPreviewProfile] = useState<PreviewProfile>({ device: 'desktop', orientation: 'landscape' });
   const [editView, setEditView] = useState<EditView>('normal');
   const [editClockRunning, setEditClockRunning] = useState(false);
+  const [activeEffectPreviews, setActiveEffectPreviews] = useState<ReadonlySet<string>>(() => new Set());
+  const [previewModes, setPreviewModes] = useState<ReadonlyMap<string, EffectPreviewMode>>(() => new Map());
+  const [snapshotAlias, setSnapshotAlias] = useState<string>();
+  function markEffectPreview(id: string, key: string, active: boolean) {
+    const identity = effectPreviewKey(id, key);
+    setActiveEffectPreviews(current => {
+      const next = new Set(current);
+      if (active) next.add(identity);
+      else next.delete(identity);
+      return next;
+    });
+  }
   const [settingsProfile, setSettingsProfile] = useState(previewProfile);
   const resolvedConfig = useMemo(() => configRegistry.forPreview(scene.config, previewProfile.device, previewProfile.orientation),
     [scene.config, previewProfile]);
   const authoredSize = scene.config.renderer;
   const [panelLayout, setPanelLayout] = useState(readPanelLayout);
-  useEffect(() => { savePanelLayout(panelLayout); }, [panelLayout]);
-  const scenePanel = panelLayout.panels.find(panel => panel.id === 'scene')!;
+  useEffect(() => { if (!vscodeCanvas) savePanelLayout(panelLayout); }, [panelLayout]);
+  const scenePanel = vscodeCanvas ? { open: true, minimized: false } : panelLayout.panels.find(panel => panel.id === 'scene')!;
+  function focusPanel(id: PanelId) {
+    if (vscodeCanvas) {
+      if (id !== 'scene') void window.oliveHost?.focusView(id).catch(console.warn);
+    } else {
+      setPanelLayout(current => setPanelOpen(current, id, true));
+    }
+  }
   const [bundleSelection, setBundleSelection] = useState<string[]>([]);
   const [bundleFocus, setBundleFocus] = useState(0);
   const assetsPanel = useRef<AssetsPanelHandle>(null);
@@ -300,6 +378,12 @@ function Editor() {
   const catalog = useMemo(() => createCatalog(pack.bundles, imports, scene.assetLibrary,
     [t('projectAssets'), t('builtInAssets')]), [pack.bundles, imports, scene.assetLibrary]);
   const assets = useMemo(() => new Map(catalog.entries.map(asset => [asset.alias, asset])), [catalog.entries]);
+  useLayoutEffect(() => {
+    if (!snapshotAlias || !assets.has(snapshotAlias)) return;
+    assetsPanel.current?.reveal(snapshotAlias, true);
+    setInspection([snapshotAlias]);
+    setSnapshotAlias(undefined);
+  }, [assets, snapshotAlias]);
   const inspected = inspection.flatMap(alias => {
     const asset = assets.get(alias);
     return asset ? [asset] : [];
@@ -312,6 +396,9 @@ function Editor() {
   const input = useRef<HTMLInputElement>(null);
   const view = useRef<SceneView | null>(null);
   const liveView = useRef<SceneView | null>(null);
+  const previewRuntime = (liveActive ? liveView : view).current;
+  const requirements = useSyncExternalStore(previewRuntime?.subscribeEffectRequirements ?? subscribeEmptyRequirements,
+    previewRuntime?.getEffectRequirements ?? getEmptyRequirements);
   const generation = useRef(0);
   const fileWork = useRef(false);
   const tree = useMemo(() => selectionTree(scene.objects), [scene.objects]);
@@ -328,6 +415,8 @@ function Editor() {
   const inspectionIds = inspectLive ? liveSelection ?? selectedIds : selectedIds;
   const inspectionNodes = inspectionIds.flatMap(id => inspectionTree.get(id)?.node ?? []);
   const inspectionNode = inspectionNodes.at(-1);
+  const liveEffectSource = inspectLive && inspectionNode ? liveEffectSources.get(inspectionNode.id) : undefined;
+  const effectInspectionNode = inspectionNode && liveEffectSource ? withEffectSettings(inspectionNode, liveEffectSource.node) : inspectionNode;
   const inspectionGroups = inspectLive ? [...inspectionTree.values()].flatMap(({ node }) =>
     node.type === 'Container' && node.children.length ? [node.id] : []) : expandableGroups;
   const selectedPrefabRoot = prefabOwner(scene.objects, selectedId);
@@ -349,9 +438,10 @@ function Editor() {
   const singleEditable = selectedIds.length === 1 && !selectedLocked;
   const tool = requestedTool === 'skew' && (!supportsSkew(selected) || !singleEditable) ? 'select' : requestedTool;
 
-  const install = useCallback(async (next: Project, name: string, selection: string | null, configToken?: string) => {
+  const install = useCallback(async (next: Project, name: string, selection: string | null, configToken?: string, workspace?: HostWorkspaceState) => {
     const ticket = ++generation.current;
-    const active = readScene(next, next.startup);
+    const activeScene = next.scenes.find(item => item.id === workspace?.scene)?.id ?? next.startup;
+    const active = readScene(next, activeScene);
     setBusy(true);
     setFileError(undefined);
     let candidate: SceneView | undefined;
@@ -377,21 +467,22 @@ function Editor() {
         if (view.current === candidate) setTextureErrors(errors);
       });
       if (ticket !== generation.current) return;
-      candidate.show(active.objects, assetsRef.current, undefined, next.globals, active.lighting);
-      const ids = selection ? [selection] : [];
-      candidate.setSelection(ids);
+      candidate?.show(active.objects, assetsRef.current, undefined, next.globals, active.lighting);
+      const ids = workspace ? workspace.selection.filter(id => !!findObject(active.objects, id)) : selection ? [selection] : [];
+      candidate?.setSelection(ids);
       view.current?.destroy();
-      view.current = candidate;
+      view.current = candidate ?? null;
       setTextureErrors(new Set());
       setAudio({ state: 'idle' });
       setSourceStatuses(new Map());
       setAudioTransport('stopped');
       inspectorSections.current.clear();
       configDocument.current = { token: configToken, draft: crypto.randomUUID() };
+      publishedProject.current = next;
       queuedConfig.current = next.config;
       appliedConfig.current = next.config;
       setDiskConfig(configToken ? next.config : undefined);
-      setHistory({ active: { project: next, sceneId: next.startup, selection: ids }, past: [], future: [] });
+      setHistory({ active: { project: next, sceneId: activeScene, selection: ids }, past: [], future: [] });
       setSavedProject(next);
       setRecovered(false);
       recoveryId.current = undefined;
@@ -413,7 +504,7 @@ function Editor() {
       setClosed(new Set());
       setAssetSession(current => current + 1);
       setBundleSelection([]);
-      setInspection([]);
+      setInspection(workspace?.inspection ?? []);
       setBundleFocus(0);
       setReady(true);
       return true;
@@ -425,15 +516,122 @@ function Editor() {
     }
   }, []);
 
+  const synchronizeSave = useEffectEvent((text: string) => {
+    if (!busy && !prefabEdit && serializeProject(project) === text) {
+      setSavedProject(project);
+      setDiskConfig(project.config);
+      setRecovered(false);
+    }
+  });
+
+  const applyWorkspace = useEffectEvent((state: HostWorkspaceState) => {
+    if (prefabEdit) return;
+    const record = project.scenes.find(item => item.id === state.scene);
+    if (!record) {
+      pendingWorkspace.current = state;
+      return;
+    }
+    pendingWorkspace.current = undefined;
+    publishedWorkspace.current = JSON.stringify(state);
+    const ids = selectionTree(record.objects);
+    setHistory(current => ({
+      ...current, active: { ...current.active, sceneId: state.scene, selection: state.selection.filter(id => ids.has(id)) },
+    }));
+    setInspection(state.inspection);
+  });
+
+  const applyDocument = useEffectEvent((file: OpenedScene, next: Project) => {
+    const workspace = pendingWorkspace.current ?? file.workspaceState;
+    const record = next.scenes.find(item => item.id === (workspace?.scene ?? sceneId)) ?? sceneRecord(next, next.startup);
+    const ids = selectionTree(record.objects);
+    const selection = (workspace?.selection ?? selectedIds).filter(id => ids.has(id));
+    if (workspace) {
+      publishedWorkspace.current = JSON.stringify(workspace);
+      setInspection(workspace.inspection);
+      pendingWorkspace.current = undefined;
+    }
+    publishedProject.current = next;
+    queuedConfig.current = next.config;
+    appliedConfig.current = next.config;
+    setFileError(undefined);
+    setReady(true);
+    setHistory({ active: { project: next, sceneId: record.id, selection }, past: [], future: [] });
+    if (file.revision !== undefined) void window.oliveHost?.acceptDocument(file.revision);
+  });
+
   useEffect(() => {
-    void install(sampleProject, 'olive-grove.json', 'sample-sprite');
+    let disposed = false;
+    const host = window.oliveHost;
+    const load = async (file?: OpenedScene | { blank: true } | { sample: true } | null) => {
+      if (disposed) return;
+      try {
+        if (file && 'text' in file) {
+          const next = projectFromFile(file);
+          if (host?.bound && currentDocument.current === file.name) {
+            applyDocument(file, next);
+            return;
+          }
+          const workspace = pendingWorkspace.current ?? file.workspaceState;
+          if (await install(next, file.name, sceneRecord(next, next.startup).objects[0]?.id ?? null, file.configToken, workspace) && !disposed) {
+            currentDocument.current = file.name;
+            setRecovered(!!file.recovered);
+            setHubOpen(false);
+            if (pendingWorkspace.current && pendingWorkspace.current !== workspace) applyWorkspace(pendingWorkspace.current);
+            if (file.recentToken) await window.oliveFiles?.hub.remember(file.recentToken);
+          }
+        } else if (file && 'blank' in file) {
+          if (await install(projectFromScene(emptyScene()), 'scene.json', null)) setHubOpen(false);
+        } else if (await install(sampleProject, 'olive-grove.json', 'sample-sprite') && file) {
+          setHubOpen(false);
+        }
+      } catch (error) {
+        if (!disposed) {
+          setReady(false);
+          setBusy(false);
+          setFileError({ title: t('sceneError'), detail: validationMessage(error) });
+        }
+      }
+    };
+    if (host) void host.initial().then(load, error => {
+      if (!disposed) {
+        setBusy(false);
+        setFileError({ title: t('sceneError'), detail: validationMessage(error) });
+      }
+    });
+    else void load();
+    const offDocument = host?.onDocument(file => { void load(file); });
+    const offSaved = host?.onSaved(text => synchronizeSave(text));
+    const offWorkspace = host?.onWorkspace(state => applyWorkspace(state));
     return () => {
+      disposed = true;
+      offDocument?.();
+      offSaved?.();
+      offWorkspace?.();
       generation.current++;
       launching.current = undefined;
       view.current?.destroy();
       view.current = null;
     };
   }, [install]);
+
+  useEffect(() => {
+    const host = window.oliveHost;
+    if (!host?.bound || !ready || prefabEdit || !publishedProject.current || publishedProject.current === project) return;
+    publishedProject.current = project;
+    void host.edit(serializeProject(project)).catch(error => {
+      if (project === publishedProject.current) setFileError({ title: t('saveError'), detail: validationMessage(error) });
+    });
+  }, [project, ready, prefabEdit]);
+
+  useEffect(() => {
+    const host = window.oliveHost;
+    if (!host?.bound || !ready || prefabEdit || !publishedProject.current) return;
+    const state = { scene: sceneId, selection: selectedIds, inspection };
+    const identity = JSON.stringify(state);
+    if (publishedWorkspace.current === identity) return;
+    publishedWorkspace.current = identity;
+    void host.updateWorkspace(state).catch(error => console.warn('Could not synchronize the editor view:', error));
+  }, [sceneId, selectedIds, inspection, ready, prefabEdit]);
 
   const mainPreview = playback?.main;
   const liveNetwork = useMemo(() => liveSnapshot && networkPlan(liveSnapshot.project), [liveSnapshot]);
@@ -491,6 +689,9 @@ function Editor() {
     if (gameScene && liveSnapshot) liveView.current?.show(displayedObjects, liveSnapshot.assets, gameScene,
       gameProject.globals, sceneRecord(gameProject, gameScene.id).lighting);
   }, [displayedObjects, gameScene, gameProject, liveSnapshot, liveRevision]);
+  useEffect(() => {
+    liveView.current?.syncLiveEffects(Array.from(liveEffectSources.values(), source => source.node));
+  }, [displayedObjects, gameScene, liveEffectSources, liveRevision]);
   useEffect(() => { view.current?.setLightingPreview(lightingPreview); }, [lightingPreview, assetSession]);
   useLayoutEffect(() => { view.current?.setEditView(editView); }, [editView, assetSession]);
   const editClockActive = editClockRunning && !liveActive && !hubOpen && scenePanel.open && !scenePanel.minimized;
@@ -510,6 +711,16 @@ function Editor() {
   }, [gameProject.audioMix, previewing]);
   useEffect(() => { view.current?.setShaderLibrary(project.shaders); }, [project.shaders, assetSession]);
   useEffect(() => { liveView.current?.setShaderLibrary(gameProject.shaders); }, [gameProject.shaders, previewing]);
+  const previousViewportMode = useRef(viewportMode);
+  useLayoutEffect(() => {
+    if (previousViewportMode.current === viewportMode) return;
+    previousViewportMode.current = viewportMode;
+    view.current?.stopCanvasPreviews();
+    liveView.current?.stopCanvasPreviews();
+    view.current?.app.audio.stop();
+    view.current?.app.audio.sources.stopScene();
+    setAudioTransport('stopped');
+  }, [viewportMode]);
   useLayoutEffect(() => {
     const editCanvas = view.current?.app.canvas;
     const gameCanvas = liveView.current?.app.canvas;
@@ -543,21 +754,24 @@ function Editor() {
     try { localStorage.setItem('olivestudio:colliders', String(physicsDebug)); } catch { /* storage unavailable */ }
   }, [physicsDebug, assetSession, previewing]);
   useEffect(() => {
+    view.current?.setSpineBounds(spineBounds ? selectedIds : []);
+    liveView.current?.setSpineBounds(spineBounds ? liveSelection ?? selectedIds : []);
+  }, [spineBounds, selectedIds, liveSelection, assetSession, previewing, liveRevision]);
+  useEffect(() => {
     const runtime = liveView.current;
     if (!playback || !runtime) return;
     return runtime.attachScripts({
       library: gameProject.scripts, scene: sceneRecord(gameProject, playback.main), scenes: gameProject.scenes,
       objects: runtimeObjects, inputMap: gameProject.inputMap, globals: gameProject.globals,
       production: gameProject,
-      changeScene: (target, mode) => setPlayback(current => current ? followProjectSceneLink(gameProject, current, { target, mode }) : current),
+      changeScene: (target, mode, link) => setPlayback(current => current ? followProjectSceneLink(gameProject, current, link ?? { target, mode }) : current),
       popScene: () => setPlayback(current => current && popScene(current)),
     }, gameProject.content, liveViewport.current?.parentElement ?? undefined);
   }, [playback, runtimeObjects, gameProject, liveRevision]);
   useEffect(() => {
     const runtime = liveView.current;
     if (!mainPreview || !runtime) return;
-    return playCinematic(runtime, gameProject, mainPreview, id =>
-      setPlayback(current => current ? followProjectSceneLink(gameProject, current, { target: id, mode: 'replace' }) : current));
+    return playCinematic(runtime, gameProject, mainPreview);
   }, [mainPreview, gameProject, liveRevision]);
   useEffect(() => {
     const runtime = liveView.current;
@@ -574,7 +788,7 @@ function Editor() {
     }).catch(error => { if (!canceled) setNetworkError(validationMessage(error)); });
     return () => { canceled = true; detach?.(); };
   }, [networkPreview, gameNetwork, gameProject, liveRevision]);
-  const networkOpen = panelLayout.panels.some(panel => panel.id === 'network' && panel.open);
+  const networkOpen = !vscodeCanvas && panelLayout.panels.some(panel => panel.id === 'network' && panel.open);
   useEffect(() => {
     const files = window.oliveFiles;
     if (!files || !(networkOpen || networkPreview || networkServer?.running)) return;
@@ -610,10 +824,9 @@ function Editor() {
   useEffect(() => {
     if (hubOpen || !scenePanel.open || scenePanel.minimized) {
       stopPreview();
+      view.current?.stopCanvasPreviews();
     }
-    if (liveActive || hubOpen || !scenePanel.open || scenePanel.minimized) view.current?.stopEffectPreview();
-    if (!liveActive) liveView.current?.stopEffectPreview();
-  }, [hubOpen, scenePanel.open, scenePanel.minimized, liveActive]);
+  }, [hubOpen, scenePanel.open, scenePanel.minimized]);
   useEffect(() => {
     const host = viewport.current;
     const instance = view.current;
@@ -659,13 +872,13 @@ function Editor() {
   }, [assets, audio]);
 
   useEffect(() => {
-    if (!dirty) return;
+    if (!dirty || window.oliveHost) return;
     const guard = (event: BeforeUnloadEvent) => event.preventDefault();
     window.addEventListener('beforeunload', guard);
     return () => window.removeEventListener('beforeunload', guard);
   }, [dirty]);
 
-  const mayReplace = () => !dirty || window.confirm(t('discard'));
+  const mayReplace = () => !dirty || (window.oliveHost?.confirm(t('discard')) ?? window.confirm(t('discard')));
 
   function commit(update: (scene: Scene) => Scene, selection?: string | string[] | null) {
     setHistory(current => {
@@ -797,8 +1010,7 @@ function Editor() {
     } }] };
     setPrefabEdit({ source, history });
     setHistory({ active: { project: { ...project, scenes: [...project.scenes, draft] }, sceneId: id, selection: [source.root.id] }, past: [], future: [] });
-    const panel = panelLayout.panels.find(item => item.id === 'hierarchy')!;
-    setPanelLayout(current => setPanelOpen(current, panel.id, true));
+    focusPanel('hierarchy');
   }
 
   function applyPrefabChange(before: History, source: Prefab) {
@@ -839,8 +1051,10 @@ function Editor() {
     else editPrefabRecord(unpackPrefab(record, selectedPrefabRoot.id), selectedPrefabRoot.id);
   }
 
-  function deleteScene() {
-    if (!canDeleteScene(project, sceneId) || !window.confirm(t('deleteSceneConfirm', { name: sceneRecord(project, sceneId).name }))) return;
+  async function deleteScene() {
+    if (!canDeleteScene(project, sceneId)) return;
+    const message = t('deleteSceneConfirm', { name: sceneRecord(project, sceneId).name });
+    if (!await (window.oliveHost?.confirm(message) ?? window.confirm(message))) return;
     updateProject(project => {
       if (!canDeleteScene(project, sceneId)) return project;
       const scenes = project.scenes.filter(record => record.id !== sceneId);
@@ -953,6 +1167,10 @@ function Editor() {
 
   function travel(direction: 'undo' | 'redo') {
     if (!editable || fileWork.current) return;
+    if (window.oliveHost?.bound && !prefabEdit) {
+      void window.oliveHost.travel(direction);
+      return;
+    }
     setHistory(current => {
       if (direction === 'undo') {
         const target = current.past.at(-1);
@@ -965,6 +1183,28 @@ function Editor() {
 
   function updateSelected(change: (node: SceneObject) => SceneObject) {
     if (selected && singleEditable) edit(objects => changeObject(objects, selected.id, change));
+  }
+
+  function updateLiveEffect(key: string, effect: CameraPostFXData | ObjectEffectData) {
+    if (!ready || busy || !liveEffectSource || liveEffectSource.locked || fileWork.current) return;
+    const { sceneId: id, node: { id: objectId } } = liveEffectSource;
+    updateProject(current => {
+      if (!current.scenes.some(record => record.id === id)) return current;
+      const authored = readScene(current, id);
+      const objects = changeObject(authored.objects, objectId, node => {
+        if (node.type === 'Camera2D') {
+          const next = CameraPostFXSchema.safeParse(effect);
+          const entries = effectEntries(node.camera.postFXs ?? []);
+          if (!next.success || !entries.some(entry => entry.key === key && entry.effect.type === effect.type)) return node;
+          return { ...node, camera: { ...node.camera, postFXs: entries.map(entry => entry.key === key ? next.data : entry.effect) } };
+        }
+        const next = ObjectEffectsSchema.safeParse([effect]);
+        const entries = effectEntries(node.effects ?? []);
+        if (!next.success || !entries.some(entry => entry.key === key && entry.effect.type === effect.type)) return node;
+        return { ...node, effects: entries.map(entry => entry.key === key ? next.data[0] : entry.effect) };
+      });
+      return objects === authored.objects ? current : writeScene(current, id, { ...authored, objects });
+    });
   }
 
   function updateBatch(change: (node: SceneObject, index: number) => SceneObject, ids = selectedIds.filter(id => !locked.has(id))) {
@@ -1014,9 +1254,10 @@ function Editor() {
     if (patch) updateSelected(node => ({ ...node, ...patch }));
   }
 
-  function add(node: SceneObject) {
-    const parent = selected?.type === 'Container' && singleEditable && !selectedPrefabRoot ? selected.id :
-      prefabEdit?.source.root.type === 'Container' ? prefabEdit.source.root.id : null;
+  function add(node: SceneObject, parentOverride?: string) {
+    if (parentOverride && (locked.has(parentOverride) || prefabOwner(scene.objects, parentOverride))) return;
+    const parent = parentOverride ?? (selected?.type === 'Container' && singleEditable && !selectedPrefabRoot ? selected.id :
+      prefabEdit?.source.root.type === 'Container' ? prefabEdit.source.root.id : null);
     setInspection([]);
     commit(current => {
       const objects = parent ? changeObject(current.objects, parent, item =>
@@ -1026,6 +1267,13 @@ function Editor() {
       return { ...current, objects, lighting };
     }, node.id);
     if (parent && closed.has(parent)) toggle(parent);
+  }
+
+  function addBone(parent: Extract<SceneObject, { type: 'Container' }>) {
+    add({
+      ...createObject('Container'), label: t('rigBone'), rig: { kind: 'bone', length: 48 },
+      position: { x: parent.rig?.kind === 'bone' ? parent.rig.length : 0, y: 0 },
+    }, parent.id);
   }
 
   function toggle(id: string) {
@@ -1055,11 +1303,38 @@ function Editor() {
       !ids.has(id) && !deletable.some(node => node.type === 'Container' && findObject(node.children, id))));
   }
 
+  async function captureSceneSnapshot() {
+    const runtime = (liveActive ? liveView : view).current;
+    if (!runtime || !ready || busy || prefabEdit || fileWork.current || (liveActive && !previewing)) return;
+    fileWork.current = true;
+    setBusy(true);
+    setFileError(undefined);
+    const ticket = generation.current;
+    try {
+      const data = await runtime.captureSnapshot();
+      if (ticket !== generation.current) return;
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      const alias = `project/${crypto.randomUUID()}/snapshot-${timestamp}.png`;
+      const nextAssets = importedAssetsSchema.parse([...latestProject.current.assets, { alias, data }]);
+      commit(current => ({ ...current, assets: nextAssets,
+        assetLibrary: addLibraryEntries(current.assetLibrary, [alias], null, true) }));
+      focusPanel('assets');
+      focusPanel('inspector');
+      setSnapshotAlias(alias);
+    } catch (error) {
+      if (ticket === generation.current) setFileError({ title: t('snapshotFailed'), detail: validationMessage(error) });
+    } finally {
+      fileWork.current = false;
+      setBusy(false);
+    }
+  }
+
   async function importAssets(folderId: string | null, dropped?: File[]) {
     const files = window.oliveFiles;
     if (!files || !ready || busy || prefabEdit || fileWork.current) return;
     fileWork.current = true;
     setBusy(true);
+    setImportingAssets(true);
     setFileError(undefined);
     try {
       const packed = await files.importAssets(dropped);
@@ -1073,6 +1348,7 @@ function Editor() {
       setFileError({ title: t('importFailed'), detail: validationMessage(error) });
     } finally {
       fileWork.current = false;
+      setImportingAssets(false);
       setBusy(false);
     }
   }
@@ -1108,6 +1384,61 @@ function Editor() {
     } finally { fileWork.current = false; setBusy(false); }
   }
 
+  async function createRig(images: CatalogEntry[], folderId: string | null = null) {
+    if (!editable || prefabEdit || fileWork.current) return;
+    const sourceName = images.length === 1 ? images[0].name.slice(0, -extension(images[0].name).length) : 'spine-rig';
+    const stem = images.length ? `${sourceName.replace(/[^a-zA-Z0-9_-]+/g, '-').slice(0, 70) || 'rig'}-spine` : 'spine-rig';
+    const alias = `project/${crypto.randomUUID()}/${stem}.json`;
+    const ticket = generation.current;
+    fileWork.current = true;
+    setBusy(true);
+    setFileError(undefined);
+    try {
+      const asset = await createSpineAsset(images, stem);
+      if (ticket !== generation.current) return;
+      const assets = importedAssetsSchema.parse([...latestProject.current.assets, { alias, ...asset }]);
+      commit(current => ({ ...current, assets, assetLibrary: addLibraryEntries(current.assetLibrary, [alias], folderId, true) }));
+      focusPanel('assets');
+      focusPanel('inspector');
+      setSnapshotAlias(alias);
+    } catch (error) {
+      if (ticket === generation.current) setFileError({ title: t('spineCreateRig'), detail: validationMessage(error) });
+    } finally {
+      fileWork.current = false;
+      setBusy(false);
+    }
+  }
+
+  async function convertSpineBinary(item: CatalogEntry) {
+    const files = window.oliveFiles;
+    const asset = latestProject.current.assets.find(asset => asset.alias === item.alias);
+    if (!files || !editable || prefabEdit || fileWork.current || asset?.media?.kind !== 'spine' ||
+        !/\.skel$/i.test(asset.alias)) return;
+    const ticket = generation.current;
+    fileWork.current = true;
+    setBusy(true);
+    setFileError(undefined);
+    try {
+      const data = await files.convertSpineBinary(asset);
+      let alias = asset.alias.replace(/\.skel$/i, '.json');
+      if (latestProject.current.assets.some(candidate => candidate.alias === alias)) {
+        alias = `project/${crypto.randomUUID()}/${alias.split('/').at(-1)}`;
+      }
+      const animation = await loadAnimation({ path: alias, url: `data:application/json;base64,${data}`, media: asset.media });
+      animation.dispose();
+      if (ticket !== generation.current) return;
+      if (!latestProject.current.assets.some(candidate => candidate.alias === asset.alias && candidate.data === asset.data &&
+          candidate.media === asset.media)) throw new Error(t('spineSourceChanged'));
+      updateProject(project => replaceProjectSpineBinary(project, asset.alias, alias, data));
+      setSnapshotAlias(alias);
+    } catch (error) {
+      if (ticket === generation.current) setFileError({ title: t('spineConvertBinary'), detail: validationMessage(error) });
+    } finally {
+      fileWork.current = false;
+      setBusy(false);
+    }
+  }
+
   async function exportBundles() {
     const files = window.oliveFiles;
     if (!files || !ready || busy || fileWork.current || !scene.assets.length) return null;
@@ -1125,10 +1456,11 @@ function Editor() {
     }
   }
 
-  function newScene() {
-    if (prefabEdit) return;
+  async function newScene() {
+    if (prefabEdit || busy || fileWork.current) return;
+    if (window.oliveHost?.bound) { await window.oliveHost.newProject(); return; }
     if (hubOpen) { void newHubProject(); return; }
-    if (!busy && !fileWork.current && mayReplace()) void install(projectFromScene(emptyScene()), 'scene.json', null);
+    if (!busy && !fileWork.current && await mayReplace()) void install(projectFromScene(emptyScene()), 'scene.json', null);
   }
 
   function chooseScene() {
@@ -1147,10 +1479,8 @@ function Editor() {
     try {
       await configWrites.current;
       const file = await read();
-      if (!file || ticket !== generation.current || !mayReplace()) return;
-      const raw: unknown = JSON.parse(file.text);
-      const next = parseProject(file.configText !== undefined && raw && typeof raw === 'object' ?
-        { ...raw, config: configSchema.parse(JSON.parse(file.configText)) } : raw, file.name.replace(/\.json$/i, ''));
+      if (!file || ticket !== generation.current || !await mayReplace()) return;
+      const next = projectFromFile(file);
       if (ticket === generation.current && await install(next, file.name, sceneRecord(next, next.startup).objects[0]?.id ?? null, file.configToken)) {
         setRecovered(!!file.recovered);
         setHubOpen(false);
@@ -1169,7 +1499,9 @@ function Editor() {
   }
 
   async function newHubProject() {
-    if (busy || fileWork.current || !mayReplace()) return;
+    if (busy || fileWork.current) return;
+    if (window.oliveHost?.bound) { await window.oliveHost.newProject(); return; }
+    if (!await mayReplace()) return;
     const next = projectFromScene(emptyScene());
     const files = window.oliveFiles;
     if (!files) {
@@ -1190,11 +1522,12 @@ function Editor() {
     }
   }
 
-  function openExample(id: 'grove' | 'gallery') {
-    if (id === 'gallery') {
+  async function openExample(id: 'grove' | 'gallery' | 'theatre' | 'tavern' | 'photo' | 'rig') {
+    if (id === 'grove' && window.oliveHost?.bound) { await window.oliveHost.example(); return; }
+    if (id !== 'grove') {
       const hub = window.oliveFiles?.hub;
-      if (hub) void open(hub.example);
-    } else if (!busy && !fileWork.current && mayReplace()) {
+      if (hub) void open(() => hub.example(id));
+    } else if (!busy && !fileWork.current && await mayReplace()) {
       void install(sampleProject, 'olive-grove.json', 'sample-sprite').then(loaded => {
         if (loaded) setHubOpen(false);
       });
@@ -1245,12 +1578,14 @@ function Editor() {
     else if (command === 'save') void save();
     else if (command === 'export-game' && editable && !prefabEdit && !hubOpen && !settingsOpen) setExportOpen(true);
     else if (command === 'undo' || command === 'redo') travel(command);
+    else if (command === 'search' && editable && !prefabEdit) setSearchOpen(true);
     else if (command === 'settings' && !hubOpen) setSettingsOpen(true);
     else if (command === 'hub' && !prefabEdit) { setSettingsOpen(false); setFileError(undefined); setHubOpen(true); }
-    else if (command === 'panel-reset') setPanelLayout(defaultLayout());
+    else if (command === 'panel-reset' && !vscodeCanvas) setPanelLayout(defaultLayout());
     else {
       const id = panelIds.find(id => command === `panel-${id}`);
-      if (id) setPanelLayout(current => setPanelOpen(current, id, !current.panels.find(item => item.id === id)?.open));
+      if (id && vscodeCanvas) focusPanel(id);
+      else if (id) setPanelLayout(current => setPanelOpen(current, id, !current.panels.find(item => item.id === id)?.open));
     }
   });
   useEffect(() => {
@@ -1274,6 +1609,10 @@ function Editor() {
   }, []);
 
   const editable = ready && !busy && (!previewing || !liveActive);
+  const inspectedSpine = inspectionNode?.type === 'Spine' ? inspectionNode : undefined;
+  const inspectedSpineAsset = inspectedSpine?.asset ? assets.get(inspectedSpine.asset) : undefined;
+  const editableSpineAsset = inspectedSpineAsset?.writable && inspectedSpineAsset.kind === 'spine' &&
+    /\.json$/i.test(inspectedSpineAsset.path) ? inspectedSpineAsset : undefined;
   function canvasDropPoint(event: React.DragEvent) {
     const sceneView = view.current;
     if (!editable || prefabEdit || !sceneView || !(event.target instanceof HTMLCanvasElement)) return;
@@ -1281,7 +1620,7 @@ function Editor() {
     if (point && point.x >= 0 && point.y >= 0 && point.x <= sceneView.app.screen.width && point.y <= sceneView.app.screen.height) return point;
   }
   const timelineDock = panelLayout.panels.find(item => item.id === 'timeline')!.dock;
-  const timelineVisible = activeTab(panelLayout, timelineDock) === 'timeline' && !hubOpen && editable;
+  const timelineVisible = !vscodeCanvas && activeTab(panelLayout, timelineDock) === 'timeline' && !hubOpen && editable;
   const inputDock = panelLayout.panels.find(item => item.id === 'input')!.dock;
   const hasSceneAudio = hasAudioSource(scene.objects);
   useEffect(() => {
@@ -1374,6 +1713,15 @@ function Editor() {
     commit(current => ({ ...current, timeline: timeline.data, cinematics: cinematics.data }));
   }
 
+  function insertDirectorCue(cue: Cue) {
+    changeTimeline(data => changeClip(data, mainClip, clip => clip.cues.length < cueLimit ?
+      { ...clip, cues: [...clip.cues, cue] } : clip));
+    setPanelLayout(current => setPanelOpen(current, 'timeline', true));
+  }
+
+  const canInsertDirectorCue = editable && !prefabEdit && (scene.cinematics?.main.cues.length ?? 0) < cueLimit;
+  const cueBase = (name: string) => ({ id: crypto.randomUUID(), name: name.slice(0, 80), time: 0 });
+
   function changeNetwork(patch: Partial<MultiplayerSettings>) {
     const parsed = MultiplayerSettingsSchema.safeParse({ ...network.settings, ...patch });
     if (!parsed.success) { setNetworkError(validationMessage(parsed.error)); return; }
@@ -1431,7 +1779,7 @@ function Editor() {
     if (!editable || prefabEdit || launching.current) return;
     flushScriptEdits();
     if (network.problems.length) {
-      setPanelLayout(current => setPanelOpen(current, 'network', true));
+      focusPanel('network');
       return;
     }
     const ticket = Symbol();
@@ -1557,73 +1905,142 @@ function Editor() {
     } catch (error) { reportContent(error); }
   }
 
-  return <ScriptsProvider state={{
-    library: project.scripts, editable: editable && !prefabEdit,
-    scene: sceneRecord(project, sceneId), globals: project.globals.items,
-    selected: selected && singleEditable && !prefabEdit ? { id: selected.id, name: selected.label, scripted: !!selected.behaviour } : undefined,
-    entities: [...tree.values()].map(({ node }) => ({ id: node.id, name: node.label })),
-    change: changeScripts,
-    setBehavior,
-    select: id => { if (tree.has(id)) select([id]); },
-    graphs: project.behaviorGraphs?.items ?? [],
-    saveGraph,
-    editLogic,
-    catalog: () => logicCatalog(project, scene.objects),
-    content: project.content,
-    logicActivity: id => liveView.current?.logicActivity(id),
-    setBehaviour: (id, value) => {
-      if (prefabEdit || !editable || locked.has(id)) return;
-      updateProject(current => {
-        const active = readScene(current, sceneId);
-        const objects = changeObject(active.objects, id, node => {
-          if (value.scriptId) return { ...node, behaviour: value };
-          const { behaviour: _removed, ...rest } = node;
-          return rest;
-        });
-        return objects === active.objects ? current : { ...writeScene(current, sceneId, { ...active, objects }), version: 2 };
-      });
-    },
-    open: () => setPanelLayout(current => setPanelOpen(current, 'scripts', true)),
-    report: error => setFileError({ title: t('scriptsPanel'), detail: validationMessage(error) }),
-  }}><main className="editor">
-    <header className="topbar">
-      <IconButton icon={Home} label={t('hubTitle')} disabled={!!prefabEdit} onClick={() => {
-        setFileError(undefined);
-        setHubOpen(true);
-      }} />
-      <div className="toolbar">
-        <IconButton icon={FilePlus2} label={t('newScene')} description={t('newSceneHint')} disabled={busy || !!prefabEdit}
-          onClick={newScene} />
-        <IconButton icon={FolderOpen} label={t('openScene')} description={t('openSceneHint')} disabled={busy || !!prefabEdit}
-          onClick={chooseScene} />
-        <IconButton icon={Save} className="save" label={t('saveScene')} description={t('saveSceneHint')}
-          disabled={!editable} onClick={save} />
-        <IconButton icon={Undo2} label={t('undo')} description={t('undoHint')}
-          disabled={!editable || !history.past.length} onClick={() => travel('undo')} />
-        <IconButton icon={Redo2} label={t('redo')} description={t('redoHint')}
-          disabled={!editable || !history.future.length} onClick={() => travel('redo')} />
-        <input ref={input} type="file" accept=".json,application/json" hidden onChange={event => {
-          const file = event.target.files?.[0];
-          event.target.value = '';
-          if (file) void open(async () => ({ name: file.name, text: await file.text() }));
-        }} />
-      </div>
-      <div className="file-info" {...hint(fileName, dirty ? t('unsaved') : undefined)}>
-        <span>{fileName}</span>{dirty && <i role="img" aria-label={t('unsaved')} />}
-      </div>
-      <IconButton icon={Download} label={t('exportWindow')} description={t('exportWindowHint')}
-        disabled={!editable || !!prefabEdit || !window.oliveFiles} onClick={() => setExportOpen(true)} />
-      <IconButton icon={Search} label={t('projectSearch')} description={t('projectSearchHint')}
-        disabled={!editable || !!prefabEdit} onClick={() => setSearchOpen(true)} />
-      <PanelsMenu layout={panelLayout} change={setPanelLayout} />
-      <IconButton icon={Settings2} label={t('settingsTitle')} description={t('settingsOpenHint')}
-        disabled={!ready || busy || !!prefabEdit} onClick={() => setSettingsOpen(true)} />
-    </header>
+  const nativeTest = useRef<{ id: string; running?: boolean; report?: TestReport; error?: string } | undefined>(undefined);
+  async function runNativeTest(id: string) {
+    const current = latestProject.current;
+    const tests = current.tests;
+    const test = tests?.items.find(test => test.id === id);
+    if (!test?.assertions.length || !tests || !editable || previewing || prefabEdit || nativeTest.current?.running) return;
+    nativeTest.current = { id, running: true };
+    try {
+      const report = await runSceneTest(current, assets, test);
+      nativeTest.current = { id, report };
+      const fingerprint = testFingerprint(current);
+      updateProject(latest => testFingerprint(latest) !== fingerprint ? latest : { ...latest, version: 2,
+        tests: { ...tests, proofs: [...(latest.tests?.proofs ?? []).filter(proof => proof.testId !== id),
+          { testId: id, fingerprint, at: Date.now(), passed: report.passed }] } });
+    } catch (error) { nativeTest.current = { id, error: validationMessage(error) }; }
+  }
 
-    {fileError && <div className="scene-error" role="alert"><strong>{fileError.title}</strong><p>{fileError.detail}</p>
-      <IconButton icon={X} label={t('dismiss')} onClick={() => setFileError(undefined)} /></div>}
+  const runNativeCanvas = useEffectEvent((action: CanvasAction) => {
+    const runtime = view.current;
+    switch (action.kind) {
+      case 'placeAsset': {
+        const asset = assets.get(action.alias);
+        if (editable && asset) add(objectFromAsset(asset, { x: authoredSize.width / 2, y: authoredSize.height / 2 }));
+        break;
+      }
+      case 'previewAsset': setNativeAssetPreview(assets.get(action.alias)); break;
+      case 'playAsset': runtime?.app.audio.play(action.alias); break;
+      case 'stopAudio': runtime?.app.audio.stop(); break;
+      case 'playSceneAudio': runtime?.app.audio.sources.playScene(); break;
+      case 'pauseSceneAudio': runtime?.app.audio.sources.pauseScene(); break;
+      case 'addLight': if (editable) add({ ...createObject('Light2D'), position: { x: authoredSize.width / 2, y: authoredSize.height / 2 } }); break;
+      case 'toggleLighting': setLightingPreview(value => !value); break;
+      case 'toggleColliders': setPhysicsDebug(value => !value); break;
+      case 'stepPhysics': liveView.current?.app.physics.step(); break;
+      case 'pausePhysics': liveView.current?.app.physics.pause(action.enabled); break;
+      case 'setupNetwork': if (editable) setupNetwork(); break;
+      case 'network': void networkAction(action.action, action.value); break;
+      case 'slot': if (action.mode === 'save') saveSlot(action.slot); else loadSlot(action.slot); break;
+      case 'global': liveView.current?.app.globals.set(action.id, action.value); break;
+      case 'sceneLink': navigateLink(action.link); break;
+      case 'goBack': setPlayback(current => current && popScene(current)); break;
+      case 'capturePrefab': if (editable && !prefabEdit) createPrefab(); break;
+      case 'placePrefab': {
+        const prefab = project.prefabs.find(item => item.id === action.id);
+        if (editable && prefab) insertPrefab(prefab);
+        break;
+      }
+      case 'variantPrefab': {
+        const source = project.prefabs.find(item => item.id === action.id);
+        if (editable && source) updateProject(project => ({ ...project, version: 2, prefabs: [...project.prefabs,
+          { ...source, id: crypto.randomUUID(), base: source.id, name: t('prefabVariantName', { name: source.name.slice(0, 80) }) }] }));
+        break;
+      }
+      case 'prefabInstance': if (editable) prefabInstanceAction(action.mode); break;
+      case 'chooseBrush': setBrushId(action.id); break;
+      case 'eraseBrush': setBrushErase(action.enabled); break;
+      case 'installCharacterKit': installCharacterKit(CharacterSchema.parse({ mode: action.mode })); break;
+      case 'applyPlatform': if (editable) applyPlatform(); break;
+      case 'particlePreview': runtime?.restartParticles(action.id); break;
+      case 'playSource': runtime?.app.audio.sources.play(action.id); break;
+      case 'stopSource': runtime?.app.audio.sources.stop(action.id); break;
+      case 'fitPhysics': {
+        const physics = runtime?.physicsFit(action.id);
+        if (physics && editable) edit(objects => changeObject(objects, action.id, node => ({ ...node, physics: {
+          joints: node.physics?.joints ?? [], body: node.physics?.body,
+          colliders: [...(node.physics?.colliders ?? []), { id: crypto.randomUUID(), kind: 'box',
+            data: { ...physics, sensor: false, angle: 0, chamfer: 0 } }],
+        } })));
+        break;
+      }
+      case 'pauseProfile': previewProfileRecorder.paused = action.enabled; break;
+      case 'runTest': void runNativeTest(action.id); break;
+      case 'clearProfile': previewProfileRecorder.clear(); break;
+      case 'previewEffect': {
+        const node = findObject(scene.objects, action.id);
+        if (node?.type !== 'Camera2D') break;
+        const entry = effectEntries(node.camera.postFXs ?? [])[action.index];
+        if (entry) (liveActive ? liveView : view).current?.playEffectPreview(action.id, entry.key, entry.effect,
+          active => markEffectPreview(action.id, entry.key, active), previewModes.get(effectPreviewKey(action.id, entry.key)));
+        break;
+      }
+    }
+  });
 
-    <DockWorkspace layout={panelLayout} change={setPanelLayout} panels={{
+  const captureNativeState = useEffectEvent(() => {
+    const samples = previewProfileRecorder.samples();
+    const profile = summarize(samples);
+    return {
+      input: inputValues, globals: globalValues, physics: physicsStatus, network: networkServer, client: networkClient,
+      networkError, slotMessage, playback, lightingPreview, physicsDebug, brush: activeBrush?.id,
+      brushErase, audio: (liveActive ? liveView : view).current?.app.audio.sources.levels(),
+      test: nativeTest.current,
+      profile: { ...profile, paused: previewProfileRecorder.paused,
+        history: samples.slice(-36).map(frame => Math.round(frame.frameMs * 10) / 10) },
+    };
+  });
+  useEffect(() => {
+    const host = window.oliveHost;
+    if (!host?.bound) return;
+    let previous = '';
+    const send = () => {
+      const state = captureNativeState();
+      const serialized = JSON.stringify(state);
+      if (serialized !== previous) { previous = serialized; void host.publishCanvasState(state).catch(console.warn); }
+    };
+    const off = host.onCanvasAction(action => {
+      try { runNativeCanvas(action); } catch (error) { reportContent(error); }
+    });
+    const timer = window.setInterval(send, 500);
+    send();
+    return () => { window.clearInterval(timer); off(); };
+  }, []);
+
+  const startHostPreview = useEffectEvent((from: 'startup' | 'active') => { void startScenePreview(from); });
+  const startHostPrefab = useEffectEvent((id: string) => {
+    const prefab = project.prefabs.find(item => item.id === id);
+    if (prefab && editable && !prefabEdit) startPrefabEdit(prefab);
+  });
+  useEffect(() => {
+    const offPreview = window.oliveHost?.onPreview(from => startHostPreview(from));
+    const offPrefab = window.oliveHost?.onPrefabEdit(id => startHostPrefab(id));
+    const offTimeline = window.oliveHost?.onTimeline(command => {
+      const runtime = view.current;
+      switch (command.action) {
+        case 'play': runtime?.playTimeline(command.clip, command.position, () => {}, { transport: command.transport, fade: command.fade }); break;
+        case 'seek': runtime?.seekTimeline(command.clip, command.position); break;
+        case 'pause': runtime?.pauseTimeline(); break;
+        case 'stop': runtime?.stopTimeline(); break;
+        case 'onion': runtime?.setOnionSkin(command.settings); break;
+        case 'record': recording.current = command.target; break;
+      }
+    });
+    return () => { offPreview?.(); offTimeline?.(); offPrefab?.(); };
+  }, []);
+
+  const panels: Record<PanelId, ReactNode> = {
       hierarchy: <aside className="panel hierarchy" aria-label={t('hierarchy')}>
         <PanelHeader icon={Layers3} label={t('hierarchy')} description={t('hierarchyHint')}>
           <div className="panel-tools" role="group" aria-label={t('addObjects')}>
@@ -1642,6 +2059,15 @@ function Editor() {
               <IconButton icon={Ellipsis} label={t('moreObjects')} description={t('moreObjectsHint')}
                 aria-expanded={moreObjects} disabled={!editable} onClick={() => setMoreObjects(open => !open)} />
               {moreObjects && <div className="object-create-list" role="group" aria-label={t('moreObjects')}>
+                <button type="button" onClick={() => {
+                  setMoreObjects(false);
+                  const position = selected?.type === 'Container' && singleEditable ?
+                    { x: 32, y: 32 } : { x: resolvedConfig.renderer.width / 2, y: resolvedConfig.renderer.height / 2 };
+                  const bone = {
+                    ...createObject('Container'), label: t('rigBone'), rig: { kind: 'bone' as const, length: 64 }, position: { x: 0, y: 0 },
+                  };
+                  add({ ...createObject('Container'), label: t('rigSkeleton'), rig: { kind: 'skeleton' }, position, children: [bone] });
+                }}><Bone size={15} aria-hidden="true" />{t('rigSkeleton')}</button>
                 {additionalObjectTypes.map(type => {
                   const Icon = objectIcons[type];
                   return <button key={type} type="button" aria-label={t('addObject', { type: t(objectTypeKey[type]) })}
@@ -1677,9 +2103,18 @@ function Editor() {
         </PanelHeader>
         <Hierarchy nodes={inspectionObjects} selected={inspectionIds} select={select} locked={locked} closed={closed} toggle={toggle}
           groups={inspectionGroups} setGroupsExpanded={setGroupsExpanded}
+          setVisible={(id, visible) => {
+            if (!editable || locked.has(id)) return;
+            edit(objects => changeObject(objects, id, node => node.visible === visible ? node : { ...node, visible }));
+          }}
           editable={editable} assets={assets} assignAsset={(id, alias) => {
             const asset = assets.get(alias);
             if (!asset || locked.has(id)) return;
+            const node = inspectionTree.get(id)?.node;
+            if (node?.type === 'Container' && node.rig) {
+              if (asset.kind === 'image' || asset.kind === 'sheet') add(objectFromAsset(asset, { x: 0, y: 0 }), id);
+              return;
+            }
             setInspection([]);
             edit(objects => changeObject(objects, id, node => assignObjectAsset(node, asset)), id);
           }} onMove={(id, destination) => {
@@ -1747,6 +2182,11 @@ function Editor() {
                 if (audio) setAudioTransport(audio.sources.stopScene());
               }} />
           </div>}
+          {inspectionNodes.some(node => node.type === 'Spine') && <IconButton icon={Scan}
+            label={t('spineShowBounds')} description={t('spineShowBoundsHint')} aria-pressed={spineBounds}
+            onClick={() => setSpineBounds(value => !value)} />}
+          <IconButton icon={Camera} label={t('captureSnapshot')} description={t('captureSnapshotHint')}
+            disabled={!ready || busy || !!prefabEdit || (liveActive && !previewing)} onClick={() => void captureSceneSnapshot()} />
           <span className="panel-aside">{resolvedConfig.renderer.width} × {resolvedConfig.renderer.height}</span>
         </PanelHeader>
         <div className="viewport-pane" id="viewport-pane-edit" role="tabpanel" aria-labelledby="viewport-tab-edit" hidden={liveActive}>
@@ -1788,15 +2228,22 @@ function Editor() {
 
       inspector: <aside className="panel inspector" aria-label={t('inspector')}>
         <PanelHeader icon={SlidersHorizontal} label={t('inspector')} description={t('inspectorHint')} />
-        <fieldset className="panel-body" disabled={!editable && (!inspectionNode || inspected.length > 0 || inspectionNodes.length > 1)}>
+        <fieldset className="panel-body" disabled={!ready || busy || (!editable && !inspected.length && inspectionNodes.length !== 1)}>
           {inspected.length ? <AssetInspector assets={inspected} audio={audio} editable={editable}
             canAssign={editable && singleEditable && selected?.type === 'Sprite'} library={scene.assetLibrary}
             onAssign={alias => updateSelected(node => node.type === 'Sprite' && node.texture !== alias ? { ...node, texture: alias } : node)}
             onAssignAudio={singleEditable && selected?.type === 'AudioSource' ? alias =>
               updateSelected(node => node.type === 'AudioSource' && node.asset !== alias ? { ...node, asset: alias } : node) : undefined}
-            onAdd={asset => add(objectFromAsset(asset))}
+            onAdd={(asset, selection) => add(objectFromAsset(asset, undefined, selection))}
             onReplace={window.oliveFiles ? item => void replaceAsset(item) : undefined}
-            slice={createAtlas}
+            onConvertSpine={window.oliveFiles && !prefabEdit ? item => void convertSpineBinary(item) : undefined}
+            onOpenSpine={!prefabEdit ? asset => setSpineStudio({ asset }) : undefined}
+            onExportSpine={window.oliveFiles ? async (alias, format) => {
+              const asset = scene.assets.find(asset => asset.alias === alias);
+              if (!asset || asset.media?.kind !== 'spine') throw new Error(t('unsupportedAnimationAsset'));
+              return window.oliveFiles!.exportSpineFiles(asset, format);
+            } : undefined}
+            slice={createAtlas} onCreateSpine={!prefabEdit ? images => void createRig(images) : undefined}
             onTags={(aliases, tags) => mutateLibrary({ type: 'tags', aliases, tags })}
             onBundle={(aliases, id) => mutateLibrary({ type: 'bundle', operation: { type: 'assign', aliases, id } })}
             onPlay={alias => view.current?.app.audio.play(alias)} onStop={() => view.current?.app.audio.stop()} /> :
@@ -1805,8 +2252,19 @@ function Editor() {
               update={updateBatch} align={align} flip={flip} toggleLock={toggleLock}
               canToggleLock={selection.some(node => !tree.get(node.id)?.inheritedLock)}
               lockAction={selection.some(node => !tree.get(node.id)?.inheritedLock && !node.locked)} /> :
-            inspectionNode ? <Inspector key={`${assetSession}:${inspectionNode.id}`} node={inspectionNode} assets={assets} textureErrors={textureErrors} update={updateSelected}
+            inspectionNode && effectInspectionNode ? <Inspector key={`${assetSession}:${inspectionNode.id}`} node={effectInspectionNode} assets={assets} textureErrors={textureErrors} update={updateSelected}
+              updateEffect={ready && !busy && liveEffectSource && !liveEffectSource.locked ? updateLiveEffect : undefined}
+              requiredEffects={requirements.get(inspectionNode.id)}
+              updateRequiredEffect={ready && !busy && previewRuntime ?
+                (instance, settings) => previewRuntime.updateRequiredCameraEffect(instance, settings) : undefined}
+              framingViewport={() => (liveActive ? liveView : view).current?.app.screen ?? resolvedConfig.renderer}
               roots={inspectionObjects} topLevel={!inspectionTree.get(inspectionNode.id)?.parent}
+              addRigBone={inspectionNode.type === 'Container' && inspectionNode.rig ? () => addBone(inspectionNode) : undefined}
+              openRigTimeline={!prefabEdit ? () => setPanelLayout(current => setPanelOpen(current, 'timeline', true)) : undefined}
+              openSpineAnimation={editable && !prefabEdit && inspectedSpine && editableSpineAsset ? () => {
+                const { animation, skin } = inspectedSpine;
+                setSpineStudio({ asset: editableSpineAsset, initialClip: { animation, skin } });
+              } : undefined}
               layoutChild={layoutChildren.has(inspectionNode.id)}
               movementActions={project.inputMap.actions.filter(action => action.kind === 'button').map(action => action.name)}
               globals={project.globals.items}
@@ -1816,13 +2274,35 @@ function Editor() {
               audioEnabled={inspectionNode.type === 'AudioSource' && isActive(scene.objects, inspectionNode.id)}
               playAudio={() => view.current?.app.audio.sources.play(inspectionNode.id)}
               stopAudio={() => view.current?.app.audio.sources.stop(inspectionNode.id)}
+              addDirectorCue={!canInsertDirectorCue ? undefined : kind => {
+                const target = inspectionNode.id;
+                const base = cueBase(inspectionNode.label);
+                if (kind === 'audio') insertDirectorCue({ ...base, kind, target, action: 'play' });
+                if (kind === 'physics') insertDirectorCue({ ...base, kind, target, action: 'impulse', x: 0, y: -5 });
+                if (kind === 'particles') insertDirectorCue({ ...base, kind, target });
+              }}
               restartParticles={id => view.current?.restartParticles(id)} sectionHistory={inspectorSections.current}
               readOnly={!editable}
-              testEffect={!ready || busy || !scenePanel.open || scenePanel.minimized ||
+              activeEffectPreview={key => activeEffectPreviews.has(effectPreviewKey(inspectionNode.id, key))}
+              previewModes={new Map(effectEntries(inspectionNode.type === 'Camera2D' ? inspectionNode.camera.postFXs ?? [] : [])
+                .flatMap(({ key }) => {
+                  const mode = previewModes.get(effectPreviewKey(inspectionNode.id, key));
+                  return mode ? [[key, mode]] : [];
+                }))}
+              setPreviewMode={(key, mode) => {
+                const id = inspectionNode.id;
+                setPreviewModes(current => new Map(current).set(effectPreviewKey(id, key), mode));
+                (liveActive ? liveView : view).current?.setEffectPreviewMode(id, key, mode);
+              }}
+              previewEffect={!ready || busy || !scenePanel.open || scenePanel.minimized ||
                 (liveActive && (!gameScene || (inspectionNode.type === 'Camera2D' ? inspectionNode.id !== gameScene.cameraId :
-                  !inspectionTree.has(inspectionNode.id)))) ? undefined :
-                effect => (liveActive ? liveView : view).current?.playEffectPreview(effect)}
-              stopEffectTest={() => (liveActive ? liveView : view).current?.stopEffectPreview()}
+                  !inspectionTree.has(inspectionNode.id)))) ? undefined : (key, effect) => {
+                const id = inspectionNode.id;
+                (liveActive ? liveView : view).current?.playEffectPreview(id, key, effect,
+                  active => markEffectPreview(id, key, active), previewModes.get(effectPreviewKey(id, key)));
+              }}
+              resetEffectTest={key => (liveActive ? liveView : view).current?.resetEffectPreview(inspectionNode.id, key)}
+              stopEffectTest={key => (liveActive ? liveView : view).current?.stopEffectPreview(inspectionNode.id, key)}
               particlePresets={prefabEdit ? undefined : { items: project.particlePresets ?? [],
                 change: particlePresets => updateProject(current => ({ ...current, version: 2, particlePresets })) }} />
             : <p className="empty"><CircleHelp size={16} aria-hidden="true" />{t('noSelection')}</p>}
@@ -1831,9 +2311,10 @@ function Editor() {
 
       assets: <AssetsPanel key={assetSession} ref={assetsPanel} catalog={catalog} scene={scene} referencedObjects={referencedObjects} editable={editable && !prefabEdit}
         canAssign={editable && singleEditable && selected?.type === 'Sprite'} audio={audio}
-        packing={pack.packing} loaded={pack.loaded} error={pack.error}
+        packing={pack.packing} loaded={pack.loaded} error={pack.error} importing={importingAssets}
         rebuild={development ? () => void pack.refresh(true) : undefined}
         importFiles={window.oliveFiles ? (folder, files) => void importAssets(folder, files) : undefined}
+        createSpine={folder => void createRig([], folder)}
         bundlesOpen={bundlesOpen} toggleBundles={() => showBundles(!bundlesOpen)}
         createBundle={() => { showBundles(true); setBundleFocus(current => current + 1); }}
         onBundleSelectionChange={setBundleSelection} inspect={setInspection}
@@ -1849,7 +2330,7 @@ function Editor() {
           assetsPanel.current?.reveal(alias);
         }} />,
       timeline: <TimelinePanel key={`${assetSession}:${sceneId}`} data={scene}
-        targets={{ nodes: scene.objects, globals: project.globals.items, scenes: project.scenes.filter(item => item.id !== sceneId) }}
+        targets={{ nodes: scene.objects, globals: project.globals.items, dialogues: project.content?.dialogues.items, scenes: project.scenes.filter(item => item.id !== sceneId) }}
         selected={singleEditable ? selected : undefined} layoutChildren={layoutChildren} locked={locked}
         editable={editable} visible={timelineVisible} view={view} record={setRecording} prefabEditing={!!prefabEdit}
         change={changeTimeline} />,
@@ -1900,10 +2381,13 @@ function Editor() {
           lab={project.gameplayLab ?? { version: 1, presets: [] }} apply={applyCharacter} platform={applyPlatform}
           store={gameplayLab => updateProject(current => ({ ...current, version: 2, gameplayLab }))} install={installCharacterKit}
           buttons={project.inputMap.actions.filter(action => action.kind === 'button').map(action => action.name)} />}
+        addDirectorCue={canInsertDirectorCue ? link => insertDirectorCue({
+          ...cueBase(sceneRecord(project, link.target).name), kind: 'scene', target: link.target, action: link.mode,
+        }) : undefined}
         preview={() => void startScenePreview('active')}
         navigate={navigateLink} goBack={() => setPlayback(current => current && popScene(current))} />,
       input: <InputPanel key={assetSession} map={project.inputMap} editable={editable && !prefabEdit}
-        running={previewing} values={inputValues} visible={activeTab(panelLayout, inputDock) === 'input' && !hubOpen && !settingsOpen}
+        running={previewing} values={inputValues} visible={!vscodeCanvas && activeTab(panelLayout, inputDock) === 'input' && !hubOpen && !settingsOpen}
         globals={project.globals.items}
         change={inputMap => updateProject(current => ({ ...current, version: 2, inputMap }))} />,
       network: <MultiplayerPanel plan={network} editable={editable && !prefabEdit} server={networkServer} client={networkClient}
@@ -1918,11 +2402,15 @@ function Editor() {
           x: resolvedConfig.renderer.width / 2, y: resolvedConfig.renderer.height / 2,
         } })} />,
       physics: <PhysicsPanel settings={physicsSettings} editable={editable && !prefabEdit} debug={physicsDebug}
+        addDirectorCue={canInsertDirectorCue ? () => insertDirectorCue({
+          ...cueBase(t('directorAction_gravity')), kind: 'physics', target: '', action: 'gravity',
+          x: physicsSettings.gravityX, y: physicsSettings.gravityY,
+        }) : undefined}
         status={physicsStatus} toggleDebug={() => setPhysicsDebug(current => !current)}
         layerInUse={[...selectionTree(referencedObjects).values()].some(({ node }) => node.physics?.body?.layer === physicsSettings.layers.length - 1)}
         change={physics => updateProject(current => ({ ...current, version: 2, physics }))}
         pause={paused => liveView.current?.app.physics.pause(paused)} step={() => liveView.current?.app.physics.step()} />,
-      scripts: panelLayout.panels.some(panel => panel.id === 'scripts' && panel.open) ? <ScriptsPanel key={assetSession}
+      scripts: !vscodeCanvas && panelLayout.panels.some(panel => panel.id === 'scripts' && panel.open) ? <ScriptsPanel key={assetSession}
         tests={<TestStudio project={project} sceneId={sceneId} assets={assets} editable={editable && !previewing && !prefabEdit}
           save={tests => updateProject(current => current !== project ? current : { ...current, version: 2, tests,
             buildQuality: current.buildQuality && { ...current.buildQuality, requiredTests: current.buildQuality.requiredTests
@@ -1951,27 +2439,116 @@ function Editor() {
             const brushes = BrushesSchema.parse({ version: 1, items });
             updateProject(current => ({ ...current, version: 2, brushes }));
           }} />} />,
-    }} />
+  };
+
+  return <PreviewMode.Provider value={viewportMode}><ScriptsProvider state={{
+    library: project.scripts, editable: editable && !prefabEdit,
+    scene: sceneRecord(project, sceneId), globals: project.globals.items,
+    selected: selected && singleEditable && !prefabEdit ? { id: selected.id, name: selected.label, scripted: !!selected.behaviour } : undefined,
+    entities: [...tree.values()].map(({ node }) => ({ id: node.id, name: node.label })),
+    change: changeScripts,
+    setBehavior,
+    select: id => { if (tree.has(id)) select([id]); },
+    graphs: project.behaviorGraphs?.items ?? [],
+    saveGraph,
+    editLogic,
+    catalog: () => logicCatalog(project, scene.objects),
+    content: project.content,
+    logicActivity: id => liveView.current?.logicActivity(id),
+    setBehaviour: (id, value) => {
+      if (prefabEdit || !editable || locked.has(id)) return;
+      updateProject(current => {
+        const active = readScene(current, sceneId);
+        const objects = changeObject(active.objects, id, node => {
+          if (value.scriptId) return { ...node, behaviour: value };
+          const { behaviour: _removed, ...rest } = node;
+          return rest;
+        });
+        return objects === active.objects ? current : { ...writeScene(current, sceneId, { ...active, objects }), version: 2 };
+      });
+    },
+    open: () => focusPanel('scripts'),
+    report: error => setFileError({ title: t('scriptsPanel'), detail: validationMessage(error) }),
+  }}><main className="editor">
+    {!vscodeCanvas && <header className="topbar">
+      <IconButton icon={Home} label={t('hubTitle')} disabled={!!prefabEdit} onClick={() => {
+        setFileError(undefined);
+        setHubOpen(true);
+      }} />
+      <div className="toolbar">
+        <IconButton icon={FilePlus2} label={t('newScene')} description={t('newSceneHint')} disabled={busy || !!prefabEdit}
+          onClick={newScene} />
+        <IconButton icon={FolderOpen} label={t('openScene')} description={t('openSceneHint')} disabled={busy || !!prefabEdit}
+          onClick={chooseScene} />
+        <IconButton icon={Save} className="save" label={t('saveScene')} description={t('saveSceneHint')}
+          disabled={!editable} onClick={save} />
+        <IconButton icon={Undo2} label={t('undo')} description={t('undoHint')}
+          disabled={!editable || (!window.oliveHost?.bound && !history.past.length)} onClick={() => travel('undo')} />
+        <IconButton icon={Redo2} label={t('redo')} description={t('redoHint')}
+          disabled={!editable || (!window.oliveHost?.bound && !history.future.length)} onClick={() => travel('redo')} />
+        <input ref={input} type="file" accept=".json,application/json" hidden onChange={event => {
+          const file = event.target.files?.[0];
+          event.target.value = '';
+          if (file) void open(async () => ({ name: file.name, text: await file.text() }));
+        }} />
+      </div>
+      <div className="file-info" {...hint(fileName, dirty ? t('unsaved') : undefined)}>
+        <span>{fileName}</span>{dirty && <i role="img" aria-label={t('unsaved')} />}
+      </div>
+      <IconButton icon={Download} label={t('exportWindow')} description={t('exportWindowHint')}
+        disabled={!editable || !!prefabEdit || !window.oliveFiles} onClick={() => setExportOpen(true)} />
+      <IconButton icon={Search} label={t('projectSearch')} description={t('projectSearchHint')}
+        disabled={!editable || !!prefabEdit} onClick={() => setSearchOpen(true)} />
+      <PanelsMenu layout={panelLayout} change={setPanelLayout} />
+      <IconButton icon={Settings2} label={t('settingsTitle')} description={t('settingsOpenHint')}
+        disabled={!ready || busy || !!prefabEdit} onClick={() => setSettingsOpen(true)} />
+    </header>}
+
+    {fileError && <div className="scene-error" role="alert"><strong>{fileError.title}</strong><p>{fileError.detail}</p>
+      <IconButton icon={X} label={t('dismiss')} onClick={() => setFileError(undefined)} /></div>}
+
+    {vscodeCanvas ? <div className="vscode-olive-scene">{panels.scene}</div> :
+      <DockWorkspace layout={panelLayout} change={setPanelLayout} panels={panels} />}
+    {spineStudio && <SpineStudio key={spineStudio.asset.alias} asset={spineStudio.asset}
+      libraryAssets={catalog.entries} initialClip={spineStudio.initialClip} close={() => setSpineStudio(undefined)}
+      save={(data, original, renames, media) => {
+        const current = assets.get(original.alias);
+        if (!editable || prefabEdit || current?.url !== original.url || current.media !== original.media) throw new Error(t('spineSourceChanged'));
+        const snapshot = latestProject.current;
+        const checked = importedAssetsSchema.parse(snapshot.assets.map(asset =>
+          asset.alias === original.alias ? { ...asset, data, media } : asset));
+        const next = remapProjectSpineReferences({ ...snapshot, assets: checked }, original.alias, renames);
+        updateProject(() => next);
+      }} />}
+    {nativeAssetPreview && <dialog ref={assetPreviewDialog} className="native-asset-preview"
+      aria-label={nativeAssetPreview.name ?? nativeAssetPreview.alias} onClose={() => setNativeAssetPreview(undefined)}>
+      <div className="panel-header">
+        <strong>{nativeAssetPreview.name ?? nativeAssetPreview.alias}</strong>
+        <IconButton icon={X} label={t('dismiss')} onClick={() => assetPreviewDialog.current?.close()} />
+      </div>
+      <AnimatedAssetPreview asset={nativeAssetPreview} />
+    </dialog>}
     {searchOpen && <ProjectSearch project={project} assets={catalog.entries} close={() => setSearchOpen(false)} reveal={result => {
       if (result.kind === 'scene' || result.kind === 'object') {
         editScene(result.scene ?? result.id);
         setInspection([]);
         if (result.kind === 'object') select([result.id]);
-        setPanelLayout(current => setPanelOpen(current, 'hierarchy', true));
+        focusPanel('hierarchy');
       } else if (result.kind === 'asset') {
         setInspection([result.id]);
-        setPanelLayout(current => setPanelOpen(setPanelOpen(current, 'inspector', true), 'assets', true));
+        focusPanel('inspector');
+        focusPanel('assets');
         requestAnimationFrame(() => assetsPanel.current?.reveal(result.id));
       } else if (result.kind === 'script') {
-        setPanelLayout(current => setPanelOpen(current, 'scripts', true));
+        focusPanel('scripts');
         revealScript(result.id);
       } else if (result.kind === 'prefab') {
         setActivePrefabId(result.id);
-        setPanelLayout(current => setPanelOpen(current, 'prefabs', true));
+        focusPanel('prefabs');
       } else {
         const tab = result.id.split(':')[0];
         if (tab === 'data' || tab === 'dialogues' || tab === 'achievements') requestContentTab({ tab });
-        setPanelLayout(current => setPanelOpen(current, 'content', true));
+        focusPanel('content');
       }
     }} />}
     {exportOpen && <ExportDialog project={project} title={fileName.replace(/\.json$/i, '')}
@@ -1998,7 +2575,7 @@ function Editor() {
         if (hub) void open(() => hub.open(id));
       }} openExample={openExample} />}
     <Tooltips />
-  </main></ScriptsProvider>;
+  </main></ScriptsProvider></PreviewMode.Provider>;
 }
 
 document.documentElement.lang = locale;

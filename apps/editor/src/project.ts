@@ -119,7 +119,7 @@ export function cameraInScene(objects: SceneObject[]): CameraObject | undefined 
 export function newSceneCamera(size: { width: number; height: number }, id?: string): CameraObject {
   const node = createObject('Camera2D');
   return { ...node, id: id ?? node.id, visible: false, position: { x: size.width / 2, y: size.height / 2 },
-    camera: { ...node.camera, viewportRelative: true } };
+    camera: { ...node.camera, postFXs: [{ type: 'viewport', enabled: true }] } };
 }
 
 function asContainer(node: SceneObject): SceneObject {
@@ -166,6 +166,15 @@ export function projectFromScene(scene: Scene, name = t('firstScene')): Project 
     startup: 'scene-1', prefabs: [], inputMap: defaultInputMap, globals: defaultGlobals, scripts: emptyLibrary(),
     scenes: [{ id: 'scene-1', name: name.slice(0, 100), objects: scene.objects, timeline: scene.timeline, cinematics: scene.cinematics, lighting: scene.lighting, links: [] }],
   });
+}
+
+// Version 1 scene files without objects or renderer config cannot be distinguished from generic JSON.
+export function isOliveProject(value: unknown): boolean {
+  if (!value || typeof value !== 'object' || !('version' in value)) return false;
+  if (value.version === 2 && 'scenes' in value && Array.isArray(value.scenes)) return projectSchema.safeParse(value).success;
+  if (value.version !== 1 || !('objects' in value) || !Array.isArray(value.objects)) return false;
+  return (value.objects.length > 0 || ('config' in value && !!value.config && typeof value.config === 'object' &&
+    'renderer' in value.config)) && sceneSchema.safeParse(value).success;
 }
 
 export function parseProject(value: unknown, name?: string): Project {

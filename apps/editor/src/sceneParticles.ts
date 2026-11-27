@@ -81,6 +81,8 @@ class SceneEmitter {
     if (this.playing && this.settings.emission === 'burst') this.emitter.emitNow();
   }
 
+  clearParticles() { this.emitter.cleanup(); }
+
   update(seconds: number) { this.emitter.update(seconds); }
 
   destroy() {
@@ -129,6 +131,10 @@ export class SceneParticles {
 
   restart(id: string) {
     this.emitters.get(id)?.restart();
+  }
+
+  clearParticles(id: string) {
+    this.emitters.get(id)?.clearParticles();
   }
 
   destroy() {

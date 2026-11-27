@@ -4,8 +4,8 @@ import { validateInteractions } from '@rewrite/interactions';
 import { defaultMobileApp, parseMobileApp } from '@rewrite/html-export/mobile';
 import { defaultWebApp, parseWebApp } from '@rewrite/html-export/webapp';
 import { z } from 'zod';
-import { objectAsset } from './assetLibrary';
-import type { Asset } from './assets';
+import { cameraLutAliases, objectAsset } from './assetLibrary';
+import { spineAudioBytes, type Asset } from './assets';
 import { clipList } from './cinematics';
 import { t } from './i18n';
 import { defaultBuildQuality, testFingerprint, type Project } from './project';
@@ -30,12 +30,13 @@ export type ExportOptions = z.output<typeof exportOptionsSchema>;
 export type ExportIssue = { level: 'error' | 'warning' | 'info'; scope: string; message: string };
 const mebibyte = 1024 * 1024;
 
-export function assessBuildBudget(project: Project, assets: ReadonlyMap<string, Pick<Asset, 'kind' | 'bytes'>>, outputBytes?: number, textureBytes?: number) {
+export function assessBuildBudget(project: Project, assets: ReadonlyMap<string, Pick<Asset, 'kind' | 'bytes' | 'media'>>, outputBytes?: number, textureBytes?: number) {
   const quality = project.buildQuality ?? defaultBuildQuality;
   const number = new Intl.NumberFormat(undefined, { maximumFractionDigits: 2 });
   const metrics = {
     entities: project.scenes.reduce((n, scene) => n + selectionTree(scene.objects).size, 0),
-    audio: [...assets.values()].reduce((n, asset) => n + (asset.kind === 'audio' ? asset.bytes ?? 0 : 0), 0) / mebibyte,
+    audio: [...assets.values()].reduce((n, asset) =>
+      n + (asset.kind === 'audio' ? asset.bytes ?? 0 : spineAudioBytes(asset.media)), 0) / mebibyte,
     output: outputBytes === undefined ? undefined : outputBytes / mebibyte,
     textures: textureBytes === undefined ? undefined : textureBytes / mebibyte,
   };
@@ -56,7 +57,7 @@ export function initialExportOptions(title: string): ExportOptions {
   return { format: 'html', title: name, appId: defaultMobileApp(name).appId };
 }
 
-export function assessExport(project: Project, options: ExportOptions, assets: ReadonlyMap<string, Pick<Asset, 'kind' | 'bytes'>>, layout?: ExportLayout): ExportIssue[] {
+export function assessExport(project: Project, options: ExportOptions, assets: ReadonlyMap<string, Pick<Asset, 'kind' | 'bytes' | 'media'>>, layout?: ExportLayout): ExportIssue[] {
   const format = layout ?? builtInExportTargets.find(target => target.id === options.format)?.layout;
   const issues: ExportIssue[] = [];
   const add = (level: ExportIssue['level'], scope: string, message: string) => issues.push({ level, scope, message });
@@ -118,6 +119,9 @@ export function assessExport(project: Project, options: ExportOptions, assets: R
         const type = node.type === 'Spine' ? 'spine' : node.type === 'AnimatedSprite' ? 'sheet' : node.type === 'AudioSource' ? 'audio' : 'image';
         const asset = assets.get(alias);
         if (!asset || asset.kind !== type) add('error', scope, t('exportMissingAsset', { alias, type }));
+      }
+      for (const alias of new Set(cameraLutAliases(node))) {
+        if (assets.get(alias)?.kind !== 'image') add('error', scope, t('exportMissingAsset', { alias, type: 'image' }));
       }
       checkScript(node.behaviour?.scriptId, scope);
       if (node.behavior?.scriptId) {

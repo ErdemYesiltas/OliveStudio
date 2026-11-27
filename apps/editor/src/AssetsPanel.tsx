@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useImperativeHandle, useLayoutEffect, useMemo, useRef, useState, type DragEvent, type MouseEvent, type PointerEvent, type Ref } from 'react';
 import {
-  AudioLines, Boxes, Film, ChevronDown, ChevronRight, Folder, FolderOpen, FolderPlus, Import, LayoutGrid, Link2, List,
+  AudioLines, Bone, Boxes, Film, ChevronDown, ChevronRight, Folder, FolderOpen, FolderPlus, Import, LayoutGrid, Link2, List,
   ListChecks, PackageOpen, Play, RefreshCw, Search, Square, X,
 } from 'lucide-react';
 import {
@@ -18,13 +18,14 @@ type FolderNode = Catalog['folders'] extends Map<string, infer F> ? F : never;
 type Mode = 'create' | 'rename' | 'move';
 const projectParent = (id: string) => id === projectRoot ? null : id;
 
-export type AssetsPanelHandle = { reveal: (alias: string) => void };
+export type AssetsPanelHandle = { reveal: (alias: string, openContainingFolder?: boolean) => void };
 
 type Props = {
   ref?: Ref<AssetsPanelHandle>;
   catalog: Catalog; scene: Scene; referencedObjects: Scene['objects']; editable: boolean; canAssign: boolean; audio: AudioStatus;
-  packing: boolean; loaded: boolean; error?: string; rebuild?: () => void;
+  packing: boolean; loaded: boolean; importing?: boolean; error?: string; rebuild?: () => void;
   importFiles?: (folder: string | null, files?: File[]) => void;
+  createSpine: (folder: string | null) => void;
   bundlesOpen: boolean;
   toggleBundles: () => void;
   createBundle: () => void;
@@ -35,8 +36,8 @@ type Props = {
 };
 
 export function AssetsPanel({
-  ref, catalog, scene, referencedObjects, editable, canAssign, audio, packing, loaded, error, rebuild,
-  importFiles, bundlesOpen, toggleBundles, createBundle, onBundleSelectionChange, inspect, mutate, assign, play, stop,
+  ref, catalog, scene, referencedObjects, editable, canAssign, audio, packing, loaded, importing, error, rebuild,
+  importFiles, createSpine, bundlesOpen, toggleBundles, createBundle, onBundleSelectionChange, inspect, mutate, assign, play, stop,
 }: Props) {
   const { folders, entries } = catalog;
   const [folder, setFolder] = useState(allAssets);
@@ -96,10 +97,10 @@ export function AssetsPanel({
   useEffect(() => onBundleSelectionChange(selectedProjects), [onBundleSelectionChange, selectedProjects]);
 
   useImperativeHandle(ref, () => ({
-    reveal(alias) {
+    reveal(alias, openContainingFolder) {
       const entry = entries.find(item => item.alias === alias);
       if (!entry) return;
-      if (!visible.includes(entry)) {
+      if (openContainingFolder || !visible.includes(entry)) {
         showFolder(entry.folderId);
         setFilter('all');
       }
@@ -191,7 +192,7 @@ export function AssetsPanel({
     }
   }
 
-  function remove() {
+  async function remove() {
     if (!item || !itemName || !canEditItem) return;
     const users = active ? assetUsers(referencedObjects, active.alias) : [];
     setMenu(undefined);
@@ -204,7 +205,8 @@ export function AssetsPanel({
       setMessage(t('assetFolderNotEmpty'));
       return;
     }
-    if (window.confirm(t('confirmDeleteAsset', { name: itemName })) && change({ type: 'delete', item })) clearSelection();
+    const message = t('confirmDeleteAsset', { name: itemName });
+    if (await (window.oliveHost?.confirm(message) ?? window.confirm(message)) && change({ type: 'delete', item })) clearSelection();
   }
 
   function openMenu(event: { clientX: number; clientY: number; currentTarget: HTMLElement }, target?: LibraryItem) {
@@ -342,7 +344,7 @@ export function AssetsPanel({
         <option value="all">{t('allAssetTypes')}</option><option value="generated">{t('generatedAssets')}</option><option value="image">{t('imageAssets')}</option>
         <option value="audio">{t('audioAssets')}</option><option value="animated">{t('animatedAssets')}</option>
       </select>
-      <span className="panel-aside" role="status">{packing ? t('packing') : loaded ? total : t('packUnavailable')}</span>
+      <span className="panel-aside" role="status">{importing ? t('importingAssets') : packing ? t('packing') : loaded ? total : t('packUnavailable')}</span>
       {(['grid', 'list'] as const).map(mode => <IconButton key={mode} icon={mode === 'grid' ? LayoutGrid : List}
         label={t(mode === 'grid' ? 'gridAssets' : 'listAssets')} aria-pressed={mode === layout}
         onClick={() => { setLayout(mode); localStorage.setItem('olive.assets.layout', mode); }} />)}
@@ -353,6 +355,8 @@ export function AssetsPanel({
           if (currentFolder !== allAssets) openFolder(writableFolder);
         }} />}
       <IconButton icon={FolderPlus} label={t('newAssetFolder')} disabled={!editable} onClick={() => showForm('create')} />
+      <IconButton icon={Bone} label={t('spineCreateEmptyRig')} description={t('spineCreateEmptyRigHint')}
+        disabled={!editable} onClick={() => createSpine(projectParent(writableFolder))} />
       <IconButton icon={ListChecks} label={t('selectMultipleAssets')} description={t('selectMultipleHint')}
         aria-pressed={selectMode} onClick={() => setSelectMode(!selectMode)} />
       <button className="bundle-command asset-bundles-button" aria-label={t('assetBundles')}
@@ -424,7 +428,7 @@ export function AssetsPanel({
               {asset.kind === 'image' ?
                 <IconButton icon={Link2} label={t('assignTexture', { alias: asset.alias })} disabled={!canAssign} onClick={() => assign(asset.alias)} /> : asset.kind === 'audio' ?
                 <IconButton icon={playing ? Square : Play} label={t(playing ? 'stopAudio' : 'playAudio', { alias: asset.alias })}
-                  disabled={!editable} onClick={() => toggleAudio(asset.alias)} /> : null}
+                  onClick={() => toggleAudio(asset.alias)} /> : null}
             </article>;
           })}
           {!visible.length && !visibleFolders.length && <p className="empty">{search || filter !== 'all' ? t('noAssetMatches') : t('emptyAssetFolder')}</p>}

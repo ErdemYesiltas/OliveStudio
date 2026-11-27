@@ -134,13 +134,24 @@ export function assignObjectAsset(node: SceneObject, asset: Asset): SceneObject 
   if ('texture' in node) return { ...node, texture: asset.alias };
   if (node.type === 'AudioSource') return { ...node, asset: asset.alias };
   if (node.type === 'AnimatedSprite') return { ...node, asset: asset.alias, animation: null };
-  if (node.type === 'Spine') return { ...node, asset: asset.alias, animation: null, skin: null };
+  if (node.type === 'Spine') return { ...node, asset: asset.alias, animation: null, skin: null,
+    skinLayers: undefined, eventAudio: undefined, playback: undefined, mix: node.mix && { duration: node.mix.duration, pairs: [] } };
   return node;
+}
+
+export function cameraLutAliases(node: SceneObject): string[] {
+  return node.type === 'Camera2D' ? node.camera.postFXs?.flatMap(effect => {
+    if (effect.type !== 'lut') return [];
+    const alias = effect.settings.texture;
+    return typeof alias === 'string' && alias ? [alias] : [];
+  }) ?? [] : [];
 }
 
 export function assetUsers(objects: SceneObject[], alias: string): string[] {
   return objects.flatMap(node => node.type === 'Container' ? assetUsers(node.children, alias) :
-    objectAsset(node) === alias ? [node.label] : []);
+    objectAsset(node) === alias || cameraLutAliases(node).includes(alias) ||
+    (node.type === 'Spine' && Object.values(node.eventAudio ?? {}).includes(alias)) ||
+    node.effects?.some(effect => effect.type === 'photoDepth' && effect.texture === alias) ? [node.label] : []);
 }
 
 export type LibraryItem = { type: 'folder' | 'asset'; id: string };

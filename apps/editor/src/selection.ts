@@ -16,6 +16,20 @@ export function selectionTree(nodes: readonly SceneObject[]) {
   return items;
 }
 
+export function findSceneObjectByPath(objects: readonly SceneObject[], path: string) {
+  if (!path.includes('/')) return undefined;
+  let siblings = objects;
+  let result: SceneObject | undefined;
+  for (const label of path.split('/')) {
+    if (!label) return undefined;
+    const matches = siblings.filter(node => node.label === label);
+    if (matches.length !== 1) return undefined;
+    [result] = matches;
+    siblings = result.type === 'Container' ? result.children : [];
+  }
+  return result;
+}
+
 export function selectionRoots(tree: ReturnType<typeof selectionTree>, ids: readonly string[]) {
   const selected = new Set(ids);
   return ids.filter(id => {

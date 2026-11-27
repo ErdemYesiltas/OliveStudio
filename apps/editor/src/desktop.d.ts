@@ -1,12 +1,38 @@
-type DesktopCommand = 'new' | 'open' | 'save' | 'undo' | 'redo' | 'settings' | 'hub' | 'export-game' | 'panel-reset' |
+type DesktopCommand = 'new' | 'open' | 'save' | 'undo' | 'redo' | 'settings' | 'search' | 'hub' | 'export-game' | 'panel-reset' |
   `panel-${import('./panelLayout').PanelId}`;
 
-type OpenedScene = { name: string; text: string; recentToken?: string; configText?: string; configToken?: string; recovered?: boolean };
+type HostWorkspaceState = { scene: string; selection: string[]; inspection: string[] };
+
+type OpenedScene = { name: string; text: string; recentToken?: string; configText?: string; configToken?: string; recovered?: boolean; revision?: number; workspaceState?: HostWorkspaceState };
 type RecentScene = { id: string; name: string; path: string; lastOpened: number; pinned: boolean; exists: boolean };
 type RecoveryCopy = { id: string; name: string; at: number };
 type ProjectHistory = { repo: boolean; branch?: string; changed?: string; commits: { hash: string; timestamp: string; summary: string }[] };
 
 interface Window {
+  oliveHost?: {
+    bound: boolean;
+    onCanvasAction(callback: (action: import('./vscodeCanvas').CanvasAction) => void): () => void;
+    publishCanvasState(state: unknown): Promise<void>;
+    panels(): Promise<import('./panelLayout').PanelId[]>;
+    publishDebugState(state: import('./vscodeDebug').DebugSnapshot): Promise<void>;
+    onDebugAction(callback: (action: import('./vscodeDebug').DebugAction) => void): () => void;
+    onPrefabEdit(callback: (id: string) => void): () => void;
+    focusView(id: import('./panelLayout').PanelId): Promise<void>;
+    onPanels(callback: (ids: import('./panelLayout').PanelId[]) => void): () => void;
+    updateWorkspace(state: HostWorkspaceState): Promise<void>;
+    onWorkspace(callback: (state: HostWorkspaceState) => void): () => void;
+    acceptDocument(revision: number): Promise<void>;
+    travel(direction: 'undo' | 'redo'): Promise<void>;
+    onPreview(callback: (from: 'startup' | 'active') => void): () => void;
+    onTimeline(callback: (command: import('./TimelinePanel').TimelinePreviewCommand) => void): () => void;
+    initial(): Promise<OpenedScene | { blank: true } | { sample: true } | null>;
+    edit(text: string): Promise<void>;
+    onDocument(callback: (file: OpenedScene) => void): () => void;
+    onSaved(callback: (text: string) => void): () => void;
+    confirm(message: string): Promise<boolean>;
+    newProject(): Promise<void>;
+    example(): Promise<void>;
+  };
   oliveFiles?: {
     open(): Promise<OpenedScene | null>;
     save(name: string, text: string): Promise<{ name: string; configToken: string } | null>;
@@ -21,6 +47,12 @@ interface Window {
     } | null>;
     exportTargets(): Promise<import('./exportReport').ExportTargetInfo[]>;
     exportBundles(assets: { alias: string; data: string; bundle: string; media?: import('./assets').EmbeddedMedia }[]): Promise<string | null>;
+    exportSpineFiles(asset: { alias: string; data: string; media?: import('./assets').EmbeddedMedia }, format?: 'runtime' | 'project' | 'binary'): Promise<string | null>;
+    convertSpineBinary(asset: { alias: string; data: string; media?: import('./assets').EmbeddedMedia }): Promise<string>;
+    spineLauncher?(action: 'status' | 'choose' | 'reset' | 'test'): Promise<{
+      path: string | null; configured: string | null;
+      test?: { state: 'ready'; version: string } | { state: 'notActivated' | 'unavailable' };
+    }>;
     history(token: string, action: 'status'): Promise<ProjectHistory>;
     history(token: string, action: 'init' | 'commit', message?: string): Promise<boolean>;
     history(token: string, action: 'show', hash: string): Promise<OpenedScene>;
@@ -41,10 +73,13 @@ interface Window {
     hub: {
       list(): Promise<RecentScene[]>;
       open(id: string): Promise<OpenedScene | null>;
-      example(): Promise<OpenedScene>;
+      example(id?: 'gallery' | 'theatre' | 'tavern' | 'photo' | 'rig'): Promise<OpenedScene>;
       remember(token: string): Promise<void>;
       action(id: string, action: 'pin' | 'remove' | 'reveal'): Promise<void>;
     };
     onCommand(callback: (command: DesktopCommand) => void): () => void;
   };
 }
+
+// Pixi's side-effect entry replaces dynamic shader generation in CSP-restricted webviews.
+declare module 'pixi.js/unsafe-eval';

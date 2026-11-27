@@ -8,7 +8,14 @@ import { fileURLToPath } from 'node:url';
 
 const output = resolve(process.argv[2] ?? 'dist/asset-import.cjs');
 const root = fileURLToPath(new URL('.', import.meta.url));
+const vscode = process.argv.includes('--vscode');
 const renderer = process.argv[2] ? join(dirname(output), 'renderer') : join(root, 'dist');
+
+if (!vscode) await build({
+  entryPoints: [join(root, 'preload.cjs')],
+  outfile: join(dirname(output), 'preload.cjs'),
+  platform: 'node', target: 'node22', format: 'cjs', bundle: true, external: ['electron'],
+});
 
 await build({
   entryPoints: [fileURLToPath(new URL('./asset-import.mjs', import.meta.url))],
@@ -17,6 +24,8 @@ await build({
   target: 'node22',
   format: 'cjs',
   bundle: true,
+  // Unzipper's optional S3 adapter is unused by local archive imports.
+  external: ['@aws-sdk/client-s3'],
   plugins: [{
     name: 'assetpack-crc32',
     setup(build) {
@@ -35,11 +44,12 @@ await build({
   platform: 'node', target: 'node22', format: 'cjs', bundle: true,
   loader: { '.json': 'json' },
 });
-const hubClient = join(process.env.LOCALHUB_DIR ?? resolve(root, '../../../localhub'), 'clients/typescript/src/index.ts');
+const hubClient = [process.env.LOCALHUB_DIR, resolve(root, '../../localhub'), resolve(root, '../../../localhub')]
+  .filter(Boolean).map(directory => join(directory, 'clients/typescript/src/index.ts')).find(existsSync);
 const hubBundle = join(dirname(output), 'localhub.cjs');
-if (existsSync(hubClient)) {
+if (hubClient) {
   await build({
-    entryPoints: [resolve(root, 'native/native-localhub.mts')],
+    entryPoints: [resolve(root, vscode ? 'native/native-localhub.mts' : 'native/electron-localhub.mts')],
     outfile: hubBundle, platform: 'node', target: 'node22', format: 'cjs', bundle: true,
     alias: { '@localhub/client': hubClient }, external: ['electron'],
   });

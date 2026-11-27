@@ -1,0 +1,821 @@
+{
+  "name": "olivestudio",
+  "displayName": "OliveStudio",
+  "description": "OliveStudio's Pixi game editor inside Visual Studio Code.",
+  "version": "0.5.0",
+  "publisher": "olivestudio",
+  "private": true,
+  "engines": {
+    "vscode": "^1.106.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "extensionKind": [
+    "ui"
+  ],
+  "main": "./extension.cjs",
+  "icon": "icon.png",
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": false
+    },
+    "virtualWorkspaces": false
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "oliveStudio.hub",
+        "title": "OliveStudio: Open Project Hub"
+      },
+      {
+        "command": "oliveStudio.open",
+        "title": "OliveStudio: Open Project\u2026"
+      },
+      {
+        "command": "oliveStudio.openResource",
+        "title": "Open with OliveStudio"
+      },
+      {
+        "command": "oliveStudio.showPanels",
+        "title": "OliveStudio: Show Project Panels"
+      },
+      {
+        "command": "oliveStudio.openText",
+        "title": "Open Project JSON as Text"
+      },
+      {
+        "command": "oliveStudio.treeAction",
+        "title": "Run View Action"
+      },
+      {
+        "command": "oliveStudio.editTreeItem",
+        "title": "Edit Property",
+        "icon": "$(edit)"
+      },
+      {
+        "command": "oliveStudio.addObject",
+        "title": "Add Object",
+        "icon": "$(add)"
+      },
+      {
+        "command": "oliveStudio.renameObject",
+        "title": "Rename Object"
+      },
+      {
+        "command": "oliveStudio.addScene",
+        "title": "New Scene",
+        "icon": "$(add)"
+      },
+      {
+        "command": "oliveStudio.setStartup",
+        "title": "Set as Startup Scene"
+      },
+      {
+        "command": "oliveStudio.importAssets",
+        "title": "Import Assets",
+        "icon": "$(cloud-download)"
+      },
+      {
+        "command": "oliveStudio.addBundle",
+        "title": "New Bundle",
+        "icon": "$(add)"
+      },
+      {
+        "command": "oliveStudio.assignBundle",
+        "title": "Assign Bundle"
+      },
+      {
+        "command": "oliveStudio.exportBundles",
+        "title": "Export Bundles",
+        "icon": "$(export)"
+      },
+      {
+        "command": "oliveStudio.renameScene",
+        "title": "Rename Scene"
+      },
+      {
+        "command": "oliveStudio.duplicateScene",
+        "title": "Duplicate Scene"
+      },
+      {
+        "command": "oliveStudio.addAssetFolder",
+        "title": "New Asset Folder",
+        "icon": "$(new-folder)"
+      },
+      {
+        "command": "oliveStudio.assignAsset",
+        "title": "Assign Asset to Selected Object"
+      },
+      {
+        "command": "oliveStudio.stopTimeline",
+        "title": "Stop Timeline",
+        "icon": "$(debug-stop)"
+      },
+      {
+        "command": "oliveStudio.deleteObject",
+        "title": "Delete Object"
+      },
+      {
+        "command": "oliveStudio.exportGame",
+        "title": "OliveStudio: Export Game",
+        "enablement": "oliveStudio.canvasActive"
+      },
+      {
+        "command": "oliveStudio.projectSettings",
+        "title": "OliveStudio: Project Settings",
+        "enablement": "oliveStudio.canvasActive"
+      },
+      {
+        "command": "oliveStudio.findInProject",
+        "title": "OliveStudio: Search Project",
+        "enablement": "oliveStudio.canvasActive"
+      },
+      {
+        "command": "oliveStudio.saveProject",
+        "title": "OliveStudio: Save Project",
+        "enablement": "oliveStudio.canvasActive"
+      },
+      {
+        "command": "oliveStudio.filterAssets",
+        "title": "Filter Assets",
+        "icon": "$(search)"
+      },
+      {
+        "command": "oliveStudio.previewAsset",
+        "title": "Preview Asset",
+        "icon": "$(eye)"
+      },
+      {
+        "command": "oliveStudio.placeAsset",
+        "title": "Place in Scene"
+      },
+      {
+        "command": "oliveStudio.renameAsset",
+        "title": "Rename Asset or Folder"
+      },
+      {
+        "command": "oliveStudio.moveAsset",
+        "title": "Move to Folder"
+      },
+      {
+        "command": "oliveStudio.deleteAsset",
+        "title": "Delete Asset or Folder"
+      },
+      {
+        "command": "oliveStudio.tagAsset",
+        "title": "Edit Tags"
+      },
+      {
+        "command": "oliveStudio.renameBundle",
+        "title": "Rename Bundle"
+      },
+      {
+        "command": "oliveStudio.removeBundle",
+        "title": "Remove Bundle"
+      },
+      {
+        "command": "oliveStudio.revealAsset",
+        "title": "Reveal in Assets"
+      }
+    ],
+    "customEditors": [
+      {
+        "viewType": "oliveStudio.project",
+        "displayName": "OliveStudio",
+        "selector": [
+          {
+            "filenamePattern": "*.json"
+          }
+        ],
+        "priority": "option"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "oliveStudio.openResource",
+          "when": "resourceExtname == .json",
+          "group": "navigation@50"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "oliveStudio.openResource",
+          "when": "false"
+        },
+        {
+          "command": "oliveStudio.openText",
+          "when": "activeCustomEditorId == oliveStudio.project"
+        },
+        {
+          "command": "oliveStudio.treeAction",
+          "when": "false"
+        },
+        {
+          "command": "oliveStudio.editTreeItem",
+          "when": "false"
+        },
+        {
+          "command": "oliveStudio.addObject",
+          "when": "false"
+        },
+        {
+          "command": "oliveStudio.renameObject",
+          "when": "false"
+        },
+        {
+          "command": "oliveStudio.addScene",
+          "when": "false"
+        },
+        {
+          "command": "oliveStudio.setStartup",
+          "when": "false"
+        },
+        {
+          "command": "oliveStudio.importAssets",
+          "when": "false"
+        },
+        {
+          "command": "oliveStudio.addBundle",
+          "when": "false"
+        },
+        {
+          "command": "oliveStudio.assignBundle",
+          "when": "false"
+        },
+        {
+          "command": "oliveStudio.exportBundles",
+          "when": "false"
+        },
+        {
+          "command": "oliveStudio.renameScene",
+          "when": "false"
+        },
+        {
+          "command": "oliveStudio.duplicateScene",
+          "when": "false"
+        },
+        {
+          "command": "oliveStudio.addAssetFolder",
+          "when": "false"
+        },
+        {
+          "command": "oliveStudio.assignAsset",
+          "when": "false"
+        },
+        {
+          "command": "oliveStudio.stopTimeline",
+          "when": "false"
+        },
+        {
+          "command": "oliveStudio.deleteObject",
+          "when": "false"
+        },
+        {
+          "command": "oliveStudio.filterAssets",
+          "when": "false"
+        },
+        {
+          "command": "oliveStudio.previewAsset",
+          "when": "false"
+        },
+        {
+          "command": "oliveStudio.placeAsset",
+          "when": "false"
+        },
+        {
+          "command": "oliveStudio.renameAsset",
+          "when": "false"
+        },
+        {
+          "command": "oliveStudio.moveAsset",
+          "when": "false"
+        },
+        {
+          "command": "oliveStudio.deleteAsset",
+          "when": "false"
+        },
+        {
+          "command": "oliveStudio.tagAsset",
+          "when": "false"
+        },
+        {
+          "command": "oliveStudio.renameBundle",
+          "when": "false"
+        },
+        {
+          "command": "oliveStudio.removeBundle",
+          "when": "false"
+        },
+        {
+          "command": "oliveStudio.revealAsset",
+          "when": "false"
+        }
+      ],
+      "editor/title/context": [
+        {
+          "command": "oliveStudio.openText",
+          "when": "activeCustomEditorId == oliveStudio.project",
+          "group": "navigation"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "oliveStudio.addObject",
+          "when": "view == oliveStudio.rail.hierarchy",
+          "group": "navigation"
+        },
+        {
+          "command": "oliveStudio.addScene",
+          "when": "view == oliveStudio.rail.scenes",
+          "group": "navigation"
+        },
+        {
+          "command": "oliveStudio.importAssets",
+          "when": "view == oliveStudio.rail.assets",
+          "group": "navigation"
+        },
+        {
+          "command": "oliveStudio.addBundle",
+          "when": "view == oliveStudio.rail.bundles",
+          "group": "navigation"
+        },
+        {
+          "command": "oliveStudio.exportBundles",
+          "when": "view == oliveStudio.rail.bundles",
+          "group": "navigation"
+        },
+        {
+          "command": "oliveStudio.addAssetFolder",
+          "when": "view == oliveStudio.rail.assets",
+          "group": "navigation"
+        },
+        {
+          "command": "oliveStudio.stopTimeline",
+          "when": "view == oliveStudio.rail.timeline",
+          "group": "navigation"
+        },
+        {
+          "command": "oliveStudio.filterAssets",
+          "when": "view == oliveStudio.rail.assets",
+          "group": "navigation@1"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "oliveStudio.editTreeItem",
+          "when": "view == oliveStudio.rail.inspector && viewItem == olive-property",
+          "group": "inline"
+        },
+        {
+          "command": "oliveStudio.renameObject",
+          "when": "view == oliveStudio.rail.hierarchy && viewItem == olive-object",
+          "group": "1_edit"
+        },
+        {
+          "command": "oliveStudio.setStartup",
+          "when": "view == oliveStudio.rail.scenes && viewItem == olive-scene",
+          "group": "1_edit"
+        },
+        {
+          "command": "oliveStudio.importAssets",
+          "when": "view == oliveStudio.rail.assets && viewItem == olive-folder",
+          "group": "1_edit"
+        },
+        {
+          "command": "oliveStudio.assignBundle",
+          "when": "view == oliveStudio.rail.assets && viewItem == olive-asset",
+          "group": "1_edit"
+        },
+        {
+          "command": "oliveStudio.assignBundle",
+          "when": "view == oliveStudio.rail.bundles && viewItem == olive-asset",
+          "group": "1_edit"
+        },
+        {
+          "command": "oliveStudio.renameScene",
+          "when": "view == oliveStudio.rail.scenes && viewItem == olive-scene",
+          "group": "1_edit"
+        },
+        {
+          "command": "oliveStudio.duplicateScene",
+          "when": "view == oliveStudio.rail.scenes && viewItem == olive-scene",
+          "group": "1_edit"
+        },
+        {
+          "command": "oliveStudio.addAssetFolder",
+          "when": "view == oliveStudio.rail.assets && viewItem == olive-folder",
+          "group": "1_edit"
+        },
+        {
+          "command": "oliveStudio.assignAsset",
+          "when": "view == oliveStudio.rail.assets && viewItem == olive-asset",
+          "group": "1_edit"
+        },
+        {
+          "command": "oliveStudio.deleteObject",
+          "when": "view == oliveStudio.rail.hierarchy && viewItem == olive-object",
+          "group": "9_delete"
+        },
+        {
+          "command": "oliveStudio.previewAsset",
+          "when": "view == oliveStudio.rail.assets && viewItem == olive-asset",
+          "group": "inline"
+        },
+        {
+          "command": "oliveStudio.placeAsset",
+          "when": "view == oliveStudio.rail.assets && viewItem == olive-asset",
+          "group": "1_edit"
+        },
+        {
+          "command": "oliveStudio.renameAsset",
+          "when": "view == oliveStudio.rail.assets && viewItem =~ /^(olive-asset|olive-folder)$/",
+          "group": "1_edit"
+        },
+        {
+          "command": "oliveStudio.moveAsset",
+          "when": "view == oliveStudio.rail.assets && viewItem =~ /^(olive-asset|olive-folder)$/",
+          "group": "1_edit"
+        },
+        {
+          "command": "oliveStudio.deleteAsset",
+          "when": "view == oliveStudio.rail.assets && viewItem =~ /^(olive-asset|olive-folder)$/",
+          "group": "9_delete"
+        },
+        {
+          "command": "oliveStudio.tagAsset",
+          "when": "view == oliveStudio.rail.assets && viewItem == olive-asset",
+          "group": "1_edit"
+        },
+        {
+          "command": "oliveStudio.renameBundle",
+          "when": "view == oliveStudio.rail.bundles && viewItem == olive-bundle",
+          "group": "1_edit"
+        },
+        {
+          "command": "oliveStudio.removeBundle",
+          "when": "view == oliveStudio.rail.bundles && viewItem == olive-bundle",
+          "group": "9_delete"
+        },
+        {
+          "command": "oliveStudio.revealAsset",
+          "when": "view == oliveStudio.rail.bundles && viewItem == olive-asset",
+          "group": "1_edit"
+        }
+      ]
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "olivestudio-native-hierarchy",
+          "title": "Hierarchy",
+          "icon": "activity.png"
+        },
+        {
+          "id": "olivestudio-native-scenes",
+          "title": "Scenes",
+          "icon": "activity.png"
+        }
+      ],
+      "secondarySidebar": [
+        {
+          "id": "olivestudio-native-inspector",
+          "title": "Inspector",
+          "icon": "activity.png"
+        }
+      ],
+      "panel": [
+        {
+          "id": "olivestudio-native-assets",
+          "title": "Assets",
+          "icon": "activity.png"
+        },
+        {
+          "id": "olivestudio-native-bundles",
+          "title": "Asset Bundles",
+          "icon": "activity.png"
+        },
+        {
+          "id": "olivestudio-native-prefabs",
+          "title": "Prefabs",
+          "icon": "activity.png"
+        },
+        {
+          "id": "olivestudio-native-timeline",
+          "title": "Timeline",
+          "icon": "activity.png"
+        },
+        {
+          "id": "olivestudio-native-input",
+          "title": "Input Map",
+          "icon": "activity.png"
+        },
+        {
+          "id": "olivestudio-native-globals",
+          "title": "Globals",
+          "icon": "activity.png"
+        },
+        {
+          "id": "olivestudio-native-scripts",
+          "title": "Scripts",
+          "icon": "activity.png"
+        },
+        {
+          "id": "olivestudio-native-physics",
+          "title": "Physics",
+          "icon": "activity.png"
+        },
+        {
+          "id": "olivestudio-native-lighting",
+          "title": "Lighting",
+          "icon": "activity.png"
+        },
+        {
+          "id": "olivestudio-native-network",
+          "title": "Multiplayer",
+          "icon": "activity.png"
+        },
+        {
+          "id": "olivestudio-native-content",
+          "title": "Game Content",
+          "icon": "activity.png"
+        },
+        {
+          "id": "olivestudio-native-audiostudio",
+          "title": "Audio Studio",
+          "icon": "activity.png"
+        },
+        {
+          "id": "olivestudio-native-shaders",
+          "title": "Shaders",
+          "icon": "activity.png"
+        },
+        {
+          "id": "olivestudio-native-ai",
+          "title": "AI Studio",
+          "icon": "activity.png"
+        },
+        {
+          "id": "olivestudio-native-diagnostics",
+          "title": "Diagnostics",
+          "icon": "activity.png"
+        }
+      ]
+    },
+    "views": {
+      "olivestudio-native-hierarchy": [
+        {
+          "id": "oliveStudio.rail.hierarchy",
+          "name": "Hierarchy",
+          "type": "tree",
+          "visibility": "visible",
+          "icon": "activity.png"
+        }
+      ],
+      "olivestudio-native-scenes": [
+        {
+          "id": "oliveStudio.rail.scenes",
+          "name": "Scenes",
+          "type": "tree",
+          "visibility": "visible",
+          "icon": "activity.png"
+        }
+      ],
+      "olivestudio-native-assets": [
+        {
+          "id": "oliveStudio.rail.assets",
+          "name": "Assets",
+          "type": "tree",
+          "visibility": "visible",
+          "icon": "activity.png"
+        }
+      ],
+      "olivestudio-native-bundles": [
+        {
+          "id": "oliveStudio.rail.bundles",
+          "name": "Asset Bundles",
+          "type": "tree",
+          "visibility": "visible",
+          "icon": "activity.png"
+        }
+      ],
+      "olivestudio-native-prefabs": [
+        {
+          "id": "oliveStudio.rail.prefabs",
+          "name": "Prefabs",
+          "type": "tree",
+          "visibility": "visible",
+          "icon": "activity.png"
+        }
+      ],
+      "olivestudio-native-timeline": [
+        {
+          "id": "oliveStudio.rail.timeline",
+          "name": "Timeline",
+          "type": "tree",
+          "visibility": "visible",
+          "icon": "activity.png"
+        }
+      ],
+      "olivestudio-native-input": [
+        {
+          "id": "oliveStudio.rail.input",
+          "name": "Input Map",
+          "type": "tree",
+          "visibility": "visible",
+          "icon": "activity.png"
+        }
+      ],
+      "olivestudio-native-globals": [
+        {
+          "id": "oliveStudio.rail.globals",
+          "name": "Globals",
+          "type": "tree",
+          "visibility": "visible",
+          "icon": "activity.png"
+        }
+      ],
+      "olivestudio-native-scripts": [
+        {
+          "id": "oliveStudio.rail.scripts",
+          "name": "Scripts",
+          "type": "tree",
+          "visibility": "visible",
+          "icon": "activity.png"
+        }
+      ],
+      "olivestudio-native-physics": [
+        {
+          "id": "oliveStudio.rail.physics",
+          "name": "Physics",
+          "type": "tree",
+          "visibility": "visible",
+          "icon": "activity.png"
+        }
+      ],
+      "olivestudio-native-lighting": [
+        {
+          "id": "oliveStudio.rail.lighting",
+          "name": "Lighting",
+          "type": "tree",
+          "visibility": "visible",
+          "icon": "activity.png"
+        }
+      ],
+      "olivestudio-native-network": [
+        {
+          "id": "oliveStudio.rail.network",
+          "name": "Multiplayer",
+          "type": "tree",
+          "visibility": "visible",
+          "icon": "activity.png"
+        }
+      ],
+      "olivestudio-native-content": [
+        {
+          "id": "oliveStudio.rail.content",
+          "name": "Game Content",
+          "type": "tree",
+          "visibility": "visible",
+          "icon": "activity.png"
+        }
+      ],
+      "olivestudio-native-audiostudio": [
+        {
+          "id": "oliveStudio.rail.audioStudio",
+          "name": "Audio Studio",
+          "type": "tree",
+          "visibility": "visible",
+          "icon": "activity.png"
+        }
+      ],
+      "olivestudio-native-shaders": [
+        {
+          "id": "oliveStudio.rail.shaders",
+          "name": "Shaders",
+          "type": "tree",
+          "visibility": "visible",
+          "icon": "activity.png"
+        }
+      ],
+      "olivestudio-native-ai": [
+        {
+          "id": "oliveStudio.rail.ai",
+          "name": "AI Studio",
+          "type": "tree",
+          "visibility": "visible",
+          "icon": "activity.png"
+        }
+      ],
+      "olivestudio-native-diagnostics": [
+        {
+          "id": "oliveStudio.rail.diagnostics",
+          "name": "Diagnostics",
+          "type": "tree",
+          "visibility": "visible",
+          "icon": "activity.png"
+        }
+      ],
+      "olivestudio-native-inspector": [
+        {
+          "id": "oliveStudio.rail.inspector",
+          "name": "Inspector",
+          "type": "tree",
+          "visibility": "visible",
+          "icon": "activity.png"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "OliveStudio",
+      "properties": {
+        "oliveStudio.autoOpenProjects": {
+          "type": "boolean",
+          "default": true,
+          "description": "Open recognized OliveStudio JSON projects in the scene editor."
+        }
+      }
+    },
+    "viewsWelcome": [
+      {
+        "view": "oliveStudio.rail.hierarchy",
+        "contents": "[Open Project](command:oliveStudio.open)"
+      },
+      {
+        "view": "oliveStudio.rail.scenes",
+        "contents": "[Open Project](command:oliveStudio.open)"
+      },
+      {
+        "view": "oliveStudio.rail.assets",
+        "contents": "[Open Project](command:oliveStudio.open)"
+      },
+      {
+        "view": "oliveStudio.rail.bundles",
+        "contents": "[Open Project](command:oliveStudio.open)"
+      },
+      {
+        "view": "oliveStudio.rail.prefabs",
+        "contents": "[Open Project](command:oliveStudio.open)"
+      },
+      {
+        "view": "oliveStudio.rail.timeline",
+        "contents": "[Open Project](command:oliveStudio.open)"
+      },
+      {
+        "view": "oliveStudio.rail.input",
+        "contents": "[Open Project](command:oliveStudio.open)"
+      },
+      {
+        "view": "oliveStudio.rail.globals",
+        "contents": "[Open Project](command:oliveStudio.open)"
+      },
+      {
+        "view": "oliveStudio.rail.scripts",
+        "contents": "[Open Project](command:oliveStudio.open)"
+      },
+      {
+        "view": "oliveStudio.rail.physics",
+        "contents": "[Open Project](command:oliveStudio.open)"
+      },
+      {
+        "view": "oliveStudio.rail.lighting",
+        "contents": "[Open Project](command:oliveStudio.open)"
+      },
+      {
+        "view": "oliveStudio.rail.network",
+        "contents": "[Open Project](command:oliveStudio.open)"
+      },
+      {
+        "view": "oliveStudio.rail.content",
+        "contents": "[Open Project](command:oliveStudio.open)"
+      },
+      {
+        "view": "oliveStudio.rail.audioStudio",
+        "contents": "[Open Project](command:oliveStudio.open)"
+      },
+      {
+        "view": "oliveStudio.rail.shaders",
+        "contents": "[Open Project](command:oliveStudio.open)"
+      },
+      {
+        "view": "oliveStudio.rail.ai",
+        "contents": "[Open Project](command:oliveStudio.open)"
+      },
+      {
+        "view": "oliveStudio.rail.diagnostics",
+        "contents": "[Open Project](command:oliveStudio.open)"
+      },
+      {
+        "view": "oliveStudio.rail.inspector",
+        "contents": "[Open Project](command:oliveStudio.open)"
+      }
+    ]
+  },
+  "dependencies": {
+    "image-size": "2.2.0"
+  },
+  "activationEvents": [
+    "onStartupFinished"
+  ]
+}

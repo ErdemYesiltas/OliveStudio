@@ -12,13 +12,13 @@ export * from './globals';
 import {slot,components,createItems,type EditorModule,type ComponentDefinition,type Json} from '@rewrite/sdk';
 import type {Entity} from '@rewrite/scene';
 export interface InteractionEvent{type:string;sourceId:string;event?:string;silent:boolean;
- /** Extra numbers for scripts (e.g. a collision's contact point, normal and speed). */
- data?:Readonly<Record<string,number>>}
+ /** Serializable event details for scripts. */
+ data?:Readonly<Record<string,Json>>}
 export const RuleSchema=z.object({id:z.string().min(1),trigger:z.object({type:z.string().min(1),sourceId:z.string(),event:z.string()}).strict(),condition:ConditionSchema.optional(),actions:z.array(ActionSchema).max(32)}).strict();
 export const BindingsSchema=z.object({rules:z.array(RuleSchema).max(64)}).strict().superRefine((v,c)=>{const ids=v.rules.flatMap(r=>[r.id,...r.actions.map(a=>a.id)]);if(new Set(ids).size!==ids.length)c.addIssue({code:'custom',message:'Duplicate interaction ID'});});
 export type Rule=z.infer<typeof RuleSchema>;
 export interface ReferenceOption{id:string;name:string;events?:{id:string;name:string}[]}
-export interface InteractionCatalog{entities:readonly Entity[];/** Project prefabs a rule can spawn (`prefab:<id>` targets). */prefabs?:readonly {id:string;name:string}[];scenes:readonly {id:string;name:string}[];globals?:readonly {id:string;name:string;type:GlobalType}[];inputActions?:readonly {id:string;name:string}[];languages?:readonly {id:string;name:string}[];spineEvents?(assetId:string):readonly string[]}
+export interface InteractionCatalog{entities:readonly Entity[];/** Project prefabs a rule can spawn (`prefab:<id>` targets). */prefabs?:readonly {id:string;name:string}[];scenes:readonly {id:string;name:string}[];globals?:readonly {id:string;name:string;type:GlobalType}[];inputActions?:readonly {id:string;name:string}[];languages?:readonly {id:string;name:string}[];spineEvents?(assetId:string):readonly string[];spineAnimations?(assetId:string):readonly string[]}
 export interface TriggerDefinition{type:string;titleKey:string;references(c:InteractionCatalog):ReferenceOption[];entityReference?:boolean;sceneReference?:boolean;globalReference?:boolean;/** Project-level ID (global, input action): never remapped when objects are copied. */projectReference?:boolean}
 export interface ActionContext{silent:boolean;/** The object whose rule (or state machine) runs the action. */owner?:string;
  /** Copy an object (or `prefab:<id>`) into the running game at (x, y), offset from `near`'s position when given; returns the copy's ID. */spawn?(target:string,x:number,y:number,near?:string):string;
@@ -194,7 +194,18 @@ export function conditionHolds(condition:Condition,store:Pick<GlobalStore,'get'>
 /** Why a condition cannot run: a missing global, an operator or a value of the wrong type. */
 function conditionIssue(catalog:InteractionCatalog,c:Condition){const g=catalog.globals?.find(x=>x.id===c.globalId);if(!g)return 'uses a missing global';if(!operatorsFor(g.type).includes(c.op))return `uses ${c.op} on a ${g.type}`;const kind=conditionValueKind(g.type,c.op),actual=typeOfGlobal(c.value);if(kind==='item')return undefined;if(kind==='count'?actual!=='number':kind==='field'?actual!=='string':actual!==kind)return `compares the ${g.type} ${g.name} with a ${actual}`;return undefined;}
 /** Why a global action cannot run: a value of the wrong type for `global.set`, an object field action without a field. */
-function actionIssue(catalog:InteractionCatalog,a:Action){if((a.type==='object.set'||a.type==='object.remove')&&!a.key)return 'has no field name';if(a.type!=='global.set'||a.to===undefined)return undefined;const g=catalog.globals?.find(x=>x.id===a.targetId);return g&&typeOfGlobal(a.to)!==g.type?`sets the ${g.type} ${g.name} to a ${typeOfGlobal(a.to)}`:undefined;}
+function actionIssue(catalog:InteractionCatalog,a:Action){
+ if(a.type==='spine.play'&&a.to!==undefined&&a.to!==''){
+  const target=catalog.entities.find(entity=>entity.id===a.targetId);
+  const spine=target?.components.find(component=>component.type==='spine.renderer');
+  const asset=(spine?.data as {assetId?:string}|undefined)?.assetId;
+  if(typeof a.to!=='string'||!asset||!catalog.spineAnimations?.(asset).includes(a.to))return 'refers to an unknown Spine animation';
+ }
+ if((a.type==='object.set'||a.type==='object.remove')&&!a.key)return 'has no field name';
+ if(a.type!=='global.set'||a.to===undefined)return undefined;
+ const g=catalog.globals?.find(x=>x.id===a.targetId);
+ return g&&typeOfGlobal(a.to)!==g.type?`sets the ${g.type} ${g.name} to a ${typeOfGlobal(a.to)}`:undefined;
+}
 /**
  * `{name}` shows a global (numbers without needless decimals, booleans as true/false), `{@key}` a localized text,
  * `{@key:name}` a plural form chosen by the number global `name` (passed as `count`). Unknown names stay as written.

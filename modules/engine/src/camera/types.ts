@@ -1,4 +1,5 @@
 import type { Application, Size } from 'pixi.js';
+import type { CameraEase } from './easing.js';
 
 /**
  * How a camera move settled. Returned by `panTo` / `zoomTo` / `rotateTo` /
@@ -30,8 +31,10 @@ export interface CameraFocusOptions extends CameraTweenOptions {
 export interface CameraShakeOptions {
   /** Peak positional amplitude in pixels. Defaults to `8`. */
   intensity?: number;
-  /** Total duration in milliseconds; amplitude decays linearly to zero. Defaults to `300`. */
+  /** Total duration in milliseconds. Defaults to `300`. */
   ms?: number;
+  /** Easing of the amplitude decay. Defaults to linear. */
+  ease?: CameraEase;
   /** Peak angular amplitude in degrees. Defaults to `0` (no rotation). */
   rotation?: number;
 }

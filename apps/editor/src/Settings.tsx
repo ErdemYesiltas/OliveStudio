@@ -58,6 +58,10 @@ export function Settings({ config, profile, onProfile, onChange, onClose, saveEr
   const resolved = configRegistry.forPreview(config, profile.device, profile.orientation) as Modules;
   const modules = Object.entries(configRegistry.settings);
   const terms = query.trim().toLocaleLowerCase(locale).split(/\s+/).filter(Boolean);
+  const launcher = window.oliveFiles?.spineLauncher;
+  const launcherSelected = selection?.module === 'spineLauncher';
+  const launcherWords = [t('spineLauncherSetting'), t('spineLauncherDescription')].join(' ').toLocaleLowerCase(locale);
+  const showLauncher = launcher && (!selection || launcherSelected) && terms.every(term => launcherWords.includes(term));
   const groups = modules.flatMap(([module, settings]) => {
     if (selection && selection.module !== module) return [];
     const matching = settings.fields.filter(field => {
@@ -82,7 +86,8 @@ export function Settings({ config, profile, onProfile, onChange, onClose, saveEr
     navigate();
   };
 
-  return <dialog className="settings-dialog" ref={dialog} aria-labelledby="settings-title" onCancel={onClose}>
+  return <dialog className="settings-dialog" data-launcher={launcherSelected || undefined}
+    ref={dialog} aria-labelledby="settings-title" onCancel={onClose}>
     <header className="settings-header">
       <h1 id="settings-title"><Settings2 size={18} aria-hidden="true" />{t('settingsTitle')}</h1>
       <IconButton icon={X} label={t('dismiss')} onClick={onClose} />
@@ -94,7 +99,7 @@ export function Settings({ config, profile, onProfile, onChange, onClose, saveEr
       {query && <IconButton icon={X} label={t('settingsClearSearch')}
         onClick={() => { filter(''); search.current?.focus(); }} />}
     </div>
-    <div className="settings-profile">
+    {!launcherSelected && <div className="settings-profile">
       <div role="group" className="settings-devices" aria-label={t('settingsDevice')}>
         {devices.map(device => <button key={device} type="button" aria-pressed={profile.device === device}
           onClick={() => onProfile({ ...profile, device })}>{t(deviceLabels[device])}</button>)}
@@ -108,11 +113,13 @@ export function Settings({ config, profile, onProfile, onChange, onClose, saveEr
           {orientations.map(orientation => <option key={orientation} value={orientation}>{t(orientationLabels[orientation])}</option>)}
         </select>
       </label>
-    </div>
+    </div>}
     <div className="settings-body">
       <nav className="settings-nav" aria-label={t('settingsCategories')}>
         <button type="button" className="settings-nav-item" aria-current={!selection ? 'true' : undefined}
           onClick={() => navigate()}><Layers3 size={14} aria-hidden="true" />{t('settingsAll')}</button>
+        {launcher && <button type="button" className="settings-nav-item" aria-current={launcherSelected ? 'true' : undefined}
+          onClick={() => navigate({ module: 'spineLauncher' })}><Settings2 size={14} aria-hidden="true" />{t('spineLauncherSetting')}</button>}
         {modules.map(([module, settings]) => <div key={module} className="settings-nav-module">
           <button type="button" className="settings-nav-item"
             aria-current={selection?.module === module && !selection.category ? 'true' : undefined}
@@ -125,11 +132,12 @@ export function Settings({ config, profile, onProfile, onChange, onClose, saveEr
       </nav>
       <div className="settings-results" ref={results}>
         {saveError && <p className="settings-note" role="alert"><strong>{t('settingsSaveError')}</strong> {saveError}</p>}
-        <p className="settings-note">{t('settingsInheritance')}</p>
+        {!launcherSelected && <p className="settings-note">{t('settingsInheritance')}</p>}
         {terms.length > 0 && <p className="settings-note" role="status">
-          {groups.length ? t('settingsMatches', { count: groups.reduce((total, group) => total + group.fields.length, 0) }) :
+          {groups.length || showLauncher ? t('settingsMatches', { count: groups.reduce((total, group) => total + group.fields.length, Number(!!showLauncher)) }) :
             t('settingsNoMatches')}
         </p>}
+        {showLauncher && <SpineLauncherSettings launcher={launcher} />}
         {groups.map(({ module, category, label, fields }) => <section className="settings-section" key={`${module}-${category}`}>
           <h2><span>{t(label)}</span>{category && <>{' / '}{t(category)}</>}</h2>
           {fields.map(field => {
@@ -170,4 +178,50 @@ export function Settings({ config, profile, onProfile, onChange, onClose, saveEr
       </div>
     </div>
   </dialog>;
+}
+
+type Launcher = NonNullable<NonNullable<Window['oliveFiles']>['spineLauncher']>;
+
+function SpineLauncherSettings({ launcher }: { launcher: Launcher }) {
+  const [status, setStatus] = useState<Awaited<ReturnType<Launcher>>>();
+  const [error, setError] = useState('');
+  const [pending, setPending] = useState<'choose' | 'reset' | 'test'>();
+  const busy = pending !== undefined;
+  const testing = pending === 'test';
+  useEffect(() => {
+    let current = true;
+    void launcher('status').then(value => { if (current) setStatus(value); })
+      .catch(error => { if (current) setError(error instanceof Error ? error.message : String(error)); });
+    return () => { current = false; };
+  }, [launcher]);
+  function change(action: 'choose' | 'reset' | 'test') {
+    setPending(action);
+    setError('');
+    void launcher(action).then(setStatus)
+      .catch(error => setError(error instanceof Error ? error.message : String(error)))
+      .finally(() => setPending(undefined));
+  }
+  return <section className="settings-section">
+    <h2>{t('spineLauncherSetting')}</h2>
+    <div className="setting-row">
+      <div className="setting-description">
+        <p>{t('spineLauncherDescription')}</p>
+        {status && <p className="spine-launcher-path" role="status">
+          {status.path ?? (status.configured ? t('spineLauncherUnavailable', { path: status.configured }) : t('spineLauncherNotFound'))}
+        </p>}
+        {(testing || status?.test) && <p role="status">{testing ? t('spineLauncherTesting') : status?.test?.state === 'ready'
+          ? t('spineLauncherReady', { version: status.test.version }) : status?.test?.state === 'notActivated'
+            ? t('spineLauncherNotActivated') : t('spineLauncherTestUnavailable')}</p>}
+        {error && <p className="error" role="alert">{error}</p>}
+      </div>
+      <div className="setting-control">
+        <button type="button" className="bundle-command" disabled={busy || (!status && !error)}
+          onClick={() => change('choose')}>{t('spineChooseLauncher')}</button>
+        <button type="button" className="bundle-command" disabled={busy || !status?.path}
+          onClick={() => change('test')}>{t('spineTestLauncher')}</button>
+        {status?.configured && <IconButton icon={RotateCcw} label={t('spineResetLauncher')} disabled={busy}
+          onClick={() => change('reset')} />}
+      </div>
+    </div>
+  </section>;
 }

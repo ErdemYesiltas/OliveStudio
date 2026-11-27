@@ -94,7 +94,7 @@ export const timelineStrategy: IStepStrategy<TimelineStep> = {
   type: 'timeline',
   run(step, context) {
     const sample = context.vars.get('sample') as Sample;
-    const ticker = context.vars.get('ticker') as Ticker | undefined ?? context.app.ticker;
+    const ticker = context.ticker;
     return new Observable<void>(subscriber => {
       let time = step.start;
       let elapsed = 0;

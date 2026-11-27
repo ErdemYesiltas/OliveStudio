@@ -31,7 +31,7 @@ export class DelayStrategy implements IStepStrategy<DelayStep> {
             const pauseSub = ctx.pause$.subscribe(() => { paused = true; });
             const resumeSub = ctx.resume$.subscribe(() => { paused = false; });
             const delaySub = tickerDelay$(step.ms ?? 0, {
-                ticker: ctx.app.ticker,
+                ticker: ctx.ticker,
                 isPaused: () => paused,
             }).subscribe(subscriber);
 

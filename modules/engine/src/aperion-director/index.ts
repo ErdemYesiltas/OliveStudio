@@ -1,43 +1,53 @@
-import type { Application } from 'pixi.js';
-import type { DirectorControl } from './DirectorControl.js';
-import type { DirectorStep, DirectorVars } from './DirectorTypes.js';
-import { Interpreter } from './interpreter/Interpreter.js';
-import { DelayStrategy } from './strategies/DelayStrategy.js';
-import type { IStepStrategy } from './strategies/IStepStrategy.js';
-import { ParallelStrategy } from './strategies/ParallelStrategy.js';
-import { SequenceStrategy } from './strategies/SequenceStrategy.js';
-import { StepStrategyRegistry } from './strategies/StepStrategyRegistry.js';
+/**
+ * Public surface of the director module — the Pixi {@link DirectorPlugin},
+ * the {@link CompositionRegistry} and {@link TriggerRegistry} primitives,
+ * the {@link Interpreter} that walks composition trees, the
+ * {@link DirectorControl} handle, the user-facing
+ * {@link Composition} / {@link DirectorStep} types, the
+ * {@link DirectorEvent} union, and every built-in step strategy.
+ *
+ * Strategy-system naming follows `factory/strategies` —
+ * `IStepStrategy`, `StepStrategyRegistry`, `registerDefaultStepStrategies` —
+ * so there are no collisions with the top-level engine barrel.
+ */
 
-export type { DirectorControl, DirectorStep, DirectorVars, IStepStrategy };
+export { DirectorPlugin, type DirectorOptions } from './DirectorPlugin.js';
+export { DirectorService, DirectorService as AperionDirector } from './DirectorService.js';
+export { DirectorEventBus, type DirectorPorts, type DirectorAnimationControl } from './host.js';
+export type { AudioAction } from './AudioAction.js';
+export { tickerDelay$, tickerInterval$, tickerFrames$ } from './tickerDelay.js';
+export { CompositionRegistry } from './CompositionRegistry.js';
+export type { DirectorControl } from './DirectorControl.js';
+export type {
+    Composition,
+    DirectorStep,
+    DirectorVars,
+    TriggerSpec,
+    TriggerContext,
+    DirectorEventPayload,
+} from './DirectorTypes.js';
+export type {
+    DirectorEvent,
+    DirectorRunEvent,
+    DirectorAdvanceEvent,
+    DirectorCompleteEvent,
+    DirectorStoppedEvent,
+    DirectorErrorEvent,
+} from './DirectorEvents.js';
 
-/** Mounts the Aperion composition interpreter with the strategies available in this host. */
-export class AperionDirector {
-  private readonly registry = new StepStrategyRegistry();
-  private readonly interpreter: Interpreter;
-  private active?: DirectorControl;
+export { Interpreter } from './interpreter/Interpreter.js';
+export { TriggerRegistry, type TriggerOptions } from './triggers/TriggerRegistry.js';
 
-  constructor(app: Application) {
-    this.registry.register(new SequenceStrategy());
-    this.registry.register(new ParallelStrategy());
-    this.registry.register(new DelayStrategy());
-    this.interpreter = new Interpreter(app, this.registry);
-  }
+// Strategy system — names already disambiguated by the `Step` prefix.
+export * from './strategies/index.js';
 
-  registerStrategy(strategy: IStepStrategy) {
-    this.registry.register(strategy);
-  }
-
-  run(step: DirectorStep, vars: DirectorVars = {}) {
-    this.stop();
-    const control = this.interpreter.interpret(step, vars);
-    this.active = control;
-    const release = () => { if (this.active === control) this.active = undefined; };
-    void control.finished.then(release, release);
-    return control;
-  }
-
-  stop() {
-    this.active?.stop();
-    this.active = undefined;
-  }
-}
+// Expression DSL — used by `if` step and trigger `whenExpr`.
+export {
+    parseExpression,
+    compileExpression,
+    clearExpressionCache,
+    ExpressionParseError,
+} from '../expression/index.js';
+export type { LookupFn, ExpressionEvaluator, IdentifierPrefix } from '../expression/index.js';
+export * from './stepRefs.js';
+export * from './moduleStrategies.js';

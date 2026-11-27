@@ -11,7 +11,7 @@ type LightNode = Extract<SceneObject, { type: 'Light2D' }>;
 type Lookup = (id: string) => Container | undefined;
 type Occluder = { id: string; points?: Point[] };
 type LightVisual = { glow: Sprite; mask?: Graphics; signature?: string };
-type PulsePreview = { id: string; amount: number; frequency: number; seconds: number; node?: LightNode };
+type PulsePreview = { id: string; amount: number; frequency: number; seconds: number; node: LightNode };
 
 function makeGlow() {
   const canvas = document.createElement('canvas');
@@ -100,9 +100,9 @@ export class SceneLighting {
     }
   }
 
-  update(world: Container, screen: { width: number; height: number }, seconds: number, preview: boolean, test?: PulsePreview) {
+  update(world: Container, screen: { width: number; height: number }, seconds: number, preview: boolean, tests: readonly PulsePreview[] = []) {
     const normal = this.settings.enabled && preview;
-    this.layer.visible = normal || !!test;
+    this.layer.visible = normal || tests.length > 0;
     if (!this.layer.visible || !this.lookup) return;
     const lookup = this.lookup;
     if (!this.filter) {
@@ -124,11 +124,12 @@ export class SceneLighting {
     const inverse = matrix.clone().invert();
     let polygons: Point[][] | undefined;
     let geometryKey = '';
-    const lights = normal ? this.lights : test?.node ? [test.node] : [];
+    const lights = normal ? this.lights : [...new Map(tests.map(test => [test.id, test.node])).values()];
     if (!normal) for (const visual of this.visuals.values()) visual.glow.visible = false;
     for (const [index, node] of lights.entries()) {
       const display = lookup(node.id);
-      const alpha = display ? displayAlpha(display) || (test?.id === node.id ? 1 : 0) : 0;
+      const pulses = tests.filter(test => test.id === node.id);
+      const alpha = display ? displayAlpha(display) || (pulses.length ? 1 : 0) : 0;
       const config = node.light;
       let visual = this.visuals.get(node.id);
       if (!display || !alpha || !config.intensity) {
@@ -148,10 +149,8 @@ export class SceneLighting {
       visual.glow.position.set(point.x, point.y);
       visual.glow.width = visual.glow.height = config.radius * 2;
       visual.glow.tint = hexColor(config.color);
-      const pulses = test?.id === node.id ? [test] : objectModulations(display, 'lightPulse');
-      const time = test?.id === node.id ? test.seconds : seconds;
-      const modulation = pulses.reduce((value, pulse) =>
-        value * (1 - pulse.amount * (1 - Math.cos(time * pulse.frequency * Math.PI * 2)) / 2), 1);
+      const modulation = (pulses.length ? pulses : objectModulations(display, 'lightPulse').map(pulse => ({ ...pulse, seconds })))
+        .reduce((value, pulse) => value * (1 - pulse.amount * (1 - Math.cos(pulse.seconds * pulse.frequency * Math.PI * 2)) / 2), 1);
       visual.glow.alpha = alpha * config.intensity * flickerAt(config.flicker, seconds, index * 1.7) * modulation;
       if (config.shadows) {
         if (!polygons) {

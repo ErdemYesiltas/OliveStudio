@@ -4,8 +4,8 @@ import * as monaco from 'monaco-editor/editor/editor.api';
 import {typescriptDefaults, ScriptTarget, ModuleKind, ModuleResolutionKind} from 'monaco-editor/languages/features/typescript/register';
 /** RxJS declarations for `rx` (the sandbox runs the same 7.8 bundle). */
 const rxjsTypes = import.meta.glob('../node_modules/rxjs/dist/types/**/*.d.ts', {query: '?raw', import: 'default', eager: true}) as Record<string, string>;
-import EditorWorker from 'monaco-editor/editor/editor.worker?worker';
-import TsWorker from 'monaco-editor/languages/features/typescript/ts.worker?worker';
+import editorWorkerUrl from 'monaco-editor/editor/editor.worker?worker&url';
+import tsWorkerUrl from 'monaco-editor/languages/features/typescript/ts.worker?worker&url';
 import {compileScript} from './compile';
 import {describeScript, loadScriptEngine, scriptEngineReady, type DebugInstance} from './session';
 import {scriptDebugger} from './debug';
@@ -41,12 +41,28 @@ export interface ScriptsBridge {
  useGlobals?(): readonly {name: string; type: string; initial?: unknown}[];
 }
 
+const webviewWorkerUrls = new Map<string, Promise<string>>();
+function monacoWorker(url: string) {
+ if (location.protocol !== 'vscode-webview:') return new Worker(url);
+ // The webview's service worker can load extension resources on behalf of the page.
+ // Start Monaco with the fetched bundle so its worker never has to fetch across origins.
+ let bundle = webviewWorkerUrls.get(url);
+ if (!bundle) {
+  bundle = fetch(url).then(async response => {
+   if (!response.ok) throw new Error(`Could not load the TypeScript editor worker (${response.status})`);
+   return URL.createObjectURL(new Blob([await response.arrayBuffer()], {type: 'text/javascript'}));
+  }).catch(error => { webviewWorkerUrls.delete(url); throw error; });
+  webviewWorkerUrls.set(url, bundle);
+ }
+ return bundle.then(source => new Worker(source));
+}
+
 let configured = false;
 /** Workers, the TypeScript service and the `game` API declarations, once per window. */
 function configure() {
  if (configured) return;
  configured = true;
- (globalThis as {MonacoEnvironment?: monaco.Environment}).MonacoEnvironment = {getWorker: (_id, label) => label === 'typescript' || label === 'javascript' ? new TsWorker() : new EditorWorker()};
+ (globalThis as {MonacoEnvironment?: monaco.Environment}).MonacoEnvironment = {getWorker: (_id, label) => monacoWorker(label === 'typescript' || label === 'javascript' ? tsWorkerUrl : editorWorkerUrl)};
  typescriptDefaults.setCompilerOptions({target: ScriptTarget.ES2020, module: ModuleKind.ESNext, moduleResolution: ModuleResolutionKind.NodeJs, lib: ['es2020'], strict: false, noImplicitAny: false, allowNonTsExtensions: true, isolatedModules: true});
  typescriptDefaults.setDiagnosticsOptions({noSemanticValidation: false, noSyntaxValidation: false});
  for (const [path, source] of Object.entries(rxjsTypes)) typescriptDefaults.addExtraLib(source, `file:///node_modules/rxjs/${path.replace(/^.*?node_modules\/rxjs\//, '')}`);
@@ -57,6 +73,22 @@ function configure() {
 export function addScriptLibrary(source: string, uri: string) { configure(); return typescriptDefaults.addExtraLib(source, uri); }
 const modelUri = (id: string) => monaco.Uri.parse(`file:///scripts/${encodeURIComponent(id)}.ts`);
 const dark = () => { const bg = getComputedStyle(document.body).backgroundColor.match(/\d+/g)?.map(Number) ?? [0, 0, 0]; return (bg[0] * 299 + bg[1] * 587 + bg[2] * 114) / 1000 < 128; };
+
+function editorTheme() {
+ const base = document.body.classList.contains('vscode-high-contrast') ? 'hc-black' :
+  document.body.classList.contains('vscode-high-contrast-light') ? 'hc-light' : dark() ? 'vs-dark' : 'vs';
+ if (location.protocol !== 'vscode-webview:') return base;
+ const styles = getComputedStyle(document.body);
+ const colors: Record<string, string> = {};
+ for (const id of ['editor.background', 'editor.foreground', 'editorCursor.foreground', 'editorLineNumber.foreground',
+  'editorLineNumber.activeForeground', 'editor.selectionBackground', 'editor.inactiveSelectionBackground',
+  'editorWidget.background', 'editorWidget.foreground', 'editor.lineHighlightBackground']) {
+  const color = styles.getPropertyValue('--vscode-' + id.replace('.', '-')).trim();
+  if (color.startsWith('#')) colors[id] = color;
+ }
+ monaco.editor.defineTheme('olive-vscode', {base, inherit: true, rules: [], colors});
+ return 'olive-vscode';
+}
 
 /** Panel selection shared with the inspector's "Edit script" button. */
 let current = '';
@@ -121,13 +153,17 @@ export function createScriptViews(bridge: ScriptsBridge) {
   useEffect(() => {
    configure();
    void loadScriptEngine().catch(bridge.report);
-   const instance = editor.current = monaco.editor.create(host.current!, {language: 'typescript', theme: dark() ? 'vs-dark' : 'vs', automaticLayout: true, minimap: {enabled: false}, glyphMargin: true, fontSize: 13, tabSize: 2, scrollBeyondLastLine: false, fixedOverflowWidgets: true, ariaLabel: t('scripts.editor')});
+   const instance = editor.current = monaco.editor.create(host.current!, {language: 'typescript', theme: editorTheme(), automaticLayout: true, minimap: {enabled: false}, glyphMargin: true, fontSize: 13, tabSize: 2, scrollBeyondLastLine: false, fixedOverflowWidgets: true, ariaLabel: t('scripts.editor')});
+   const theme = new MutationObserver(() => monaco.editor.setTheme(editorTheme()));
+   if (location.protocol === 'vscode-webview:') theme.observe(document.body, {
+    attributes: true, attributeFilter: ['class', 'style', 'data-vscode-theme-id'],
+   });
    const blur = instance.onDidBlurEditorText(flushScriptEdits);
    // Breakpoints: click the glyph margin left of the line numbers, or F9 on the cursor's line.
    const toggle = (line: number) => { const id = currentScript.current; if (id) scriptDebugger.toggle(id, line); };
    const gutter = instance.onMouseDown(e => { if (e.target.type === monaco.editor.MouseTargetType.GUTTER_GLYPH_MARGIN && e.target.position) toggle(e.target.position.lineNumber); });
    instance.addCommand(monaco.KeyCode.F9, () => { const at = instance.getPosition(); if (at) toggle(at.lineNumber); });
-   return () => { flushScriptEdits(); blur.dispose(); gutter.dispose(); instance.dispose(); editor.current = null; };
+   return () => { theme.disconnect(); flushScriptEdits(); blur.dispose(); gutter.dispose(); instance.dispose(); editor.current = null; };
   }, []);
   // One model per script (each is its own module); the editor shows the current one.
   useEffect(() => {

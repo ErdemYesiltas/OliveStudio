@@ -1,4 +1,6 @@
 import { z } from 'zod';
+import { directorAudioActions, directorPhysicsActions, directorSceneActions, type DirectorStep } from '@olivestudio/engine/aperion-director';
+import { directorLibrarySchema, rewriteDirectorSteps } from './directorModel';
 import type { SceneObject } from './scene';
 import { audioTween, authoredValue, timelineDuration, timelineLimits, timelineSchema, tweenValue, type TweenProperty, type TweenTrack } from './timeline';
 
@@ -15,12 +17,16 @@ const cueBase = { id, time, name };
 
 const cueSchema = z.discriminatedUnion('kind', [
   z.strictObject({ ...cueBase, kind: z.literal('message'), message: z.string().max(200) }),
-  z.strictObject({ ...cueBase, kind: z.literal('audio'), target: z.string(), action: z.enum(['play', 'stop']) }),
+  z.strictObject({ ...cueBase, kind: z.literal('audio'), target: z.string(), action: z.enum(directorAudioActions), gain: z.number().min(0).max(4).optional() }),
   z.strictObject({ ...cueBase, kind: z.literal('visibility'), target: z.string(), visible: z.boolean() }),
   z.strictObject({ ...cueBase, kind: z.literal('camera') }),
   z.strictObject({ ...cueBase, time: time.min(0.01), kind: z.literal('clip'), target: z.string(), fade: z.number().min(0).max(8) }),
   z.strictObject({ ...cueBase, kind: z.literal('global'), target: z.string(), value: z.string().max(1000) }),
-  z.strictObject({ ...cueBase, kind: z.literal('scene'), target: z.string() }),
+  z.strictObject({ ...cueBase, kind: z.literal('scene'), target: z.string(), action: z.enum(directorSceneActions).optional() }),
+  z.strictObject({ ...cueBase, kind: z.literal('physics'), target: z.string(), action: z.enum(directorPhysicsActions),
+    x: z.number().min(-1e6).max(1e6), y: z.number().min(-1e6).max(1e6) }),
+  z.strictObject({ ...cueBase, kind: z.literal('particles'), target: z.string() }),
+  z.strictObject({ ...cueBase, kind: z.literal('director'), composition: z.string().max(128) }),
 ]);
 const nestedSchema = z.strictObject({ id, clip: id, start: time, speed: z.number().min(0.25).max(4) });
 const unique = <T extends { id: string }>(items: T[]) => new Set(items.map(item => item.id)).size === items.length;
@@ -34,6 +40,7 @@ export const cinematicsSchema = z.strictObject({
   main: metadata.default({ cues: [], nested: [] }),
   clips: z.array(clipSchema).max(clipLimit).refine(unique).default([]),
   autoplay: id.optional(),
+  director: directorLibrarySchema.optional(),
 }).superRefine((library, ctx) => {
   const clips = new Map<string, ClipMetadata>([[mainClip, library.main]]);
   for (const clip of library.clips) clips.set(clip.id, clip);
@@ -138,11 +145,26 @@ export function crossedCues(cues: readonly TimedCue[], from: number, to: number,
 export function remapCinematics(library: Cinematics | undefined, ids: ReadonlyMap<string, string>): Cinematics | undefined {
   if (!library) return;
   function metadata(clip: ClipMetadata) {
-    return { ...clip, cues: clip.cues.map(cue => cue.kind === 'audio' || cue.kind === 'visibility' ?
+    return { ...clip, cues: clip.cues.map(cue => cue.kind === 'audio' || cue.kind === 'visibility' || cue.kind === 'physics' || cue.kind === 'particles' ?
       { ...cue, target: ids.get(cue.target) ?? cue.target } : cue) };
   }
+  const director = library.director?.map(definition => {
+    try {
+      return rewriteDirectorSteps(definition, step => {
+        if (step.type !== 'rigClip' && step.type !== 'animation') return step;
+        const remap = (ref: unknown) => typeof ref === 'string' && !ref.startsWith('$') ? ids.get(ref) ?? ref : ref;
+        if (step.type === 'animation' && Array.isArray(step.target)) {
+          const target = step.target.map(remap);
+          return target.some((ref, index) => ref !== step.target[index]) ? { ...step, target } : step;
+        }
+        const target = remap(step.target);
+        return target === step.target ? step : { ...step, target };
+      });
+    } catch { return definition; }
+  });
   return {
     ...library, main: metadata(library.main),
+    ...(director && { director }),
     clips: library.clips.map(clip => ({
       ...clip, ...metadata(clip), tracks: clip.tracks.map(track => ({
         ...track, id: crypto.randomUUID(), target: ids.get(track.target) ?? track.target,
@@ -154,7 +176,7 @@ export function remapCinematics(library: Cinematics | undefined, ids: ReadonlyMa
 export function pruneCinematics(library: Cinematics | undefined, ids: ReadonlySet<string>) {
   if (!library) return;
   function prune<T extends ClipMetadata>(clip: T): T {
-    const cues = clip.cues.filter(cue => !(cue.kind === 'audio' || cue.kind === 'visibility') || !cue.target || ids.has(cue.target));
+    const cues = clip.cues.filter(cue => !(cue.kind === 'audio' || cue.kind === 'visibility' || cue.kind === 'physics' || cue.kind === 'particles') || !cue.target || ids.has(cue.target));
     return cues.length === clip.cues.length ? clip : { ...clip, cues };
   }
   const main = prune(library.main);
@@ -164,4 +186,20 @@ export function pruneCinematics(library: Cinematics | undefined, ids: ReadonlySe
     return tracks.length === next.tracks.length ? next : { ...next, tracks };
   });
   return main === library.main && clips.every((clip, i) => clip === library.clips[i]) ? library : { ...library, main, clips };
+}
+
+export function cueDirectorStep(cue: Cue): DirectorStep | undefined {
+  switch (cue.kind) {
+    case 'audio': return cue.target ? { type: 'audioSource', target: cue.target, action: cue.action, gain: cue.gain } : undefined;
+    case 'scene': return cue.target || cue.action === 'pop' ? { type: 'scene', target: cue.target, action: cue.action ?? 'replace' } : undefined;
+    case 'physics': return cue.target || cue.action === 'gravity' ?
+      { type: 'physics', target: cue.target, action: cue.action, x: cue.x, y: cue.y } : undefined;
+    case 'particles': return cue.target ? { type: 'particles', target: cue.target } : undefined;
+    case 'visibility': return cue.target ? { type: 'visibility', target: cue.target, visible: cue.visible } : undefined;
+    case 'message': return { type: 'emit', event: cue.name, payload: { message: cue.message } };
+    case 'director': return cue.composition ? { type: 'composition', name: cue.composition } : undefined;
+    case 'global': return cue.target ? { type: 'global', target: cue.target, value: cue.value } : undefined;
+    case 'clip':
+    case 'camera': return undefined;
+  }
 }

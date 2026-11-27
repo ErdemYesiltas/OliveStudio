@@ -1,8 +1,6 @@
 import {randomUUID} from 'node:crypto';
 import {hostname} from 'node:os';
-import {join} from 'node:path';
-import {app, ipcMain, safeStorage, type BrowserWindow} from 'electron';
-import {HubClient, HubRequestError, InviteError, MemorySessionStore, PinMismatchError, SafeStorageSessionStore, parseInvite, pinnedRequest, readBody, type HubFile, type HubJob, type HubModel, type HubVideo} from '@localhub/client';
+import {HubClient, HubRequestError, InviteError, PinMismatchError, parseInvite, pinnedRequest, readBody, type HubFile, type HubJob, type HubModel, type HubVideo, type SessionStore} from '@localhub/client';
 import {ChatRequestSchema} from '@rewrite/ai-lm/contracts';
 import {chatBody, chunkReader} from '@rewrite/ai-lm/stream';
 import {CreateRequestSchema, encodeProblem, hubApp, hubCapabilities, unpaired, uploadLimit, uploadName, type HubFileInfo, type HubJobInfo, type HubOutput, type HubProblem, type HubStatus} from '@rewrite/ai-hub/contracts';
@@ -24,17 +22,18 @@ const videoJob = (v: HubVideo, capability: string): HubJobInfo => ({id: v.id, st
 const jobInfo = (j: HubJob): HubJobInfo => ({...j});
 const fileInfo = (f: HubFile): HubFileInfo => ({id: f.id, filename: f.filename, bytes: f.bytes, mime: f.mime_type, purpose: f.purpose, source: f.source, createdAt: f.created_at, ...(f.job_id ? {jobId: f.job_id} : {})});
 
-/**
- * LocalHub in the main process (integration guide §8.1): the session (token + pinned fingerprint) is kept with
- * `safeStorage` and never reaches the renderer. One `/v2/events` stream per paired editor forwards job updates and
- * permission changes; it reconnects with backoff while paired. `memory` keeps the session in memory only (tests).
- */
-export function registerLocalHub(options: {window(): BrowserWindow | null; sender(event: Electron.IpcMainInvokeEvent): void; memory: boolean}) {
- const store = options.memory ? new MemorySessionStore() : new SafeStorageSessionStore(safeStorage, join(app.getPath('userData'), 'localhub-session.bin'));
+/** LocalHub session and event stream shared by the editor hosts. */
+export function registerLocalHub<Event>(options: {
+ store: SessionStore;
+ handle(channel: string, handler: (event: Event, ...args: unknown[]) => unknown): void;
+ removeHandler(channel: string): void;
+ sender(event: Event): void;
+ send(channel: string, payload: unknown): void;
+}) {
+ const {store, send} = options;
  let hub = new HubClient(store);
  const ready = hub.restore().catch(() => null);
  const chats = new Map<string, AbortController>();
- const send = (channel: string, payload: unknown) => options.window()?.webContents.send(channel, payload);
  let events: AbortController | null = null;
  const stopEvents = () => { events?.abort(); events = null; };
  /** Drops the session on this side even when the hub cannot be told (offline Mac, revoked device). */
@@ -98,8 +97,8 @@ export function registerLocalHub(options: {window(): BrowserWindow | null; sende
   return JSON.parse(text) as HubJob;
  };
 
- ipcMain.handle('localhub:status', async event => { options.sender(event); return status(); });
- ipcMain.handle('localhub:pair', async (event, text: unknown) => {
+ options.handle('localhub:status', async event => { options.sender(event); return status(); });
+ options.handle('localhub:pair', async (event, text: unknown) => {
   options.sender(event);
   if (typeof text !== 'string' || !text.trim() || text.length > 1024) throw Error(encodeProblem({code: 'invalid_invite', message: 'Paste the invite from LocalHub › Pair a Device'}));
   try {
@@ -110,9 +109,9 @@ export function registerLocalHub(options: {window(): BrowserWindow | null; sende
   } catch (error) { fail(error); }
   return status();
  });
- ipcMain.handle('localhub:unpair', async event => { options.sender(event); await ready; await forget(); });
- ipcMain.handle('localhub:cancel', (event, jobId: unknown) => { options.sender(event); if (typeof jobId === 'string') chats.get(jobId)?.abort(); });
- ipcMain.handle('localhub:chat', async (event, jobId: unknown, input: unknown, servers: unknown) => {
+ options.handle('localhub:unpair', async event => { options.sender(event); await ready; await forget(); });
+ options.handle('localhub:cancel', (event, jobId: unknown) => { options.sender(event); if (typeof jobId === 'string') chats.get(jobId)?.abort(); });
+ options.handle('localhub:chat', async (event, jobId: unknown, input: unknown, servers: unknown) => {
   options.sender(event);
   if (typeof jobId !== 'string' || !/^[a-f0-9-]{36}$/.test(jobId) || chats.has(jobId)) throw Error('Invalid assistant job');
   const request = ChatRequestSchema.parse(input), mcp = Array.isArray(servers) ? servers.filter((x): x is string => typeof x === 'string' && /^[\w.-]{1,64}$/.test(x)).slice(0, 8) : [];
@@ -125,7 +124,7 @@ export function registerLocalHub(options: {window(): BrowserWindow | null; sende
   } catch (error) { if (abort.signal.aborted) throw Error('Assistant cancelled'); return fail(error); }
   finally { chats.delete(jobId); send('localhub:delta', {jobId, done: true}); }
  });
- ipcMain.handle('localhub:create', async (event, input: unknown) => {
+ options.handle('localhub:create', async (event, input: unknown) => {
   options.sender(event);
   const r = CreateRequestSchema.parse(input);
   await ready;
@@ -150,18 +149,18 @@ export function registerLocalHub(options: {window(): BrowserWindow | null; sende
    }
   } catch (error) { return fail(error); }
  });
- ipcMain.handle('localhub:job', async (event, value: unknown) => {
+ options.handle('localhub:job', async (event, value: unknown) => {
   options.sender(event);
   try { return jobInfo(await hub.job(id(value))); }
   catch (error) { if (error instanceof HubRequestError && error.status === 404) return null; return fail(error); }
  });
- ipcMain.handle('localhub:job-cancel', async (event, value: unknown) => { options.sender(event); try { await hub.cancelJob(id(value)); } catch (error) { fail(error); } });
- ipcMain.handle('localhub:job-preview', async (event, value: unknown) => {
+ options.handle('localhub:job-cancel', async (event, value: unknown) => { options.sender(event); try { await hub.cancelJob(id(value)); } catch (error) { fail(error); } });
+ options.handle('localhub:job-preview', async (event, value: unknown) => {
   options.sender(event);
   try { const bytes = await hub.jobPreview(id(value)); return bytes ? new Uint8Array(bytes) : null; } catch { return null; }
  });
  /** A finished job's files (images, sounds, a video) with their types, at most 256 MB in all. */
- ipcMain.handle('localhub:job-outputs', async (event, value: unknown) => {
+ options.handle('localhub:job-outputs', async (event, value: unknown) => {
   options.sender(event);
   try {
    const job = await hub.job(id(value)), out: HubOutput[] = [];
@@ -176,11 +175,11 @@ export function registerLocalHub(options: {window(): BrowserWindow | null; sende
   } catch (error) { return fail(error); }
  });
  /** Files (guide §5.6): this device's uploads and job outputs on the hub. */
- ipcMain.handle('localhub:files', async event => {
+ options.handle('localhub:files', async event => {
   options.sender(event); await ready;
   try { return (await hub.files()).map(fileInfo).sort((a, b) => b.createdAt - a.createdAt); } catch (error) { return fail(error); }
  });
- ipcMain.handle('localhub:file-content', async (event, value: unknown) => {
+ options.handle('localhub:file-content', async (event, value: unknown) => {
   options.sender(event);
   try {
    const fileId = id(value), meta = await hub.request('GET', `/v1/files/${encodeURIComponent(fileId)}`) as HubFile;
@@ -189,18 +188,18 @@ export function registerLocalHub(options: {window(): BrowserWindow | null; sende
    return output;
   } catch (error) { return fail(error); }
  });
- ipcMain.handle('localhub:file-upload', async (event, bytes: unknown, name: unknown) => {
+ options.handle('localhub:file-upload', async (event, bytes: unknown, name: unknown) => {
   options.sender(event);
   if (!(bytes instanceof Uint8Array) || !bytes.byteLength || bytes.byteLength > uploadLimit || typeof name !== 'string' || name.length > 200) throw Error(encodeProblem({code: 'payload_too_large', message: 'Files up to 100 MB'}));
   const {filename, mime} = uploadName(name);
   await ready;
   try { return fileInfo(await hub.uploadFile(Buffer.from(bytes), filename, {purpose: 'reference', contentType: mime})); } catch (error) { return fail(error); }
  });
- ipcMain.handle('localhub:file-delete', async (event, value: unknown) => { options.sender(event); try { await hub.deleteFile(id(value)); } catch (error) { fail(error); } });
+ options.handle('localhub:file-delete', async (event, value: unknown) => { options.sender(event); try { await hub.deleteFile(id(value)); } catch (error) { fail(error); } });
  return {dispose() {
   stopEvents();
   for (const chat of chats.values()) chat.abort();
   chats.clear();
-  for (const channel of ['localhub:status', 'localhub:pair', 'localhub:unpair', 'localhub:cancel', 'localhub:chat', 'localhub:create', 'localhub:job', 'localhub:job-cancel', 'localhub:job-preview', 'localhub:job-outputs', 'localhub:files', 'localhub:file-content', 'localhub:file-upload', 'localhub:file-delete']) ipcMain.removeHandler(channel);
+  for (const channel of ['localhub:status', 'localhub:pair', 'localhub:unpair', 'localhub:cancel', 'localhub:chat', 'localhub:create', 'localhub:job', 'localhub:job-cancel', 'localhub:job-preview', 'localhub:job-outputs', 'localhub:files', 'localhub:file-content', 'localhub:file-upload', 'localhub:file-delete']) options.removeHandler(channel);
  }};
 }

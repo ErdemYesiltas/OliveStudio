@@ -39,6 +39,7 @@ export function gameEntity(node: SceneObject, parentId: string | null, display: 
     components: [
       { id: `${node.id}:transform`, type: 'scene.transform2d', version: 1, data: transform },
       { id: `${node.id}:visual`, type: node.type === 'Text' ? 'pixi.text' : node.type === 'BitmapText' ? 'pixi.bitmapText' : 'pixi.sprite', version: 1, data: visual },
+      ...(node.type === 'Spine' ? [{ id: `${node.id}:spine`, type: 'spine.renderer', version: 1, data: { assetId: node.asset } }] : []),
       ...(node.behaviour?.scriptId ? [{ id: `${node.id}:script`, type: behaviourType, version: 1, data: node.behaviour }] : []),
       ...(node.behavior?.scriptId ? [{ id: `${node.id}:behavior`, type: behaviorType, version: 1, data: node.behavior }] : []),
       ...(node.logicGraph ? [{ id: `${node.id}:logic`, type: graphType, version: 1, data: node.logicGraph }] : []),

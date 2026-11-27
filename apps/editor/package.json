@@ -57,7 +57,8 @@
     "vite": "7.3.1",
     "electron": "45.3.1",
     "electron-builder": "26.18.0",
-    "sharp": "0.34.5"
+    "sharp": "0.34.5",
+    "unzipper": "0.12.5"
   },
   "main": "desktop.mjs",
   "build": {

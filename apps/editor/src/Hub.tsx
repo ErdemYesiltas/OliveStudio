@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { ArchiveRestore, ArrowRight, Boxes, FilePlus2, FolderOpen, FolderSearch, GitBranch, Leaf, Pin, PinOff, Search, Sparkles, X } from 'lucide-react';
+import { ArchiveRestore, ArrowRight, Bone, Boxes, FilePlus2, FolderOpen, FolderSearch, GitBranch, Image, Leaf, Pin, PinOff, Search, Sparkles, Theater, X } from 'lucide-react';
 import { IconButton } from './chrome';
 import { locale, t } from './i18n';
 
 const startupKey = 'olive.hub.startup';
-export const showHubAtStartup = () => !!window.oliveFiles && localStorage.getItem(startupKey) !== 'off';
+export const showHubAtStartup = () => !!window.oliveFiles && !window.oliveHost?.bound && localStorage.getItem(startupKey) !== 'off';
 
 type Props = {
   busy: boolean;
@@ -13,7 +13,7 @@ type Props = {
   create: () => void;
   open: () => void;
   openRecent: (id: string) => void;
-  openExample: (id: 'grove' | 'gallery') => void;
+  openExample: (id: 'grove' | 'gallery' | 'theatre' | 'tavern' | 'photo' | 'rig') => void;
   autoRecovery: boolean;
   setAutoRecovery: (enabled: boolean) => void;
   saveRecovery: () => Promise<void> | undefined;
@@ -24,6 +24,10 @@ type Props = {
 const examples = [
   { id: 'grove', icon: Leaf, title: 'hubGroveTitle', description: 'hubGroveDescription' },
   { id: 'gallery', icon: Boxes, title: 'hubGalleryTitle', description: 'hubGalleryDescription' },
+  { id: 'theatre', icon: Theater, title: 'hubTheatreTitle', description: 'hubTheatreDescription' },
+  { id: 'tavern', icon: Theater, title: 'hubTavernTitle', description: 'hubTavernDescription' },
+  { id: 'photo', icon: Image, title: 'hubPhotoTitle', description: 'hubPhotoDescription' },
+  { id: 'rig', icon: Bone, title: 'hubRigTitle', description: 'hubRigDescription' },
 ] as const;
 
 export function Hub({ busy, close, create, open, openRecent, openExample, error, autoRecovery, setAutoRecovery, saveRecovery, openRecovery, history }: Props) {
@@ -81,7 +85,7 @@ export function Hub({ busy, close, create, open, openRecent, openExample, error,
   const matches = (...parts: string[]) => parts.join(' ').toLocaleLowerCase(locale)
     .includes(query.trim().toLocaleLowerCase(locale));
   const projects = recent?.filter(item => matches(item.name, item.path));
-  const featured = examples.filter(item => (item.id !== 'gallery' || bridge) && matches(t(item.title), t(item.description)));
+  const featured = examples.filter(item => (item.id === 'grove' || (bridge && (item.id === 'gallery' || !window.oliveHost?.bound))) && matches(t(item.title), t(item.description)));
   const title = t(section === 'projects' ? 'hubProjects' : section === 'examples' ? 'hubExamples' : section === 'history' ? 'projectHistory' : 'hubRecovery');
   const search = t(section === 'projects' ? 'hubSearchProjects' : section === 'examples' ? 'hubSearchExamples' : 'recoverySearch');
   return <dialog className="hub" ref={dialog} aria-labelledby="hub-title" onCancel={event => {

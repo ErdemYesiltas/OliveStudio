@@ -67,3 +67,62 @@
     --canvas-shadow: #26302340;
   }
 }
+
+/* VS Code adds these colors to the webview whenever its workbench theme changes. */
+body:is(.vscode-light, .vscode-dark, .vscode-high-contrast, .vscode-high-contrast-light) {
+  color: var(--vscode-editor-foreground);
+  background: var(--workspace);
+  padding: 0;
+  font-family: var(--vscode-font-family);
+  --text: var(--vscode-editor-foreground);
+  --muted: var(--vscode-descriptionForeground);
+  --input-text: var(--vscode-input-foreground);
+  --property-icon: var(--vscode-icon-foreground, var(--text));
+  --workspace: var(--vscode-editor-background);
+  --panel: var(--vscode-sideBar-background, var(--workspace));
+  --bar: var(--vscode-editorGroupHeader-tabsBackground, var(--panel));
+  --raised: var(--vscode-editorWidget-background, var(--panel));
+  --field: var(--vscode-input-background, var(--workspace));
+  --line: var(--vscode-contrastBorder, var(--vscode-panel-border, var(--vscode-editorGroup-border, var(--muted))));
+  --divider: var(--line);
+  --edge: var(--line);
+  --grid: var(--vscode-editorIndentGuide-background1, var(--line));
+  --accent: var(--vscode-textLink-foreground);
+  --tab-accent: var(--vscode-tab-activeBorderTop, var(--accent));
+  --active-line: var(--vscode-focusBorder);
+  --selected: var(--vscode-list-activeSelectionBackground);
+  --selected-text: var(--vscode-list-activeSelectionForeground);
+  --hover: var(--vscode-list-hoverBackground);
+  --tool-hover: var(--vscode-toolbar-hoverBackground, var(--hover));
+  --tool-hover-line: var(--vscode-toolbar-hoverOutline, var(--line));
+  --alert: var(--vscode-inputValidation-errorBackground, var(--raised));
+  --error: var(--vscode-errorForeground);
+  --danger: var(--vscode-errorForeground);
+  --tooltip-fill: var(--vscode-editorHoverWidget-background, var(--raised));
+  --tooltip-line: var(--vscode-editorHoverWidget-border, var(--line));
+  --tooltip-text: var(--vscode-editorHoverWidget-foreground, var(--text));
+  --tooltip-muted: var(--muted);
+  --tooltip-shadow: var(--vscode-widget-shadow, #0004);
+  --canvas-shadow: var(--tooltip-shadow);
+}
+body:is(.vscode-light, .vscode-high-contrast-light) { color-scheme: light; }
+body:is(.vscode-dark, .vscode-high-contrast) { color-scheme: dark; }
+
+
+body:is(.vscode-light, .vscode-dark, .vscode-high-contrast, .vscode-high-contrast-light) .file-info {
+  position: static;
+  transform: none;
+  min-width: 0;
+  flex: 1;
+}
+
+.vscode-olive-scene { display: flex; flex: 1; min-height: 0; min-width: 0; }
+.vscode-olive-scene > .stage { flex: 1; }
+
+.native-asset-preview {
+  width: min(480px, 90vw);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--text);
+}

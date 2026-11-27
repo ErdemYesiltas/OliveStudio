@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { spineRelativePath } from '@olivestudio/engine/spine-paths';
 import { t } from './i18n';
 
 export function assetMime(filename: string): string | undefined {
@@ -9,6 +10,7 @@ export function assetMime(filename: string): string | undefined {
     case 'webp': return 'image/webp';
     case 'wav': return 'audio/wav';
     case 'mp3': return 'audio/mpeg';
+    case 'ogg': return 'audio/ogg';
   }
 }
 
@@ -25,13 +27,27 @@ const manifestSchema = z.object({
   })),
 });
 
-const companionName = relativePath.refine(name => !name.includes('/') && !/[{}:\u0000-\u001f]/.test(name));
+const companionName = relativePath.refine(name => spineRelativePath(name) === name);
 const assetData = z.base64().min(4).max(32 * 1024 * 1024);
+const spineAudioFiles = z.array(z.strictObject({
+  path: z.string().refine(path => spineRelativePath(path) === path && assetMime(path)?.startsWith('audio/')),
+  data: assetData,
+})).min(1).max(128);
 const mediaSchema = z.strictObject({
   kind: z.enum(['spine', 'sheet']),
   files: z.array(z.strictObject({ name: companionName, data: assetData })).min(1).max(128),
-});
+  audio: spineAudioFiles.optional(),
+}).refine(media => !media.audio || media.kind === 'spine' &&
+  new Set(media.audio.map(file => file.path)).size === media.audio.length);
 export type EmbeddedMedia = z.output<typeof mediaSchema>;
+export function spineEmbeddedAudio(media: EmbeddedMedia | undefined, path: string) {
+  if (!media?.audio) return;
+  return media.audio.find(file => file.path === spineRelativePath(path));
+}
+export function spineEmbeddedAudioUrl(media: EmbeddedMedia | undefined, path: string) {
+  const file = spineEmbeddedAudio(media, path);
+  return file && `data:${assetMime(file.path)};base64,${file.data}`;
+}
 export type Asset = {
   alias: string; path: string; url: string; kind: 'image' | 'audio' | 'spine' | 'sheet';
   name?: string; bytes?: number; media?: EmbeddedMedia;
@@ -39,6 +55,10 @@ export type Asset = {
 export type AssetBundle = { name: string; assets: Asset[] };
 export const encodeAssetPath = (path: string) => path.split('/').map(encodeURIComponent).join('/');
 const byteLength = (data: string) => data.length * 0.75 - (data.endsWith('==') ? 2 : data.endsWith('=') ? 1 : 0);
+export const spineAudioBytes = (media: EmbeddedMedia | undefined) =>
+  media?.audio?.reduce((total, file) => total + byteLength(file.data), 0) ?? 0;
+const mediaBytes = (media: EmbeddedMedia | undefined) =>
+  (media?.files.reduce((total, file) => total + byteLength(file.data), 0) ?? 0) + spineAudioBytes(media);
 
 export const importedAssetsSchema = z.array(z.strictObject({
   alias: relativePath.refine(path => /^project\/[\da-f-]{36}\/[^/]+$/i.test(path)),
@@ -51,13 +71,14 @@ export const importedAssetsSchema = z.array(z.strictObject({
     if (aliases.has(alias)) ctx.addIssue({ code: 'custom', path: [index, 'alias'], message: t('duplicateAlias', { alias }) });
     aliases.add(alias);
     const names = new Set(media?.files.map(file => file.name));
-    if (media ? !alias.toLowerCase().endsWith('.json') || names.size !== media.files.length ||
+    if (media ? !/\.json$/i.test(alias) && !(media.kind === 'spine' && /\.skel$/i.test(alias)) || names.size !== media.files.length ||
       media.files.some(file => file.name === alias.split('/').at(-1) ||
+        (file.name.includes('/') && (media.kind !== 'spine' || !assetMime(file.name)?.startsWith('image/'))) ||
         (!assetMime(file.name)?.startsWith('image/') && !(media.kind === 'spine' && file.name.endsWith('.atlas')))) :
       !assetMime(alias)) {
       ctx.addIssue({ code: 'custom', path: [index], message: t('unsupportedAsset', { path: alias }) });
     }
-    bytes += byteLength(data) + (media?.files.reduce((total, file) => total + byteLength(file.data), 0) ?? 0);
+    bytes += byteLength(data) + mediaBytes(media);
   });
   if (bytes > 64 * 1024 * 1024) ctx.addIssue({ code: 'custom', message: t('assetLimit') });
 });
@@ -66,9 +87,9 @@ export function projectBundle(imports: z.output<typeof importedAssetsSchema>): A
   return {
     name: t('projectAssets'),
     assets: imports.map(({ alias, data, media }) => {
-      const mime = media ? 'application/json' : assetMime(alias)!;
+      const mime = media ? /\.skel$/i.test(alias) ? 'application/octet-stream' : 'application/json' : assetMime(alias)!;
       return { alias, path: alias, url: `data:${mime};base64,${data}`, media,
-        bytes: byteLength(data) + (media?.files.reduce((total, file) => total + byteLength(file.data), 0) ?? 0),
+        bytes: byteLength(data) + mediaBytes(media),
         kind: media?.kind ?? (mime.startsWith('image/') ? 'image' : 'audio') };
     }),
   };

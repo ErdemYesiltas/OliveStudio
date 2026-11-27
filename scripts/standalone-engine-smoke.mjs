@@ -32,13 +32,39 @@ try{
   expect(()=>require.resolve(forbidden)).toThrow();
  }
  await writeFile(join(scratch,'index.html'),'<!doctype html><style>body{margin:0}</style><script type="module" src="/game.ts"></script>');
+ const spineFixture=join(root,'modules/spine/testdata');
+ const [rigJson,rigAtlas]=await Promise.all(['rig.json','rig.atlas'].map(file=>readFile(join(spineFixture,file),'utf8')));
+ const spineNotice=await readFile(join(scratch,'node_modules/@olivestudio/engine/SPINE-RUNTIMES-LICENSE.txt'),'utf8');
+ expect(spineNotice).toContain('Spine Runtimes License Agreement');
  await writeFile(join(scratch,'game.ts'),`
   import {PixiGameApplication,SceneVisualProjection,type Entity,type RuntimeEntity} from '@olivestudio/engine';
-  import {Container} from 'pixi.js';
+  import {loadSpineSource,Spine} from '@olivestudio/engine/spine';
+  import {SceneAnimation} from '@olivestudio/engine/scene-animation';
+  import {parseSpineDocument} from '@olivestudio/engine/spine-format';
+  import {Container,Ticker} from 'pixi.js';
   async function boot(){
   const app=new PixiGameApplication();
   await app.init({width:96,height:64,background:'#000000',autoStart:false,preference:'webgl'});
   document.body.appendChild(app.canvas);
+  const source=await loadSpineSource({
+   format:'json',data:parseSpineDocument(${JSON.stringify(rigJson)}),atlas:${JSON.stringify(rigAtlas)},
+   loadPage:async name=>{
+    if(name!=='rig.png')throw Error('Unexpected Spine atlas page '+name);
+    const image=new ImageData(64,64);
+    for(let i=0;i<image.data.length;i+=4){image.data[i+1]=255;image.data[i+3]=255;}
+    return createImageBitmap(image);
+   },
+  });
+  const events:string[]=[];
+  const playback=new SceneAnimation(source,{type:'Spine',skin:'warm',animation:'sway',playing:true,loop:false,speed:1,
+   playback:{queue:[{animation:'still',loop:true,delay:0}],tracks:[]}},event=>{if(event.type==='spine.event')events.push(event.name);});
+  const rig=playback.display;
+  if(!(rig instanceof Spine))throw Error('Expected a Spine display');
+  const clock=new Ticker();clock.deltaMS=250;playback.tick(clock);
+  rig.position.set(72,32);
+  rig.scale.set(0.15);
+  app.stage.addChild(rig);
+  document.body.dataset.spineAngle=String(rig.skeleton.findBone('arm')?.rotation);
   const entity:Entity={id:'marker',name:'Marker',parentId:null,active:true,components:[
    {id:'shape',type:'pixi.shape',version:1,data:{width:20,height:20,color:'#ff0000',rounded:0}},
   ]};
@@ -62,7 +88,18 @@ try{
   });
   await app.game.startScene(scene,{prepare:async()=>{},started(){}});
   app.game.step();
-  Object.assign(window,{stopEngine:()=>app.game.stop()});
+  Object.assign(window,{advanceSpine:()=>{
+   clock.deltaMS=100;
+   for(let frame=0;frame<18;frame++)playback.tick(clock);
+   return {current:rig.state.getCurrent(0)?.animation?.name,events};
+  },stopEngine:()=>{
+   app.game.stop();
+   clock.destroy();
+   playback.dispose();
+   rig.destroy();
+   source.dispose();
+   source.dispose();
+  }});
   }
   void boot();
  `);
@@ -86,14 +123,18 @@ try{
  page.on('pageerror',error=>errors.push(error.message));
  await page.goto(`http://127.0.0.1:${server.address().port}/`);
  await expect(page.locator('body')).toHaveAttribute('data-x','36');
+ await expect(page.locator('body')).toHaveAttribute('data-spine-angle','-15');
  const image=await page.locator('canvas').screenshot();
  const sharp=createRequire(join(root,'apps/editor/package.json'))('sharp');
  const pixel=await sharp(image).extract({left:36,top:32,width:1,height:1}).removeAlpha().raw().toBuffer();
  expect([...pixel]).toEqual([255,0,0]);
+ const renderedRig=await sharp(image).extract({left:64,top:20,width:31,height:28}).removeAlpha().raw().toBuffer();
+ expect(renderedRig.some((value,index)=>index%3===1&&value>80)).toBe(true);
+ expect(await page.evaluate(()=>window.advanceSpine())).toEqual({current:'still',events:['ping']});
  await page.evaluate(()=>window.stopEngine());
  await expect(page.locator('body')).toHaveAttribute('data-disposed','true');
  expect(errors).toEqual([]);
- console.log('PASS standalone engine: tarball, declarations, Pixi frame, scene step and disposal without editor packages');
+ console.log('PASS standalone engine: tarball, declarations, Pixi frame, scene step, Spine animation and disposal without editor packages');
 }finally{
  await browser?.close();
  if(server)await new Promise(done=>server.close(done));

@@ -1,4 +1,6 @@
-import type { Application } from 'pixi.js';
+import type { Application, Ticker } from 'pixi.js';
+import type { CompositionRegistry } from '../CompositionRegistry.js';
+import type { DirectorEventBus, DirectorPorts } from '../host.js';
 import type { Observable } from 'rxjs';
 import type { DirectorEventPayload, DirectorStep, DirectorVars } from '../DirectorTypes.js';
 
@@ -22,6 +24,11 @@ import type { DirectorEventPayload, DirectorStep, DirectorVars } from '../Direct
 export interface StepContext {
     /** Host application — read sibling plugins (`app.audio`, `app.animations`, …) here. */
     readonly app: Application;
+    readonly ticker: Ticker;
+    readonly isPaused: () => boolean;
+    readonly signals: DirectorEventBus<DirectorEventPayload>;
+    readonly compositions: CompositionRegistry;
+    readonly ports: DirectorPorts;
     /** Mutable per-run scratchpad shared across every step in the same run. */
     readonly state: Map<string, unknown>;
     /**

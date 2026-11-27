@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { execFileSync, spawn } from 'node:child_process';
 import { createServer } from 'node:http';
-import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
 import { extname, join, resolve, sep } from 'node:path';
@@ -787,14 +787,21 @@ test('asset Inspector previews animation files and creates portable scene object
   try {
     const rig = new URL('../../../modules/spine/testdata/', import.meta.url);
     const image = await readFile(new URL('../raw-assets/images{m}/olive-crystal.png', import.meta.url));
+    const rigJson = await readFile(new URL('rig.json', rig), 'utf8');
+    const rigAtlas = (await readFile(new URL('rig.atlas', rig), 'utf8')).replaceAll('64', '48').replace('rig.png', 'textures/spine/rig.png');
+    const pageFile = 'textures/spine/rig.png';
+    await mkdir(file('textures/spine'), { recursive: true });
     const frame = x => ({
       frame: { x, y: 0, w: 24, h: 48 }, rotated: false, trimmed: false,
       sourceSize: { w: 24, h: 48 }, spriteSourceSize: { x: 0, y: 0, w: 24, h: 48 },
     });
     await Promise.all([
-      writeFile(file('rig.json'), await readFile(new URL('rig.json', rig))),
-      writeFile(file('rig.atlas'), (await readFile(new URL('rig.atlas', rig), 'utf8')).replaceAll('64', '48')),
-      writeFile(file('rig.png'), image),
+      writeFile(file('rig.json'), rigJson),
+      writeFile(file('shared-textures.atlas'), rigAtlas),
+      writeFile(file('wrong-atlas.json'), rigJson),
+      writeFile(file('wrong-atlas.atlas'), rigAtlas.replace('\ntile\n', '\nother\n')),
+      writeFile(file('other.atlas'), ''),
+      writeFile(file(pageFile), image),
       writeFile(file('sheet.png'), image),
       writeFile(file('missing.json'), JSON.stringify({ frames: { left: frame(0) }, meta: { image: 'missing.png' } })),
       writeFile(file('sheet.json'), JSON.stringify({
@@ -805,11 +812,12 @@ test('asset Inspector previews animation files and creates portable scene object
     ]);
     editor = await launchEditor(file('profile'));
     await editor.evaluate(({ dialog }, paths) => {
-      const selections = [[paths.missing], paths.assets, [paths.directory], [paths.sceneFile]];
+      const selections = [[paths.missing], [paths.mismatched], paths.assets, [paths.ambiguous], [paths.directory], [paths.sceneFile]];
       dialog.showOpenDialog = async () => ({ canceled: false, filePaths: selections.shift() });
       dialog.showSaveDialog = async () => ({ canceled: false, filePath: paths.sceneFile });
       dialog.showMessageBoxSync = () => 1;
-    }, { missing: file('missing.json'), assets: ['rig.json', 'rig.atlas', 'rig.png', 'sheet.json', 'sheet.png'].map(file), directory, sceneFile });
+    }, { missing: file('missing.json'), mismatched: file('wrong-atlas.json'), ambiguous: file('ambiguous.json'),
+      assets: ['rig.json', pageFile, 'sheet.json', 'sheet.png'].map(file), directory, sceneFile });
 
     const page = await editor.firstWindow();
     page.setDefaultTimeout(5000);
@@ -833,6 +841,13 @@ test('asset Inspector previews animation files and creates portable scene object
     await expect(page.getByRole('alert')).toContainText('missing.png');
     await expect(panel.getByText('2 assets', { exact: true })).toBeVisible();
     await button(panel, 'Import Assets').click();
+    await expect(page.getByRole('alert')).toContainText('Could not load wrong-atlas.json with wrong-atlas.atlas');
+    await expect(panel.getByText('2 assets', { exact: true })).toBeVisible();
+    await button(panel, 'Import Assets').click();
+    await expect(panel.getByText('4 assets', { exact: true })).toBeVisible();
+    await Promise.all([writeFile(file('ambiguous.json'), rigJson), writeFile(file('another-match.atlas'), rigAtlas)]);
+    await button(panel, 'Import Assets').click();
+    await expect(page.getByRole('alert')).toContainText('More than one atlas matches ambiguous.json');
     await expect(panel.getByText('4 assets', { exact: true })).toBeVisible();
     await combo(panel, 'Asset Type').selectOption('animated');
     await expect(asset('chime.wav')).toHaveCount(0);
@@ -843,11 +858,13 @@ test('asset Inspector previews animation files and creates portable scene object
     await button(preview, 'Play Animation').click();
     await button(preview, 'Pause Animation').click();
     await button(preview, 'Stop Animation').click();
+    await preview.getByRole('checkbox', { name: 'Loop', exact: true }).uncheck();
 
     await button(preview, 'Add to Scene').click();
     await expect(object('rig.json')).toHaveAttribute('aria-pressed', 'true');
     await expect(preview).toHaveCount(0);
-    await combo(inspector, 'Skin').selectOption('warm');
+    await expect(combo(inspector, 'Skin')).toHaveValue('warm');
+    await expect(combo(inspector, 'Animation')).toHaveValue('still');
     await combo(inspector, 'Animation').selectOption('sway');
     const playing = inspector.getByRole('checkbox', { name: 'Play in Scene' });
     await expect(playing).toBeChecked();
@@ -875,7 +892,18 @@ test('asset Inspector previews animation files and creates portable scene object
     const liveCanvas = page.locator('#viewport-pane-live canvas');
     const liveFrame = await liveCanvas.screenshot();
     await expect.poll(async () => (await liveCanvas.screenshot()).equals(liveFrame)).toBe(false);
+    await asset('sheet.json').click();
+    await button(preview, 'Play Animation').click();
+    await expect(button(preview, 'Pause Animation')).toBeVisible();
+    await page.getByRole('tab', { name: 'Edit', exact: true }).click();
+    await expect(button(preview, 'Play Animation')).toBeEnabled();
+    await button(preview, 'Play Animation').click();
+    await page.getByRole('tab', { name: 'Live', exact: true }).click();
+    await expect(button(preview, 'Play Animation')).toBeEnabled();
+    await button(preview, 'Play Animation').click();
+    await expect(button(preview, 'Pause Animation')).toBeVisible();
     await button(page, 'Stop Game').click();
+    await object('sheet.json').click();
     await combo(inspector, 'Animation').selectOption('idle');
 
     for (const name of ['Graphics', 'Bitmap Text', 'Tiling Sprite', 'Nine-Slice Sprite', 'Tilemap',
@@ -902,8 +930,9 @@ test('asset Inspector previews animation files and creates portable scene object
     await expect(page.getByRole('img', { name: 'Unsaved changes' })).toHaveCount(0);
     const saved = JSON.parse(await readFile(sceneFile, 'utf8'));
     assert.deepEqual(saved.assets.map(asset => asset.media.kind), ['spine', 'sheet']);
-    assert.deepEqual(saved.assets[0].media.files.map(asset => asset.name), ['rig.atlas', 'rig.png']);
+    assert.deepEqual(saved.assets[0].media.files.map(asset => asset.name), ['rig.atlas', pageFile]);
     assert.equal(saved.objects.find(node => node.label === 'rig.json').skin, 'warm');
+    assert.equal(saved.objects.find(node => node.label === 'rig.json').loop, false);
     assert.equal(saved.objects.find(node => node.label === 'sheet.json').animation, 'idle');
     assert.equal(saved.objects.find(node => node.type === 'Graphics').shape, 'ellipse');
     assert.deepEqual(saved.objects.find(node => node.type === 'Tilemap').tiles, [0, 4, -1, 8]);
@@ -919,8 +948,9 @@ test('asset Inspector previews animation files and creates portable scene object
     const manifest = JSON.parse(await readFile(join(destination, 'manifest.json'), 'utf8'));
     const atlas = manifest.bundles[0].assets.find(asset => asset.alias[0].endsWith('/rig.atlas'));
     assert.ok(atlas);
-    assert.ok((await readFile(join(destination, atlas.src[0]))).includes('rig.png'));
-    await Promise.all(['rig.json', 'rig.atlas', 'rig.png', 'sheet.json', 'sheet.png'].map(name => rm(file(name))));
+    assert.ok((await readFile(join(destination, atlas.src[0]))).includes(pageFile));
+    assert.deepEqual(await readFile(join(destination, atlas.src[0], '..', pageFile)), image);
+    await Promise.all(['rig.json', 'shared-textures.atlas', pageFile, 'sheet.json', 'sheet.png'].map(name => rm(file(name))));
 
     await button(page, 'New Scene').click();
     await button(page, 'Open Scene').click();
@@ -1070,8 +1100,21 @@ test('panels close, resize, dock into tabs, and restore across launches', { time
     await button('Close Inspector Panel').click();
     await expect(inspector()).toBeHidden();
     await button('Panels').click();
-    await menu().getByRole('checkbox', { name: 'Inspector' }).check();
+    const inspectorToggle = menu().getByRole('checkbox', { name: 'Inspector' });
+    const inspectorRow = menu().locator('label').filter({ hasText: /^Inspector$/ });
+    await inspectorRow.getByText('Inspector', { exact: true }).click();
+    await expect(inspectorToggle).toBeChecked();
     await expect(inspector()).toBeVisible();
+    await inspectorRow.locator('svg').click();
+    await expect(inspectorToggle).not.toBeChecked();
+    const rowBounds = await inspectorRow.boundingBox();
+    await inspectorRow.click({ position: { x: rowBounds.width - 3, y: rowBounds.height / 2 } });
+    await expect(inspectorToggle).toBeChecked();
+    await inspectorToggle.press('Space');
+    await expect(inspectorToggle).not.toBeChecked();
+    await inspectorToggle.press('Space');
+    await expect(inspector()).toBeVisible();
+    await inspectorToggle.press('Escape');
 
     const divider = page.getByRole('separator', { name: 'Resize Left Dock' });
     const initialWidth = (await hierarchy().boundingBox()).width;
@@ -2051,7 +2094,7 @@ test('required scene camera controls startup, active preview and saved layer eff
       version: 2, startup: 'intro', scenes: [
         { id: 'intro', name: 'Introduction', objects: [layer('Opening', 160, 110, '#dba39e')] },
         { id: 'workshop', name: 'Workshop', objects: [
-          layer('Back', 170, 105, '#95bd6c'), layer('Front', 290, 180, '#508cb6'),
+          layer('Back', 170, 105, '#95bd6c'), layer('Middle', 220, 143, '#df9d77'), layer('Front', 290, 180, '#508cb6'),
           { type: 'AudioSource', id: 'test-source', label: 'Test Source', visible: false },
           { type: 'AudioListener', id: 'test-listener', label: 'Test Listener', visible: false },
           { type: 'Light2D', id: 'test-light', label: 'Test Light', visible: false },
@@ -2090,36 +2133,38 @@ test('required scene camera controls startup, active preview and saved layer eff
     const edit = page.getByRole('tabpanel', { name: 'Edit', exact: true });
     const canvas = edit.locator('canvas');
     const shake = page.locator('[data-inspector-section="cameraShake"]');
-    await shake.locator('summary').click();
-    const shakeTest = shake.getByRole('form', { name: 'Test Preview' });
+    await shake.locator(':scope > summary').click();
     const steady = await canvas.screenshot();
-    await expect(shakeTest.getByRole('spinbutton', { name: 'Test Strength' })).toHaveValue('15');
-    await shakeTest.getByRole('spinbutton', { name: 'Test Strength' }).fill('0');
-    await shakeTest.getByRole('spinbutton', { name: 'Test Rotation' }).fill('30');
-    await shakeTest.getByRole('spinbutton', { name: 'Test Duration' }).fill('2');
-    await button('Run Test', shakeTest).click();
+    await expect(shake.getByRole('spinbutton', { name: 'Shake Strength' })).toHaveValue('15');
+    const duration = shake.getByRole('spinbutton', { name: 'Shake Duration' });
+    await duration.fill('2');
+    await duration.press('Enter');
+    await expect(shake.getByRole('form', { name: 'Test Preview' })).toHaveCount(0);
+    await button('Preview Shake', shake).click();
     await expect(canvas).toHaveAttribute('data-effect-preview', 'shake');
-    assert.ok(!(await canvas.screenshot()).equals(steady), 'Rotation-only shake changes the Edit view');
-    await button('Stop Test', shakeTest).click();
-    await expect(canvas).not.toHaveAttribute('data-effect-preview', 'shake');
-    assert.ok((await canvas.screenshot()).equals(steady), 'Stopping the test restores the frame');
-    await shakeTest.getByRole('spinbutton', { name: 'Test Duration' }).fill('0.1');
-    await button('Run Test', shakeTest).click();
-    await expect(canvas).not.toHaveAttribute('data-effect-preview', 'shake');
-    assert.ok((await canvas.screenshot()).equals(steady), 'The test restores the frame when its duration elapses');
+    assert.ok(!(await canvas.screenshot()).equals(steady), 'Shake changes the Edit view');
+    await button('Stop Shake Preview', shake).click();
+    assert.ok((await canvas.screenshot()).equals(steady), 'Stopping shake restores the frame');
+    await expect(shake.locator(':scope > summary')).toHaveText('Shake');
+    await shake.getByRole('checkbox', { name: 'Use Depth' }).check();
+    await shake.getByRole('combobox', { name: 'Depth Distribution' }).selectOption('power2.in');
+    await button('Apply Depth Distribution', shake).click();
+    await button('Save Scene').click();
     await expect(page.getByRole('img', { name: 'Unsaved changes' })).toHaveCount(0);
+    await shake.locator(':scope > summary .property-label').click();
+    await expect(shake).not.toHaveAttribute('open');
+    await button('Preview Shake', shake).click();
+    await expect(shake).not.toHaveAttribute('open');
+    assert.ok(!(await canvas.screenshot()).equals(steady), 'Layered shake moves the world layers in Edit');
+    await button('Stop Shake Preview', shake).click();
+    assert.ok((await canvas.screenshot()).equals(steady), 'Stopping layered shake restores the world layers');
     const zoomFX = page.locator('[data-inspector-section="cameraZoomEffect"]');
-    await zoomFX.locator('summary').click();
-    const zoomTest = zoomFX.getByRole('form', { name: 'Test Preview' });
-    await expect(zoomTest.getByRole('spinbutton', { name: 'Test Zoom' })).toHaveValue('1.8');
-    await zoomTest.getByRole('spinbutton', { name: 'Test Zoom' }).fill('2');
-    await button('Run Test', zoomTest).click();
+    await button('Preview Zoom', zoomFX).click();
     await expect(canvas).toHaveAttribute('data-effect-preview', 'zoom');
     assert.ok(!(await canvas.screenshot()).equals(steady), 'Zoom preview changes the camera framing');
-    await button('Stop Test', zoomTest).click();
+    await button('Stop Zoom Preview', zoomFX).click();
     await expect(canvas).not.toHaveAttribute('data-effect-preview', 'zoom');
     assert.ok((await canvas.screenshot()).equals(steady), 'Stopping zoom preview restores the Edit view');
-    await expect(zoomFX.getByRole('spinbutton', { name: 'Camera Zoom' })).toHaveValue('1.2');
     await expect(page.getByRole('img', { name: 'Unsaved changes' })).toHaveCount(0);
     await button('Scene Root', hierarchy).click();
     const setEditView = async mode => {
@@ -2134,13 +2179,6 @@ test('required scene camera controls startup, active preview and saved layer eff
     assert.ok(!normal.equals(cameraFrame), 'Edit Camera uses the authored camera position and zoom');
     await expect(page.getByRole('img', { name: 'Unsaved changes' })).toHaveCount(0);
     await camera.click();
-    const currentZoom = zoomTest.getByRole('spinbutton', { name: 'Test Zoom' });
-    await expect(currentZoom).toHaveValue('1.8');
-    const settledCamera = await canvas.screenshot();
-    await button('Run Test', zoomTest).click();
-    await expect.poll(async () => (await canvas.screenshot()).equals(settledCamera)).toBe(false);
-    await button('Stop Test', zoomTest).click();
-    assert.ok((await canvas.screenshot()).equals(settledCamera), 'Zoom preview restores Camera mode framing');
     await button('Scene Root', hierarchy).click();
     await setEditView('Normal');
     const addEffect = page.getByRole('combobox', { name: 'Add Effect', exact: true });
@@ -2176,26 +2214,40 @@ test('required scene camera controls startup, active preview and saved layer eff
     await setEditView('Camera');
     const selectCamera = () => camera.click();
     const clearSelection = () => button('Scene Root', hierarchy).click();
-    const perspective = page.locator('[data-inspector-section="cameraPerspective"]');
+    const perspective = page.locator('[data-inspector-section="cameraCurve"]').first();
     const enabled = perspective.getByRole('checkbox', { name: 'Enabled' });
     await selectCamera();
     await perspective.locator('summary').click();
     await enabled.check();
+    await expect(perspective.getByRole('checkbox', { name: 'Use Depth' })).toBeChecked();
     const distance = perspective.getByRole('slider', { name: 'Layer Distance' });
     await distance.press('End');
     await clearSelection();
-    assert.ok(!(await canvas.screenshot()).equals(cameraFrame), 'Layer Perspective reframes and shades the layers');
+    const linear = await canvas.screenshot();
+    assert.ok(!linear.equals(cameraFrame), 'Migrated Curve reframes the layers');
+    await selectCamera();
+    await perspective.getByRole('combobox', { name: 'Depth Distribution' }).selectOption('power2.in');
+    await clearSelection();
+    const eased = await canvas.screenshot();
+    assert.ok(!eased.equals(linear), 'Selecting a preset applies the layer distribution immediately');
+    await selectCamera();
+    const depthExpression = perspective.getByRole('textbox', { name: 'Ease Expression' });
+    await depthExpression.fill('sine.in');
+    await depthExpression.press('Enter');
+    await clearSelection();
+    assert.ok(!(await canvas.screenshot()).equals(eased), 'Committing an expression immediately applies its distribution');
     await selectCamera();
     await enabled.uncheck();
     await clearSelection();
     assert.ok((await canvas.screenshot()).equals(cameraFrame), 'Disabling perspective restores the base camera frame');
 
-    const curveSection = page.locator('[data-inspector-section="cameraCurve"]');
+    const curveSection = page.locator('[data-inspector-section="cameraCurve"]').last();
     const direction = curveSection.getByRole('combobox', { name: 'Curve Direction' });
     const angle = curveSection.getByRole('slider', { name: 'Curve Angle' });
     await selectCamera();
     await addEffect.selectOption('curve');
     await curveSection.locator('summary').click();
+    await expect(curveSection.getByRole('checkbox', { name: 'Use Depth' })).not.toBeChecked();
     await expect(direction).toHaveValue('concave');
     await expect(angle).toHaveValue('0');
     await angle.press('End');
@@ -2215,10 +2267,10 @@ test('required scene camera controls startup, active preview and saved layer eff
     const saved = JSON.parse(await readFile(path, 'utf8'));
     const rig = saved.scenes.find(scene => scene.id === 'workshop').objects.find(node => node.type === 'Camera2D');
     const settingsOnly = ({ effectId: _effectId, ...effect }) => effect;
-    assert.deepEqual(settingsOnly(rig.camera.postFXs.find(effect => effect.type === 'curve')),
-      { type: 'curve', enabled: true, angle: 90, direction: 'convex' });
+    assert.deepEqual(settingsOnly(rig.camera.postFXs.find(effect => effect.type === 'curve' && effect.enabled)),
+      { type: 'curve', enabled: true, angle: 90, direction: 'convex', useDepth: false, scale: 0, distance: 0, distribution: 'none' });
     assert.deepEqual(rig.camera.postFXs.find(effect => effect.type === 'shake'),
-      { type: 'shake', enabled: true, amplitude: 15, duration: 0.35, rotation: 0 });
+      { type: 'shake', enabled: true, amplitude: 15, duration: 2, rotation: 0, useDepth: true, distribution: 'power2.in' });
     assert.equal(rig.camera.shakeAmplitude, undefined);
     assert.deepEqual(rig.camera.postFXs.find(effect => effect.type === 'zoom'),
       { type: 'zoom', enabled: true, value: 1.2, min: 0.05, max: 20 });
@@ -2252,6 +2304,20 @@ test('required scene camera controls startup, active preview and saved layer eff
     assert.ok((await canvas.screenshot()).equals(convex), 'Zero blur preserves camera curvature');
     await selectCamera();
     await depth.getByRole('slider', { name: 'Blur Strength' }).press('End');
+    await depth.getByRole('checkbox', { name: 'Use Depth' }).check();
+    await expect(depth.getByRole('img', { name: 'Depth Distribution' })).toBeVisible();
+    await clearSelection();
+    const depthFrame = await canvas.screenshot();
+    await selectCamera();
+    await addEffect.selectOption('tiltShift');
+    const tiltShift = page.locator('[data-inspector-section="cameraTiltShift"]');
+    await clearSelection();
+    assert.ok(!(await canvas.screenshot()).equals(depthFrame), 'Tilt Shift adds an optical focus band');
+    await selectCamera();
+    await tiltShift.locator('summary').click();
+    await tiltShift.getByRole('checkbox', { name: 'Enabled' }).uncheck();
+    await clearSelection();
+    assert.ok((await canvas.screenshot()).equals(depthFrame), 'Removing Tilt Shift restores the depth view');
     for (const [label, type] of [['Test Source', 'audioGain'], ['Test Listener', 'listenerOffset'], ['Test Light', 'lightPulse']]) {
       await button(label, hierarchy).click();
       await addEffect.selectOption(type);
@@ -2259,19 +2325,18 @@ test('required scene camera controls startup, active preview and saved layer eff
     }
     const pulse = page.locator('[data-inspector-section="effectLightPulse"]');
     await pulse.locator('summary').click();
-    const pulseTest = pulse.getByRole('form', { name: 'Test Preview' });
     const unlit = await canvas.screenshot();
-    await button('Run Test', pulseTest).click();
+    await button('Preview Light Pulse', pulse).click();
     await expect(canvas).toHaveAttribute('data-effect-preview', 'lightPulse');
     assert.ok(!(await canvas.screenshot()).equals(unlit), 'Light Pulse can be previewed with scene lighting off');
-    await button('Stop Test', pulseTest).click();
+    await button('Stop Light Pulse Preview', pulse).click();
     assert.ok((await canvas.screenshot()).equals(unlit), 'Stopping Light Pulse restores the scene lighting');
     await selectCamera();
     await addEffect.selectOption('zoom');
     const zoomEffects = page.locator('[data-inspector-section="cameraZoomEffect"]');
     await expect(zoomEffects).toHaveCount(2);
     const secondZoom = zoomEffects.nth(1);
-    await secondZoom.locator('summary').click();
+    await secondZoom.locator(':scope > summary').click();
     const zoomValue = secondZoom.getByRole('spinbutton', { name: 'Camera Zoom' });
     await zoomValue.fill('1.6');
     await zoomValue.press('Enter');
@@ -2280,9 +2345,10 @@ test('required scene camera controls startup, active preview and saved layer eff
     const updatedProject = JSON.parse(await readFile(path, 'utf8'));
     const settings = updatedProject.scenes.find(scene => scene.id === 'workshop').objects.find(node => node.type === 'Camera2D').camera;
     assert.deepEqual(settingsOnly(settings.postFXs.find(effect => effect.type === 'depth')),
-      { type: 'depth', enabled: true, filter: 'motion', strength: 100 });
-    assert.deepEqual(settings.postFXs.find(effect => effect.type === 'perspective'),
-      { type: 'perspective', enabled: false, scale: 16, distance: 240, zIndex: 1 });
+      { type: 'depth', enabled: true, filter: 'motion', strength: 100, useDepth: true, scale: 16, distance: 32, distribution: 'none' });
+    assert.deepEqual(settings.postFXs.find(effect => effect.type === 'curve' && !effect.enabled),
+      { type: 'curve', enabled: false, angle: 0, direction: 'concave', useDepth: true, scale: 16, distance: 240, distribution: 'sine.in' });
+    assert.equal(settings.postFXs.some(effect => effect.type === 'perspective'), false);
     assert.equal(settings.perspective, undefined);
     const savedZooms = settings.postFXs.filter(effect => effect.type === 'zoom');
     assert.deepEqual(savedZooms.map(effect => effect.value), [1.2, 1.6]);
@@ -2313,17 +2379,546 @@ test('required scene camera controls startup, active preview and saved layer eff
     await button('Pause Game').click();
     await page.getByRole('tab', { name: 'Hierarchy', exact: true }).click();
     await selectCamera();
-    const liveZoom = zoomEffects.nth(1);
-    const liveTest = liveZoom.getByRole('form', { name: 'Test Preview' });
-    await expect(liveZoom.getByRole('spinbutton', { name: 'Camera Zoom' })).toBeDisabled();
-    await liveTest.getByRole('spinbutton', { name: 'Test Zoom' }).fill('2');
-    await button('Run Test', liveTest).click();
+    const pausedFrame = await liveCanvas.screenshot();
+    const pausedPose = await liveCanvas.getAttribute('data-game-camera');
+    await button('Preview Shake', shake).click();
+    assert.ok(!(await liveCanvas.screenshot()).equals(pausedFrame), 'Layered shake moves the world layers in paused Live');
+    await expect(liveCanvas).toHaveAttribute('data-game-camera', pausedPose);
+    await button('Stop Shake Preview', shake).click();
+    assert.ok((await liveCanvas.screenshot()).equals(pausedFrame), 'Stopping layered shake restores the paused game frame');
+    const liveZoom = zoomEffects.first();
+    await button('Preview Zoom', liveZoom).click();
     await expect(liveCanvas).toHaveAttribute('data-effect-preview', 'zoom');
-    await expect(liveCanvas).toHaveAttribute('data-game-camera', /"zoom":2[,}]/);
-    await button('Stop Test', liveTest).click();
+    await expect(liveCanvas).toHaveAttribute('data-game-camera', /"zoom":1\.2/);
+    await button('Stop Zoom Preview', liveZoom).click();
     await expect(liveCanvas).toHaveAttribute('data-game-camera', /"zoom":1\.6/);
     await expect(button('Resume Game')).toBeVisible();
     assert.deepEqual(errors, []);
+  } finally {
+    await editor?.close();
+    await rm(profile, { recursive: true, force: true });
+  }
+});
+
+test('camera Curve bulges textured layers around a shared center in Edit and Live', { timeout: 25_000 }, async () => {
+  const profile = await mkdtemp(join(tmpdir(), 'olive-curve-textures-'));
+  const path = join(profile, 'curve.json');
+  const sharp = require('sharp');
+  const asset = async (name, content) => ({
+    alias: `project/27670c9e-9a88-4830-8627-f24dfaf726a1/${name}.png`,
+    data: (await sharp(Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">${content}</svg>`))
+      .png().toBuffer()).toString('base64'),
+  });
+  const backdrop = await asset('backdrop', '<rect width="100" height="100" fill="#2040d0"/><rect x="33" width="3" height="100" fill="#10c050"/>');
+  const props = await asset('props', '<rect x="3" width="15" height="100" fill="#ff5020"/><rect x="82" width="15" height="100" fill="#ffd020"/>');
+  let editor;
+  try {
+    await writeFile(path, JSON.stringify({ version: 1, assets: [backdrop, props], config: { renderer: { width: 960, height: 540 } },
+      objects: [
+        { type: 'Sprite', id: 'back', label: 'Backdrop', texture: backdrop.alias, anchor: { x: 0, y: 0 }, scale: { x: 9.6, y: 5.4 } },
+        { type: 'Container', id: 'front', label: 'Props', position: { x: 230, y: 130 }, children: [
+          { type: 'Sprite', id: 'markers', label: 'Markers', texture: props.alias, anchor: { x: 0, y: 0 }, scale: { x: 5, y: 2.8 } },
+        ] },
+        { type: 'Camera2D', id: 'camera', label: 'Camera 2D', position: { x: 480, y: 270 },
+          camera: { postFXs: [{ type: 'curve', angle: 90, direction: 'convex', useDepth: false }] } },
+      ],
+    }));
+    editor = await launchEditor(profile);
+    await editor.evaluate(({ dialog }, file) => {
+      dialog.showOpenDialog = async () => ({ canceled: false, filePaths: [file] });
+      dialog.showMessageBoxSync = () => 1;
+    }, path);
+    const page = await editor.firstWindow();
+    page.setDefaultTimeout(5000);
+    const button = (name, where = page) => where.getByRole('button', { name, exact: true });
+    const edit = page.getByRole('tabpanel', { name: 'Edit', exact: true });
+    const canvas = edit.locator('canvas');
+    const red = [255, 80, 32], blue = [32, 64, 208], yellow = [255, 208, 32], green = [16, 192, 80];
+    async function markerColorError(view, markers) {
+      const { info, data } = await sharp(await view.screenshot()).raw().toBuffer({ resolveWithObject: true });
+      const errors = markers.flatMap(([x, expected]) => {
+        const offset = (Math.floor(330 * info.height / 540) * info.width + Math.floor(x * info.width / 960)) * info.channels;
+        return expected.map((channel, component) => Math.abs(data[offset + component] - channel));
+      });
+      return Math.max(...errors);
+    }
+    await button('Open Scene').click();
+    const straight = [[280, red], [480, blue], [680, yellow]];
+    const convex = [[230, red], [480, blue], [730, yellow]];
+    const concave = [[325, red], [480, blue], [635, yellow]];
+    await expect.poll(() => markerColorError(canvas, straight)).toBeLessThanOrEqual(4);
+    await button('Camera 2D', page.getByRole('complementary', { name: 'Hierarchy' })).click();
+    const curve = page.locator('[data-inspector-section="cameraCurve"]');
+    await curve.locator(':scope > summary .property-label').click();
+    const useDepth = curve.getByRole('checkbox', { name: 'Use Depth' });
+    await expect(useDepth).not.toBeChecked();
+    await button('Preview Curve', curve).click();
+    await expect(canvas).toHaveAttribute('data-effect-preview', 'curve');
+    await expect.poll(() => markerColorError(canvas, [...convex, [283, green]])).toBeLessThanOrEqual(4);
+    const angle = curve.getByRole('spinbutton', { name: 'Curve Angle' });
+    await angle.fill('0');
+    await angle.press('Enter');
+    await expect.poll(() => markerColorError(canvas, straight)).toBeLessThanOrEqual(4);
+    await expect(canvas).toHaveAttribute('data-effect-preview', 'curve');
+    await angle.fill('90');
+    await angle.press('Enter');
+    await expect.poll(() => markerColorError(canvas, convex)).toBeLessThanOrEqual(4);
+    await button('Stop Curve Preview', curve).click();
+
+    await useDepth.check();
+    const applyDistribution = button('Apply Depth Distribution', curve.locator(':scope > .fields > .effect-fields'));
+    await expect(applyDistribution).toBeEnabled();
+    await applyDistribution.click();
+    await expect(applyDistribution).toBeEnabled();
+    await button('View', edit).click();
+    await button('Camera', edit).click();
+    await expect.poll(() => markerColorError(canvas, [...convex, [283, blue]])).toBeLessThanOrEqual(4);
+    await curve.getByRole('combobox', { name: 'Curve Direction' }).selectOption('concave');
+    await expect.poll(() => markerColorError(canvas, concave)).toBeLessThanOrEqual(4);
+    await button('Play Game').click();
+    const live = page.getByRole('tabpanel', { name: 'Live', exact: true }).locator('canvas');
+    await expect.poll(() => markerColorError(live, concave)).toBeLessThanOrEqual(4);
+    const required = curve.locator('[data-inspector-section="requiredEffects"]');
+    const depth = required.locator('[data-inspector-section="cameraDepth"]');
+    await depth.locator(':scope > summary .property-label').click();
+    await button('Pause Game').click();
+    const scale = depth.getByRole('spinbutton', { name: 'Layer Scale' });
+    await expect(scale).toHaveValue('0');
+    const baseline = await live.screenshot();
+    await scale.fill('80');
+    await scale.press('Enter');
+    await expect(scale).toHaveValue('80');
+    await expect.poll(async () => (await live.screenshot()).equals(baseline)).toBe(false);
+    await expect(button('Resume Game')).toBeVisible();
+    await curve.locator(':scope > .fields > .field').getByRole('checkbox', { name: 'Enabled' }).uncheck();
+    await expect(required).toHaveCount(0);
+  } finally {
+    await editor?.close();
+    await rm(profile, { recursive: true, force: true });
+  }
+});
+
+test('camera Framing crops the world in Preview and Live while the HUD stays visible', { timeout: 25_000 }, async () => {
+  const profile = await mkdtemp(join(tmpdir(), 'olive-camera-framing-'));
+  const path = join(profile, 'framing.json');
+  let editor;
+  try {
+    await writeFile(path, JSON.stringify({ version: 1, config: { renderer: { width: 960, height: 540, background: '#101010' } },
+      objects: [
+        { type: 'Graphics', id: 'world', label: 'World', position: { x: 0, y: 0 }, width: 960, height: 540, fill: '#00ff00' },
+        { type: 'Graphics', id: 'hud', label: 'HUD', position: { x: 50, y: 50 }, width: 60, height: 40, fill: '#ff00ff',
+          screenSpace: { anchor: 'top-left' } },
+        { type: 'Camera2D', id: 'camera', label: 'Camera 2D', position: { x: 480, y: 270 },
+          camera: { postFXs: [{ type: 'zoom', value: 2 }] } },
+      ],
+    }));
+    editor = await launchEditor(profile);
+    await editor.evaluate(({ dialog }, file) => {
+      dialog.showOpenDialog = async () => ({ canceled: false, filePaths: [file] });
+      dialog.showSaveDialog = async () => ({ canceled: false, filePath: file });
+      dialog.showMessageBoxSync = () => 1;
+    }, path);
+    const page = await editor.firstWindow();
+    page.setDefaultTimeout(5000);
+    const button = (name, where = page) => where.getByRole('button', { name, exact: true });
+    const sharp = require('sharp');
+    async function colorAt(canvas, x, y, expected) {
+      const { info, data } = await sharp(await canvas.screenshot()).raw().toBuffer({ resolveWithObject: true });
+      const offset = (Math.floor(y * info.height / 540) * info.width + Math.floor(x * info.width / 960)) * info.channels;
+      const actual = [...data.subarray(offset, offset + 3)];
+      assert.ok(actual.every((channel, index) => Math.abs(channel - expected[index]) <= 5),
+        `Expected ${expected} at ${x}, ${y} but saw ${actual}`);
+    }
+    await button('Open Scene').click();
+    const hierarchy = page.getByRole('complementary', { name: 'Hierarchy' });
+    await button('Camera 2D', hierarchy).click();
+    await page.getByRole('combobox', { name: 'Add Effect' }).selectOption('framing');
+    const framing = page.locator('[data-inspector-section="cameraFraming"]');
+    await framing.locator(':scope > summary .property-label').click();
+    const edit = page.getByRole('tabpanel', { name: 'Edit', exact: true }).locator('canvas');
+    const rendererSize = await edit.evaluate(canvas => [canvas.width, canvas.height]);
+    const ratios = framing.getByRole('combobox', { name: 'Aspect Ratio Preset' });
+    await expect(ratios).toHaveValue('16:9');
+    for (const [ratio, width, height] of [['32:9', '960', '270'], ['4:3', '720', '540'], ['9:20', '243', '540'], ['1:1', '540', '540']]) {
+      await ratios.selectOption(ratio);
+      await expect(ratios).toHaveValue(ratio);
+      await expect(framing.getByRole('spinbutton', { name: 'Frame Width' })).toHaveValue(width);
+      await expect(framing.getByRole('spinbutton', { name: 'Frame Height' })).toHaveValue(height);
+    }
+    await button('Save Scene').click();
+    await expect(page.getByRole('img', { name: 'Unsaved changes' })).toHaveCount(0);
+    const saved = JSON.parse(await readFile(path, 'utf8'));
+    const camera = saved.objects.find(node => node.type === 'Camera2D');
+    assert.equal(camera.camera.postFXs.find(effect => effect.type === 'framing').aspectRatio, '1:1');
+    assert.deepEqual(await edit.evaluate(canvas => [canvas.width, canvas.height]), rendererSize);
+    for (const [name, value] of [['Frame Width', '400'], ['Frame Height', '200']]) {
+      const field = framing.getByRole('spinbutton', { name });
+      await field.fill(value);
+      await field.press('Enter');
+    }
+    await expect(ratios).toHaveValue('');
+    await expect(ratios.locator('option:checked')).toHaveText('Custom');
+    await colorAt(edit, 120, 270, [0, 255, 0]);
+    await button('Preview Framing', framing).click();
+    await expect(edit).toHaveAttribute('data-effect-preview', 'framing');
+    await colorAt(edit, 120, 270, [16, 16, 16]);
+    await colorAt(edit, 440, 230, [0, 255, 0]);
+    await colorAt(edit, 65, 65, [255, 0, 255]);
+    await button('Stop Framing Preview', framing).click();
+    await colorAt(edit, 120, 270, [0, 255, 0]);
+    await button('Play Game').click();
+    const live = page.getByRole('tabpanel', { name: 'Live', exact: true }).locator('canvas');
+    await expect.poll(async () => JSON.parse(await live.getAttribute('data-game-camera') ?? 'null')).toMatchObject({
+      zoom: 2, frame: { x: 280, y: 170, width: 400, height: 200 },
+    });
+    await colorAt(live, 120, 270, [16, 16, 16]);
+    await colorAt(live, 440, 230, [0, 255, 0]);
+    await colorAt(live, 65, 65, [255, 0, 255]);
+  } finally {
+    await editor?.close();
+    await rm(profile, { recursive: true, force: true });
+  }
+});
+
+test('camera filter catalog renders and previews Shockwave', { timeout: 50_000 }, async () => {
+  const profile = await mkdtemp(join(tmpdir(), 'olive-camera-filters-'));
+  const path = join(profile, 'filters.json');
+  const texture = 'project/27670c9e-9a88-4830-8627-f24dfaf726a1/strip.png';
+  const sharp = require('sharp');
+  const data = (await sharp({ create: { width: 4, height: 2, channels: 3, background: '#ea8655' } })
+    .png().toBuffer()).toString('base64');
+  const kinds = ['colorGrade', 'fog', 'bloom', 'glow', 'dropShadow', 'outline', 'heatHaze', 'distortion', 'lut',
+    'gradient', 'crt', 'oldFilm', 'rgbSplit', 'glitch', 'vignette', 'zoomBlur', 'radialBlur', 'shockwave',
+    'bulgePinch', 'reflection', 'parallax'];
+  let editor;
+  try {
+    await writeFile(path, JSON.stringify({ version: 1, assets: [{ alias: texture, data }], objects: [
+      { type: 'Graphics', id: 'back', label: 'Back', position: { x: 200, y: 120 }, width: 560, height: 280, fill: '#6494ce' },
+      { type: 'Graphics', id: 'front', label: 'Front', position: { x: 370, y: 200 }, width: 240, height: 140, fill: '#efaf54' },
+      { type: 'Camera2D', id: 'camera', label: 'Camera 2D', position: { x: 480, y: 270 },
+        camera: { postFXs: [{ type: 'lut', settings: { texture } }] } },
+    ] }));
+    editor = await launchEditor(profile);
+    await editor.evaluate(({ dialog }, file) => {
+      dialog.showOpenDialog = async () => ({ canceled: false, filePaths: [file] });
+      dialog.showMessageBoxSync = () => 1;
+    }, path);
+    const page = await editor.firstWindow();
+    page.setDefaultTimeout(5000);
+    const errors = [];
+    page.on('pageerror', error => errors.push(error.message));
+    page.on('console', message => {
+      if (/initialize shader|gl\.getProgramInfoLog\(\)|shader.*compil/i.test(message.text())) errors.push(message.text());
+    });
+    const button = (name, where = page) => where.getByRole('button', { name, exact: true });
+    await button('Open Scene').click();
+    const edit = page.getByRole('tabpanel', { name: 'Edit', exact: true });
+    const canvas = edit.locator('canvas');
+    const normal = await canvas.screenshot();
+    await button('View', edit).click();
+    await button('Camera', edit).click();
+    await expect(canvas).toHaveAttribute('data-edit-view', 'camera');
+    await expect.poll(async () => (await canvas.screenshot()).equals(normal)).toBe(false);
+    const hierarchy = page.getByRole('complementary', { name: 'Hierarchy' });
+    await button('Camera 2D', hierarchy).click();
+    const add = page.getByRole('combobox', { name: 'Add Effect' });
+    const section = kind => page.locator(`[data-inspector-section="cameraFx_${kind}"]`);
+    await section('lut').locator('summary').click();
+    await expect(section('lut').getByRole('button', { name: 'LUT Image' })).toHaveAttribute('value', texture);
+    await button('Remove Color LUT', section('lut')).click();
+    for (const kind of kinds) {
+      if (kind === 'lut') continue;
+      await add.selectOption(kind);
+      const current = section(kind);
+      await current.locator('summary').click();
+      if (kind === 'fog' || kind === 'parallax') await expect(current.getByRole('checkbox', { name: 'Use Depth' })).toBeChecked();
+      if (kind === 'shockwave') {
+        const steady = await canvas.screenshot();
+        const amplitude = current.getByRole('spinbutton', { name: 'Amplitude' });
+        await amplitude.fill('75');
+        await amplitude.press('Enter');
+        await button('Preview Shockwave', current).click();
+        await expect(canvas).toHaveAttribute('data-effect-preview', 'shockwave');
+        await expect.poll(async () => (await canvas.screenshot()).equals(steady)).toBe(false);
+        await button('Stop Shockwave Preview', current).click();
+        await expect(canvas).not.toHaveAttribute('data-effect-preview', 'shockwave');
+      } else await canvas.screenshot();
+      await current.getByRole('button', { name: /^Remove / }).click();
+    }
+    assert.deepEqual(errors, []);
+  } finally {
+    await editor?.close();
+    await rm(profile, { recursive: true, force: true });
+  }
+});
+
+test('camera previews run independently and snapshots become selected project assets', { timeout: 25_000 }, async () => {
+  const profile = await mkdtemp(join(tmpdir(), 'olive-parallel-fx-'));
+  const path = join(profile, 'snapshot.json');
+  let editor;
+  try {
+    await writeFile(path, JSON.stringify({ version: 1, objects: [
+      { type: 'Graphics', id: 'card', label: 'Card', position: { x: 420, y: 200 }, width: 120, height: 120, fill: '#ff5020' },
+      { type: 'Camera2D', id: 'camera', label: 'Camera 2D', position: { x: 480, y: 270 }, camera: { postFXs: [
+        { type: 'move', x: 610, y: 270, duration: 0.25, ease: 'none' },
+        { type: 'rotate', angle: 40, duration: 0.35, ease: 'none' },
+      ] } },
+    ] }));
+    editor = await launchEditor(profile);
+    await editor.evaluate(({ dialog }, file) => {
+      dialog.showOpenDialog = async () => ({ canceled: false, filePaths: [file] });
+      dialog.showSaveDialog = async () => ({ canceled: false, filePath: file });
+      dialog.showMessageBoxSync = () => 1;
+    }, path);
+    const page = await editor.firstWindow();
+    page.setDefaultTimeout(5000);
+    const button = (name, where = page) => where.getByRole('button', { name, exact: true });
+    const inspector = page.getByRole('complementary', { name: 'Inspector' });
+    await button('Open Scene').click();
+    await button('Camera 2D', page.getByRole('complementary', { name: 'Hierarchy' })).click();
+    const add = inspector.getByRole('combobox', { name: 'Add Effect' });
+    await expect(add.locator('optgroup[label="Motion"] option[value="move"]')).toHaveCount(1);
+    await expect(add.locator('optgroup[label="Lens and Depth"] option[value="curve"]')).toHaveCount(1);
+    const move = inspector.locator('[data-inspector-section="cameraMoveEffect"]');
+    const rotate = inspector.locator('[data-inspector-section="cameraRotateEffect"]');
+    await rotate.locator(':scope > summary .property-label').click();
+    await button('Play Game').click();
+    await button('Pause Game').click();
+    const canvas = page.getByRole('tabpanel', { name: 'Live' }).locator('canvas');
+    await button('Preview Move', move).click();
+    await button('Preview Rotate', rotate).click();
+    await expect(canvas).toHaveAttribute('data-effect-previews', 'move,rotate');
+    await expect(canvas).toHaveAttribute('data-game-camera', /"x":610.*"rotation":40/);
+    await new Promise(resolve => setTimeout(resolve, 420));
+    await expect(canvas).toHaveAttribute('data-game-camera', /"x":610.*"rotation":40/);
+    await button('Stop Move Preview', move).click();
+    await expect(canvas).toHaveAttribute('data-effect-previews', 'rotate');
+    const looped = canvas.evaluate(element => new Promise(resolve => {
+      let atEnd = false;
+      const observer = new MutationObserver(() => {
+        const rotation = JSON.parse(element.dataset.gameCamera ?? '{}').rotation;
+        if (atEnd && rotation < 14) { observer.disconnect(); resolve(true); }
+        if (rotation > 30) atEnd = true;
+      });
+      observer.observe(element, { attributeFilter: ['data-game-camera'] });
+      setTimeout(() => { observer.disconnect(); resolve(false); }, 3000);
+    }));
+    await rotate.getByRole('combobox', { name: 'Preview Playback' }).selectOption('loop');
+    assert.equal(await looped, true, 'Loop returns to the beginning of the camera effect');
+    await button('Stop Rotate Preview', rotate).click();
+    await expect(canvas).not.toHaveAttribute('data-effect-preview');
+
+    const snapshots = page.getByRole('region', { name: 'Assets', exact: true }).locator('.asset-entry').filter({ hasText: /^snapshot-.*\.png$/ });
+    const preview = inspector.getByRole('region', { name: 'Asset Preview' });
+    await button('Capture Snapshot').click();
+    await expect(snapshots).toHaveCount(1);
+    await expect(snapshots.first()).toHaveAttribute('aria-pressed', 'true');
+    await expect.poll(() => preview.locator('img').evaluate(image => [image.naturalWidth, image.naturalHeight])).toEqual([960, 540]);
+    await page.getByRole('tab', { name: 'Edit', exact: true }).click();
+    await button('Capture Snapshot').click();
+    await expect(snapshots).toHaveCount(2);
+    await expect(snapshots.and(page.locator('[aria-pressed="true"]'))).toHaveCount(1);
+    await expect(preview.locator('img')).toBeVisible();
+    const media = preview.locator('.asset-preview-media');
+    const dockedHeight = (await media.boundingBox()).height;
+    await button('Maximize Inspector Panel').click();
+    const expanded = await media.boundingBox();
+    const image = await media.locator('img').boundingBox();
+    const metadata = await preview.locator('.asset-metadata').boundingBox();
+    assert.ok(expanded.height > dockedHeight, 'Maximize provides more space for the image');
+    assert.ok(image.y >= expanded.y && image.y + image.height <= expanded.y + expanded.height);
+    assert.ok(metadata.y >= expanded.y + expanded.height, 'Asset metadata has its own row below the image');
+    await button('Restore Inspector Panel').click();
+    assert.equal((await media.boundingBox()).height, dockedHeight);
+    await button('Save Scene').click();
+    await expect(page.getByRole('img', { name: 'Unsaved changes' })).toHaveCount(0);
+    const saved = JSON.parse(await readFile(path, 'utf8'));
+    assert.ok(saved.assetLibrary.entries.every(entry => entry.folderId === null));
+    const { data, info } = await require('sharp')(Buffer.from(saved.assets[1].data, 'base64'))
+      .raw().toBuffer({ resolveWithObject: true });
+    const offset = (220 * info.width + 440) * info.channels;
+    assert.ok(data[offset] > 245 && data[offset + 1] < 90 && data[offset + 2] < 45, 'The PNG contains the game artwork');
+  } finally {
+    await editor?.close();
+    await rm(profile, { recursive: true, force: true });
+  }
+});
+
+test('camera motion effects and their ease curves preview in Edit and paused Live', { timeout: 30_000 }, async () => {
+  const profile = await mkdtemp(join(tmpdir(), 'olive-camera-motion-'));
+  const path = join(profile, 'motion.json');
+  let editor;
+  try {
+    await writeFile(path, JSON.stringify({ version: 1, objects: [
+      { type: 'Graphics', id: 'target', label: 'Focus Card', position: { x: 650, y: 380 },
+        width: 160, height: 90, fill: '#71abd7' },
+      { type: 'Camera2D', id: 'camera', label: 'Camera 2D', position: { x: 480, y: 270 }, rotation: 30 },
+    ] }));
+    editor = await launchEditor(profile);
+    await editor.evaluate(({ dialog }, file) => {
+      dialog.showOpenDialog = async () => ({ canceled: false, filePaths: [file] });
+      dialog.showMessageBoxSync = () => 1;
+    }, path);
+    const page = await editor.firstWindow();
+    page.setDefaultTimeout(3500);
+    const button = (name, where = page) => where.getByRole('button', { name, exact: true });
+    await button('Open Scene').click();
+    const hierarchy = page.getByRole('complementary', { name: 'Hierarchy' });
+    const inspector = page.getByRole('complementary', { name: 'Inspector' });
+    const addEffect = inspector.getByRole('combobox', { name: 'Add Effect' });
+    await button('Focus Card', hierarchy).click();
+    await addEffect.selectOption('outline');
+    await button('Camera 2D', hierarchy).click();
+    const edit = page.getByRole('tabpanel', { name: 'Edit' }).locator('canvas');
+    const section = name => inspector.locator(`[data-inspector-section="camera${name}Effect"]`);
+    for (const name of ['Move', 'Follow', 'Focus', 'Rotate']) {
+      const kind = name.toLowerCase();
+      await addEffect.selectOption(kind);
+      const effect = section(name);
+      await effect.locator(':scope > summary').click();
+      const duration = effect.getByRole('spinbutton', { name: 'Transition Duration' });
+      await duration.fill('0');
+      await duration.press('Enter');
+      if (name === 'Follow' || name === 'Focus') await effect.getByRole('combobox', { name: `${name} Target` }).selectOption('target');
+      const steady = await edit.screenshot();
+      await button(`Preview ${name}`, effect).click();
+      await expect(edit).toHaveAttribute('data-effect-preview', kind);
+      assert.ok(!(await edit.screenshot()).equals(steady), `${name} changes the Edit camera`);
+      await button(`Stop ${name} Preview`, effect).click();
+      await expect(edit).not.toHaveAttribute('data-effect-preview');
+      assert.ok((await edit.screenshot()).equals(steady), `${name} restores the Edit camera`);
+    }
+    const rotate = section('Rotate');
+    const graph = rotate.locator('.ease-graph');
+    await graph.locator('summary').click();
+    await graph.getByRole('combobox', { name: 'Ease Visualizer' }).selectOption('none');
+    await expect(graph.getByRole('img', { name: 'Ease Visualizer' })).toBeVisible();
+    await button('Play Ease Curve', graph).click();
+    await expect(graph.getByText('Value 100%')).toBeVisible();
+    const expression = graph.getByRole('textbox', { name: 'Ease Expression' });
+    await expression.fill('sine.in(0.4)');
+    await expression.press('Enter');
+    await expect(expression).toHaveAttribute('aria-invalid', 'true');
+    await expression.fill('back.in(0.4)');
+    await expression.press('Enter');
+    await expect(graph.getByRole('spinbutton', { name: 'Overshoot' })).toHaveValue('0.4');
+    await graph.getByRole('slider', { name: 'Progress' }).fill('0.5');
+    await expect(graph.getByText('Value 7%')).toBeVisible();
+    await expression.fill('cubic-bezier(0.4, 0, 1, 1)');
+    await expression.press('Enter');
+    const handle = graph.locator('.ease-handle').first();
+    await handle.scrollIntoViewIfNeeded();
+    const position = await handle.boundingBox();
+    assert.ok(position);
+    await page.mouse.move(position.x + position.width / 2, position.y + position.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(position.x + position.width / 2 + 14, position.y + position.height / 2 - 6);
+    await page.mouse.up();
+    const custom = await expression.inputValue();
+    assert.notEqual(custom, 'cubic-bezier(0.4, 0, 1, 1)');
+    await button('Apply Ease to Effect', graph).click();
+    await expect(rotate.locator('.ease-expression').first().getByRole('textbox')).toHaveValue(custom);
+    const angle = rotate.getByRole('spinbutton', { name: 'View Angle' });
+    await button('Preview Rotate', rotate).click();
+    const originalAngle = await edit.screenshot();
+    await angle.fill('18');
+    await angle.press('Enter');
+    await expect(edit).toHaveAttribute('data-effect-preview', 'rotate');
+    await expect.poll(async () => (await edit.screenshot()).equals(originalAngle)).toBe(false);
+    const enabled = rotate.getByRole('checkbox', { name: 'Enabled' });
+    await enabled.uncheck();
+    await expect(edit).not.toHaveAttribute('data-effect-preview');
+    await expect(button('Preview Rotate', rotate)).toBeEnabled();
+    await enabled.check();
+    const reset = button('Reset Rotate Preview', rotate);
+    const transition = rotate.getByRole('spinbutton', { name: 'Transition Duration' });
+    await expect(reset).toBeDisabled();
+    await transition.fill('1');
+    await transition.press('Enter');
+    await button('Preview Rotate', rotate).click();
+    await page.waitForTimeout(1150);
+    const settled = await edit.screenshot();
+    await reset.click();
+    await expect.poll(async () => (await edit.screenshot()).equals(settled)).toBe(false);
+    await expect(edit).toHaveAttribute('data-effect-preview', 'rotate');
+    await expect(angle).toHaveValue('18');
+    await expect(transition).toHaveValue('1');
+    await button('Stop Rotate Preview', rotate).click();
+    await transition.fill('0');
+    await transition.press('Enter');
+    await angle.fill('-25');
+    await angle.press('Enter');
+    const editTab = page.getByRole('tab', { name: 'Edit', exact: true });
+    const liveTab = page.getByRole('tab', { name: 'Live', exact: true });
+    await button('Preview Rotate', rotate).click();
+    await expect(edit).toHaveAttribute('data-effect-preview', 'rotate');
+    await button('Play Game').click();
+    const live = page.getByRole('tabpanel', { name: 'Live' }).locator('canvas');
+    await expect(live).toHaveAttribute('data-game-camera');
+    await expect(button('Preview Rotate', rotate)).toBeEnabled();
+    await expect(live).not.toHaveAttribute('data-effect-preview');
+    await button('Pause Game').click();
+    const before = await live.getAttribute('data-game-camera');
+    await button('Preview Rotate', rotate).click();
+    await expect(live).toHaveAttribute('data-effect-preview', 'rotate');
+    await expect(live).toHaveAttribute('data-game-camera', /"rotation":-25/);
+    // The old preview expired after one second for an instant rotation.
+    await new Promise(resolve => setTimeout(resolve, 1300));
+    await expect(live).toHaveAttribute('data-effect-preview', 'rotate');
+    await expect(live).toHaveAttribute('data-game-camera', /"rotation":-25/);
+    await editTab.click();
+    await expect(edit).not.toHaveAttribute('data-effect-preview');
+    await button('Preview Rotate', rotate).click();
+    await expect(edit).toHaveAttribute('data-effect-preview', 'rotate');
+    await liveTab.click();
+    await expect(live).not.toHaveAttribute('data-effect-preview');
+    await expect(live).toHaveAttribute('data-game-camera', before);
+    await expect(button('Resume Game')).toBeVisible();
+    await button('Preview Rotate', rotate).click();
+    await expect(live).toHaveAttribute('data-effect-preview', 'rotate');
+    await expect(angle).toBeEnabled();
+    await angle.fill('18');
+    await angle.press('Enter');
+    await expect(live).toHaveAttribute('data-game-camera', /"rotation":18/);
+    await expect(live).toHaveAttribute('data-effect-preview', 'rotate');
+    await reset.click();
+    await expect(live).toHaveAttribute('data-effect-preview', 'rotate');
+    await enabled.uncheck();
+    await expect(live).not.toHaveAttribute('data-effect-preview');
+    await expect(live).toHaveAttribute('data-game-camera', /"rotation":0/);
+    await expect(button('Preview Rotate', rotate)).toBeEnabled();
+    await angle.fill('25');
+    await angle.press('Enter');
+    await enabled.check();
+    await expect(live).toHaveAttribute('data-game-camera', /"rotation":25/);
+    await expect(live).not.toHaveAttribute('data-effect-preview');
+    await button('Focus Card', hierarchy).click();
+    const outline = inspector.locator('[data-inspector-section="effectOutline"]');
+    await outline.locator('summary').click();
+    const thickness = outline.getByRole('spinbutton', { name: 'Outline Thickness' });
+    const thinOutline = await live.screenshot();
+    await thickness.fill('12');
+    await thickness.press('Enter');
+    await expect.poll(async () => (await live.screenshot()).equals(thinOutline)).toBe(false);
+    await expect(button('Resume Game')).toBeVisible();
+    await button('Stop Game').click();
+    await expect(angle).toHaveValue('25');
+    await button('Remove Focus', section('Focus').locator(':scope > summary')).click();
+    await expect(section('Focus')).toHaveCount(0);
+    const settings = name => inspector.locator(`[data-inspector-section="camera${name}Effect"] > .fields > .effect-fields`);
+    if (await section('Follow').getAttribute('open') === null) await section('Follow').locator(':scope > summary .property-label').click();
+    if (await rotate.getAttribute('open') === null) await rotate.locator(':scope > summary .property-label').click();
+    await settings('Follow').getByRole('combobox', { name: 'Follow Mode' }).selectOption('tracking');
+    await settings('Follow').getByRole('combobox', { name: 'Follow Target' }).selectOption('target');
+    await expect(settings('Follow').getByRole('spinbutton', { name: 'Smoothing' })).toHaveValue('0');
+    await settings('Rotate').getByRole('combobox', { name: 'Rotation Source' }).selectOption('object');
+    await addEffect.selectOption('viewport');
+    await expect(inspector.locator('[data-inspector-section="cameraViewportRelative"] summary')).toBeVisible();
+    await button('Play Game').click();
+    await expect.poll(async () => JSON.parse(await live.getAttribute('data-game-camera') ?? 'null'))
+      .toMatchObject({ x: 650, y: 380 });
+    const trackingFrame = JSON.parse(await live.getAttribute('data-game-camera'));
+    assert.ok(Math.abs(trackingFrame.rotation - 30) < 0.001);
   } finally {
     await editor?.close();
     await rm(profile, { recursive: true, force: true });
@@ -2933,11 +3528,16 @@ test('Director clips record keys, crossfade, show ghosts, and fire nested game c
       version: 2, startup: 'main', globals: { version: 1, items: [
         { id: 'score', name: 'score', type: 'number', initial: 0 },
         { id: 'finished', name: 'finished', type: 'number', initial: 0 },
+        { id: 'directed', name: 'directed', type: 'number', initial: 0 },
       ] },
       scenes: [{ id: 'main', name: 'Opening',
         objects: [{ id: 'card', type: 'Graphics', label: 'Title Card',
           position: { x: 200, y: 150 }, width: 70, height: 45, fill: '#f1eee1' }],
-        cinematics: { clips: [
+        cinematics: { director: [{ id: 'opening', name: 'Opening Signal', event: 'scene:ready',
+          whenExpr: 'sceneId == "main"', source: JSON.stringify({ vars: { zoom: 1.2 }, root: { type: 'sequence', children: [
+            { type: 'delay', ms: 30 }, { type: 'camera', zoom: '$zoom', ms: 25 },
+            { type: 'global', target: 'directed', value: '7' },
+          ] } }) }], clips: [
           { id: 'pan', name: 'Pan', tracks: [track('pan-x', 200, 520)],
             cues: [{ id: 'fade', kind: 'clip', time: 0.8, name: 'Return', target: 'return', fade: 0.12 }] },
           { id: 'return', name: 'Return', tracks: [track('return-x', 90, 90)],
@@ -2968,6 +3568,38 @@ test('Director clips record keys, crossfade, show ghosts, and fire nested game c
     await button(page, 'Title Card').click();
     await openPanel('Timeline');
     const timeline = page.getByRole('region', { name: 'Timeline', exact: true });
+    const director = timeline.locator('.director-panel');
+    await director.locator(':scope > summary').click();
+    const composition = director.getByRole('region', { name: 'Opening Signal' });
+    await composition.getByText('Start on Event', { exact: false }).click();
+    await expect(composition.getByRole('combobox', { name: 'Event Trigger' })).toHaveValue('scene:ready');
+    await button(composition, 'Preview Composition').click();
+    await expect(composition.getByRole('status')).toHaveText('Preview complete');
+    await button(composition, 'Stop Director Preview').click();
+    await expect(composition.getByRole('status')).toHaveText('Preview stopped');
+    await composition.getByRole('combobox', { name: 'Add Step' }).selectOption('visibility');
+    const visibility = composition.getByRole('region', { name: 'Set Visibility' });
+    await visibility.getByRole('combobox', { name: 'Cue Target' }).selectOption('card');
+    await button(visibility, 'Move Step Up').click();
+    await expect(composition.locator('.director-step-list > li > section > header > strong')).toHaveText([
+      'Wait', 'Camera', 'Set Visibility', 'Set Global',
+    ]);
+    await button(composition, 'Advanced JSON').click();
+    const source = composition.getByRole('textbox', { name: 'Composition JSON' });
+    const authored = JSON.parse(await source.inputValue());
+    assert.deepEqual(authored.vars, { zoom: 1.2 });
+    assert.deepEqual(authored.root.children[2], { type: 'visibility', target: 'card', visible: true });
+    await source.fill('{');
+    await button(composition, 'Apply JSON').click();
+    await expect(composition.getByRole('alert')).toBeVisible();
+    await button(composition, 'Discard Changes').click();
+    await button(composition, 'Steps').click();
+    await button(composition, 'Add Cue at Playhead').click();
+    const directorCue = timeline.getByRole('region', { name: 'Cue 1', exact: true });
+    await expect(directorCue.getByRole('combobox', { name: 'Cue Action' })).toHaveValue('director');
+    await directorCue.getByRole('button', { name: 'Remove Cue', exact: true }).click();
+    await timeline.locator('summary').filter({ hasText: /^Cues$/ }).click();
+    await director.locator(':scope > summary').click();
     const select = timeline.getByRole('combobox', { name: 'Clip', exact: true });
     const scrubber = timeline.getByRole('slider', { name: 'Timeline position' });
     const canvas = page.getByRole('region', { name: 'Scene', exact: true }).locator('canvas');
@@ -3053,6 +3685,11 @@ test('Director clips record keys, crossfade, show ghosts, and fire nested game c
     await page.getByRole('tab', { name: 'Globals', exact: true }).click();
     await expect(page.getByRole('spinbutton', { name: 'Current Value for score' })).toHaveValue('9');
     await expect(page.getByRole('spinbutton', { name: 'Current Value for finished' })).toHaveValue('1');
+    await expect(page.getByRole('spinbutton', { name: 'Current Value for directed' })).toHaveValue('7');
+    await expect.poll(async () => {
+      const view = await page.locator('canvas[data-game-camera]').getAttribute('data-game-camera');
+      return Number(JSON.parse(view).zoom.toFixed(4));
+    }).toBe(1.2);
     await page.getByRole('tab', { name: 'Scenes', exact: true }).click();
     await button(page, 'Stop Scene Flow').click();
 
@@ -3062,6 +3699,9 @@ test('Director clips record keys, crossfade, show ghosts, and fire nested game c
     assert.equal(project.scenes[0].objects[0].position.x, 200);
     const library = project.scenes[0].cinematics;
     assert.equal(library.autoplay, 'timeline');
+    const savedDirector = JSON.parse(library.director[0].source);
+    assert.equal(savedDirector.root.children[2].target, 'card');
+    assert.equal(savedDirector.vars.zoom, 1.2);
     assert.deepEqual(library.main.nested.map(({ clip, start, speed }) => ({ clip, start, speed })), [{ clip: 'pan', start: 0.2, speed: 2 }]);
     assert.equal(library.clips[0].tracks[0].keys.find(key => key.time === 0.5).value, 370);
     await button(page, 'Open Scene').click();
@@ -3492,29 +4132,47 @@ test('dock panels minimize to their rail, maximize to the window, and restore th
     const lower = separator('Resize Assets Panel');
     const assets = () => page.locator('#dock-content-assets .panel');
     const bundles = () => page.locator('#dock-content-bundles .panel');
+    const scene = () => page.locator('#dock-content-scene');
+    const rail = (name) => rails().filter({ has: page.getByRole('group', { name, exact: true }) });
+    const sceneWidth = (await scene().boundingBox()).width;
+    const assetsWidth = (await assets().boundingBox()).width;
+    const bundlesWidth = (await bundles().boundingBox()).width;
     const lowerSize = await lower.getAttribute('aria-valuenow');
     await right.dblclick();
     await expect(inspector()).toBeHidden();
     await expect(bundles()).toBeVisible();
+    await expect(rail('Right Dock')).toHaveAttribute('data-vertical', 'true');
+    assert.equal((await rail('Right Dock').boundingBox()).width, 33);
+    assert.ok((await scene().boundingBox()).width > sceneWidth);
+    assert.equal((await bundles().boundingBox()).width, bundlesWidth);
     await right.dblclick();
     await expect(inspector()).toBeVisible();
+    assert.equal((await scene().boundingBox()).width, sceneWidth);
     await lowerRight.dblclick();
     await expect(bundles()).toBeHidden();
     await expect(inspector()).toBeVisible();
+    await expect(rail('Lower Right Dock')).toHaveAttribute('data-vertical', 'true');
+    assert.ok((await assets().boundingBox()).width > assetsWidth);
+    assert.equal((await scene().boundingBox()).width, sceneWidth);
     await lowerRight.dblclick();
     await expect(bundles()).toBeVisible();
     await lower.dblclick();
     await expect(assets()).toBeHidden();
     await expect(bundles()).toBeHidden();
     await expect(button('Close Assets Panel', rails())).toBeVisible();
+    await expect(rail('Lower Right Dock')).not.toHaveAttribute('data-vertical', 'true');
     await lower.dblclick();
     await expect(assets()).toBeVisible();
     await expect(bundles()).toBeVisible();
     await expect(lower).toHaveAttribute('aria-valuenow', lowerSize);
     await left.press('Enter');
     await expect(hierarchy()).toBeHidden();
+    await expect(rail('Left Dock')).toHaveAttribute('data-vertical', 'true');
+    assert.equal(await button('Hierarchy', rail('Left Dock')).locator('span').evaluate(label => getComputedStyle(label).writingMode), 'vertical-rl');
+    assert.ok((await scene().boundingBox()).width > sceneWidth);
     await left.press('Enter');
     await expect(hierarchy()).toBeVisible();
+    assert.equal((await scene().boundingBox()).width, sceneWidth);
 
     await button('Minimize Inspector Panel').click();
     await expect(inspector()).toBeHidden();
@@ -3624,6 +4282,17 @@ test('minimized dock titles keep their order in one scrolling row', { timeout: 3
     await expect(titles).toHaveText(expectedOrder);
     await expect(page.getByRole('tablist', { name: 'Lower Dock', exact: true }).getByRole('tab')).toHaveCount(2);
     await expect(page.getByRole('button', { name: /^Scroll Lower Dock/ })).toHaveCount(0);
+
+    await page.getByRole('separator', { name: 'Resize Right Dock' }).dblclick();
+    const vertical = page.locator('.dock-rail[data-vertical]').filter({ has: page.getByRole('group', { name: 'Right Dock', exact: true }) });
+    await expect(vertical.locator('.dock-rail-item > button')).toHaveText(expectedOrder);
+    const down = vertical.getByRole('button', { name: 'Scroll Right Dock Down' });
+    const up = vertical.getByRole('button', { name: 'Scroll Right Dock Up' });
+    const verticalViewport = vertical.locator('.dock-rail-viewport');
+    await expect(down).toBeVisible();
+    await down.click();
+    await expect.poll(() => verticalViewport.evaluate(element => element.scrollTop)).toBeGreaterThan(0);
+    await expect(up).toBeVisible();
   } finally {
     await editor?.close();
     await rm(profile, { recursive: true, force: true });

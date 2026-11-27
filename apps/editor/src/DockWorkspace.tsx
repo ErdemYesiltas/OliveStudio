@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef, useState, type CSSProperties, type Dispatch, type DragEvent, type ReactNode, type SetStateAction } from 'react';
-import { Activity, AudioLines, Bot, Box, Boxes, ChevronLeft, ChevronRight, Clapperboard, Code2, Frame, Gamepad2, Globe, Layers3, LayoutPanelTop, Lightbulb, MessageSquare, Network, PackageOpen, RotateCcw, SlidersHorizontal, Sparkles, X } from 'lucide-react';
+import { Activity, AudioLines, Bot, Box, Boxes, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Clapperboard, Code2, Frame, Gamepad2, Globe, Layers3, LayoutPanelTop, Lightbulb, MessageSquare, Network, PackageOpen, RotateCcw, SlidersHorizontal, Sparkles, X } from 'lucide-react';
 import { DockChrome, hint, IconButton } from './chrome';
 import { t, type MessageKey } from './i18n';
 import {
@@ -54,12 +54,15 @@ export function PanelsMenu({ layout, change }: { layout: PanelLayout; change: Ch
       {panelIds.map(id => {
         const [Icon] = panelInfo[id];
         const checked = layout.panels.some(item => item.id === id && item.open);
-        return <label key={id}>
+        return <label key={id} onMouseDown={event => {
+          // Keep focus inside the popup until the label activates its checkbox.
+          if (event.button === 0 && !(event.target instanceof HTMLInputElement)) event.preventDefault();
+        }}>
           <input type="checkbox" checked={checked} onChange={event => {
             const open = event.target.checked;
             change(current => setPanelOpen(current, id, open));
           }} />
-          <Icon size={14} aria-hidden="true" />{panelLabel(id)}
+          <Icon size={14} aria-hidden="true" /><span>{panelLabel(id)}</span>
         </label>;
       })}
       <button type="button" onClick={() => { change(defaultLayout()); setOpen(false); toggle.current?.focus(); }}>
@@ -114,20 +117,25 @@ function Splitter({ side, docks, label, value, change, workbench, style, resizab
     }} />;
 }
 
-function DockRail({ style, label, tabs, children }: { style: CSSProperties; label: string; tabs: boolean; children: ReactNode }) {
+function DockRail({ style, label, tabs, vertical, children }: {
+  style: CSSProperties; label: string; tabs: boolean; vertical: boolean; children: ReactNode;
+}) {
   const rail = useRef<HTMLDivElement>(null);
   const viewport = useRef<HTMLDivElement>(null);
   const strip = useRef<HTMLDivElement>(null);
-  const [edges, setEdges] = useState({ overflow: false, left: false, right: false });
+  const [edges, setEdges] = useState({ overflow: false, before: false, after: false });
 
   useLayoutEffect(() => {
     const outer = rail.current!, scroller = viewport.current!, content = strip.current!;
     const measure = () => {
-      const overflow = content.offsetWidth > outer.clientWidth;
-      const left = overflow && scroller.scrollLeft > 1;
-      const right = overflow && (content.offsetWidth > scroller.clientWidth + scroller.scrollLeft + 1);
-      setEdges(previous => previous.overflow === overflow && previous.left === left && previous.right === right ?
-        previous : { overflow, left, right });
+      const size = vertical ? content.offsetHeight : content.offsetWidth;
+      const position = vertical ? scroller.scrollTop : scroller.scrollLeft;
+      const available = vertical ? scroller.clientHeight : scroller.clientWidth;
+      const overflow = size > (vertical ? outer.clientHeight : outer.clientWidth);
+      const before = overflow && position > 1;
+      const after = overflow && size > available + position + 1;
+      setEdges(previous => previous.overflow === overflow && previous.before === before && previous.after === after ?
+        previous : { overflow, before, after });
     };
     const observer = new ResizeObserver(measure);
     for (const element of [outer, scroller, content]) observer.observe(element);
@@ -137,27 +145,30 @@ function DockRail({ style, label, tabs, children }: { style: CSSProperties; labe
       event.preventDefault();
       scroller.scrollLeft += event.deltaY * (event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? scroller.clientWidth : 1);
     };
-    scroller.addEventListener('wheel', wheel, { passive: false });
+    if (!vertical) scroller.addEventListener('wheel', wheel, { passive: false });
     measure();
     return () => {
       observer.disconnect();
       scroller.removeEventListener('scroll', measure);
       scroller.removeEventListener('wheel', wheel);
     };
-  }, []);
+  }, [vertical]);
 
   const scroll = (direction: number) => {
     const element = viewport.current!;
-    element.scrollBy({ left: direction * Math.max(60, element.clientWidth - 24), behavior: 'smooth' });
+    const length = vertical ? element.clientHeight : element.clientWidth;
+    element.scrollBy({ [vertical ? 'top' : 'left']: direction * Math.max(60, length - 24), behavior: 'smooth' });
   };
 
-  return <div className="dock-rail" style={style} ref={rail} data-overflow={edges.overflow || undefined}>
-    {edges.left && <div className="dock-rail-left"><IconButton icon={ChevronLeft} label={t('scrollDockLeft', { dock: label })}
+  return <div className="dock-rail" style={style} ref={rail} data-vertical={vertical || undefined} data-overflow={edges.overflow || undefined}>
+    {edges.before && <div className="dock-rail-before"><IconButton icon={vertical ? ChevronUp : ChevronLeft}
+      label={t(vertical ? 'scrollDockUp' : 'scrollDockLeft', { dock: label })}
       onClick={() => scroll(-1)} /></div>}
     <div ref={viewport} className="dock-rail-viewport">
       <div ref={strip} className="dock-rail-strip" role={tabs ? 'tablist' : 'group'} aria-label={label}>{children}</div>
     </div>
-    {edges.right && <div className="dock-rail-right"><IconButton icon={ChevronRight} label={t('scrollDockRight', { dock: label })}
+    {edges.after && <div className="dock-rail-after"><IconButton icon={vertical ? ChevronDown : ChevronRight}
+      label={t(vertical ? 'scrollDockDown' : 'scrollDockRight', { dock: label })}
       onClick={() => scroll(1)} /></div>}
   </div>;
 }
@@ -174,8 +185,9 @@ export function DockWorkspace({ layout, change, panels }: {
   const bottom = occupied('bottom'), bottomRight = occupied('bottomRight');
   const upper = left || center || right;
   const lower = bottom || bottomRight;
-  const expandedUpper = !!(openTabs(layout, 'left').length || openTabs(layout, 'center').length || openTabs(layout, 'right').length);
-  const expandedLower = !!(openTabs(layout, 'bottom').length || openTabs(layout, 'bottomRight').length);
+  const expanded = (dock: DockId) => openTabs(layout, dock).length > 0;
+  const expandedUpper = expanded('left') || expanded('center') || expanded('right');
+  const expandedLower = expanded('bottom') || expanded('bottomRight');
   const upperCompact = upper && !expandedUpper;
   const lowerCompact = lower && !expandedLower;
   const rowSplit = expandedUpper && expandedLower;
@@ -184,13 +196,29 @@ export function DockWorkspace({ layout, change, panels }: {
   const leftSplit = left && center;
   const upperRightSplit = right && (left || center);
   const lowerRightSplit = bottom && bottomRight;
-  const rightSplit = upperRightSplit || lowerRightSplit;
+  const verticalRails = new Set<DockId>();
+  if (left && !expanded('left') && expandedUpper) verticalRails.add('left');
+  if (upperRightSplit && !expanded('right') && expandedUpper) verticalRails.add('right');
+  if (lowerRightSplit && !expanded('bottomRight') && expandedLower) verticalRails.add('bottomRight');
+  const sizes = layout.sizes;
+  const divider = 'var(--dock-divider-width)';
+  const width = (dock: DockId, expandedWidth: string) => verticalRails.has(dock) ? 'var(--dock-rail-height)' : expandedWidth;
+  const leftWidth = width('left', `max(128px, ${sizes.left}%)`);
+  const rightWidth = width('right', `max(155px, ${sizes.right}%)`);
+  const lowerRightWidth = width('bottomRight', `max(155px, ${sizes.right}%)`);
+  const beside = (width: string) => `calc(${width} + ${divider})`;
+  const rightFillsRow = !center && verticalRails.has('left');
+  const cell = (gridRow: number, placement: CSSProperties = {}): CSSProperties => ({ gridRow, gridColumn: 1, ...placement });
+  const atEdge = (width: string, justifySelf: 'start' | 'end'): CSSProperties => ({ width, justifySelf });
   const placements: Record<DockId, CSSProperties> = {
-    left: { gridRow: 1, gridColumn: center ? '1' : right ? '1 / 4' : '1 / 6' },
-    center: { gridRow: 1, gridColumn: `${left ? 3 : 1} / ${right ? 4 : 6}` },
-    right: { gridRow: 1, gridColumn: upperRightSplit ? '5' : '1 / 6' },
-    bottom: { gridRow: 3, gridColumn: lowerRightSplit ? '1 / 4' : '1 / 6' },
-    bottomRight: { gridRow: 3, gridColumn: lowerRightSplit ? '5' : '1 / 6' },
+    left: cell(1, leftSplit || rightFillsRow ? atEdge(leftWidth, 'start') :
+      { marginInlineEnd: right ? beside(rightWidth) : undefined }),
+    center: cell(1, { marginInlineStart: left ? beside(leftWidth) : undefined,
+      marginInlineEnd: right ? beside(rightWidth) : undefined }),
+    right: cell(1, rightFillsRow ? { marginInlineStart: beside(leftWidth) } :
+      upperRightSplit ? atEdge(rightWidth, 'end') : {}),
+    bottom: cell(3, { marginInlineEnd: lowerRightSplit ? beside(lowerRightWidth) : undefined }),
+    bottomRight: cell(3, lowerRightSplit ? atEdge(lowerRightWidth, 'end') : {}),
   };
 
   function resetDrag() { setDragging(undefined); setTarget(undefined); }
@@ -222,25 +250,21 @@ export function DockWorkspace({ layout, change, panels }: {
     };
   }
 
-  const sizes = layout.sizes;
-  const columns = [
-    leftSplit ? `max(128px, ${sizes.left}%)` : '0px', leftSplit ? '4px' : '0px', 'minmax(0, 1fr)',
-    rightSplit ? '4px' : '0px', rightSplit ? `max(155px, ${sizes.right}%)` : '0px',
-  ].join(' ');
   const rows = [
     upperCompact ? 'var(--dock-rail-height)' : upper ? 'minmax(0, 1fr)' : '0px',
-    rowDivider ? '4px' : '0px',
+    rowDivider ? divider : '0px',
     lowerCompact ? 'var(--dock-rail-height)' : expandedLower ? rowSplit ? `${sizes.bottom}%` : 'minmax(0, 1fr)' : '0px',
   ].join(' ');
   const close = (id: PanelId) => change(current => setPanelOpen(current, id, false));
 
   return <div className="workbench" ref={workspace} data-maximized={maximized || undefined}
-    style={{ gridTemplateColumns: maximized ? 'minmax(0, 1fr)' : columns, gridTemplateRows: maximized ? 'minmax(0, 1fr)' : rows }}>
+    style={{ gridTemplateRows: maximized ? 'minmax(0, 1fr)' : rows }}>
     {!maximized && dockIds.map(dock => {
       const items = open.filter(item => item.dock === dock);
       if (items.length < 2 && !items.some(item => item.minimized)) return null;
       const selected = activeTab(layout, dock);
-      return <DockRail key={dock} style={placements[dock]} label={t(dockNames[dock])} tabs={!!selected}>
+      const vertical = verticalRails.has(dock);
+      return <DockRail key={dock} style={placements[dock]} label={t(dockNames[dock])} tabs={!!selected} vertical={vertical}>
         {items.map(({ id, minimized }, index) => {
           const [Icon] = panelInfo[id];
           const label = panelLabel(id);
@@ -255,7 +279,8 @@ export function DockWorkspace({ layout, change, panels }: {
                   workspace.current?.querySelector<HTMLElement>(`#dock-content-${id} h2`))?.focus());
               }}
               onKeyDown={event => {
-                const offset = event.key === 'ArrowLeft' ? -1 : event.key === 'ArrowRight' ? 1 : 0;
+                const offset = event.key === (vertical ? 'ArrowUp' : 'ArrowLeft') ? -1 :
+                  event.key === (vertical ? 'ArrowDown' : 'ArrowRight') ? 1 : 0;
                 if (!offset) return;
                 event.preventDefault();
                 const next = items[(index + offset + items.length) % items.length];
@@ -296,14 +321,17 @@ export function DockWorkspace({ layout, change, panels }: {
       </div>;
     })}
     {!maximized && leftSplit && <Splitter side="left" docks={['left']} label={t('resizeLeftDock')} value={sizes.left} change={change} workbench={workspace}
-      style={{ gridColumn: 2, gridRow: 1 }} />}
+      resizable={!verticalRails.has('left')} style={cell(1, { ...atEdge(divider, 'start'), marginInlineStart: leftWidth })} />}
     {!maximized && upperRightSplit && <Splitter side="right" docks={['right']} label={t('resizeRightDock')} value={sizes.right}
-      change={change} workbench={workspace} style={{ gridColumn: 4, gridRow: 1 }} />}
+      change={change} workbench={workspace} resizable={!rightFillsRow && !verticalRails.has('right')}
+      style={cell(1, rightFillsRow ? { ...atEdge(divider, 'start'), marginInlineStart: leftWidth } :
+        { ...atEdge(divider, 'end'), marginInlineEnd: rightWidth })} />}
     {!maximized && lowerRightSplit && <Splitter side="right" docks={['bottomRight']} label={t('resizeLowerRightDock')} value={sizes.right}
-      change={change} workbench={workspace} style={{ gridColumn: 4, gridRow: 3 }} />}
+      change={change} workbench={workspace} resizable={!verticalRails.has('bottomRight')}
+      style={cell(3, { ...atEdge(divider, 'end'), marginInlineEnd: lowerRightWidth })} />}
     {!maximized && rowDivider && <Splitter side="bottom" docks={['bottom', 'bottomRight']} resizable={rowSplit}
       label={t(open.some(item => item.id === 'assets' && item.dock === 'bottom') ? 'resizeAssets' : 'resizeLowerDock')}
-      value={sizes.bottom} change={change} workbench={workspace} style={{ gridColumn: '1 / 6', gridRow: 2 }} />}
+      value={sizes.bottom} change={change} workbench={workspace} style={cell(2)} />}
     {!maximized && dragging && <div className="dock-destinations" aria-hidden="true">
       {dockIds.map(dock => <div key={dock} data-dock={dock} data-active={target === dock} {...dragHooks(dock)}>
         {t(dockNames[dock])}

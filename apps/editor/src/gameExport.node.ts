@@ -11,6 +11,7 @@ import { t } from './i18n';
 import { networkPlan } from './networkModel';
 import { parseProject, serializeProject } from './project';
 import { getExportTarget } from './exportTargets.node';
+export { isOliveProject } from './project';
 export { exportTargets, getExportTarget, registerExportTarget } from './exportTargets.node';
 
 const json = (value: unknown) => JSON.stringify(value, null, 2) + '\n';
@@ -133,6 +134,7 @@ export async function exportGame(renderer: string, serverBundle: string, output:
     await mkdir(web, { recursive: true });
     const runtime = join(renderer, 'game-runtime');
     await cp(join(runtime, 'assets'), join(web, 'assets'), { recursive: true });
+    await cp(join(renderer, 'SPINE-RUNTIMES-LICENSE.txt'), join(web, 'SPINE-RUNTIMES-LICENSE.txt'));
     await cp(assetpack, join(web, 'assetpack'), { recursive: true });
     const html = await readFile(join(runtime, 'game.html'), 'utf8');
     await writeFile(join(web, 'index.html'), html.replace('</head>', `<meta name="game-title" content="${escapeHtml(options.title)}"></head>`));
@@ -186,3 +188,35 @@ export async function exportGame(renderer: string, serverBundle: string, output:
 }
 
 export { localChat, localGenerate, localModels } from './localAI.node';
+
+// The VS Code tree views use the same document, selection and asset operations as the scene editor.
+export { parseProject, serializeProject, sceneRecord, readScene, writeScene, newSceneCamera, duplicateScene, sceneLinkModes, sceneTransitionKinds } from './project';
+export { createObject, changeObject, moveObject, validationMessage, configSchema } from './scene';
+export { selectionTree } from './selection';
+export { changeLibrary, addLibraryEntries, assignObjectAsset, filename } from './assetLibrary';
+export { projectBundle, readManifest } from './assets';
+export { compileScript } from '@rewrite/scripts/compile';
+export { canDeleteScene } from './project';
+export { prefabOwner, revisePrefab } from './prefabs';
+export { clipList, compileClip, mainClip } from './cinematics';
+export { defaultTransport } from './timeline';
+export { pruneCinematics } from './cinematics';
+export { emptyCinematics, changeClip, removeClip } from './cinematics';
+export { authoredValue, timelineProperties, timelineEases, audioTween } from './timeline';
+export { emptyContent } from './gameContent';
+export { emptyGameData } from './gameData';
+export { emptyWorld, worldDiagnostics } from './world';
+export { createGameSave, gameSlots } from './globals';
+export { defaultMixer } from '@rewrite/audio/contracts';
+export { defaultPhysicsSettings, defaultRigidBody, setLayerPair } from '@rewrite/physics/contracts';
+export { defaultMultiplayer } from '@rewrite/multiplayer/contracts';
+export { emptySkills } from '@rewrite/ai-skills';
+export { emptyShaderLibrary, shaderPresets, checkShader } from '@rewrite/render-pixi/shaders';
+export { newLine } from '@rewrite/dialogue';
+export { mergeI18nextJson, toI18nextJson } from '@rewrite/interactions';
+export { parseGameData } from './gameData';
+export { importCSV, tableCSV } from '@rewrite/production-tools/models';
+export { applyAssistantEdits, parseAssistantEdits } from './assistantEdits';
+export { newCollider, newJoint, colliderKinds } from './physicsModel';
+export { sfxPresets, presetSfx, renderSfx, encodeWav } from '@rewrite/audio/sfx';
+export { BrushSchema, defaults as productionDefaults } from '@rewrite/production-tools/contracts';

@@ -7,7 +7,7 @@ import { BehaviorSchema } from '@rewrite/behavior/contracts';
 import { GraphSchema as LogicGraphSchema } from '@rewrite/interactions';
 import { CharacterSchema } from '@rewrite/production-tools/contracts';
 import { z } from 'zod';
-import { CameraEffectSettingsSchema, migrateCameraProjection } from '@olivestudio/engine/runtime-camera';
+import { CameraEffectSettingsSchema, migrateCameraEffects } from '@olivestudio/engine/runtime-camera';
 import { ScreenSpaceSchema } from '@olivestudio/engine/screen';
 import { flexContainerSchema, flexItemSchema, type FlexContainer } from './layout';
 import { ObjectEffectsSchema } from './objectEffects';
@@ -54,6 +54,7 @@ const common = {
   pivot: point.default({ x: 0, y: 0 }),
   skew: point.default({ x: 0, y: 0 }),
   visible: z.boolean().default(true),
+  zIndex: z.number().int().min(-100000).max(100000).optional(),
   locked: z.boolean().optional(),
   behaviour: BehaviourSchema.optional(),
   behavior: BehaviorSchema.optional(),
@@ -177,9 +178,30 @@ const animatedSprite = animation.extend({
   anchor: point.default({ x: 0, y: 0 }),
   speed: animation.shape.speed.default(10),
 });
+const mixDuration = z.number().min(0);
+const spineMix = z.strictObject({
+  duration: mixDuration.default(0),
+  pairs: z.array(z.strictObject({ from: z.string().min(1), to: z.string().min(1), duration: mixDuration })).default([]),
+}).refine(mix => new Set(mix.pairs.map(pair => JSON.stringify([pair.from, pair.to]))).size === mix.pairs.length);
+export type SpineMix = z.output<typeof spineMix>;
+const spineCue = z.strictObject({
+  animation: z.string().min(1),
+  loop: z.boolean().default(false),
+  delay: z.number().nonnegative().default(0),
+});
+const spinePlayback = z.strictObject({
+  queue: z.array(spineCue).default([]),
+  tracks: z.array(z.strictObject({ weight: z.number().min(0).max(1).default(1), clips: z.array(spineCue).min(1) })).default([]),
+});
+export type SpineCue = z.output<typeof spineCue>;
+export type SpinePlayback = z.output<typeof spinePlayback>;
 const spine = animation.extend({
   type: z.literal('Spine'),
   skin: z.string().min(1).nullable().default(null),
+  skinLayers: z.array(z.string().min(1)).transform(names => [...new Set(names)]).optional(),
+  mix: spineMix.optional(),
+  playback: spinePlayback.optional(),
+  eventAudio: z.record(z.string().min(1), z.string().min(1).nullable()).optional(),
 });
 
 const audioSource = base.extend({ type: z.literal('AudioSource'), ...audioSourceOptions.shape })
@@ -187,9 +209,7 @@ const audioSource = base.extend({ type: z.literal('AudioSource'), ...audioSource
 const audioListener = base.extend({ type: z.literal('AudioListener') });
 const camera = base.extend({
   type: z.literal('Camera2D'),
-  camera: z.preprocess(migrateCameraProjection, CameraEffectSettingsSchema.extend({
-    viewportRelative: z.boolean().optional(),
-  })).prefault({}),
+  camera: z.preprocess(migrateCameraEffects, CameraEffectSettingsSchema).prefault({}),
 });
 export type CameraObject = z.output<typeof camera>;
 export type AudioSourceObject = z.output<typeof audioSource>;
@@ -204,17 +224,27 @@ const leafSchemas = [sprite, text, bitmapText, graphics, tiling, nineSlice, mesh
   particles, animatedSprite, spine, audioSource, audioListener, camera, pointLight, uiWidget] as const;
 type LeafSchema = typeof leafSchemas[number];
 
+const rigNodeSchema = z.discriminatedUnion('kind', [
+  z.object({ kind: z.literal('skeleton') }),
+  z.object({ kind: z.literal('bone'), length: z.number().min(1).max(1000).default(48) }),
+]);
+
 const container = base.extend({
   type: z.literal('Container'),
   layout: flexContainerSchema.optional(),
+  rig: rigNodeSchema.optional(),
   get children(): z.ZodDefault<z.ZodArray<z.ZodType<SceneObject, SceneObjectInput>>> {
     return z.array(objectSchema).default([]);
   },
 });
 export type SceneObject = z.output<LeafSchema> |
-  (z.output<typeof base> & { type: 'Container'; children: SceneObject[]; layout?: FlexContainer });
+  (z.output<typeof base> & { type: 'Container'; children: SceneObject[]; layout?: FlexContainer; rig?: z.output<typeof rigNodeSchema> });
+export type AnimationObject = Extract<SceneObject, { type: 'Spine' | 'AnimatedSprite' }>;
+export function isAnimationObject(node: SceneObject): node is AnimationObject {
+  return node.type === 'Spine' || node.type === 'AnimatedSprite';
+}
 type SceneObjectInput = z.input<LeafSchema> |
-  (z.input<typeof base> & { type: 'Container'; children?: SceneObjectInput[]; layout?: z.input<typeof flexContainerSchema> });
+  (z.input<typeof base> & { type: 'Container'; children?: SceneObjectInput[]; layout?: z.input<typeof flexContainerSchema>; rig?: z.input<typeof rigNodeSchema> });
 export const objectSchema = z.discriminatedUnion('type', [container, ...leafSchemas]);
 
 export const sceneContentFields = {
@@ -333,6 +363,10 @@ export function moveObject(nodes: SceneObject[], id: string, destination: DropTa
     index = target.index + (destination.placement === 'after' ? 1 : 0);
   }
   if (source.node.type === 'Container' && (parent === id || findObject(source.node.children, parent))) return nodes;
+  if (source.node.type === 'Container' && source.node.rig?.kind === 'bone' && source.parent !== parent) {
+    const group = findObject(nodes, parent);
+    if (group?.type !== 'Container' || !group.rig) return nodes;
+  }
   if (source.parent === parent && source.index < index) index--;
   if (source.parent === parent && source.index === index) return nodes;
 

@@ -20,35 +20,40 @@ import { SceneScripts, type ScriptPreviewOptions } from './sceneScripts';
 import { gridLines } from '@rewrite/render-pixi/grid';
 import { guideTargets, snapToGuides, type GuideBox, type GuideLine, type GuideTargets } from '@rewrite/render-pixi/guides';
 import { computeLayout } from '@olivestudio/engine/scale-layout';
-import { applyCameraShake, cameraControls, cameraProjection, cameraView, idleCamera, viewPlacement, type CameraView } from '@olivestudio/engine/runtime-camera';
-import { CameraPlugin, CameraStrategy, type Camera, type CameraService } from '@olivestudio/engine/camera';
+import { applyCameraMotion, applyCameraShake, cameraControls, cameraEaseProgress, cameraProjection, cameraSubjectFromDisplay,
+  cameraTrackingEffect, cameraView, constrainCameraView, idleCamera, viewPlacement, type CameraSubject, type CameraView, type CameraPostFXData } from '@olivestudio/engine/runtime-camera';
+import { CameraEffect, CameraFrameClip, CameraPlugin, createCameraPostFX, type Camera, type CameraService } from '@olivestudio/engine/camera';
 import { ScenePlugin, cancelSceneTransition, sceneTransition, type AppScreen, type SceneManager,
   type SceneTransition } from '@olivestudio/engine/scenes';
 import { screenOffset, type ScreenSpace } from '@olivestudio/engine/screen';
 import { SceneLayout } from '@rewrite/layout/apply';
 import { createEffectsDecorator } from '@rewrite/render-pixi/effects';
-import { effectTypesFor, isModulation, objectModulations, ObjectModulationEffect } from './objectEffects';
-import { alternateTestZoom, type EffectPreview } from './effectPreview';
+import { effectTypesFor, isModulation, objectModulations, ObjectModulationEffect, withEffectSettings } from './objectEffects';
+import { defaultPreviewMode, effectPreviewFor, effectPreviewKey, previewDuration, previewEffectType, previewNeedsClock, type EffectPreview, type EffectPreviewMode, type EffectPreviewSettings } from './effectPreview';
+import { effectEntries } from '@olivestudio/engine';
 import { shaderType, type ShaderLibrary } from '@rewrite/render-pixi/shaders';
 import { createWidget, widgetGlobalType } from '@olivestudio/engine/widgets';
 import type { InputMap } from '@rewrite/input';
-import type { Globals } from '@rewrite/interactions';
+import { parseGlobal, type Globals } from '@rewrite/interactions';
 import { createLanguageStore, type LanguageStore, type Localization } from '@rewrite/interactions';
 import { memoryStore, type AchievementStore } from '@rewrite/achievements';
 import { startGameContent, type GameContent } from './gameContent';
 import { layoutManaged } from '@rewrite/layout/contracts';
-import { AperionDirector, type DirectorControl } from '@olivestudio/engine/aperion-director';
+import { AperionDirector, registerModuleStrategies, type DirectorControl, type DirectorStep, type DirectorVars, type StepContext } from '@olivestudio/engine/aperion-director';
+import { defer, finalize, Subject, takeUntil, tap } from 'rxjs';
 import {
-  Application, BitmapText, CanvasSource, Container, ExtensionType, Graphics, ImageSource, Matrix, NineSliceSprite, RenderTexture, Sprite, Text, Texture, Ticker, TilingSprite, extensions,
+  Application, BitmapText, CanvasSource, Container, DisplacementFilter, ExtensionType, Graphics, ImageSource, Matrix, NineSliceSprite, Rectangle, RenderTexture, Sprite, Text, Texture, Ticker, TilingSprite, extensions,
 } from 'pixi.js';
+import { DirectorCamera } from './directorCamera';
 import { EditorAudio, type AudioStatus, type SourceStatus } from './audio';
-import type { Asset } from './assets';
+import { spineEmbeddedAudioUrl, type Asset } from './assets';
 import { loadAnimation, type AnimationSource } from './animationAssets';
-import { SceneAnimation, type AnimationObject } from './sceneAnimation';
+import { maxDirectorSpineTrack, SceneAnimation } from '@olivestudio/engine/scene-animation';
+import type { SpinePlayOptions, SpineTrackCommand } from '@rewrite/scripts/session';
 import { t } from './i18n';
 import { SceneParticles } from './sceneParticles';
 import { meshPlane, meshRope, tilemap } from './objectVisuals';
-import { configRegistry, type AudioSourceObject, type ResolvedSceneConfig, type Scene, type SceneObject } from './scene';
+import { configRegistry, findObject, type AudioSourceObject, type ResolvedSceneConfig, type Scene, type SceneObject } from './scene';
 import type { PreviewProfile } from './Settings';
 import type { ViewportGrid } from './viewportGrid';
 import { drawGizmo, drawOriginMarkers, toolColors, type GizmoHandle, type Tool } from './viewportGizmo';
@@ -56,7 +61,7 @@ import { type ClockApplicationOptions, type GameClockControls } from '@olivestud
 import '@olivestudio/engine/core-clock';
 import { applyTween, audioTween, authoredValue, defaultTransport, timelineStep, timelineStrategy, type TimelineTransport, type TweenProperty } from './timeline';
 import { crossedCues, sampleClip, type Cue, type DirectedClip, type OnionSkin, type TweenPose } from './cinematics';
-import { boxBetween, selectionTree, unionBoxes } from './selection';
+import { boxBetween, findSceneObjectByPath, selectionTree, unionBoxes } from './selection';
 import { layoutEntities } from './layout';
 import { PreviewInput, type InputValues } from './input';
 import { globalText, PreviewGlobals, type GlobalValues } from './globals';
@@ -137,13 +142,12 @@ class DirectorExtension {
     if (!(this instanceof PrototypeApplication)) return;
     const director = new AperionDirector(this);
     director.registerStrategy(timelineStrategy);
-    director.registerStrategy(new CameraStrategy());
     Object.defineProperty(this, 'director', { value: director, configurable: true });
   }
 
   static destroy(this: Application) {
     if (this instanceof PrototypeApplication) {
-      this.director?.stop();
+      this.director?.destroy();
       Reflect.deleteProperty(this, 'director');
     }
   }
@@ -264,13 +268,44 @@ function isVisible(display: Container) {
   return true;
 }
 
+function previewChangesLayers(effect: EffectPreview) {
+  return effect.type === 'optics' || (effect.type === 'shake' && effect.useDepth);
+}
+
+type EffectPreviewState = { effect: EffectPreview; elapsed: number; from?: CameraView; focus?: CameraSubject; tracking?: ReturnType<typeof idleCamera> };
+type EffectPreviewSession = {
+  id: string; key: string; settings: EffectPreviewSettings; mode: EffectPreviewMode; changed: (active: boolean) => void;
+  cameraEffect?: CameraEffect;
+  preview?: EffectPreviewState;
+};
+
+export type RequiredCameraEffect = {
+  instance: CameraEffect;
+  settings: CameraPostFXData;
+  required: RequiredCameraEffect[];
+};
+export type CameraRequirements = ReadonlyMap<string, ReadonlyMap<string, RequiredCameraEffect[]>>;
+
+function cameraRequirements(owner: CameraEffect): RequiredCameraEffect[] {
+  return owner.requiredEffects.flatMap(({ effect }) => effect instanceof CameraEffect && effect.settings ?
+    [{ instance: effect, settings: effect.settings, required: cameraRequirements(effect) }] : []);
+}
+
 export class SceneView {
+  private directorNavigation?: ScriptPreviewOptions;
+  private readonly directorCamera: DirectorCamera;
+  private directorCameraBase?: CameraView;
+  private readonly directorPreviews = new Set<DirectorControl>();
+  private readonly rigPoses = new Map<string, { pose: TweenPose; cancel: Subject<void> }>();
+  private rigSelection?: { objects: SceneObject[]; selected: string; root?: SceneObject };
   private language?: LanguageStore;
   private runningContent?: ReturnType<typeof startGameContent>;
   private readonly previewProgress = memoryStore();
   private readonly textures = new Map<string, TextureEntry>();
   private readonly animationSources = new Map<string, AnimationEntry>();
   private readonly animations = new Map<string, SceneAnimation>();
+  private readonly pendingSpinePlays = new Map<string, Map<number, { clip: string; options: SpinePlayOptions; paused?: boolean }>>();
+  private readonly pendingSpineSkins = new Map<string, { skin: string | null; layers: readonly string[] }>();
   private assets = new Map<string, Asset>();
   private objects: SceneObject[] = [];
   private readonly placeholder: Texture;
@@ -281,21 +316,28 @@ export class SceneView {
   private widgetGlobals = new Map<string, Globals['items'][number]>();
   private readonly widgets = new Map<string, ReturnType<typeof createWidget>>();
   private shaders?: ShaderLibrary;
+  private readonly photoDepth = new Map<Sprite, { map: Sprite; filter: DisplacementFilter; x: number; y: number }[]>();
+  private photoPointer = { x: 0, y: 0 };
   private readonly effects = createEffectsDecorator({ shaders: () => this.shaders, shaderTime: () => this.gameTime });
+  private readonly modulations = new WeakMap<Container, ObjectModulationEffect[]>();
+  private liveEffectSources = new Map<string, SceneObject>();
   private readonly flex: SceneLayout;
   private flexChildren = new Set<string>();
   private readonly world = new Container();
   private readonly hud = new Container();
   private readonly sceneSurface: AppScreen = new Container();
+  private readonly cameraWorld = new Container();
+  private readonly cameraFrameClip = new CameraFrameClip(this.sceneSurface, this.cameraWorld);
   private readonly sceneCamera: Camera;
   private transitionSequence = 0;
   private transitioning = false;
-  private transitionFrame?: { surface: AppScreen; texture: RenderTexture; hidden: Container[] };
+  private transitionFrame?: { surface: AppScreen; textures: RenderTexture[]; hidden: Container[] };
   private readonly hudAnchors: { container: Container; anchor: ScreenSpace['anchor'] }[] = [];
   private authoredSize = { width: 960, height: 540 };
   private gameScene?: GameSceneView;
   private gameCamera = idleCamera();
   private gameTime = 0;
+  private parallaxOrigin?: { id: string; center: Point };
   private profiler?: LiveProfiler;
   private productionDocument: ReturnType<ConstructorParameters<typeof ProductionRuntime>[0]>['extensions'] = {};
   private readonly production = new ProductionRuntime(() => ({ extensions: this.productionDocument }),
@@ -309,6 +351,8 @@ export class SceneView {
   private readonly outline = new Graphics();
   private readonly grid = new Graphics();
   private readonly physicsDebug = new Graphics();
+  private readonly spineBounds = new Graphics();
+  private spineBoundsIds: readonly string[] = [];
   private physicsOutlines: ReturnType<typeof colliderOutlines> = [];
   private showColliders = false;
   private readonly guides = new Graphics();
@@ -333,7 +377,9 @@ export class SceneView {
   private editorLighting = true;
   private readonly editorTicker?: Ticker;
   private particlePreview?: string;
-  private effectPreview?: { effect: EffectPreview; elapsed: number; zoomFrom?: number };
+  private readonly previewSessions = new Map<string, EffectPreviewSession>();
+  private requiredEffects: CameraRequirements = new Map();
+  private readonly requirementListeners = new Set<() => void>();
   private liveEffectTicker?: Ticker;
   private readonly netCopies = new Map<string, { node: SceneObject; ids: Set<string> }>();
   private readonly netVisibility = new Map<string, boolean>();
@@ -355,6 +401,9 @@ export class SceneView {
         if (this.particlePreview && this.app.clock.state !== 'running') {
           this.app.particles.update(ticker.deltaMS / 1000, isVisible, this.particlePreview);
         }
+        if (this.app.clock.state !== 'running') {
+          for (const animation of this.animations.values()) if (animation.directing) animation.tick(ticker, true);
+        }
         this.advanceEffectPreview(ticker.deltaMS / 1000);
         if (this.app.clock.state !== 'running') {
           this.drawSelection();
@@ -363,6 +412,72 @@ export class SceneView {
         this.syncTicker();
       });
     }
+    if (this.editorTicker) {
+      app.director.ticker = this.editorTicker;
+      for (const event of ['director:run', 'director:complete', 'director:stopped', 'director:error'] as const) {
+        app.director.events.on(event, () => { if (app.renderer) this.syncTicker(); });
+      }
+    }
+    app.director.ports.audio = action => app.audio.director.run(action, this.editorTicker ?? app.ticker);
+    app.director.ports.resolveAnimationTarget = ref => {
+      const direct = this.displays.get(ref);
+      if (direct) return direct;
+      const target = findSceneObjectByPath(this.objects, ref);
+      return target ? this.displays.get(target.id) : undefined;
+    };
+    app.director.ports.animation = (key, displays, overrides) => {
+      const captures = [...this.animations.values()].filter(animation => displays.includes(animation.display));
+      if (!captures.length) throw new Error('No loaded animation targets');
+      for (const animation of captures) animation.checkDirectorTarget(key, overrides);
+      const controls: ReturnType<SceneAnimation['direct']>[] = [];
+      try { for (const animation of captures) controls.push(animation.direct(key, overrides)); }
+      catch (error) { controls.forEach(control => control.finish()); throw error; }
+      this.syncTicker();
+      return {
+        finished: Promise.all(controls.map(control => control.finished)),
+        pause: () => controls.forEach(control => control.pause()),
+        resume: () => controls.forEach(control => control.resume()),
+        finish: () => controls.forEach(control => control.finish()),
+      };
+    };
+    registerModuleStrategies(app.director, {
+      audioSource: ({ action, target, gain }) => {
+        const sources = app.audio.sources;
+        if (action === 'gain') sources.setSourceGain(target, gain ?? 1);
+        else if (action === 'pause') sources.pauseSource(target);
+        else if (action === 'resume') sources.resumeSource(target);
+        else sources[action](target);
+      },
+      scene: ({ action, target }) => {
+        if (action === 'pop') this.directorNavigation?.popScene?.();
+        else if (target && this.directorNavigation) {
+          const options = this.directorNavigation;
+          const scene = options.production?.scenes.find(scene => scene.id === options.scene.id);
+          options.changeScene(target, action, scene?.links.find(link => link.target === target && link.mode === action));
+        }
+      },
+      physics: ({ action, target, x, y }) => {
+        const physics = app.physics.controls;
+        if (!physics) return;
+        if (action === 'gravity') { physics.setGravity(x, y); return; }
+        if (!target || !physics.body(target)) return;
+        const controls = { impulse: physics.applyImpulse, force: physics.applyForce, velocity: physics.setVelocity,
+          teleport: physics.teleport, angularVelocity: physics.setAngularVelocity };
+        controls[action](target, x, y);
+      },
+      particles: ({ target }) => this.restartParticles(target),
+      dialogue: ({ action, target }) => {
+        const dialogue = this.runningContent?.dialogue;
+        if (action === 'start' && target) dialogue?.start(target);
+        else if (action === 'advance') dialogue?.advance();
+        else if (action === 'stop') dialogue?.stop();
+      },
+      global: ({ target, value }) => {
+        const global = app.globals.runtimeStore?.list.find(item => item.id === target);
+        if (global) app.globals.set(global.id, parseGlobal(global.type, value));
+      },
+      visibility: ({ target, visible }) => this.setCueVisibility(target, visible),
+    });
     this.flex = new SceneLayout(this.editorTicker ?? app.ticker);
     const canvas = document.createElement('canvas');
     canvas.width = canvas.height = 64;
@@ -380,17 +495,27 @@ export class SceneView {
     ctx.stroke();
     this.placeholder = new Texture({ source: new CanvasSource({ resource: canvas }) });
     app.canvas.setAttribute('aria-label', t('canvas'));
+    app.canvas.addEventListener('pointermove', event => {
+      const point = this.canvasPoint(event.clientX, event.clientY);
+      if (point) this.updatePhotoDepth(1 - 2 * point.x / app.screen.width, 1 - 2 * point.y / app.screen.height);
+      else this.updatePhotoDepth(0, 0);
+    });
+    app.canvas.addEventListener('pointerleave', () => this.updatePhotoDepth(0, 0));
     if (editor) app.canvas.dataset.editView = this.editView;
     this.sceneSurface.game = app;
-    this.sceneSurface.addChild(this.world, app.lighting.layer, this.hud);
+    this.cameraWorld.addChild(this.world, app.lighting.layer);
+    this.sceneSurface.addChild(this.cameraWorld, this.hud);
     app.scene.getLayer('main').addChild(this.sceneSurface);
     app.scene.defineLayer({ name: 'editor-tools', mode: 'free', zIndex: 1000 });
-    app.scene.getLayer('editor-tools').addChild(this.grid, this.onions, this.audioRanges, this.guides, this.physicsDebug, this.outline);
+    app.scene.getLayer('editor-tools').addChild(this.grid, this.onions, this.audioRanges, this.guides, this.physicsDebug, this.spineBounds, this.outline);
     this.sceneCamera = app.cameras.create('scene:world', this.world);
+    this.directorCamera = new DirectorCamera(() => this.directorCameraBase ?? cameraView(idleCamera(), this.gameTime, app.screen),
+      () => { if (app.renderer) { this.updateSceneCamera(); if (this.editorTicker) app.render(); } });
+    app.director.registerStrategy(this.directorCamera);
     const pointer = (phase: 'down' | 'move' | 'up', event: PointerEvent) => {
       if (!this.gameScene || this.transitioning || this.app.clock.state !== 'running' || this.app.scripts.paused) return;
       const point = this.canvasPoint(event.clientX, event.clientY);
-      if (!point) return;
+      if (!point || (phase === 'down' && !this.cameraFrameClip.contains(point))) return;
       const local = this.world.toLocal(point);
       this.app.scripts.pointer(phase, local.x, local.y);
       const grabbed = this.app.physics.pointer(phase, local.x, local.y);
@@ -454,6 +579,7 @@ export class SceneView {
 
   static async create(scene: Scene, options: Omit<PrototypeOptions, 'config'>, report: (aliases: ReadonlySet<string>) => void,
     profile: PreviewProfile = { device: 'desktop', orientation: 'landscape' }) {
+    if (document.querySelector('meta[name="olive-asset-root"]')) await import('pixi.js/unsafe-eval');
     const app = new PrototypeApplication();
     let view: SceneView | undefined;
     try {
@@ -467,16 +593,16 @@ export class SceneView {
         oliveScenes: {},
         oliveClock: {
           pause: () => {
-            if (!options.editor) app.audio.sources.setClockPaused(true);
+            if (!options.editor) { app.audio.sources.setClockPaused(true); app.audio.director.pause(true); }
             view?.syncWidgetInput();
           },
           resume: () => {
-            if (!options.editor) app.audio.sources.setClockPaused(false);
+            if (!options.editor) { app.audio.sources.setClockPaused(false); app.audio.director.pause(false); }
             view?.syncWidgetInput();
           },
-          step: ms => app.audio.sources.stepClock(ms),
-          speed: value => app.audio.sources.setClockSpeed(value),
-          stop: () => { app.audio?.stop(); app.audio?.sources.stopScene(); view?.syncWidgetInput(); },
+          step: ms => { app.audio.sources.stepClock(ms); app.audio.director.stepClock(ms); },
+          speed: value => { app.audio.sources.setClockSpeed(value); app.audio.director.setSpeed(value); },
+          stop: () => { app.audio?.stop(); app.audio?.sources.stopScene(); app.audio?.director.reset(); view?.syncWidgetInput(); },
           unload: () => view?.unloadScene(),
           reload: () => {
             if (options.onReload) options.onReload();
@@ -508,15 +634,23 @@ export class SceneView {
     const outgoing = layer?.exit ? this.captureTransitionLayer(layer.rootIds) : undefined;
     this.gameScene = gameScene;
     if (changedGame) {
+      this.clearEffectPreview(false);
       this.sceneCamera.stop();
       this.sceneCamera.unfollow();
       this.gameCamera = idleCamera();
       this.gameTime = 0;
+      this.parallaxOrigin = undefined;
       this.cueVisibility.clear();
+      this.directorCamera.reset();
+      this.directorCameraBase = undefined;
     }
     if (objects !== this.objects) {
-      this.clearEffectPreview();
-      this.locked = new Set([...selectionTree(objects)].flatMap(([id, item]) => item.inheritedLock || item.node.locked ? [id] : []));
+      const tree = selectionTree(objects);
+      for (const session of this.previewSessions.values()) {
+        const node = tree.get(session.id)?.node;
+        this.refreshEffectPreview(session, node && this.withLiveEffects(node));
+      }
+      this.locked = new Set([...tree].flatMap(([id, item]) => item.inheritedLock || item.node.locked ? [id] : []));
     }
     this.objects = objects;
     this.assets = assets;
@@ -551,6 +685,7 @@ export class SceneView {
   }
 
   destroy() {
+    this.clearEffectPreview(false);
     this.profiler?.dispose();
     this.profiler = undefined;
     this.productionClock?.dispose();
@@ -560,10 +695,13 @@ export class SceneView {
     this.sceneCamera.clearDepth();
     this.gameScene = undefined;
     this.cancelTimeline();
+    this.clearRigClips();
     this.clearOnions();
     this.flex.clear();
     this.effects.clear();
+    for (const sprite of this.photoDepth.keys()) this.removePhotoDepth(sprite);
     this.widgets.clear();
+    for (const animation of this.animations.values()) animation.dispose();
     this.app.destroy({ removeView: true }, { children: true });
     this.editorTicker?.destroy();
     this.liveEffectTicker?.destroy();
@@ -588,7 +726,7 @@ export class SceneView {
       cancelSceneTransition(frame.surface);
       for (const display of frame.hidden) if (!display.destroyed) display.renderable = true;
       frame.surface.destroy({ children: true });
-      frame.texture.destroy(true);
+      for (const texture of frame.textures) texture.destroy(true);
     }
     cancelSceneTransition(this.sceneSurface);
     this.transitioning = false;
@@ -601,26 +739,37 @@ export class SceneView {
 
   private captureTransitionLayer(rootIds: readonly string[]) {
     const roots = new Set(rootIds.map(id => this.sceneCamera.depth.layerFor(this.displays.get(id))));
-    const displays = [...this.world.children, ...this.hudAnchors.map(({ container }) => container.children[0])]
-      .filter(display => roots.has(display) && display.renderable && isVisible(display));
-    if (!displays.length) return undefined;
+    const included = (display: Container) => roots.has(display) && display.renderable && isVisible(display);
+    const world = this.world.children.filter(included);
+    const hud = this.hudAnchors.map(({ container }) => container.children[0]).filter(included);
+    const displays = [...world, ...hud];
     const { width, height } = this.app.screen;
-    if (!width || !height) return undefined;
-    const texture = RenderTexture.create({ width, height, resolution: Math.min(1, 2048 / Math.max(width, height)) });
+    if (!width || !height || !displays.length) return undefined;
+    const crop = this.renderedCameraView?.frame;
+    const groups = crop ? [{ displays: world, crop }, { displays: hud }] : [{ displays }];
+    const surface: AppScreen = new Container({ eventMode: 'none' });
+    surface.game = this.app;
+    const textures: RenderTexture[] = [];
     try {
-      displays.forEach((display, index) => this.app.renderer.render({
-        container: display, target: texture, transform: display.getGlobalTransform(new Matrix()),
-        clear: index === 0, clearColor: [0, 0, 0, 0],
-      }));
+      for (const group of groups) {
+        if (!group.displays.length) continue;
+        const texture = RenderTexture.create({ width, height, resolution: Math.min(1, 2048 / Math.max(width, height)) });
+        textures.push(texture);
+        group.displays.forEach((display, index) => this.app.renderer.render({
+          container: display, target: texture, transform: display.getGlobalTransform(new Matrix()),
+          clear: index === 0, clearColor: [0, 0, 0, 0],
+        }));
+        const sprite = new Sprite(texture);
+        surface.addChild(sprite);
+        if (group.crop) new CameraFrameClip(surface, sprite).update(group.crop);
+      }
     } catch (error) {
-      texture.destroy(true);
+      surface.destroy({ children: true });
+      for (const texture of textures) texture.destroy(true);
       console.warn('Scene transition capture failed', error);
       return undefined;
     }
-    const surface: AppScreen = new Container({ eventMode: 'none' });
-    surface.game = this.app;
-    surface.addChild(new Sprite(texture));
-    return { surface, texture, hidden: displays };
+    return { surface, textures, hidden: displays };
   }
 
   private playSceneTransition(config: SceneTransition, surface: AppScreen, exit = false) {
@@ -640,7 +789,9 @@ export class SceneView {
 
   private unloadScene() {
     const scene = this.lastScene;
+    this.app.audio.director.stopCues();
     this.cancelTimeline();
+    this.clearRigClips();
     this.clearOnions();
     this.timeline = undefined;
     this.app.scripts.stop();
@@ -653,10 +804,16 @@ export class SceneView {
     this.lastScene = scene;
   }
 
+  private drawOrder(nodes: SceneObject[]) {
+    return nodes.some(node => node.zIndex !== undefined) ?
+      nodes.slice().sort((a, b) => (a.zIndex ?? 0) - (b.zIndex ?? 0)) : nodes;
+  }
+
   private render() {
     this.sceneCamera.clearDepth();
     this.flex.clear();
     this.effects.clear();
+    for (const sprite of this.photoDepth.keys()) this.removePhotoDepth(sprite);
     this.widgets.clear();
     for (const animation of this.animations.values()) animation.display.removeFromParent();
     this.app.particles.detach();
@@ -669,7 +826,7 @@ export class SceneView {
     this.audioNodes.length = 0;
     this.hudAnchors.length = 0;
     this.textGlobals = this.gameScene && this.app.globals.active ? this.app.globals.snapshot() : this.initialGlobals;
-    for (const node of this.objects) {
+    for (const node of this.drawOrder(this.objects)) {
       const display = this.project(node);
       if (node.type === 'Camera2D' || !node.screenSpace) this.world.addChild(display);
       else {
@@ -683,8 +840,32 @@ export class SceneView {
     this.resizeHUD();
     for (const [id, animation] of this.animations) {
       if (this.displays.get(id) === animation.display) continue;
+      animation.dispose();
       animation.display.destroy({ children: true });
       this.animations.delete(id);
+    }
+    for (const [id, { skin, layers }] of this.pendingSpineSkins) {
+      if (!this.displays.has(id)) this.pendingSpineSkins.delete(id);
+      else {
+        const animation = this.animations.get(id);
+        if (!animation) continue;
+        this.pendingSpineSkins.delete(id);
+        try { animation.setSpineSkin(skin, layers); }
+        catch (error) { scriptConsole.log('error', error instanceof Error ? error.message : String(error)); }
+      }
+    }
+    for (const [id, pending] of this.pendingSpinePlays) {
+      if (!this.displays.has(id)) this.pendingSpinePlays.delete(id);
+      else if (this.animations.has(id)) {
+        this.pendingSpinePlays.delete(id);
+        for (const [track, { clip, options, paused }] of pending) {
+          try {
+            this.playSpine(id, clip, options);
+            if (paused) this.animations.get(id)?.controlSpineTrack(track, 'pause');
+          }
+          catch (error) { scriptConsole.log('error', error instanceof Error ? error.message : String(error)); }
+        }
+      }
     }
     this.app.particles.prune();
     this.applyLayout();
@@ -692,6 +873,7 @@ export class SceneView {
     this.refreshPhysicsOutlines();
     for (const overlay of [this.grid, this.audioRanges, this.guides, this.outline]) overlay.visible = !this.gameScene;
     this.applyTimeline();
+    this.applyRigPoses();
     this.applyDraft();
     this.applyCameraLayerEffects();
     if (this.gameScene) this.app.physics.projectPoses();
@@ -710,12 +892,13 @@ export class SceneView {
   }
 
   private project(node: SceneObject): Container {
+    node = this.withLiveEffects(node);
     let display: Container;
     switch (node.type) {
       case 'Container':
         this.groups.add(node.id);
         display = new Container();
-        for (const child of node.children) display.addChild(this.project(child));
+        for (const child of this.drawOrder(node.children)) display.addChild(this.project(child));
         break;
       case 'Sprite':
         display = new Sprite({ texture: this.texture(node.texture), anchor: node.anchor });
@@ -803,6 +986,7 @@ export class SceneView {
         break;
     }
     display.label = node.label;
+    display.zIndex = node.zIndex ?? 0;
     display.position.copyFrom(node.position);
     display.angle = node.rotation;
     display.scale.copyFrom(node.scale);
@@ -812,11 +996,7 @@ export class SceneView {
     display.alpha = node.alpha;
     display.tint = node.tint;
     this.projectEffects(node, display);
-    for (const effect of node.effects ?? []) {
-      if (effect.enabled && isModulation(effect) && effectTypesFor(node.type).includes(effect.type)) {
-        new ObjectModulationEffect(effect).attach(display);
-      }
-    }
+    this.projectModulations(node, display);
     if (this.gameScene && (node.type === 'Camera2D' || node.type === 'AudioSource' || node.type === 'AudioListener' || node.type === 'Light2D')) display.renderable = false;
     this.displays.set(node.id, display);
     this.authored.set(node.id, node);
@@ -841,13 +1021,204 @@ export class SceneView {
     this.app.render();
   }
 
+  private removePhotoDepth(sprite: Sprite) {
+    const layers = this.photoDepth.get(sprite);
+    if (!layers) return;
+    this.photoDepth.delete(sprite);
+    const remaining = sprite.filters?.filter(filter => !layers.some(layer => layer.filter === filter));
+    if (!sprite.destroyed) sprite.filters = remaining?.length ? remaining : null;
+    for (const { map, filter } of layers) {
+      filter.destroy();
+      if (!map.destroyed) map.destroy();
+    }
+    sprite.allowChildren = false;
+  }
+
+  private updatePhotoDepth(x: number, y: number) {
+    this.photoPointer = { x, y };
+    for (const layers of this.photoDepth.values()) for (const layer of layers) layer.filter.scale.set(x * layer.x, y * layer.y);
+    if (this.photoDepth.size && !this.app.ticker.started) this.app.render();
+  }
+
+  private projectPhotoDepth(node: SceneObject, display: Container) {
+    if (!(display instanceof Sprite)) return;
+    this.removePhotoDepth(display);
+    if (node.type !== 'Sprite') return;
+    const layers = [];
+    for (const effect of node.effects ?? []) {
+      if (effect.type !== 'photoDepth' || !effect.enabled || !effect.texture) continue;
+      const texture = this.texture(effect.texture, Texture.EMPTY);
+      if (texture === Texture.EMPTY) continue;
+      const map = new Sprite({ texture, anchor: display.anchor });
+      map.width = display.texture.orig.width;
+      map.height = display.texture.orig.height;
+      const filter = new DisplacementFilter({ sprite: map, scale: 0 });
+      // The hidden map shares the photo's transform so tilt follows its anchor and scale.
+      display.allowChildren = true;
+      display.addChild(map);
+      const sign = effect.invert ? -1 : 1;
+      const x = sign * effect.strengthX, y = sign * effect.strengthY;
+      filter.scale.set(this.photoPointer.x * x, this.photoPointer.y * y);
+      layers.push({ map, filter, x, y });
+    }
+    if (!layers.length) return;
+    this.photoDepth.set(display, layers);
+    display.filters = [...display.filters ?? [], ...layers.map(layer => layer.filter)];
+  }
+
   private projectEffects(node: SceneObject, display: Container) {
-    if (!node.effects && !node.shader) return;
-    const visual = node.effects?.filter(effect => !isModulation(effect));
+    const visual = node.effects?.filter(effect => effect.type !== 'photoDepth' && !isModulation(effect));
+    if (!visual?.length && !node.shader) {
+      this.effects.remove(display);
+      this.projectPhotoDepth(node, display);
+      return;
+    }
     this.effects.apply([{ id: node.id, parentId: null, components: [
       ...(visual?.length ? [{ type: 'pixi.effects', version: 1, data: visual }] : []),
       ...(node.shader ? [{ type: shaderType, version: 1, data: node.shader }] : []),
     ] }], () => display, this.app.renderer);
+    this.projectPhotoDepth(node, display);
+  }
+
+  private projectModulations(node: SceneObject, display: Container) {
+    for (const effect of this.modulations.get(display) ?? []) effect.destroy();
+    this.modulations.delete(display);
+    const attached: ObjectModulationEffect[] = [];
+    for (const effect of node.effects ?? []) {
+      if (!effect.enabled || !isModulation(effect) || !effectTypesFor(node.type).includes(effect.type)) continue;
+      const modulation = new ObjectModulationEffect(effect);
+      modulation.attach(display);
+      attached.push(modulation);
+    }
+    if (attached.length) this.modulations.set(display, attached);
+  }
+
+  syncLiveEffects(sources: Iterable<SceneObject>) {
+    if (!this.gameScene) return;
+    this.liveEffectSources = new Map(Array.from(sources, source => [source.id, source]));
+    let changed = false;
+    let cameraChanged = false;
+    for (const source of this.liveEffectSources.values()) {
+      const previous = this.authored.get(source.id);
+      const display = this.displays.get(source.id);
+      if (!previous || !display) continue;
+      const next = withEffectSettings(previous, source);
+      if (next === previous) continue;
+      changed = true;
+      this.authored.set(next.id, next);
+      if (next.type === 'Camera2D') cameraChanged ||= next.id === this.gameScene.cameraId;
+      else {
+        this.projectEffects(next, display);
+        this.projectModulations(next, display);
+      }
+      for (const session of this.previewSessions.values()) if (session.id === next.id) this.refreshEffectPreview(session, next);
+    }
+    if (!changed) return;
+    if (cameraChanged) {
+      delete this.gameCamera.focus;
+      this.applyCameraLayerEffects();
+    }
+    this.syncAudio();
+    this.drawEffectPreview();
+  }
+
+  private withLiveEffects(node: SceneObject) {
+    const source = this.gameScene && this.liveEffectSources.get(node.id);
+    return source ? withEffectSettings(node, source) : node;
+  }
+
+  dispatchDirector(step: DirectorStep, vars?: DirectorVars) {
+    const control = this.app.director.dispatch(step, vars, this.editorTicker ?? this.app.ticker);
+    if (this.editorTicker) {
+      this.directorPreviews.add(control);
+      const finish = () => {
+        this.directorPreviews.delete(control);
+        if (this.app.renderer) this.syncTicker();
+      };
+      control.subscribe({ complete: finish, error: finish });
+      this.syncTicker();
+    }
+    return control;
+  }
+
+  clearDirectorPreview() {
+    if (!this.editorTicker || !this.app.renderer) return;
+    this.cueVisibility.clear();
+    this.directorCamera.reset();
+    this.app.audio.director.reset();
+    this.app.audio.sources.stopScene();
+    this.render();
+  }
+
+  playRigClip(id: string, clip: DirectedClip, speed: number, loop: boolean, context: StepContext) {
+    return defer(() => {
+      const root = this.authored.get(id);
+      if (root?.type !== 'Container' || root.rig?.kind !== 'skeleton') throw new Error(t('rigTargetMissing', { id }));
+      const bones = new Set([id]);
+      function include(children: SceneObject[]) {
+        for (const node of children) if (node.type === 'Container' && node.rig?.kind === 'bone') {
+          bones.add(node.id);
+          include(node.children);
+        }
+      }
+      include(root.children);
+      const lanes = clip.lanes.filter(({ track }) => bones.has(track.target) && !audioTween(track.property));
+      if (!lanes.length) throw new Error(t('rigClipEmpty'));
+      const duration = Math.max(1 / 60, ...lanes.map(({ track, start, speed }) => start + track.keys.at(-1)!.time / speed));
+      this.removeRigPose(id);
+      const run = { pose: new Map() as TweenPose, cancel: new Subject<void>() };
+      this.rigPoses.set(id, run);
+      let completed = false;
+      const vars = new Map(context.vars);
+      vars.set('allowed', () => !context.isPaused());
+      vars.set('sample', (time: number) => {
+        run.pose = sampleClip({ duration, lanes, cues: [] }, time, target => this.authored.get(target));
+        this.applyRigPoses();
+        if (!this.gameScene) {
+          if (this.editView === 'camera') this.updateSceneCamera();
+          this.drawSelection();
+          if (!this.app.ticker.started) this.app.render();
+        }
+      });
+      return timelineStrategy.run(timelineStep(0, duration, { speed, loop, reverse: false }), { ...context, vars }).pipe(
+        tap({ complete: () => { completed = true; } }),
+        takeUntil(run.cancel),
+        takeUntil(context.next$),
+        finalize(() => { if (!completed && this.rigPoses.get(id) === run) this.removeRigPose(id); }),
+      );
+    });
+  }
+
+  private removeRigPose(id: string) {
+    const run = this.rigPoses.get(id);
+    if (!run) return;
+    this.rigPoses.delete(id);
+    run.cancel.next();
+    run.cancel.complete();
+    for (const [target, channels] of run.pose) {
+      const node = this.authored.get(target), display = this.displays.get(target);
+      if (!node || !display) continue;
+      for (const property of channels.keys()) if (this.canAnimate(target, property)) {
+        applyTween(display, property, this.timeline?.pose.get(target)?.get(property) ?? authoredValue(node, property));
+      }
+    }
+    this.applyRigPoses();
+    if (this.editorTicker && this.app.renderer) {
+      this.drawSelection();
+      this.app.render();
+    }
+  }
+
+  clearRigClips() {
+    for (const id of [...this.rigPoses.keys()]) this.removeRigPose(id);
+  }
+
+  private applyRigPoses() {
+    for (const { pose } of this.rigPoses.values()) this.applyTimeline(pose);
+  }
+
+  emitDirectorSignal(type: string, payload: Record<string, unknown> = {}) {
+    this.app.director.signals.emit({ ...payload, type });
   }
 
   playTimeline(
@@ -864,15 +1235,14 @@ export class SceneView {
     const fade = options.fade ?? 0;
     const from = fade > 0 ? this.readTimelinePose(clip) : undefined;
     const transport = options.transport ?? defaultTransport;
-    const control = this.app.director.run(timelineStep(start, clip.duration, transport, fade), {
-      ticker: this.editorTicker ?? this.app.ticker,
+    const control = this.app.director.dispatch(timelineStep(start, clip.duration, transport, fade), {
       allowed: () => !this.app.scripts.paused,
       sample: (time: number, span: { from: number; initial?: boolean } | undefined, elapsed: number) => {
         this.sampleTimeline(clip, time, from, fade > 0 ? Math.min(1, elapsed / fade) : 1);
         update(time, false);
         if (span && options.cue) for (const { cue } of crossedCues(clip.cues, span.from, time, span.initial)) options.cue(cue);
       },
-    });
+    }, this.editorTicker ?? this.app.ticker);
     this.timelineControl = control;
     this.timelinePlaying = true;
     const finish = () => {
@@ -974,6 +1344,7 @@ export class SceneView {
     }
     this.timeline = { clip, time, pose };
     this.applyTimeline();
+    this.applyRigPoses();
     if (!this.gameScene && this.editView === 'camera') {
       this.updateSceneCamera();
       this.drawGrid();
@@ -1049,6 +1420,7 @@ export class SceneView {
       } finally {
         if (!drawn) texture.destroy(true);
         this.applyTimeline(pose);
+        this.applyRigPoses();
       }
     };
     for (let offset = before; offset > 0; offset--) renderGhost(-offset);
@@ -1089,19 +1461,15 @@ export class SceneView {
     const pose = world.toLocal(display.toGlobal(display.pivot));
     const axis = world.toLocal(display.toGlobal({ x: display.pivot.x + 1, y: display.pivot.y }));
     const rotation = Math.atan2(axis.y - pose.y, axis.x - pose.x) * 180 / Math.PI;
-    if (node.camera.viewportRelative) {
-      pose.x += (this.app.screen.width - this.authoredSize.width) / 2;
-      pose.y += (this.app.screen.height - this.authoredSize.height) / 2;
-    }
-    return { id, camera: node.camera, pose: { ...pose, rotation } };
+    return { id, camera: node.camera, pose: { ...pose, rotation }, authoredSize: this.authoredSize };
   }
 
-  private cameraTarget(targetId?: string | null) {
+  private cameraTarget = (targetId?: string | null, measureBounds = false) => {
     if (targetId && targetId === this.networkTemplate) targetId = this.app.multiplayer.localObject ?? targetId;
     const target = targetId ? this.displays.get(targetId) : undefined;
     if (!target || !isVisible(target) || !this.isInWorld(target)) return;
-    return this.sceneCamera.depth.positionSpace(target).toLocal(target.toGlobal(target.pivot));
-  }
+    return cameraSubjectFromDisplay(target, this.sceneCamera.depth.positionSpace(target), measureBounds);
+  };
 
   private isInWorld(display: Container) {
     for (let parent = display.parent; parent; parent = parent.parent) {
@@ -1122,10 +1490,12 @@ export class SceneView {
 
   private updateSceneCamera() {
     const canvas = this.app.canvas;
-    const preview = this.effectPreview?.effect.type !== 'lightPulse' ? this.effectPreview : undefined;
-    const zoomTest = preview?.effect.type === 'zoom' ? preview.effect : undefined;
-    const rig = this.gameScene ? this.activeCamera() : zoomTest ? this.cameraRig(zoomTest.id) : this.editCamera();
-    if (!this.gameScene && !rig && !preview) {
+    const previews = this.effectPreviews().filter(({ preview }) => preview.effect.type !== 'lightPulse');
+    const cameraTest = previews.find(({ preview: { effect } }) => effect.type === 'zoom' || effect.type === 'motion' || effect.type === 'projection');
+    const rig = this.gameScene ? this.activeCamera() : cameraTest ? this.cameraRig(cameraTest.session.id) : this.editCamera();
+    if (!this.gameScene && !rig && !previews.length && !this.directorCamera.active) {
+      this.cameraFrameClip.update();
+      this.parallaxOrigin = undefined;
       if (this.renderedCameraView) {
         void this.sceneCamera.reset();
         this.gameView = undefined;
@@ -1135,28 +1505,62 @@ export class SceneView {
       return;
     }
     const stage = this.app.screen;
-    const projection = zoomTest && !this.gameScene && this.editView === 'normal' ?
-      cameraProjection(rig?.camera) : this.sceneCamera.postFXs.projection();
+    const unconfigured = !!cameraTest && !this.gameScene && this.editView === 'normal';
+    const projection = unconfigured ? cameraProjection(rig?.camera) : this.sceneCamera.postFXs.projection();
+    for (const { preview: { effect } } of previews) {
+      if (effect.type !== 'projection') continue;
+      if (effect.settings.type === 'limits') projection.limits = effect.settings;
+      if (effect.settings.type === 'viewport') projection.viewportRelative = true;
+      if (effect.settings.type === 'framing') projection.framing = effect.settings;
+    }
     const bounds = projection.limits?.mode === 'world' ? this.sceneCamera.depth.worldBounds() : undefined;
     const world = bounds?.isValid ? bounds : { x: 0, y: 0, ...this.authoredSize };
     const state = this.gameScene ? this.gameCamera : idleCamera();
-    const target = this.cameraTarget(state.followId === undefined ? rig?.camera.target : state.followId);
-    const frame = rig ? { ...rig, projection } : undefined;
-    const previewState = zoomTest ? { ...state } : undefined;
-    let view = cameraView(state, this.gameTime, stage, frame, target, world);
+    const frame = rig ? { ...rig, projection, motions: unconfigured ? undefined : this.sceneCamera.postFXs.motions() } : undefined;
+    let view = cameraView(state, this.gameTime, stage, frame, undefined, world, this.cameraTarget);
+    this.directorCameraBase = view;
+    if (this.directorCamera.active) view = constrainCameraView(this.directorCamera.apply(view), stage, projection, world);
     this.gameView = view;
-    if (zoomTest && preview && previewState && rig) {
-      const from = preview.zoomFrom ?? zoomTest.zoom;
-      const blend = Math.min(1, preview.elapsed / Math.min(0.25, zoomTest.duration / 2));
-      const zoom = from + (zoomTest.zoom - from) * (1 - (1 - blend) ** 3);
-      view = cameraView({ ...previewState, zoom }, this.gameTime, stage, {
-        ...rig, projection: { ...projection,
-          zoom: { type: 'zoom', enabled: true, value: zoom, min: zoomTest.min, max: zoomTest.max } },
-      }, target, world);
+    if (rig && this.parallaxOrigin?.id !== rig.id) this.parallaxOrigin = { id: rig.id, center: view };
+    for (const { preview } of previews) {
+      const effect = preview.effect;
+      if (effect.type === 'zoom') {
+        const zoomTest = effect;
+        const current = Math.max(zoomTest.min, Math.min(zoomTest.max, view.zoom));
+        const from = (preview.from ??= { ...view, zoom: current === zoomTest.zoom ?
+          Math.max(zoomTest.min, Math.min(zoomTest.max, 1)) : current }).zoom;
+        const blend = cameraEaseProgress(zoomTest.ease, zoomTest.transition ? preview.elapsed / zoomTest.transition : 1);
+        view = constrainCameraView({ ...view, zoom: from + (zoomTest.zoom - from) * blend }, stage, {
+          ...projection, zoom: { type: 'zoom', enabled: true, value: zoomTest.zoom, min: zoomTest.min, max: zoomTest.max },
+        }, world);
+      }
+      if (effect.type === 'motion' && frame) {
+        const motion = effect.motion;
+        if (motion.type === 'follow' && motion.mode === 'tracking') {
+          const tracking = preview.tracking ??= idleCamera();
+          tracking.zoom = view.zoom;
+          const followed = cameraView(tracking, preview.elapsed, stage, { ...frame, motions: [motion] },
+            undefined, world, this.cameraTarget);
+          view = { ...followed, rotation: view.rotation };
+        } else if (motion.type === 'rotate' && motion.mode === 'object') {
+          view = { ...view, rotation: frame.pose.rotation };
+        } else {
+          const from = preview.from ??= cameraView(idleCamera(), 0, stage, { ...frame, motions: [] }, undefined, world);
+          let subject = this.cameraTarget;
+          if (motion.type === 'focus') {
+            const focus = preview.focus ??= this.cameraTarget(motion.target, true);
+            subject = () => focus;
+          }
+          view = constrainCameraView(applyCameraMotion(view, from, motion, preview.elapsed, view.frame ?? stage, subject), stage, projection, world);
+        }
+      }
     }
-    if (preview?.effect.type === 'shake') view = applyCameraShake(view, { ...preview.effect, startedAt: 0 }, preview.elapsed);
+    for (const { preview: { effect, elapsed } } of previews) {
+      if (effect.type === 'shake' && !effect.useDepth) view = applyCameraShake(view, { ...effect, startedAt: 0 }, elapsed);
+    }
+    const frameChanged = this.cameraFrameClip.update(view.frame);
     const previous = this.renderedCameraView;
-    if (previous?.x === view.x && previous.y === view.y && previous.zoom === view.zoom && previous.rotation === view.rotation &&
+    if (!frameChanged && previous?.x === view.x && previous.y === view.y && previous.zoom === view.zoom && previous.rotation === view.rotation &&
         this.world.x === stage.width / 2 && this.world.y === stage.height / 2) return;
     this.sceneCamera.applyPose(viewPlacement(view, stage));
     this.renderedCameraView = view;
@@ -1168,6 +1572,7 @@ export class SceneView {
     if (display) {
       this.cueVisibility.set(id, visible);
       display.visible = visible;
+      if (this.editorTicker) this.app.render();
     }
   }
 
@@ -1230,6 +1635,7 @@ export class SceneView {
     this.netCopies.set(node.id, { node, ids: new Set(selectionTree([node]).keys()) });
     this.world.addChild(this.project(node));
     this.applyLayout();
+    this.applyCameraLayerEffects();
     this.syncWidgetInput();
     return node.id;
   }
@@ -1241,6 +1647,7 @@ export class SceneView {
     for (const member of copy.ids) {
       const view = this.displays.get(member);
       if (view) this.effects.remove(view);
+      this.animations.get(member)?.dispose();
     }
     this.displays.get(id)?.destroy({ children: true });
     for (const member of copy.ids) {
@@ -1254,12 +1661,13 @@ export class SceneView {
     for (let i = this.audioNodes.length - 1; i >= 0; i--) if (copy.ids.has(this.audioNodes[i].id)) this.audioNodes.splice(i, 1);
     this.app.particles.prune();
     this.applyLayout();
+    this.applyCameraLayerEffects();
   }
 
   attachPhysics(objects: SceneObject[], settings: PhysicsSettings, publish: (status: PhysicsStatus | undefined) => void) {
     const detach = this.app.physics.start(objects, settings, id => this.displays.get(id),
       () => ({ width: this.app.screen.width, height: this.app.screen.height }),
-      event => this.app.scripts.enqueue(event), publish);
+      event => { this.app.scripts.enqueue(event); this.emitDirectorSignal(event.type, { ...event }); }, publish);
     this.syncTicker();
     return () => {
       detach();
@@ -1292,15 +1700,107 @@ export class SceneView {
     }
   }
 
+  setSpineBounds(ids: readonly string[]) {
+    if (ids === this.spineBoundsIds || (!ids.length && !this.spineBoundsIds.length)) return;
+    this.spineBoundsIds = ids;
+    if (ids.length) this.drawSpineBounds();
+    else this.spineBounds.clear();
+    this.app.render();
+  }
+
+  private drawSpineBounds() {
+    if (!this.spineBoundsIds.length) return;
+    this.spineBounds.clear();
+    const scale = this.screenScale();
+    const width = 1.5 / Math.max(0.1, Math.min(scale.x, scale.y));
+    const color = '#ff86cf';
+    for (const id of this.spineBoundsIds) {
+      const animation = this.animations.get(id);
+      if (!animation?.display.parent || !isVisible(animation.display)) continue;
+      for (const { vertices } of animation.getSpineBoundingBoxes()) {
+        if (vertices.length < 3) continue;
+        this.spineBounds.poly(vertices.map(vertex => animation.display.toGlobal(vertex)))
+          .fill({ color, alpha: 0.15 }).stroke({ color, width });
+      }
+    }
+  }
+
   physicsFit(id: string) {
     const bounds = this.displays.get(id)?.getLocalBounds();
     if (!bounds?.isValid || bounds.width < 0.1 || bounds.height < 0.1) return;
     return { width: bounds.width, height: bounds.height, offsetX: bounds.x + bounds.width / 2, offsetY: bounds.y + bounds.height / 2 };
   }
 
+  private requireSpineTarget(id: string) {
+    const object = this.authored.get(id);
+    const asset = object?.type === 'Spine' && object.asset ? this.assets.get(object.asset) : undefined;
+    if (!asset || asset.kind !== 'spine' || this.animationSources.get(asset.alias)?.failed) {
+      throw new Error(t('spineRuntimeTargetUnavailable'));
+    }
+  }
+
+  private setSpineSkin(id: string, skin: string | null, layers: readonly string[]) {
+    this.requireSpineTarget(id);
+    const animation = this.animations.get(id);
+    if (animation) animation.setSpineSkin(skin, layers);
+    else this.pendingSpineSkins.set(id, { skin, layers });
+  }
+
+  private resetSpineSkin(id: string) {
+    this.pendingSpineSkins.delete(id);
+    this.animations.get(id)?.resetSpineSkin();
+  }
+
+  private playSpine(id: string, clip: string, options: SpinePlayOptions) {
+    const { track = 0, loop, speed, mixDuration, weight } = options;
+    if (!Number.isInteger(track) || track < 0 || track > maxDirectorSpineTrack ||
+        loop !== undefined && typeof loop !== 'boolean' ||
+        speed !== undefined && (!Number.isFinite(speed) || speed <= 0 || speed > 120) ||
+        mixDuration !== undefined && (!Number.isFinite(mixDuration) || mixDuration < 0) ||
+        weight !== undefined && (!Number.isFinite(weight) || weight < 0 || weight > 1)) {
+      throw new Error(t('spinePlaybackInvalidOptions'));
+    }
+    this.requireSpineTarget(id);
+    const animation = this.animations.get(id);
+    if (!animation || animation.source.kind !== 'spine') {
+      const requested = this.pendingSpinePlays.get(id) ?? new Map();
+      requested.set(track, { clip, options: { track, loop, speed, mixDuration, weight } });
+      this.pendingSpinePlays.set(id, requested);
+      return;
+    }
+    const key = clip || animation.source.skeleton.animations[0]?.name;
+    if (!key) throw new Error(t('logicSpinePlaybackUnavailable'));
+    animation.playSpineTrack(key, { track, loop, speed, mixDuration, weight });
+    this.syncTicker();
+  }
+
+  private controlSpine(id: string, track: number, command: SpineTrackCommand) {
+    if (!Number.isInteger(track) || track < 0 || track > maxDirectorSpineTrack) throw new Error(t('spinePlaybackInvalidOptions'));
+    const queued = this.pendingSpinePlays.get(id);
+    const request = queued?.get(track);
+    if (request && queued) {
+      if (command === 'stop') {
+        queued.delete(track);
+        if (!queued.size) this.pendingSpinePlays.delete(id);
+      } else request.paused = command === 'pause';
+      return true;
+    }
+    const changed = this.animations.get(id)?.controlSpineTrack(track, command) ?? false;
+    if (changed) {
+      if (command === 'stop' && this.app.clock.state !== 'running') {
+        this.drawSelection();
+        this.app.render();
+      }
+      this.syncTicker();
+    }
+    return changed;
+  }
+
   attachScripts(options: ScriptPreviewOptions, content?: GameContent, overlay?: HTMLElement, store?: AchievementStore) {
+    this.app.audio.director.stopCues();
     this.productionClock?.dispose();
     this.productionClock = undefined;
+    this.directorNavigation = options;
     const production = options.production;
     const entities = logicEntities(options.objects, id => this.displays.get(id));
     let gameData: GameData | undefined;
@@ -1335,6 +1835,32 @@ export class SceneView {
       ready: () => this.syncTicker(),
       clockPaused: () => this.app.clock.state !== 'running',
       physics: this.app.physics.controls,
+      spine: {
+        play: (id, clip, options) => this.playSpine(id, clip, options),
+        control: (id, track, command) => this.controlSpine(id, track, command),
+        setSkin: (id, skin, layers) => this.setSpineSkin(id, skin, layers),
+        resetSkin: id => this.resetSpineSkin(id),
+        bone: (id, name) => {
+          const animation = this.animations.get(id);
+          const pose = animation?.getSpineBonePose(name);
+          if (animation && pose) return this.world.toLocal(pose, animation.display);
+        },
+        point: (id, slot) => {
+          const animation = this.animations.get(id);
+          const point = animation?.getSpinePoint(slot);
+          if (!animation || !point) return;
+          const offset = point.rotation * Math.PI / 180;
+          const position = this.world.toLocal(point, animation.display);
+          const axis = this.world.toLocal({ x: point.x + Math.cos(offset), y: point.y + Math.sin(offset) }, animation.display);
+          const rotation = Math.atan2(axis.y - position.y, axis.x - position.x) * 180 / Math.PI;
+          return { name: point.name, x: position.x, y: position.y, rotation };
+        },
+        boxes: (id, slot) => {
+          const animation = this.animations.get(id);
+          return animation?.getSpineBoundingBoxes(slot).map(box => ({ ...box, vertices: box.vertices.map(vertex =>
+            this.world.toLocal(vertex, animation.display)) })) ?? [];
+        },
+      },
       camera: cameraControls(() => this.gameCamera, () => this.gameTime, () => this.gameView ??
         cameraView(idleCamera(), 0, this.app.screen)),
       dialogue: running?.dialogue,
@@ -1343,6 +1869,9 @@ export class SceneView {
         t: (key, values) => this.language?.text(key, values) },
     });
     return () => {
+      this.pendingSpinePlays.clear();
+      this.pendingSpineSkins.clear();
+      if (this.directorNavigation === options) this.directorNavigation = undefined;
       stopScripts();
       if (this.productionClock === productionClock) { productionClock?.dispose(); this.productionClock = undefined; }
       if (this.runningContent === running) this.stopGameContent();
@@ -1430,12 +1959,6 @@ export class SceneView {
   }
 
   setSelection(ids: readonly string[]) {
-    if (this.selected !== (ids.at(-1) ?? null)) {
-      const cameraPreview = this.effectPreview && this.effectPreview.effect.type !== 'lightPulse';
-      this.clearEffectPreview();
-      if (cameraPreview) this.updateSceneCamera();
-      this.syncTicker();
-    }
     this.selectedIds = ids;
     this.selected = ids.at(-1) ?? null;
     if (this.particlePreview && this.particlePreview !== this.selected) {
@@ -1561,12 +2084,25 @@ export class SceneView {
       const pivot = selected.toGlobal(selected.pivot);
       if (Math.hypot(point.x - pivot.x, point.y - pivot.y) <= 7) return this.selected;
     }
+    if (!this.gameScene) {
+      const scale = this.screenScale();
+      let nearest: string | null = null;
+      let distance = 6 / Math.max(0.1, Math.min(scale.x, scale.y));
+      for (const { id, start, tip } of this.rigGuides()) {
+        if (this.locked.has(id)) continue;
+        const dx = tip.x - start.x, dy = tip.y - start.y;
+        const ratio = Math.max(0, Math.min(1, ((point.x - start.x) * dx + (point.y - start.y) * dy) / (dx * dx + dy * dy || 1)));
+        const gap = Math.hypot(point.x - start.x - ratio * dx, point.y - start.y - ratio * dy);
+        if (gap < distance) { nearest = id; distance = gap; }
+      }
+      if (nearest) return nearest;
+    }
     const pickNodes = (nodes: SceneObject[]): string | null => {
       for (let i = nodes.length - 1; i >= 0; i--) {
         const node = nodes[i];
         if (!this.gameScene && (!node.visible || node.alpha === 0 || node.locked)) continue;
         if (node.type === 'Container') {
-          const child = pickNodes(node.children);
+          const child = pickNodes(this.drawOrder(node.children));
           if (child) return child;
           continue;
         }
@@ -1584,8 +2120,8 @@ export class SceneView {
       const layer = this.sceneCamera.depth.layerFor(this.displays.get(node.id));
       return layer ? order.get(layer) ?? -1 : -1;
     };
-    return pickNodes(hud) ?? pickNodes(this.objects.filter(node => !node.screenSpace || node.type === 'Camera2D')
-      .sort((a, b) => rank(a) - rank(b)));
+    return pickNodes(this.drawOrder(hud)) ?? (this.cameraFrameClip.contains(point) ?
+      pickNodes(this.objects.filter(node => !node.screenSpace || node.type === 'Camera2D').sort((a, b) => rank(a) - rank(b))) : null);
   }
 
   bounds(id: string): GuideBox | undefined {
@@ -1802,20 +2338,64 @@ export class SceneView {
     this.syncTicker();
   }
 
+  private rigGuides() {
+    if (!this.selected || this.gameScene) return [];
+    const selected = this.selected;
+    if (this.rigSelection?.objects !== this.objects || this.rigSelection.selected !== selected) {
+      const tree = selectionTree(this.objects);
+      let root: SceneObject | undefined;
+      for (let entry = tree.get(selected); entry; entry = entry.parent ? tree.get(entry.parent) : undefined) {
+        if (entry.node.type === 'Container' && entry.node.rig?.kind === 'skeleton') { root = entry.node; break; }
+      }
+      this.rigSelection = { selected, objects: this.objects, root };
+    }
+    const lines: { id: string; start: Point; tip: Point }[] = [];
+    const root = this.rigSelection.root;
+    const visit = (nodes: SceneObject[]) => {
+      for (const node of nodes) {
+        if (node.type !== 'Container' || node.rig?.kind !== 'bone') continue;
+        const display = this.displays.get(node.id);
+        if (!display?.parent || !isVisible(display)) continue;
+        lines.push({ id: node.id, start: display.toGlobal({ x: 0, y: 0 }), tip: display.toGlobal({ x: node.rig.length, y: 0 }) });
+        visit(node.children);
+      }
+    };
+    if (root?.type === 'Container') visit(root.children);
+    return lines;
+  }
+
   private drawSelection() {
-    this.sceneCamera.depth.update(this.app.screen.width);
-    const preview = this.effectPreview;
-    const pulse = preview?.effect.type === 'lightPulse' ? preview.effect : undefined;
-    const light = pulse ? this.authored.get(pulse.id) : undefined;
-    this.app.lighting.update(this.world, this.app.screen, this.gameTime,
-      !!this.gameScene || this.editorLighting,
-      pulse && preview && light?.type === 'Light2D' ? { ...pulse, node: light, seconds: preview.elapsed } : undefined);
+    const previews = this.effectPreviews();
+    const layerShakes = previews.flatMap(({ preview: { effect, elapsed } }) =>
+      effect.type === 'shake' && effect.useDepth ? [{ shake: { ...effect, startedAt: 0, distribution: effect.distribution ?? 'none' as const }, time: elapsed }] : []);
+    const shakes = this.gameScene ? this.gameCamera.layerShakes : undefined;
+    this.sceneCamera.depth.update(this.app.screen.width, shakes?.length || layerShakes.length ? {
+      shakes: shakes ?? [], time: this.gameTime, zoom: this.renderedCameraView?.zoom ?? 1, previews: layerShakes,
+    } : undefined, {
+      time: this.gameTime,
+      cameraOffset: this.renderedCameraView && this.parallaxOrigin && {
+        x: this.renderedCameraView.x - this.parallaxOrigin.center.x,
+        y: this.renderedCameraView.y - this.parallaxOrigin.center.y,
+      },
+    });
+    const pulses = previews.flatMap(({ preview: { effect, elapsed } }) => {
+      const light = effect.type === 'lightPulse' && this.authored.get(effect.id);
+      return effect.type === 'lightPulse' && light && light.type === 'Light2D' ? [{ ...effect, node: light, seconds: elapsed }] : [];
+    });
+    this.app.lighting.update(this.world, this.app.screen, this.gameTime, !!this.gameScene || this.editorLighting, pulses);
     if (this.showColliders) this.drawPhysics();
+    this.drawSpineBounds();
     this.outline.clear();
     this.audioRanges.clear();
     this.handles = [];
     const scale = this.screenScale();
     const unit = 1 / Math.max(0.1, Math.min(scale.x, scale.y));
+    for (const { id, start, tip } of this.rigGuides()) {
+      const color = this.locked.has(id) ? '#9da49d' : id === this.selected ? '#ffe797' : '#72dbc1';
+      this.outline.moveTo(start.x, start.y).lineTo(tip.x, tip.y).stroke({ color, width: 2 * unit })
+        .circle(start.x, start.y, 4 * unit).fill(color)
+        .circle(tip.x, tip.y, 3 * unit).stroke({ color, width: unit });
+    }
     const drawOrigins = (display: Container, pivot: Point, color: string, node?: SceneObject) => {
       // Pixi offsets the geometry by the anchor, so its local origin is at (0, 0).
       const anchor = node && 'anchor' in node ? display.toGlobal({ x: 0, y: 0 }) : undefined;
@@ -1824,7 +2404,7 @@ export class SceneView {
     const camera = this.selected && !this.gameScene ? this.cameraRig(this.selected) : undefined;
     if (camera) {
       const stage = this.app.screen;
-      const { zoom, rotation, x, y } = cameraView(idleCamera(), 0, stage, camera, this.cameraTarget(camera.camera.target));
+      const { zoom, rotation, x, y, frame: crop } = cameraView(idleCamera(), 0, stage, camera, undefined, undefined, this.cameraTarget);
       const frame = (width: number, height: number, color: string) => {
         const angle = rotation * Math.PI / 180, cos = Math.cos(angle), sin = Math.sin(angle);
         const corners = [[-1, -1], [1, -1], [1, 1], [-1, 1]].map(([dx, dy]) => this.world.toGlobal({
@@ -1833,8 +2413,9 @@ export class SceneView {
         }));
         this.outline.poly(corners).stroke({ width: unit, color });
       };
-      frame(stage.width / zoom, stage.height / zoom, '#e6c84f');
-      const { deadzoneWidth, deadzoneHeight } = camera.camera;
+      frame((crop?.width ?? stage.width) / zoom, (crop?.height ?? stage.height) / zoom, '#e6c84f');
+      const tracking = cameraTrackingEffect(camera.camera.postFXs);
+      const deadzoneWidth = tracking?.deadzoneWidth ?? 0, deadzoneHeight = tracking?.deadzoneHeight ?? 0;
       const { limits } = cameraProjection(camera.camera);
       if (deadzoneWidth || deadzoneHeight) frame(Math.max(1, deadzoneWidth / zoom), Math.max(1, deadzoneHeight / zoom), '#9fd96a');
       if (limits?.mode === 'rectangle') this.outline.poly([
@@ -1911,7 +2492,7 @@ export class SceneView {
   setEditView(view: EditView) {
     if (!this.editorTicker || this.editView === view) return;
     this.editView = view;
-    this.clearEffectPreview();
+    this.clearEffectPreview(false);
     this.app.canvas.dataset.editView = view;
     this.sceneCamera.clearDepth();
     this.applyCameraLayerEffects();
@@ -1924,23 +2505,238 @@ export class SceneView {
     this.syncTicker();
   }
 
-  playEffectPreview(effect: EffectPreview) {
+  playEffectPreview(id: string, key: string, settings: EffectPreviewSettings, changed: (active: boolean) => void,
+    mode = defaultPreviewMode(settings)) {
     if (!this.editorTicker && !this.gameScene) return;
-    if (effect.type === 'lightPulse' ? this.authored.get(effect.id)?.type !== 'Light2D' :
-        (this.gameScene && this.gameScene.cameraId !== effect.id) || !this.cameraRig(effect.id)) return;
-    let zoomFrom: number | undefined;
-    if (effect.type === 'zoom') {
-      const { min, max } = effect;
-      const current = Math.max(min, Math.min(max, this.renderedCameraView?.zoom ?? 1));
-      zoomFrom = Math.abs(current - effect.zoom) < 1e-6 ? alternateTestZoom(current, min, max) : current;
+    if (settings.type === 'lightPulse' ? this.authored.get(id)?.type !== 'Light2D' :
+      (this.gameScene && this.gameScene.cameraId !== id) || !this.cameraRig(id)) return;
+    const session = { id, key, settings, changed, mode };
+    const previous = this.previewSessions.get(effectPreviewKey(id, key));
+    if (previous) this.clearEffectPreview(false, [previous]);
+    this.startEffectPreview(session);
+    changed(true);
+  }
+
+  resetEffectPreview(id: string, key: string) {
+    const session = this.previewSessions.get(effectPreviewKey(id, key));
+    if (session) this.startEffectPreview(session);
+  }
+
+  setEffectPreviewMode(id: string, key: string, mode: EffectPreviewMode) {
+    const session = this.previewSessions.get(effectPreviewKey(id, key));
+    if (!session || session.mode === mode) return;
+    session.mode = mode;
+    if (session.preview && mode === 'loop' && !previewNeedsClock(session.preview.effect, session.preview.elapsed)) {
+      this.startEffectPreview(session);
     }
-    this.effectPreview = { effect, elapsed: 0, zoomFrom };
-    this.app.canvas.dataset.effectPreview = effect.type;
+  }
+
+  private effectPreviews() {
+    return [...this.previewSessions.values()].flatMap(session => session.preview ? [{ session, preview: session.preview }] : []);
+  }
+
+  private publishPreviewStatus() {
+    const active = this.effectPreviews().map(({ preview }) => previewEffectType(preview.effect));
+    const canvas = this.app.canvas;
+    if (active.length) {
+      canvas.dataset.effectPreview = active.at(-1);
+      canvas.dataset.effectPreviews = active.join(',');
+    } else {
+      delete canvas.dataset.effectPreview;
+      delete canvas.dataset.effectPreviews;
+    }
+  }
+
+  getEffectRequirements = () => this.requiredEffects;
+
+  subscribeEffectRequirements = (listener: () => void) => {
+    this.requirementListeners.add(listener);
+    return () => { this.requirementListeners.delete(listener); };
+  };
+
+  updateRequiredCameraEffect(instance: CameraEffect, settings: CameraPostFXData) {
+    if (!instance.updateSettings(settings)) return;
+    this.applyCameraLayerEffects();
+    this.drawEffectPreview();
+  }
+
+  private startEffectPreview(session: EffectPreviewSession) {
+    this.setEffectPreview(session, 0);
+    if (session.preview && previewChangesLayers(session.preview.effect)) this.applyCameraLayerEffects();
+    this.publishPreviewStatus();
+    this.drawEffectPreview();
+  }
+
+  private refreshEffectPreview(session: EffectPreviewSession, node?: SceneObject) {
+    const camera = node?.type === 'Camera2D' && effectEntries(node.camera.postFXs ?? [])
+      .find(entry => entry.key === session.key)?.effect;
+    const light = node?.type === 'Light2D' && effectEntries(node.effects ?? [])
+      .find(entry => entry.key === session.key)?.effect;
+    const settings = camera || (light && light.type === 'lightPulse' && light.enabled ? light : undefined);
+    if (!settings || settings.type !== session.settings.type || (session.settings.enabled && !settings.enabled)) {
+      this.clearEffectPreview(false, [session]);
+    } else if (settings !== session.settings) {
+      const elapsed = session.preview?.elapsed ?? 0;
+      if (camera && session.cameraEffect && !session.cameraEffect.updateSettings(camera)) {
+        session.cameraEffect.destroy();
+        session.cameraEffect = undefined;
+      }
+      session.settings = settings;
+      this.setEffectPreview(session, elapsed);
+    }
+  }
+
+  private setEffectPreview(session: EffectPreviewSession, elapsed: number) {
+    const present = (settings: EffectPreviewSettings) => {
+      const effect = effectPreviewFor(session.id, settings);
+      session.preview = { effect, elapsed };
+      return () => { session.preview = undefined; };
+    };
+    this.previewSessions.set(effectPreviewKey(session.id, session.key), session);
+    if (session.settings.type === 'lightPulse') present(session.settings);
+    else {
+      if (!session.cameraEffect) {
+        const cameraEffect = createCameraPostFX(session.settings);
+        cameraEffect.attach(this.sceneCamera);
+        session.cameraEffect = cameraEffect;
+      }
+      session.cameraEffect.preview(present);
+    }
+  }
+
+  private advanceEffectPreview(seconds: number) {
+    let updateCamera = false;
+    for (const { session, preview } of this.effectPreviews()) {
+      if (!previewNeedsClock(preview.effect, preview.elapsed)) continue;
+      const duration = previewDuration(preview.effect);
+      const elapsed = preview.elapsed + seconds;
+      if (session.mode === 'loop' && duration && elapsed >= duration) {
+        this.setEffectPreview(session, elapsed % duration);
+      } else preview.elapsed = duration === undefined ? elapsed : Math.min(elapsed, duration);
+      if (preview.effect.type !== 'lightPulse') updateCamera = true;
+    }
+    if (updateCamera) {
+      this.updateSceneCamera();
+      this.drawGrid();
+    }
+    if (!this.hasTimedEffectPreview()) this.syncTicker();
+  }
+
+  private hasTimedEffectPreview() {
+    return this.effectPreviews().some(({ preview }) => previewNeedsClock(preview.effect, preview.elapsed));
+  }
+
+  stopEffectPreview(id?: string, key?: string) {
+    const session = id !== undefined && key !== undefined ? this.previewSessions.get(effectPreviewKey(id, key)) : undefined;
+    if ((id !== undefined && !session) || !this.previewSessions.size) return;
+    this.clearEffectPreview(true, session ? [session] : undefined);
+    this.drawEffectPreview();
+  }
+
+  stopCanvasPreviews() {
+    const particle = this.particlePreview;
+    const cameraShake = this.gameCamera.shakes?.length || this.gameCamera.layerShakes?.length;
+    this.particlePreview = undefined;
+    delete this.gameCamera.shakes;
+    delete this.gameCamera.layerShakes;
+    if (particle) this.app.particles.clearParticles(particle);
+    this.stopEffectPreview();
+    this.stopTimeline();
+    if (particle || cameraShake) this.drawEffectPreview();
+  }
+
+  async captureSnapshot() {
+    const { renderer, screen } = this.app;
+    const [r, g, b, a] = renderer.background.colorRgba;
+    const encoded = await renderer.extract.base64({
+      target: this.sceneSurface, frame: new Rectangle(0, 0, screen.width, screen.height),
+      resolution: renderer.resolution, clearColor: [r, g, b, a], format: 'png',
+    });
+    const comma = encoded.indexOf(',');
+    if (comma < 0 || !encoded.startsWith('data:image/png')) throw new Error('Could not capture the game canvas');
+    return encoded.slice(comma + 1);
+  }
+
+  private drawEffectPreview() {
     this.updateSceneCamera();
     this.drawGrid();
     this.drawSelection();
     this.app.render();
-    if (!this.editorTicker) {
+    this.syncTicker();
+  }
+
+  private clearEffectPreview(restoreLayers = true, sessions = [...this.previewSessions.values()]) {
+    let layersChanged = false;
+    for (const current of sessions) {
+      if (current.preview && previewChangesLayers(current.preview.effect)) layersChanged = true;
+      this.previewSessions.delete(effectPreviewKey(current.id, current.key));
+      current.cameraEffect?.reset();
+      current.cameraEffect?.destroy();
+      current.preview = undefined;
+      current.changed(false);
+    }
+    if (restoreLayers && layersChanged) this.applyCameraLayerEffects();
+    this.publishPreviewStatus();
+  }
+
+  private applyCameraLayerEffects() {
+    const rig = this.gameScene ? this.activeCamera() : this.editCamera();
+    const active = this.effectPreviews();
+    const configured = rig?.camera.postFXs;
+    const opticalPreviews = active.flatMap(({ session, preview }) => {
+      if (preview.effect.type !== 'optics') return [];
+      const time = () => session.preview?.elapsed ?? 0;
+      const offset = preview.effect.settings.type === 'parallax' ? () => ({
+        x: Math.sin(time() * 2) * this.app.screen.width * 0.15,
+        y: Math.sin(time()) * this.app.screen.height * 0.12,
+      }) : undefined;
+      return [{ key: session.key, settings: preview.effect.settings, time, offset }];
+    });
+    this.sceneCamera.postFXs.configure(configured, new Set(opticalPreviews.map(({ key }) => key)));
+    const previewShakeLayers = active.some(({ preview: { effect } }) => effect.type === 'shake' && effect.useDepth);
+    const visualLayers: Container[] = [];
+    for (const node of [...this.objects, ...[...this.netCopies.values()].map(copy => copy.node)]) {
+      if (node.screenSpace || node.type === 'Camera2D' || node.type === 'AudioSource' ||
+          node.type === 'AudioListener' || node.type === 'Light2D') continue;
+      const display = this.displays.get(node.id);
+      if (!display) continue;
+      visualLayers.push(display);
+    }
+    this.sceneCamera.postFXs.apply(visualLayers, undefined, previewShakeLayers, {
+      previews: opticalPreviews,
+      texture: alias => alias ? this.texture(alias, Texture.EMPTY) : undefined,
+    });
+    this.publishEffectRequirements(rig?.id, configured);
+  }
+
+  private publishEffectRequirements(cameraId?: string, effects: readonly CameraPostFXData[] = []) {
+    const next = new Map<string, Map<string, RequiredCameraEffect[]>>();
+    const add = (id: string, key: string, instance: CameraEffect) => {
+      const required = cameraRequirements(instance);
+      if (!required.length) return;
+      const entries = next.get(id) ?? new Map();
+      entries.set(key, required);
+      next.set(id, entries);
+    };
+    if (cameraId) for (const { key } of effectEntries(effects)) {
+      const instance = this.sceneCamera.postFXs.get(key);
+      if (instance instanceof CameraEffect) add(cameraId, key, instance);
+    }
+    for (const preview of this.previewSessions.values()) if (preview.cameraEffect) add(preview.id, preview.key, preview.cameraEffect);
+    if (!next.size && !this.requiredEffects.size) return;
+    this.requiredEffects = next;
+    for (const listener of this.requirementListeners) listener();
+  }
+
+  private syncTicker() {
+    if (this.editorTicker) {
+      if (this.particlePreview && !this.app.particles.active(isVisible, this.particlePreview)) this.particlePreview = undefined;
+      const running = this.timelinePlaying || !!this.app.director?.active || this.directorPreviews.size > 0 || !!this.particlePreview || this.hasTimedEffectPreview();
+      if (running) this.editorTicker.start();
+      else this.editorTicker.stop();
+      return;
+    }
+    if (this.hasTimedEffectPreview()) {
       this.liveEffectTicker ??= new Ticker().add(ticker => {
         this.advanceEffectPreview(ticker.deltaMS / 1000);
         if (!this.app.ticker.started || this.app.scripts.paused) {
@@ -1949,69 +2745,13 @@ export class SceneView {
         }
       });
       this.liveEffectTicker.start();
-    }
-    this.syncTicker();
-  }
-
-  private advanceEffectPreview(seconds: number) {
-    const preview = this.effectPreview;
-    if (!preview) return;
-    preview.elapsed += seconds;
-    if (preview.elapsed >= preview.effect.duration) this.clearEffectPreview();
-    if (preview.effect.type !== 'lightPulse') {
-      this.updateSceneCamera();
-      this.drawGrid();
-    }
-  }
-
-  stopEffectPreview() {
-    if (!this.effectPreview) return;
-    this.clearEffectPreview();
-    this.updateSceneCamera();
-    this.drawGrid();
-    this.drawSelection();
-    this.app.render();
-    this.syncTicker();
-  }
-
-  private clearEffectPreview() {
-    if (!this.effectPreview) return;
-    this.effectPreview = undefined;
-    this.liveEffectTicker?.stop();
-    delete this.app.canvas.dataset.effectPreview;
-  }
-
-  private applyCameraLayerEffects() {
-    const camera = this.gameScene ? this.activeCamera()?.camera : this.editCamera()?.camera;
-    this.sceneCamera.postFXs.configure(camera?.postFXs);
-    if (!camera) return;
-    const perspectiveLayers: Container[] = [];
-    const visualLayers: Container[] = [];
-    for (const node of this.objects) {
-      if (node.screenSpace || node.type === 'Camera2D' || node.type === 'AudioSource' ||
-          node.type === 'AudioListener' || node.type === 'Light2D') continue;
-      const display = this.displays.get(node.id);
-      if (!display) continue;
-      if (node.type === 'Container') perspectiveLayers.push(display);
-      visualLayers.push(display);
-    }
-    this.sceneCamera.postFXs.apply(visualLayers, perspectiveLayers);
-  }
-
-  private syncTicker() {
-    if (this.editorTicker) {
-      if (this.particlePreview && !this.app.particles.active(isVisible, this.particlePreview)) this.particlePreview = undefined;
-      const running = this.timelinePlaying || !!this.particlePreview || !!this.effectPreview;
-      if (running) this.editorTicker.start();
-      else this.editorTicker.stop();
-      return;
-    }
+    } else this.liveEffectTicker?.stop();
     const running = !!this.gameScene && !this.suspended && this.app.clock.state === 'running';
     if (running && !this.app.ticker.started) this.app.ticker.start();
     if (!running && this.app.ticker.started) this.app.ticker.stop();
   }
 
-  private animatedDisplay(node: AnimationObject): Container {
+  private animatedDisplay(node: Extract<SceneObject, { type: 'Spine' | 'AnimatedSprite' }>): Container {
     const anchor = node.type === 'AnimatedSprite' ? node.anchor : undefined;
     const asset = node.asset ? this.assets.get(node.asset) : undefined;
     if (!asset || asset.kind !== (node.type === 'Spine' ? 'spine' : 'sheet')) return new Sprite({ texture: this.placeholder, anchor });
@@ -2033,21 +2773,41 @@ export class SceneView {
     if (!entry.source) return new Sprite({ texture: this.placeholder, anchor });
     const existing = this.animations.get(node.id);
     if (existing?.matches(entry.source, node)) {
-      existing.sync(node);
+      existing.sync(node, this.app.clock.state === 'running');
       return existing.display;
     }
+    existing?.dispose();
     existing?.display.destroy({ children: true });
-    const animation = new SceneAnimation(entry.source, node);
+    const animation = new SceneAnimation(entry.source, node, event => {
+      if (!this.gameScene) return;
+      const silent = this.app.clock.state !== 'running';
+      const audio = event.type === 'spine.event' ? event.audio : undefined;
+      if (!silent && audio) {
+        const current = this.authored.get(node.id);
+        if (current?.type === 'Spine') {
+          const alias = Object.hasOwn(current.eventAudio ?? {}, audio.path) ? current.eventAudio![audio.path] : undefined;
+          if (typeof alias === 'string' && this.assets.get(alias)?.kind === 'audio') {
+            this.app.audio.director.playCue(alias, audio.volume, audio.balance);
+          } else if (alias === undefined) {
+            const url = spineEmbeddedAudioUrl(this.assets.get(current.asset ?? '')?.media, audio.path);
+            if (url) this.app.audio.director.playCue(`${current.asset}#${audio.path}`, audio.volume, audio.balance, url);
+          }
+        }
+      }
+      const signal = { ...event, sourceId: node.id, silent };
+      this.app.scripts.enqueue({ type: event.type, sourceId: node.id, event: event.name, silent, data: signal });
+      this.emitDirectorSignal(event.type, signal);
+    });
     this.animations.set(node.id, animation);
     return animation.display;
   }
 
-  private texture(alias: string | null): Texture {
+  private texture(alias: string | null, fallback = this.placeholder): Texture {
     const asset = alias ? this.assets.get(alias) : undefined;
-    if (asset?.kind !== 'image') return this.placeholder;
+    if (asset?.kind !== 'image') return fallback;
     const { url } = asset;
     const existing = this.textures.get(url);
-    if (existing) return existing.texture ?? this.placeholder;
+    if (existing) return existing.texture ?? fallback;
 
     const entry: TextureEntry = {};
     this.textures.set(url, entry);
@@ -2062,6 +2822,6 @@ export class SceneView {
       entry.failed = true;
       this.render();
     });
-    return this.placeholder;
+    return fallback;
   }
 }

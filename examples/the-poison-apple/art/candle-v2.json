@@ -1,0 +1,194 @@
+{
+  "frames": {
+    "pose-0": {
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 126,
+        "h": 128
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 126,
+        "h": 128
+      },
+      "sourceSize": {
+        "w": 126,
+        "h": 128
+      }
+    },
+    "pose-1": {
+      "frame": {
+        "x": 126,
+        "y": 0,
+        "w": 126,
+        "h": 128
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 126,
+        "h": 128
+      },
+      "sourceSize": {
+        "w": 126,
+        "h": 128
+      }
+    },
+    "pose-2": {
+      "frame": {
+        "x": 252,
+        "y": 0,
+        "w": 126,
+        "h": 128
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 126,
+        "h": 128
+      },
+      "sourceSize": {
+        "w": 126,
+        "h": 128
+      }
+    },
+    "pose-3": {
+      "frame": {
+        "x": 378,
+        "y": 0,
+        "w": 126,
+        "h": 128
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 126,
+        "h": 128
+      },
+      "sourceSize": {
+        "w": 126,
+        "h": 128
+      }
+    },
+    "pose-4": {
+      "frame": {
+        "x": 0,
+        "y": 128,
+        "w": 126,
+        "h": 128
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 126,
+        "h": 128
+      },
+      "sourceSize": {
+        "w": 126,
+        "h": 128
+      }
+    },
+    "pose-5": {
+      "frame": {
+        "x": 126,
+        "y": 128,
+        "w": 126,
+        "h": 128
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 126,
+        "h": 128
+      },
+      "sourceSize": {
+        "w": 126,
+        "h": 128
+      }
+    },
+    "pose-6": {
+      "frame": {
+        "x": 252,
+        "y": 128,
+        "w": 126,
+        "h": 128
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 126,
+        "h": 128
+      },
+      "sourceSize": {
+        "w": 126,
+        "h": 128
+      }
+    },
+    "pose-7": {
+      "frame": {
+        "x": 378,
+        "y": 128,
+        "w": 126,
+        "h": 128
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 126,
+        "h": 128
+      },
+      "sourceSize": {
+        "w": 126,
+        "h": 128
+      }
+    }
+  },
+  "animations": {
+    "flicker": [
+      "pose-0",
+      "pose-1",
+      "pose-2",
+      "pose-3",
+      "pose-2",
+      "pose-4",
+      "pose-5",
+      "pose-6",
+      "pose-7",
+      "pose-6",
+      "pose-1",
+      "pose-0",
+      "pose-2",
+      "pose-5",
+      "pose-4",
+      "pose-3",
+      "pose-2",
+      "pose-1"
+    ]
+  },
+  "meta": {
+    "image": "candle-v2-poses.webp",
+    "size": {
+      "w": 504,
+      "h": 256
+    },
+    "scale": "1"
+  }
+}

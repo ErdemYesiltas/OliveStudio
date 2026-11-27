@@ -46,8 +46,13 @@ function displayProfile(width: number, height: number): PreviewProfile {
 async function prepare() {
   document.title = document.querySelector('meta[name="game-title"]')?.getAttribute('content') ?? document.title;
   status.textContent = t('gameLoading');
-  const manifest = new URL('./assetpack/manifest.json', location.href);
-  const [data, packed, config] = await Promise.all([json(new URL('./project.json', location.href)), json(manifest), optionalConfig()]);
+  const meta = (name: string) => document.querySelector<HTMLMetaElement>(`meta[name="${name}"]`)?.content;
+  const assetRoot = meta('olive-asset-root') ?? new URL('./assetpack/', location.href).href;
+  const peerProject = meta('olive-game-project');
+  const manifest = new URL('manifest.json', assetRoot);
+  const [data, packed, config] = await Promise.all([
+    json(new URL(peerProject ?? './project.json', location.href)), json(manifest), peerProject ? undefined : optionalConfig(),
+  ]);
   const project = parseProject(config && data && typeof data === 'object' ? { ...data, config } : data);
   const progress = storageStore('olive:achievements:' + (project.gameSave?.key ?? location.pathname + ':' + project.startup), localStorage);
   const network = networkPlan(project);
@@ -88,10 +93,10 @@ async function prepare() {
   let stopInput: (() => void) | undefined;
   let queued: ScenePlayback | undefined;
   let queuedGlobals: Record<string, unknown> | undefined;
-  const changeScene = (target: string, mode: SceneLink['mode']) => {
+  const changeScene = (target: string, mode: SceneLink['mode'], link?: SceneLink) => {
     if (!project.scenes.some(record => record.id === target)) return;
     const previous = queued ?? playback;
-    const next = followProjectSceneLink(project, previous, { target, mode });
+    const next = followProjectSceneLink(project, previous, link ?? { target, mode });
     if (previous === next) return;
     schedule(next);
   };
@@ -136,13 +141,13 @@ async function prepare() {
         if (previous !== current) schedule(previous);
       }, debug: false, production: project,
     }, project.content, host, progress);
-    const stopCinematic = playCinematic(view, project, primary.id, id => changeScene(id, 'replace'));
+    const stopCinematic = playCinematic(view, project, primary.id);
     view.app.audio.sources.playScene();
     let canceled = false;
     let stopNetwork: (() => void) | undefined;
     if (online) void import('@rewrite/multiplayer-colyseus/client').then(({ gameEndpoint }) => {
       if (canceled) return;
-      const name = (new URLSearchParams(location.search).get('name')?.trim() || t('networkGamePlayer')).slice(0, 32);
+      const name = ((meta('olive-game-peer') ?? new URLSearchParams(location.search).get('name'))?.trim() || t('networkGamePlayer')).slice(0, 32);
       stopNetwork = view.attachNetwork(network, gameEndpoint(network.settings, location), name, project.inputMap, client => {
         if (client?.error) console.warn(client.error);
       });

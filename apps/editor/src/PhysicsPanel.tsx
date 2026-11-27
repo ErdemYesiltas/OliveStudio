@@ -2,7 +2,7 @@ import {
   bodyTypes, defaultRigidBody, jointKinds, layersCollide, parsePoints, physicsLayerCount, setLayerPair,
   type JointData, type PhysicsSettings, type RigidBodyData,
 } from '@rewrite/physics/contracts';
-import { Box, Eye, FastForward, Link2, Pause, Play, Plus, Trash2 } from 'lucide-react';
+import { Box, Clapperboard, Eye, FastForward, Link2, Pause, Play, Plus, Trash2 } from 'lucide-react';
 import { useState, type ReactNode } from 'react';
 import { IconButton, PanelHeader } from './chrome';
 import { t, type MessageKey } from './i18n';
@@ -168,15 +168,17 @@ function ColliderFields({ item, index, fit, change, remove }: {
   </section>;
 }
 
-export function PhysicsPanel({ settings, editable, debug, toggleDebug, status, layerInUse, change, pause, step }: {
+export function PhysicsPanel({ settings, editable, debug, toggleDebug, status, layerInUse, change, pause, step, addDirectorCue }: {
   settings: PhysicsSettings; editable: boolean; debug: boolean; status?: PhysicsStatus;
   layerInUse: boolean; toggleDebug: () => void; pause: (paused: boolean) => void; step: () => void;
   change: (next: PhysicsSettings) => void;
+  addDirectorCue?: () => void;
 }) {
   const set = (patch: Partial<PhysicsSettings>) => change({ ...settings, ...patch });
   const { layers } = settings;
   return <section className="panel" aria-label={t('physicsPanel')}>
     <PanelHeader icon={Box} label={t('physicsPanel')} description={t('physicsPanelHint')}>
+      {addDirectorCue && <IconButton icon={Clapperboard} label={t('directorAddCue')} description={t('directorAction_gravity')} onClick={addDirectorCue} />}
       <IconButton icon={Eye} label={text('showColliders')} aria-pressed={debug} onClick={toggleDebug} />
       <IconButton icon={status?.paused ? Play : Pause} label={text(status?.paused ? 'resume' : 'pause')}
         disabled={!status || !!status.errors.length} onClick={() => pause(!status?.paused)} />

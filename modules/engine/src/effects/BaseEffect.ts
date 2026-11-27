@@ -65,6 +65,11 @@ export abstract class BaseEffect<
     return this._attached;
   }
 
+  /** The current instances acquired by this effect, including shared dependencies. */
+  public get requiredEffects() {
+    return this._attached ? EffectScope.for(this.target).dependenciesOf(this) : [];
+  }
+
   /**
    * Bind the effect to `target` and run the subclass's {@link onAttach} wiring.
    * Idempotent — a second call is a no-op, so an effect can never double-subscribe.
@@ -184,6 +189,13 @@ export class EffectScope<TTarget extends object> {
   }
 
   get(key: EffectKey) { return this.effects.get(key)?.effect; }
+
+  dependenciesOf(owner: EffectInstance<TTarget>) {
+    return [...this.requirements.get(owner)?.keys() ?? []].flatMap(key => {
+      const entry = this.effects.get(key);
+      return entry && !entry.attaching ? [{ key, effect: entry.effect }] : [];
+    });
+  }
 
   *values() {
     for (const { effect, attaching } of this.effects.values()) if (!attaching) yield effect;

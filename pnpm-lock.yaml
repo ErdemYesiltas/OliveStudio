@@ -171,9 +171,18 @@ importers:
       sharp:
         specifier: 0.34.5
         version: 0.34.5
+      unzipper:
+        specifier: 0.12.5
+        version: 0.12.5
       vite:
         specifier: 7.3.1
         version: 7.3.1(@types/node@24.19.2)(jiti@2.7.0)
+
+  apps/vscode:
+    dependencies:
+      image-size:
+        specifier: 2.2.0
+        version: 2.2.0
 
   modules/achievements:
     dependencies:
@@ -455,6 +464,12 @@ importers:
 
   modules/engine:
     dependencies:
+      '@esotericsoftware/spine-core':
+        specifier: 4.2.120
+        version: 4.2.120
+      '@esotericsoftware/spine-pixi-v8':
+        specifier: 4.2.120
+        version: 4.2.120(pixi.js@8.23.0)
       '@pixi/layout':
         specifier: 3.2.1
         version: 3.2.1(@types/react@19.3.0)(pixi.js@8.23.0)(react@19.3.1)(yoga-layout@3.2.1)
@@ -4545,6 +4560,11 @@ packages:
 
   image-q@4.0.0:
     resolution: {integrity: sha512-PfJGVgIfKQJuq3s0tTDOKtztksibuUEbJQIYT3by6wctQo+Rdlh7ef4evJ5NCdxY4CfMbvFkocEwbl4BF8RlJw==}
+
+  image-size@2.2.0:
+    resolution: {integrity: sha512-93QTtmEv0UD26RTJfmxQvWzhlauWO1TizNPjCumqzlACXYmI7TlwRWWT2+M4at7kZwnj+WkMOW9XKI76eX0dWw==}
+    engines: {node: '>=22'}
+    hasBin: true
 
   immer@11.2.10:
     resolution: {integrity: sha512-pzANBj+0A9u+prdhBJ14DVi44vCvVUQzBa8DKt6I0AMCokPHtt722BK9IX5bFC70xUSU9TnzLRIJLTGqIzjEFw==}
@@ -9410,6 +9430,8 @@ snapshots:
   image-q@4.0.0:
     dependencies:
       '@types/node': 16.9.1
+
+  image-size@2.2.0: {}
 
   immer@11.2.10: {}
 

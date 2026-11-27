@@ -4,16 +4,25 @@ import { hint, IconButton, PanelHeader } from './chrome';
 import { Numeric } from './Inspector';
 import { locale, t } from './i18n';
 import type { SceneView } from './runtime';
-import { findObject, type SceneObject } from './scene';
-import { audioTween, authoredValue, defaultTransport, timelineEases, timelineLimits, timelineProperties, tweenValue, type TweenKey, type TweenTrack } from './timeline';
+import { findObject, validationMessage, type SceneObject } from './scene';
+import { audioTween, authoredValue, defaultTransport, timelineEases, timelineLimits, timelineProperties, tweenValue, type TimelineTransport, type TweenKey, type TweenTrack } from './timeline';
+import { DirectorFields, type DirectorPreview } from './DirectorFields';
+import { cinematicSession } from './playCinematic';
 import { CinematicFields, type CueTargets } from './CinematicFields';
 import { TimelineCurve } from './TimelineCurve';
-import { changeClip, clipLimit, clipList, compileClip, emptyCinematics, mainClip, removeClip,
+import { changeClip, clipLimit, clipList, compileClip, cueLimit, emptyCinematics, mainClip, removeClip,
   type Clip, type ClipData, type DirectedClip, type OnionSkin } from './cinematics';
 
 import type { RecordTarget } from './timelineRecording';
 import { valueDrop } from './valueDrag';
 const number = new Intl.NumberFormat(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+export type TimelinePreviewCommand =
+  | { action: 'play'; clip: DirectedClip; position: number; transport: TimelineTransport; fade: number }
+  | { action: 'seek'; clip: DirectedClip; position: number }
+  | { action: 'pause' | 'stop' }
+  | { action: 'onion'; settings?: OnionSkin }
+  | { action: 'record'; target?: RecordTarget };
 
 export function TimelinePanel({ data, targets, selected, editable, visible, view, change, layoutChildren, locked, record, prefabEditing }: {
   data: ClipData; targets: CueTargets; selected?: SceneObject; editable: boolean; visible: boolean;
@@ -40,6 +49,20 @@ export function TimelinePanel({ data, targets, selected, editable, visible, view
   const [onion, setOnion] = useState(false);
   const [onionSettings, setOnionSettings] = useState<OnionSkin>({ before: 1, after: 1, spacing: 6 });
   const preview = useRef<SceneView | null>(null);
+  const directorSession = useRef<ReturnType<typeof cinematicSession>>(undefined);
+  const [directorPreview, setDirectorPreview] = useState<DirectorPreview>();
+  const directorPreviewRun = useRef<object>(undefined);
+  const [revealedCue, revealCue] = useState<string>();
+  function stopDirector() {
+    directorPreviewRun.current = undefined;
+    setDirectorPreview(current => current && current.status !== 'stopped' ? { name: current.name, status: 'stopped' } : current);
+    directorSession.current?.dispose();
+    directorSession.current = undefined;
+  }
+
+  function session(runtime: SceneView) {
+    return directorSession.current ??= cinematicSession(runtime, data);
+  }
   const timeRef = useRef(0);
   const track = tracks.find(item => item.id === active) ?? tracks[0];
   const target = track && findObject(nodes, track.target);
@@ -63,6 +86,7 @@ export function TimelinePanel({ data, targets, selected, editable, visible, view
   }, [armed, visible, editable, current.id, playhead, directed, record]);
   useEffect(() => {
     if (!visible) {
+      stopDirector();
       preview.current?.stopTimeline();
       preview.current = null;
       setArmed(false);
@@ -72,30 +96,41 @@ export function TimelinePanel({ data, targets, selected, editable, visible, view
   }, [visible]);
   useEffect(() => {
     if (!preview.current) return;
+    stopDirector();
     const position = Math.min(timeRef.current, directed.duration);
     preview.current.seekTimeline(directed, position);
     setPosition(position);
     setPlaying(false);
   }, [compiled, nodes]);
   useEffect(() => {
-    if (visible) view.current?.setOnionSkin(onion ? onionSettings : undefined);
+    if (!visible) return;
+    const settings = onion ? onionSettings : undefined;
+    view.current?.setOnionSkin(settings);
   }, [onion, onionSettings, visible, view]);
-  useEffect(() => () => { preview.current?.stopTimeline(); }, []);
+  useEffect(() => () => {
+    directorPreviewRun.current = undefined;
+    directorSession.current?.dispose();
+    preview.current?.stopTimeline();
+  }, []);
+  useEffect(() => { if (!editable) stopDirector(); }, [editable]);
 
   function start(clip: DirectedClip, position: number, seconds = 0) {
     const runtime = view.current;
     if (!runtime) return;
     preview.current = runtime;
+    const director = prefabEditing ? undefined : session(runtime);
+    director?.pause(false);
     runtime.playTimeline(clip, position, (position, ended) => {
       setPosition(position);
       if (ended) setPlaying(false);
-    }, { transport, fade: seconds });
+    }, { transport, fade: seconds, cue: director?.run });
     setPlaying(true);
   }
 
   function playback() {
     if (playing) {
       view.current?.pauseTimeline();
+      directorSession.current?.pause(true);
       setPlaying(false);
       return;
     }
@@ -107,12 +142,14 @@ export function TimelinePanel({ data, targets, selected, editable, visible, view
     const runtime = view.current;
     if (!runtime) return;
     preview.current = runtime;
+    stopDirector();
     runtime.seekTimeline(directed, position);
     setPlaying(false);
     setPosition(position);
   }
 
   function stop() {
+    stopDirector();
     preview.current?.stopTimeline();
     preview.current = null;
     setPlaying(false);
@@ -287,7 +324,48 @@ export function TimelinePanel({ data, targets, selected, editable, visible, view
           </div>;
         })}
       </fieldset>}
-      {!prefabEditing && <CinematicFields clip={current} playhead={playhead} targets={targets} clips={clips}
+      {!prefabEditing && <DirectorFields items={library.director ?? []} editable={editable} targets={{ ...targets, clips }} playback={directorPreview}
+        cueHint={t('directorCueHint', { clip: current.name, time: number.format(playhead) })}
+        cue={current.cues.length < cueLimit ? composition => {
+          const id = crypto.randomUUID();
+          editClip(clip => ({ ...clip, cues: [...clip.cues, {
+            id, kind: 'director', name: composition.slice(0, 80).trim(), time: playhead, composition,
+          }] }));
+          revealCue(id);
+        } : undefined}
+        change={items => change(previous => {
+          const metadata = previous.cinematics ?? emptyCinematics;
+          const byId = new Map(items.map(item => [item.id, item.name]));
+          const renamed = new Map(metadata.director?.map(({ id, name }) => [name, byId.get(id)]));
+          const renameCues = <T extends { cues: Clip['cues'] }>(clip: T): T => ({
+            ...clip, cues: clip.cues.map(cue => cue.kind === 'director' && renamed.get(cue.composition) ?
+              { ...cue, composition: renamed.get(cue.composition)! } : cue),
+          });
+          return { ...previous, cinematics: { ...metadata, director: items,
+            main: renameCues(metadata.main), clips: metadata.clips.map(renameCues) } };
+        })}
+        preview={name => {
+          const run = {};
+          try {
+            const runtime = view.current;
+            if (!runtime) throw new Error(t('directorPreviewUnavailable'));
+            preview.current = runtime;
+            const control = session(runtime).play(name);
+            if (!control) throw new Error(t('directorPreviewUnavailable'));
+            directorPreviewRun.current = run;
+            setDirectorPreview({ name, status: 'running' });
+            void control.finished.then(
+              () => { if (directorPreviewRun.current === run) setDirectorPreview({ name, status: 'completed' }); },
+              error => {
+                if (directorPreviewRun.current === run) setDirectorPreview({ name, status: 'failed', error: validationMessage(error) });
+              },
+            );
+          } catch (error) {
+            setDirectorPreview({ name, status: 'failed', error: validationMessage(error) });
+          }
+        }} stop={stop} />}
+      {!prefabEditing && <CinematicFields clip={current} playhead={playhead}
+        targets={{ ...targets, compositions: library.director }} clips={clips} revealedCue={revealedCue}
         candidates={clips.filter(clip => clip.id !== current.id && !referencesClip(clips, clip.id, current.id))}
         editable={editable} change={editClip} />}
     </div>

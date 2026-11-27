@@ -1,5 +1,8 @@
 import { createContext, useContext, useEffect, useState, type ComponentProps, type HTMLAttributes, type ReactNode } from 'react';
 import { Maximize2, Minus, Minimize2, X, type LucideIcon } from 'lucide-react';
+import type { ViewportMode } from './Viewport';
+
+export const PreviewMode = createContext<ViewportMode>('edit');
 
 export function hint(label: string, description?: string) {
   return { 'data-tip': label, 'data-tip-description': description };

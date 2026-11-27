@@ -1,7 +1,7 @@
 import { createGraphDefinition, GraphSchema } from '@rewrite/interactions';
 import { logicTools } from './sceneLogic';
 import { z } from 'zod';
-import { findObject, objectSchema, type PrefabLink, type SceneObject } from './scene';
+import { findObject, objectSchema, type CameraObject, type PrefabLink, type SceneObject } from './scene';
 import { selectionRoots, selectionTree } from './selection';
 import { timelineSchema, type TweenTrack } from './timeline';
 import type { Project, SceneRecord } from './project';
@@ -30,6 +30,11 @@ function remapEntries(items: Record<string, string>, ids: IdMap) {
 
 const remapGraph = createGraphDefinition(() => logicTools()).remapReferences!;
 
+function remapCamera(camera: CameraObject['camera'], targetId: (id: string) => string): CameraObject['camera'] {
+  return { ...camera,
+    postFXs: camera.postFXs?.map(effect => 'target' in effect ? { ...effect, target: targetId(effect.target) } : effect) };
+}
+
 function remapNode(node: SceneObject, ids: IdMap, trackIds: IdMap, scenes?: IdMap): SceneObject {
   const id = ids.get(node.id)!;
   const prefab = node.prefab && { ...node.prefab, objects: remapEntries(node.prefab.objects, ids), tracks: remapEntries(node.prefab.tracks, trackIds) };
@@ -43,7 +48,7 @@ function remapNode(node: SceneObject, ids: IdMap, trackIds: IdMap, scenes?: IdMa
     ...(node.behavior ? { behavior: { ...node.behavior, refs: remapRefs(node.behavior.refs) } } : {}),
     ...(node.behaviour ? { behaviour: { ...node.behaviour, refs: remapRefs(node.behaviour.refs) } } : {}) };
   if (node.type === 'Camera2D') {
-    return { ...node, ...metadata, id, camera: { ...node.camera, target: ids.get(node.camera.target) ?? node.camera.target } };
+    return { ...node, ...metadata, id, camera: remapCamera(node.camera, target => ids.get(target) ?? target) };
   }
   return node.type === 'Container' ? { ...node, ...metadata, id, children: node.children.map(child => remapNode(child, ids, trackIds, scenes)) } :
     { ...node, ...metadata, id };
@@ -187,7 +192,8 @@ function rebase(previous: Prefab, next: Prefab, liveRoot: SceneObject, timeline:
   }
   function build(source: SceneObject, mapped: SceneObject): SceneObject {
     const old = before.nodes.get(source.id)?.node, local = current.nodes.get(mapped.id)?.node;
-    const baseline = old?.type === 'Camera2D' ? { ...old, camera: { ...old.camera, target: link.objects[old.camera.target] ?? old.camera.target } } : old;
+    const baseline = old?.type === 'Camera2D' ?
+      { ...old, camera: remapCamera(old.camera, target => link.objects[target] ?? target) } : old;
     const fields = mode !== 'revert' && baseline && local ? merge(values(baseline), values(local), values(mapped)) : values(mapped);
     const result = { ...(fields as SceneObject), id: mapped.id, ...(mapped.prefab ? { prefab: mapped.prefab } : {}) } as SceneObject;
     return source.type === 'Container' && mapped.type === 'Container' ?

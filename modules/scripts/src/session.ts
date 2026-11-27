@@ -38,6 +38,8 @@ export interface ScriptPhysics {
  raycast(x1: number, y1: number, x2: number, y2: number): {entityId: string; x: number; y: number; normalX: number; normalY: number; distance: number}[];
  objectsAt(x: number, y: number): string[]; objectsIn(x: number, y: number, width: number, height: number): string[];
 }
+export type SpinePlayOptions = {track?: number; loop?: boolean; speed?: number; mixDuration?: number; weight?: number};
+export type SpineTrackCommand = 'pause' | 'resume' | 'stop';
 export interface ScriptHost extends Pick<ActionContext, 'setActive' | 'changeScene' | 'addScene' | 'removeScene' | 'invoke' | 'globals' | 'camera'> {
  pushScene?(id: string): void;
  popScene?(): void;
@@ -45,6 +47,15 @@ export interface ScriptHost extends Pick<ActionContext, 'setActive' | 'changeSce
  /** Optional replay seed for game.random and sandbox Math.random. */
  seed?:number;
  physics?: ScriptPhysics;
+ spine?: {
+  play(id: string, clip: string, options: SpinePlayOptions): void;
+  control(id: string, track: number, command: SpineTrackCommand): boolean;
+  setSkin(id: string, skin: string | null, layers: readonly string[]): void;
+  resetSkin(id: string): void;
+  bone(id: string, name: string): {x: number; y: number} | undefined;
+  point(id: string, slot: string): {name: string; x: number; y: number; rotation: number} | undefined;
+  boxes(id: string, slot?: string): {slot: string; name: string; vertices: {x: number; y: number}[]}[];
+ };
  /** Achievements and leaderboards. */
  achievements?: {unlock(key: string): boolean; unlocked(key: string): boolean; submit(board: string, score: number, name?: string): number; top(board: string): {name: string; score: number}[]; list(): {id: string; name: string; unlocked: boolean}[]};
  /** Dialogues: open, continue, choose, close, and the line on screen. */
@@ -303,6 +314,17 @@ globalThis.game = Object.freeze({
     get zoom() { return JSON.parse(__h.cam('view')).zoom; }, set zoom(v) { __h.cam('zoom', __num(v)); },
     get x() { return JSON.parse(__h.cam('view')).x; }, get y() { return JSON.parse(__h.cam('view')).y; }, get rotation() { return JSON.parse(__h.cam('view')).rotation; },
   }),
+  spine: Object.freeze({
+    play(target, clip, options) { __h.spine('play', String(target && target.id || target), String(clip), JSON.stringify(options ?? {})); },
+    pause(target, track = 0) { return __h.spine('pause', String(target && target.id || target), track); },
+    resume(target, track = 0) { return __h.spine('resume', String(target && target.id || target), track); },
+    stop(target, track = 0) { return __h.spine('stop', String(target && target.id || target), track); },
+    setSkin(target, skin, layers = []) { __h.spine('setSkin', String(target && target.id || target), skin, JSON.stringify(layers)); },
+    resetSkin(target) { __h.spine('resetSkin', String(target && target.id || target)); },
+    bone(target, name) { return JSON.parse(__h.spine('bone', String(target && target.id || target), String(name))); },
+    point(target, slot) { return JSON.parse(__h.spine('point', String(target && target.id || target), String(slot))); },
+    boxes(target, slot) { return JSON.parse(__h.spine('boxes', String(target && target.id || target), slot == null ? undefined : String(slot))); },
+  }),
   isDown(action) { return __h.isDown(String(action)); },
   changeScene(name) { __h.scene(String(name)); },
   pushScene(name) { __h.sceneStack('push', String(name)); },
@@ -402,11 +424,12 @@ globalThis.__frame = dt => {
   __flushMessages(); return __drain();
 };
 const __publish = (type, id, value) => { try { __events$.next({type, id, value}); } catch (error) { __streamError('game.on(' + type + ')')(error); } };
-const __owned = new Set(['onPointerEnter', 'onPointerLeave', 'onDragEnd', 'onClick', 'onCollision', 'onCollisionExit', 'onMarker', 'onComplete', 'onBeat', 'onSoundEnd', 'onTimer', 'onArrive']);
+const __owned = new Set(['onPointerEnter', 'onPointerLeave', 'onDragEnd', 'onClick', 'onCollision', 'onCollisionExit', 'onMarker', 'onComplete', 'onSpineEvent', 'onSpineComplete', 'onBeat', 'onSoundEnd', 'onTimer', 'onArrive']);
 globalThis.__event = (kind, entityId, a, b) => {
   __startAll();
   if (kind === 'broadcast') { __messages.push([String(a), b === null ? null : JSON.parse(b)]); __flushMessages(); return __drain(); }
-  const args = () => kind === 'onGlobal' ? [a, __liveGlobal(a, JSON.parse(b))] : kind === 'onInput' || kind === 'onDialogue' || (kind.startsWith('onPointer') && !__owned.has(kind)) ? [a, b] : kind === 'onCollision' ? [__object(a), b ? JSON.parse(b) : null] : kind === 'onCollisionExit' ? [__object(a)] : kind === 'onMarker' || kind === 'onBeat' ? [a] : [];
+  const spineType = kind === 'onSpineEvent' ? 'spineEvent' : kind === 'onSpineComplete' ? 'spineComplete' : '';
+  const args = () => spineType ? [JSON.parse(b)] : kind === 'onGlobal' ? [a, __liveGlobal(a, JSON.parse(b))] : kind === 'onInput' || kind === 'onDialogue' || (kind.startsWith('onPointer') && !__owned.has(kind)) ? [a, b] : kind === 'onCollision' ? [__object(a), b ? JSON.parse(b) : null] : kind === 'onCollisionExit' ? [__object(a)] : kind === 'onMarker' || kind === 'onBeat' ? [a] : [];
   for (const i of __live()) {
     if (__owned.has(kind) && i.entityId !== entityId) continue;
     __call(i, kind, args());
@@ -414,6 +437,7 @@ globalThis.__event = (kind, entityId, a, b) => {
   if (__kinds.size) __providers('event', kind, __owned.has(kind) ? entityId : '', args());
   const type = {onClick: 'click', onCollision: 'collision', onCollisionExit: 'collisionExit', onInput: 'input', onGlobal: 'global', onMarker: 'marker', onComplete: 'complete', onBeat: 'beat', onSoundEnd: 'soundEnd'}[kind];
   if (type) __publish(type, entityId, kind === 'onInput' ? {action: a, phase: b} : kind === 'onGlobal' ? {name: a, value: JSON.parse(b)} : kind === 'onMarker' ? {object: __object(entityId), name: a} : kind === 'onBeat' ? {object: __object(entityId), beat: a, bar: a % 4 === 0} : __object(entityId));
+  if (spineType) __publish(spineType, entityId, {...JSON.parse(b), object: __object(entityId)});
   __flushMessages(); return __drain();
 };
 globalThis.__currentHook = () => __current;
@@ -617,6 +641,11 @@ export class ScriptSession {
   if (event.type === 'navigation.arrived') return this.call(this.event, ['onArrive', event.sourceId, null, null]);
   if (event.type === 'physics.enter') return this.call(this.event, ['onCollision', event.sourceId, event.event || null, event.data ? JSON.stringify(event.data) : null]);
   if (event.type === 'physics.exit') return this.call(this.event, ['onCollisionExit', event.sourceId, event.event || null, null]);
+  if (event.type === 'spine.event' || event.type === 'spine.complete') {
+   if (event.data) this.call(this.event,
+    [event.type === 'spine.event' ? 'onSpineEvent' : 'onSpineComplete', event.sourceId, null, JSON.stringify(event.data)]);
+   return;
+  }
   if (event.type === 'global.change') { const g = this.host.names.globals.find(x => x.id === event.sourceId); if (g && this.host.globals) this.call(this.event, ['onGlobal', '', g.name, JSON.stringify(this.host.globals.get(g.id))]); return; }
   if ((event.type === 'audio.beat' && event.event === 'beat') || event.type === 'audio.ended') {
    const owner = this.host.entities().find(e => e.components.some(c => c.id === event.sourceId));
@@ -818,6 +847,33 @@ export class ScriptSession {
     case 'view': return JSON.stringify(c.view?.() ?? {x: this.host.stage.width / 2, y: this.host.stage.height / 2, zoom: 1, rotation: 0});
     default: throw Error(`Unknown camera operation ${String(op)}`);
    }
+  });
+  fn('spine', (op, id, name, rawOptions) => {
+   const spine = this.host.spine;
+   if (op === 'play') {
+    if (!spine) throw Error('Spine playback is unavailable');
+    const options = JSON.parse(String(rawOptions));
+    if (!options || typeof options !== 'object' || Array.isArray(options)) throw Error('Spine playback options must be an object');
+    spine.play(String(id), String(name), options);
+    return undefined;
+   }
+   if (op === 'pause' || op === 'resume' || op === 'stop') {
+    if (typeof name !== 'number') throw Error('A Spine track must be a number');
+    return spine?.control(String(id), name, op) ?? false;
+   }
+   if (op === 'setSkin') {
+    if (!spine) throw Error('Spine skin changes are unavailable');
+    const layers = JSON.parse(String(rawOptions));
+    if ((name !== null && typeof name !== 'string') || !Array.isArray(layers) ||
+        layers.some(layer => typeof layer !== 'string')) throw Error('Spine skins must be specified by name');
+    spine.setSkin(String(id), name, layers);
+    return undefined;
+   }
+   if (op === 'resetSkin') { spine?.resetSkin(String(id)); return undefined; }
+   if (op === 'bone') return JSON.stringify(spine?.bone(String(id), String(name)) ?? null);
+   if (op === 'point') return JSON.stringify(spine?.point(String(id), String(name)) ?? null);
+   if (op === 'boxes') return JSON.stringify(spine?.boxes(String(id), name === undefined ? undefined : String(name)) ?? []);
+   throw Error(`Unknown Spine operation ${String(op)}`);
   });
   fn('service', (id, kind, method) => {
    const e = this.entity(String(id));

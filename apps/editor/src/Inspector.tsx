@@ -1,5 +1,5 @@
 import type { NetworkPlayer } from '@rewrite/multiplayer/contracts';
-import { Box } from 'lucide-react';
+import { ArrowDown, ArrowUp, Bone, Box, Clapperboard, Layers3, Plus } from 'lucide-react';
 import { ObjectPhysicsFields } from './PhysicsPanel';
 import { hasPhysics, objectPhysicsSchema } from './physicsModel';
 import { selectionTree } from './selection';
@@ -10,27 +10,33 @@ import type { ParticlePreset } from './particlePresets';
 import { useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import { screenAnchors } from '@olivestudio/engine/screen';
 import { effectEntries } from '@olivestudio/engine';
-import { cameraBlurFilters, CameraPostFXSchema, type CameraDepthBlur, type CameraPostFXData, type CameraPostFXType } from '@olivestudio/engine/runtime-camera';
+import { cameraBlurFilters, cameraFrameDimensionMax, cameraFrameRatios, CameraPostFXSchema, defaultCameraEase, type CameraMotionData,
+  cameraFilterControls, cameraFilterHasDepth, cameraFilterKinds, cameraFilterValue, isCameraFilter, type CameraFilterData, type CameraFilterKind,
+  type CameraDepthBlur, type CameraPostFXData, type CameraPostFXType } from '@olivestudio/engine/runtime-camera';
 import { alignments, directions, fits, justifications, objectPositions, overflows } from '@rewrite/layout/contracts';
 import { blendModes } from '@rewrite/render-pixi/effects';
 import { effectTypesFor, makeObjectEffect, type ObjectEffectData } from './objectEffects';
-import { alternateTestZoom, type EffectPreview } from './effectPreview';
+import { defaultPreviewMode, effectPreviewFor, previewDuration, type EffectPreviewMode, type EffectPreviewSettings } from './effectPreview';
+import type { RequiredCameraEffect } from './runtime';
+import { EaseEditor, EaseVisualizer } from './EaseVisualizer';
 import { widgetGlobalType, widgetKinds, type WidgetData } from '@olivestudio/engine/widgets';
 import type { Globals } from '@rewrite/interactions';
 import {
   AlignCenterHorizontal, AlignCenterVertical, AlignEndHorizontal, AlignEndVertical, AlignHorizontalSpaceBetween,
-  AlignLeft, AlignStartHorizontal, AlignStartVertical, AlignVerticalSpaceBetween, Anchor, AudioLines, Bold, Camera, ChevronRight, Contrast,
+  AlignLeft, AlignStartHorizontal, AlignStartVertical, AlignVerticalSpaceBetween, Anchor, AudioLines, Bold, ChevronRight, Contrast,
   Crosshair, Eye, Film, Fingerprint, FlipHorizontal2, FlipVertical2, Gauge, Globe, Headphones, Image, Lightbulb, Lock, LockOpen,
-  Grid2X2, Monitor, Move, Network, Palette, Paintbrush, Play, Repeat, RotateCcw, RotateCw, Scaling, Shapes, Sparkles, Spline, Square, Table2, Tag,
+  Grid2X2, Link2, Monitor, Move, Network, Palette, Paintbrush, Play, Repeat, RotateCcw, RotateCw, Scaling, Shapes, Sparkles, Spline, Square, Table2, Tag,
   TextCursorInput, Trash2, Type, Volume2, type LucideIcon,
 } from 'lucide-react';
 import { audioBuses, audioRolloffs, type AudioTransport, type SourceStatus } from './audio';
-import type { Asset } from './assets';
+import { spineEmbeddedAudio, type Asset } from './assets';
+import { loadAnimation } from './animationAssets';
+import { SpineSkinLayers } from './SpineSkinLayers';
 import { hint, IconButton } from './chrome';
 import { objectTypeKey, t, type MessageKey } from './i18n';
-import { isAnimationObject, type AnimationObject } from './sceneAnimation';
-import type { AudioSourceObject, CameraObject, ParticleObject, SceneObject } from './scene';
-import { objectAsset } from './assetLibrary';
+import { isAnimationObject, type AnimationObject, type AudioSourceObject, type CameraObject, type ParticleObject,
+  type SceneObject, type SpineCue, type SpineMix, type SpinePlayback } from './scene';
+import { assignObjectAsset, objectAsset } from './assetLibrary';
 import { TexturePicker } from './TexturePicker';
 import { defaultFlexContainer, defaultFlexItem, type FlexContainer, type FlexItem } from './layout';
 import type { Alignment } from './selection';
@@ -39,6 +45,7 @@ import { dropOne } from './valueDrag';
 type Point = { x: number; y: number };
 type Props = {
   node: SceneObject;
+  framingViewport: () => { width: number; height: number };
   roots: SceneObject[];
   topLevel: boolean;
   layoutChild: boolean;
@@ -55,8 +62,19 @@ type Props = {
   physicsLayers: readonly string[];
   physicsFit: () => { width: number; height: number; offsetX: number; offsetY: number } | undefined;
   restartParticles: (id: string) => void;
-  testEffect?: (effect: EffectPreview) => void;
-  stopEffectTest: () => void;
+  addDirectorCue?: (kind: 'audio' | 'physics' | 'particles') => void;
+  addRigBone?: () => void;
+  openRigTimeline?: () => void;
+  openSpineAnimation?: () => void;
+  previewEffect?: (key: string, effect: EffectPreviewSettings) => void;
+  previewModes: ReadonlyMap<string, EffectPreviewMode>;
+  setPreviewMode: (key: string, mode: EffectPreviewMode) => void;
+  updateEffect?: (key: string, effect: CameraPostFXData | ObjectEffectData) => void;
+  requiredEffects?: ReadonlyMap<string, RequiredCameraEffect[]>;
+  updateRequiredEffect?: (instance: RequiredCameraEffect['instance'], settings: CameraPostFXData) => void;
+  activeEffectPreview: (key: string) => boolean;
+  resetEffectTest: (key: string) => void;
+  stopEffectTest: (key: string) => void;
   readOnly: boolean;
   audioStatus?: SourceStatus;
   audioEnabled: boolean;
@@ -78,13 +96,15 @@ function PropertyLabel({ title, icon: Icon }: { title: string; icon: LucideIcon 
   </span>;
 }
 
-function Section({ name, icon, initial = false, children, instance, title }: {
-  name: DetailKey; icon: LucideIcon; initial?: boolean; children: ReactNode; instance?: string; title?: string;
+function Section({ name, icon, initial = false, children, instance, title, actions }: {
+  name: DetailKey; icon: LucideIcon; initial?: boolean; children: ReactNode; instance?: string; title?: string; actions?: ReactNode;
 }) {
   const [open, setOpen] = useState(initial);
   return <details data-inspector-section={name} data-inspector-effect={instance} open={open} onToggle={event => setOpen(event.currentTarget.open)}>
-    <summary aria-description={t(`${name}Hint`)} {...hint(title ?? t(name), t(`${name}Hint`))}>
+    <summary aria-description={t(`${name}Hint`)} {...hint(title ?? t(name), t(`${name}Hint`))}
+      onClick={actions ? event => { event.preventDefault(); setOpen(value => !value); } : undefined}>
       <ChevronRight className="disclosure" size={12} aria-hidden="true" /><PropertyLabel title={title ?? t(name)} icon={icon} />
+      {actions && <span className="effect-header-tools">{actions}</span>}
     </summary>
     <div className="fields">{children}</div>
   </details>;
@@ -152,32 +172,51 @@ export function RequiredText({ value, commit, label }: { value: string; commit: 
   }} />;
 }
 
-function AnimationFields({ node, assets, update }: Pick<Props, 'assets' | 'update'> & { node: AnimationObject }) {
+function AnimationFields({ node, assets, update, openSpineAnimation }: Pick<Props, 'assets' | 'update' | 'openSpineAnimation'> & { node: AnimationObject }) {
   const asset = node.asset ? assets.get(node.asset) : undefined;
-  const [details, setDetails] = useState<{ asset: Asset; animations: string[]; skins: string[] }>();
+  const [details, setDetails] = useState<{ asset: Asset; animations: string[]; skins: string[]; audioPaths: string[] }>();
   const kind = node.type === 'Spine' ? 'spine' : 'sheet';
 
   useEffect(() => {
     if (!asset?.media || asset.kind !== kind) return;
     let active = true;
+    if (kind === 'spine' && /\.skel$/i.test(asset.path)) {
+      void loadAnimation(asset).then(source => {
+        try {
+          if (active && source.kind === 'spine') setDetails({ asset,
+            animations: source.skeleton.animations.map(clip => clip.name), skins: source.skeleton.skins.map(skin => skin.name),
+            audioPaths: source.skeleton.events.flatMap(event => event.audioPath ? [event.audioPath] : []) });
+        } finally { source.dispose(); }
+      }).catch(() => {});
+      return () => { active = false; };
+    }
     void fetch(asset.url).then(response => response.json()).then(json => {
       if (!active) return;
       const animations = Object.keys(json.animations ?? {}).filter(name => kind === 'spine' || json.animations[name]?.length);
       const skins = kind === 'spine' && Array.isArray(json.skins) ?
         json.skins.flatMap((skin: { name?: unknown }) => typeof skin.name === 'string' ? [skin.name] : []) : [];
-      setDetails({ asset, animations, skins });
+      const audioPaths = kind === 'spine' ? Object.values(json.events ?? {}).flatMap(event =>
+        event && typeof event === 'object' && 'audio' in event && typeof event.audio === 'string' && event.audio ? [event.audio] : []) : [];
+      setDetails({ asset, animations, skins, audioPaths });
     }).catch(() => {});
     return () => { active = false; };
   }, [asset, kind]);
 
   const assign = (alias: string | null) => update(object => {
-    if (object.type === 'Spine') return { ...object, asset: alias, animation: null, skin: null };
+    if (alias) {
+      const next = assets.get(alias);
+      return next ? assignObjectAsset(object, next) : object;
+    }
+    if (object.type === 'Spine') return { ...object, asset: alias, animation: null, skin: null,
+      skinLayers: undefined, eventAudio: undefined, playback: undefined, mix: object.mix && { duration: object.mix.duration, pairs: [] } };
     return object.type === 'AnimatedSprite' ? { ...object, asset: alias, animation: null } : object;
   });
   const playback = (patch: Partial<Pick<AnimationObject, 'animation' | 'playing' | 'loop' | 'speed'>>) =>
     update(object => isAnimationObject(object) ? { ...object, ...patch } : object);
-  const { animations = [], skins = [] } = details?.asset === asset && details ? details : {};
-  return <Section name="sceneAnimation" icon={Film} initial>
+  const { animations = [], skins = [], audioPaths = [] } = details?.asset === asset && details ? details : {};
+  return <Section name="sceneAnimation" icon={Film} initial actions={openSpineAnimation &&
+    <IconButton icon={Bone} label={t('spineEditAnimation')} description={t('spineEditAnimationHint')}
+      onClick={event => { event.stopPropagation(); openSpineAnimation(); }} />}>
     <Field name="animationAsset" icon={Image}><select value={node.asset ?? ''} onChange={event => assign(event.target.value || null)}
       {...dropOne('asset', alias => alias !== node.asset && assets.get(alias)?.kind === kind, assign)}>
       <option value="">{t('chooseAnimationAsset')}</option>
@@ -186,13 +225,24 @@ function AnimationFields({ node, assets, update }: Pick<Props, 'assets' | 'updat
         <option key={item.alias} value={item.alias} title={item.alias}>{item.name ?? item.alias}</option>)}
     </select></Field>
     {node.type === 'Spine' && <Field name="assetSkin" icon={Palette}>
-      <select value={node.skin ?? ''} disabled={!skins.length} onChange={event => update(object =>
-        object.type === 'Spine' ? { ...object, skin: event.target.value || null } : object)}>
+      <select value={node.skin ?? ''} disabled={!skins.length} onChange={event => {
+        const skin = event.target.value || null;
+        const base = skin ?? (skins.includes('default') ? 'default' : skins[0]);
+        update(object => {
+          if (object.type !== 'Spine') return object;
+          const layers = object.skinLayers?.filter(name => name !== base);
+          return { ...object, skin, skinLayers: layers?.length ? layers : undefined };
+        });
+      }}>
         <option value="">{t('defaultSkin')}</option>
         {node.skin && !skins.includes(node.skin) && <option value={node.skin}>{node.skin}</option>}
         {skins.map(name => <option key={name}>{name}</option>)}
       </select>
     </Field>}
+    {node.type === 'Spine' && (skins.length > 1 || !!node.skinLayers?.length) && <Section name="spineSkinLayers" icon={Layers3}>
+      <SpineSkinLayers skins={skins} base={node.skin} layers={node.skinLayers ?? []} change={layers =>
+        update(object => object.type === 'Spine' ? { ...object, skinLayers: layers.length ? layers : undefined } : object)} />
+    </Section>}
     <Field name="assetAnimation" icon={Film}>
       <select value={node.animation ?? ''} disabled={!animations.length}
         onChange={event => playback({ animation: event.target.value || null })}>
@@ -207,8 +257,156 @@ function AnimationFields({ node, assets, update }: Pick<Props, 'assets' | 'updat
       onChange={event => playback({ loop: event.target.checked })} /></Field>
     <NumberField name={node.type === 'Spine' ? 'playbackSpeed' : 'framesPerSecond'} icon={Gauge}
       value={node.speed} min={0.01} max={120} commit={speed => playback({ speed })} />
+    {node.type === 'Spine' && <SpineMixFields value={node.mix} animations={animations} change={mix =>
+      update(object => object.type === 'Spine' ? { ...object, mix } : object)} />}
+    {node.type === 'Spine' && <SpinePlaybackFields value={node.playback} animations={animations} change={playback =>
+      update(object => object.type === 'Spine' ? { ...object, playback: playback.queue.length || playback.tracks.length ? playback : undefined } : object)} />}
+    {node.type === 'Spine' && (audioPaths.length > 0 || node.eventAudio) && <Section name="spineEventAudio" icon={AudioLines}>
+      {[...new Set([...audioPaths, ...Object.keys(node.eventAudio ?? {})])].map(path => {
+        const mute = '__mute__';
+        const alias = Object.hasOwn(node.eventAudio ?? {}, path) ? node.eventAudio![path] ?? mute : '';
+        const embedded = spineEmbeddedAudio(asset?.media, path);
+        const assignAudio = (value: string) => update(object => {
+          if (object.type !== 'Spine') return object;
+          const mapping = { ...object.eventAudio, ...(value && { [path]: value === mute ? null : value }) };
+          if (!value) delete mapping[path];
+          return { ...object, eventAudio: Object.keys(mapping).length ? mapping : undefined };
+        });
+        return <label className="field" key={path} title={path}>
+          <PropertyLabel icon={AudioLines} title={path} />
+          <span className="field-value"><select aria-label={t('spineAudioForPath', { path })} value={alias}
+            {...dropOne('asset', alias => assets.get(alias)?.kind === 'audio', assignAudio)}
+            onChange={event => assignAudio(event.target.value)}>
+            <option value="">{t(embedded ? 'spineEmbeddedSound' : 'spineNoEventAudio')}</option>
+            {(embedded || alias === mute) && <option value={mute}>{t('spineMuteEventAudio')}</option>}
+            {alias && alias !== mute && assets.get(alias)?.kind !== 'audio' && <option value={alias}>{t('missingAssetOption', { alias })}</option>}
+            {Array.from(assets.values()).filter(asset => asset.kind === 'audio').map(asset =>
+              <option key={asset.alias} value={asset.alias}>{asset.name ?? asset.alias}</option>)}
+          </select></span>
+        </label>;
+      })}
+    </Section>}
     {node.type === 'AnimatedSprite' && <Coordinates name="anchor" icon={Anchor} value={node.anchor} commit={anchor =>
       update(object => object.type === 'AnimatedSprite' ? { ...object, anchor } : object)} />}
+  </Section>;
+}
+
+function moveSpinePlaybackItem<T>(list: T[], from: number, to: number) {
+  const next = [...list];
+  const [item] = next.splice(from, 1);
+  next.splice(to, 0, item);
+  return next;
+}
+
+function SpinePlaybackFields({ value, animations, change }: {
+  value?: SpinePlayback; animations: string[]; change: (data: SpinePlayback) => void;
+}) {
+  const { queue, tracks } = value ?? { queue: [], tracks: [] };
+  const seed = (): SpineCue => ({ animation: animations[0], loop: false, delay: 0 });
+  return <Section name="spinePlaybackTracks" icon={Layers3}>
+    <fieldset className="spine-mix-pair">
+      <legend>{t('spineBaseQueue')}</legend>
+      <SpineCueFields cues={queue} animations={animations} change={queue => change({ queue, tracks })} />
+    </fieldset>
+    {tracks.map((track, offset) => {
+      const index = offset + 1;
+      const replace = (track: SpinePlayback['tracks'][number]) => change({ queue,
+        tracks: tracks.map((item, position) => position === offset ? track : item) });
+      return <fieldset key={index} className="spine-mix-pair">
+        <legend>{t('spineOverlayTrack', { index })}</legend>
+        <NumberField name="spineOverlayWeight" icon={Gauge} value={track.weight} min={0} max={1} commit={weight => replace({ ...track, weight })} />
+        <SpineCueFields cues={track.clips} animations={animations} change={clips => {
+          if (clips.length) replace({ ...track, clips });
+          else change({ queue, tracks: tracks.filter((_, position) => position !== offset) });
+        }} />
+        <div className="asset-animation-buttons">
+          <IconButton icon={ArrowUp} label={t('spineMoveOverlayUp', { index })} disabled={!offset}
+            onClick={() => change({ queue, tracks: moveSpinePlaybackItem(tracks, offset, offset - 1) })} />
+          <IconButton icon={ArrowDown} label={t('spineMoveOverlayDown', { index })} disabled={offset === tracks.length - 1}
+            onClick={() => change({ queue, tracks: moveSpinePlaybackItem(tracks, offset, offset + 1) })} />
+          <IconButton icon={Trash2} label={t('spineRemoveOverlay', { index })}
+            onClick={() => change({ queue, tracks: tracks.filter((_, position) => position !== offset) })} />
+        </div>
+      </fieldset>;
+    })}
+    <button type="button" className="bundle-command" disabled={!animations.length}
+      onClick={() => change({ queue, tracks: [...tracks, { weight: 1, clips: [seed()] }] })}>
+      <Plus size={14} aria-hidden="true" />{t('spineAddOverlay')}
+    </button>
+  </Section>;
+}
+
+function SpineCueFields({ cues, animations, change }: { cues: SpineCue[]; animations: string[]; change: (cues: SpineCue[]) => void }) {
+  const patch = (index: number, fields: Partial<SpineCue>) =>
+    change(cues.map((cue, position) => position === index ? { ...cue, ...fields } : cue));
+  return <>
+    {cues.map((cue, offset) => {
+      const index = offset + 1;
+      return <fieldset key={index} className="spine-mix-pair">
+        <legend>{t('spineQueueEntry', { index })}</legend>
+        <Field name="assetAnimation" icon={Film}>
+          <select value={cue.animation} disabled={!animations.length} onChange={event => patch(offset, { animation: event.target.value })}>
+            {!animations.includes(cue.animation) && <option>{cue.animation}</option>}
+            {animations.map(name => <option key={name}>{name}</option>)}
+          </select>
+        </Field>
+        <Field name="loopAnimation" icon={Repeat}><input type="checkbox" checked={cue.loop}
+          onChange={event => patch(offset, { loop: event.target.checked })} /></Field>
+        <NumberField name="spineCueDelay" icon={Gauge} value={cue.delay} min={0} commit={delay => patch(offset, { delay })} />
+        <div className="asset-animation-buttons">
+          <IconButton icon={ArrowUp} label={t('spineMoveCueUp', { index })} disabled={!offset}
+            onClick={() => change(moveSpinePlaybackItem(cues, offset, offset - 1))} />
+          <IconButton icon={ArrowDown} label={t('spineMoveCueDown', { index })} disabled={offset === cues.length - 1}
+            onClick={() => change(moveSpinePlaybackItem(cues, offset, offset + 1))} />
+          <IconButton icon={Trash2} label={t('spineRemoveCue', { index })}
+            onClick={() => change(cues.filter((_, position) => position !== offset))} />
+        </div>
+      </fieldset>;
+    })}
+    <button type="button" className="bundle-command" disabled={!animations.length}
+      onClick={() => change([...cues, { animation: animations[0], loop: false, delay: 0 }])}>
+      <Plus size={14} aria-hidden="true" />{t('spineAddCue')}
+    </button>
+  </>;
+}
+
+function SpineMixFields({ value, animations, change }: {
+  value?: SpineMix; animations: string[]; change: (mix: SpineMix) => void;
+}) {
+  const { duration, pairs } = value ?? { duration: 0, pairs: [] };
+  const clips = [...new Set(animations)];
+  const pairIndex = new Map(pairs.map((pair, index) => [JSON.stringify([pair.from, pair.to]), index]));
+  const available = (from: string, to: string, except = -1) => {
+    const index = pairIndex.get(JSON.stringify([from, to]));
+    return index === undefined || index === except;
+  };
+  const nextFrom = clips.find(from => clips.some(to => available(from, to)));
+  const nextTo = nextFrom && clips.find(to => available(nextFrom, to));
+  const setPair = (index: number, patch: Partial<SpineMix['pairs'][number]>) =>
+    change({ duration, pairs: pairs.map((pair, offset) => offset === index ? { ...pair, ...patch } : pair) });
+  return <Section name="spineTransitions" icon={Spline}>
+    <NumberField name="spineDefaultMix" icon={Gauge} value={duration} min={0}
+      commit={duration => change({ duration, pairs })} />
+    {pairs.map((pair, index) => <fieldset key={JSON.stringify([pair.from, pair.to])} className="spine-mix-pair">
+      <legend>{t('spineTransitionPair', { index: index + 1 })}</legend>
+      {(['from', 'to'] as const).map(side => {
+        const options = clips.filter(clip => side === 'from' ? available(clip, pair.to, index) : available(pair.from, clip, index));
+        return <Field key={side} name={side === 'from' ? 'spineMixFrom' : 'spineMixTo'} icon={Film}>
+          <select value={pair[side]} disabled={!options.length} onChange={event => setPair(index, { [side]: event.target.value })}>
+            {!options.includes(pair[side]) && <option value={pair[side]}>{pair[side]}</option>}
+            {options.map(clip => <option key={clip}>{clip}</option>)}
+          </select>
+        </Field>;
+      })}
+      <NumberField name="spineMixDuration" icon={Gauge} value={pair.duration} min={0}
+        commit={duration => setPair(index, { duration })} />
+      <IconButton icon={Trash2} label={t('spineRemoveTransition')} onClick={() =>
+        change({ duration, pairs: pairs.filter((_, offset) => offset !== index) })} />
+    </fieldset>)}
+    <button className="bundle-command" type="button" disabled={!nextFrom || !nextTo}
+      onClick={() => { if (nextFrom && nextTo) change({ duration, pairs: [...pairs, { from: nextFrom, to: nextTo, duration }] }); }}>
+      <Plus size={14} aria-hidden="true" />{t('spineAddTransition')}
+    </button>
   </Section>;
 }
 
@@ -295,15 +493,15 @@ function TilemapFields({ node, update }: Pick<Props, 'update'> & { node: Extract
 
 type ParticleNumberKey = { [Key in keyof ParticleObject]: ParticleObject[Key] extends number ? Key : never }[keyof ParticleObject];
 
-function ParticleFields({ node, update, restartParticles, particlePresets, assets }: Pick<Props, 'update' | 'restartParticles' | 'particlePresets' | 'assets'> & { node: ParticleObject }) {
-  const [preview, showPreview] = useState(false);
+function ParticleFields({ node, update, restartParticles, particlePresets, addDirectorCue }: Pick<Props, 'update' | 'restartParticles' | 'particlePresets' | 'addDirectorCue'> & { node: ParticleObject }) {
   const change = (patch: Partial<Omit<ParticleObject, 'type'>>) => update(object =>
     object.type === 'Particles' ? { ...object, ...patch } : object);
   const numeric = (name: ParticleNumberKey & DetailKey, min?: number, max?: number, integer = false) =>
     <NumberField name={name} value={node[name]} min={min} max={max} integer={integer}
       commit={value => change({ [name]: value })} />;
   return <>
-    <Section name="emission" icon={Sparkles} initial>
+    <Section name="emission" icon={Sparkles} initial actions={addDirectorCue &&
+      <IconButton icon={Clapperboard} label={t('directorAddCue')} onClick={() => addDirectorCue('particles')} />}>
       <Field name="playInScene" icon={Play}><input type="checkbox" checked={node.playing}
         onChange={event => change({ playing: event.target.checked })} /></Field>
       <IconButton icon={RotateCcw} label={t('restartParticles')} description={t('restartParticlesHint')}
@@ -349,25 +547,30 @@ function ParticleFields({ node, update, restartParticles, particlePresets, asset
     {particlePresets && <Section name="particlePresets" icon={Sparkles}>
       <ParticlePresets key={node.id} node={node} {...particlePresets} apply={change} />
     </Section>}
-    <details data-inspector-section="particlePreview" onToggle={event => showPreview(event.currentTarget.open)}>
-      <summary>{t('particlePreview')}</summary>
-      {preview && <ParticlePreview node={node} texture={node.texture ? assets.get(node.texture)?.url : undefined} />}
-    </details>
   </>;
 }
 
-function AudioSourceFields({ node, assets, update, audioStatus, audioEnabled, audioTransport, playAudio, stopAudio }: {
+function ParticlePreviewSection({ node, texture }: { node: ParticleObject; texture?: string }) {
+  const [preview, showPreview] = useState(false);
+  return <details data-inspector-section="particlePreview" onToggle={event => showPreview(event.currentTarget.open)}>
+    <summary>{t('particlePreview')}</summary>
+    {preview && <ParticlePreview node={node} texture={texture} />}
+  </details>;
+}
+
+function AudioSourceFields({ node, assets, update, audioStatus, audioEnabled, audioTransport, playAudio, stopAudio, readOnly, addDirectorCue }: {
   node: AudioSourceObject;
-} & Pick<Props, 'assets' | 'update' | 'audioStatus' | 'audioEnabled' | 'audioTransport' | 'playAudio' | 'stopAudio'>) {
+} & Pick<Props, 'assets' | 'update' | 'audioStatus' | 'audioEnabled' | 'audioTransport' | 'playAudio' | 'stopAudio' | 'readOnly' | 'addDirectorCue'>) {
   const change = (patch: Partial<Omit<AudioSourceObject, 'type'>>) =>
     update(object => object.type === 'AudioSource' ? { ...object, ...patch } : object);
   const missing = node.asset && assets.get(node.asset)?.kind !== 'audio';
   const playing = audioStatus?.state === 'playing' || audioStatus?.state === 'loading' || audioStatus?.state === 'paused';
   return <>
-    <Section name="audioSourceSettings" icon={Volume2} initial>
+    <Section name="audioSourceSettings" icon={Volume2} initial actions={addDirectorCue &&
+      <IconButton icon={Clapperboard} label={t('directorAddCue')} onClick={() => addDirectorCue('audio')} />}>
       <Field name="audioClip" icon={AudioLines}>
-        <select value={node.asset ?? ''} onChange={event => change({ asset: event.target.value || null })}
-          {...dropOne('asset', alias => alias !== node.asset && assets.get(alias)?.kind === 'audio', asset => change({ asset }))}>
+        <select value={node.asset ?? ''} disabled={readOnly} onChange={event => change({ asset: event.target.value || null })}
+          {...dropOne('asset', alias => !readOnly && alias !== node.asset && assets.get(alias)?.kind === 'audio', asset => change({ asset }))}>
           <option value="">{t('audioNoClip')}</option>
           {missing && <option value={node.asset!}>{t('missingAssetOption', { alias: node.asset! })}</option>}
           {Array.from(assets.values()).filter(asset => asset.kind === 'audio').map(asset =>
@@ -380,44 +583,48 @@ function AudioSourceFields({ node, assets, update, audioStatus, audioEnabled, au
         <IconButton icon={Square} label={t('audioStopSource')} description={t('audioStopSourceHint')} onClick={stopAudio} disabled={!playing} />
         {audioStatus && <span role="status">{audioStatus.message ?? t(sourceStatuses[audioStatus.state])}</span>}
       </div>
-      <Field name="audioEnabled" icon={Eye}><input type="checkbox" checked={node.visible}
-        onChange={event => change({ visible: event.target.checked })} /></Field>
-      <NumberField name="audioVolume" icon={Volume2} value={node.volume} min={0} max={1} commit={volume => change({ volume })} />
-      <NumberField name="audioRate" icon={Gauge} value={node.rate} min={0.25} max={4} commit={rate => change({ rate })} />
-      <Field name="audioAutoplay" icon={Play}><input type="checkbox" checked={node.autoplay}
-        onChange={event => change({ autoplay: event.target.checked })} /></Field>
-      <Field name="audioLoop" icon={Repeat}><input type="checkbox" checked={node.loop}
-        onChange={event => change({ loop: event.target.checked })} /></Field>
-      {!node.loop && <NumberField name="audioVoiceLimit" icon={AudioLines} value={node.voiceLimit} min={1} max={16} integer
-        commit={voiceLimit => change({ voiceLimit })} />}
-      <Field name="audioBus" icon={AudioLines}>
-        <select value={node.bus} onChange={event => {
-          const bus = audioBuses.find(value => value === event.target.value);
-          if (bus) change({ bus });
-        }}>
-          {audioBuses.map(bus => <option key={bus} value={bus}>{t(busLabels[bus])}</option>)}
-        </select>
-      </Field>
-      <NumberField name="audioPan" icon={Headphones} value={node.pan} min={-1} max={1} commit={pan => change({ pan })} />
-    </Section>
-    <Section name="audioSpatialSettings" icon={Headphones} initial>
-      <Field name="audioSpatial" icon={Crosshair}><input type="checkbox" checked={node.spatial}
-        onChange={event => change({ spatial: event.target.checked })} /></Field>
-      {node.spatial && <>
-        <NumberField name="audioMinDistance" value={node.minDistance} min={0} icon={Crosshair}
-          commit={distance => change({ minDistance: Math.min(distance, node.maxDistance - 1) })} />
-        <NumberField name="audioMaxDistance" value={node.maxDistance} min={1} icon={Crosshair}
-          commit={distance => change({ maxDistance: Math.min(100000, Math.max(node.minDistance + 1, distance)) })} />
-        <Field name="audioRolloff" icon={Gauge}>
-          <select value={node.rolloff} onChange={event => {
-            const rolloff = audioRolloffs.find(value => value === event.target.value);
-            if (rolloff) change({ rolloff });
+      <fieldset className="fields" disabled={readOnly}>
+        <Field name="audioEnabled" icon={Eye}><input type="checkbox" checked={node.visible}
+          onChange={event => change({ visible: event.target.checked })} /></Field>
+        <NumberField name="audioVolume" icon={Volume2} value={node.volume} min={0} max={1} commit={volume => change({ volume })} />
+        <NumberField name="audioRate" icon={Gauge} value={node.rate} min={0.25} max={4} commit={rate => change({ rate })} />
+        <Field name="audioAutoplay" icon={Play}><input type="checkbox" checked={node.autoplay}
+          onChange={event => change({ autoplay: event.target.checked })} /></Field>
+        <Field name="audioLoop" icon={Repeat}><input type="checkbox" checked={node.loop}
+          onChange={event => change({ loop: event.target.checked })} /></Field>
+        {!node.loop && <NumberField name="audioVoiceLimit" icon={AudioLines} value={node.voiceLimit} min={1} max={16} integer
+          commit={voiceLimit => change({ voiceLimit })} />}
+        <Field name="audioBus" icon={AudioLines}>
+          <select value={node.bus} onChange={event => {
+            const bus = audioBuses.find(value => value === event.target.value);
+            if (bus) change({ bus });
           }}>
-            {audioRolloffs.map(rolloff => <option key={rolloff} value={rolloff}>{t(`audioRolloff_${rolloff}`)}</option>)}
+            {audioBuses.map(bus => <option key={bus} value={bus}>{t(busLabels[bus])}</option>)}
           </select>
         </Field>
-        <NumberField name="audioPanAmount" icon={Headphones} value={node.panAmount} min={0} max={1} commit={panAmount => change({ panAmount })} />
-      </>}
+        <NumberField name="audioPan" icon={Headphones} value={node.pan} min={-1} max={1} commit={pan => change({ pan })} />
+      </fieldset>
+    </Section>
+    <Section name="audioSpatialSettings" icon={Headphones} initial>
+      <fieldset className="fields" disabled={readOnly}>
+        <Field name="audioSpatial" icon={Crosshair}><input type="checkbox" checked={node.spatial}
+          onChange={event => change({ spatial: event.target.checked })} /></Field>
+        {node.spatial && <>
+          <NumberField name="audioMinDistance" value={node.minDistance} min={0} icon={Crosshair}
+            commit={distance => change({ minDistance: Math.min(distance, node.maxDistance - 1) })} />
+          <NumberField name="audioMaxDistance" value={node.maxDistance} min={1} icon={Crosshair}
+            commit={distance => change({ maxDistance: Math.min(100000, Math.max(node.minDistance + 1, distance)) })} />
+          <Field name="audioRolloff" icon={Gauge}>
+            <select value={node.rolloff} onChange={event => {
+              const rolloff = audioRolloffs.find(value => value === event.target.value);
+              if (rolloff) change({ rolloff });
+            }}>
+              {audioRolloffs.map(rolloff => <option key={rolloff} value={rolloff}>{t(`audioRolloff_${rolloff}`)}</option>)}
+            </select>
+          </Field>
+          <NumberField name="audioPanAmount" icon={Headphones} value={node.panAmount} min={0} max={1} commit={panAmount => change({ panAmount })} />
+        </>}
+      </fieldset>
     </Section>
   </>;
 }
@@ -459,19 +666,36 @@ function LightFields({ node, inWorld, update }: Pick<Props, 'update'> & { node: 
   </Section>;
 }
 
+const cameraFilterNames = Object.fromEntries(cameraFilterKinds.map(kind => [kind, `cameraFx_${kind}`])) as Record<CameraFilterKind, DetailKey>;
 const cameraEffectNames = {
-  perspective: 'cameraPerspective', depth: 'cameraDepth', curve: 'cameraCurve', shake: 'cameraShake',
-  zoom: 'cameraZoomEffect', limits: 'cameraLimits',
+  move: 'cameraMoveEffect', follow: 'cameraFollowEffect', focus: 'cameraFocusEffect', rotate: 'cameraRotateEffect',
+  depth: 'cameraDepth', curve: 'cameraCurve', tiltShift: 'cameraTiltShift', shake: 'cameraShake',
+  zoom: 'cameraZoomEffect', limits: 'cameraLimits', viewport: 'cameraViewportRelative', framing: 'cameraFraming',
+  ...cameraFilterNames,
 } satisfies Record<CameraPostFXType, DetailKey>;
-const cameraEffectTypes = Object.keys(cameraEffectNames) as CameraPostFXType[];
+const cameraEffectGroups = [
+  { label: 'cameraGroupMotion', types: ['move', 'follow', 'focus', 'rotate', 'zoom', 'shake', 'parallax'] },
+  { label: 'cameraGroupFraming', types: ['viewport', 'framing', 'limits'] },
+  { label: 'cameraGroupLens', types: ['curve', 'depth', 'tiltShift', 'zoomBlur', 'radialBlur', 'bulgePinch', 'distortion'] },
+  { label: 'cameraGroupColor', types: ['colorGrade', 'lut', 'gradient', 'vignette', 'rgbSplit'] },
+  { label: 'cameraGroupLighting', types: ['fog', 'bloom', 'glow', 'dropShadow', 'outline'] },
+  { label: 'cameraGroupStylized', types: ['heatHaze', 'reflection', 'shockwave', 'crt', 'oldFilm', 'glitch'] },
+] satisfies { label: MessageKey; types: CameraPostFXType[] }[];
+const cameraEffectTypes: CameraPostFXType[] = cameraEffectGroups.flatMap(group => group.types);
+
 
 function EffectList<K extends string, T extends { type: K; enabled: boolean; effectId?: string }>({
-  effects, types, names, create, change, fields, preview, readOnly,
+  effects, types, groups, names, create, change, updateEffect, fields, preview, required, headerActions, readOnly,
 }: {
   effects: readonly T[]; types: readonly K[]; names: Record<K, DetailKey>;
-  readOnly: boolean; preview?: (effect: T) => ReactNode;
+  groups?: readonly { label: MessageKey; types: readonly K[] }[];
+  headerActions?: (effect: T, key: string, title: string, remove: () => void) => ReactNode;
+  readOnly: boolean; preview?: (effect: T, key: string) => ReactNode;
+  required?: (key: string) => ReactNode;
+  updateEffect?: (key: string, effect: T) => void;
   create: (type: K) => T; change: (effects: T[]) => void; fields: (effect: T, replace: (effect: T) => void) => ReactNode;
 }) {
+  const options = (items: readonly K[]) => items.map(type => <option value={type} key={type}>{t(names[type])}</option>);
   return <Section name="objectEffects" icon={Sparkles} initial>
     <Field name="effectAdd" icon={Sparkles}>
       <select value="" disabled={readOnly || !types.length} onChange={event => {
@@ -479,21 +703,28 @@ function EffectList<K extends string, T extends { type: K; enabled: boolean; eff
         if (type) change([...effects, { ...create(type), effectId: crypto.randomUUID() }]);
       }}>
         <option value="">{t('effectChoose')}</option>
-        {types.map(type => <option value={type} key={type}>{t(names[type])}</option>)}
+        {groups ? groups.map(group => <optgroup label={t(group.label)} key={group.label}>{options(group.types)}</optgroup>) : options(types)}
       </select>
     </Field>
     {effectEntries(effects).map(({ effect, key, occurrence }, index) => {
       const name = names[effect.type];
       const title = occurrence === 1 ? t(name) : t('effectInstance', { name: t(name), number: occurrence });
-      const replace = (next: T) => change(effects.map((item, i) => i === index ? next : item));
-      return <Section name={name} icon={Sparkles} key={key} instance={key} title={title}>
+      const replace = (next: T) => {
+        if (updateEffect) updateEffect(key, next);
+        else change(effects.map((item, i) => i === index ? next : item));
+      };
+      const remove = () => change(effects.filter((_, i) => i !== index));
+      return <Section name={name} icon={Sparkles} key={key} instance={key} title={title}
+        actions={headerActions?.(effect, key, title, remove)}>
         <Field name="effectEnabled" icon={Eye}>
-          <input type="checkbox" checked={effect.enabled} disabled={readOnly} onChange={event => replace({ ...effect, enabled: event.currentTarget.checked })} />
+          <input type="checkbox" checked={effect.enabled} disabled={readOnly && !updateEffect}
+            onChange={event => replace({ ...effect, enabled: event.currentTarget.checked })} />
         </Field>
-        <fieldset className="fields effect-fields" disabled={readOnly || !effect.enabled}>{fields(effect, replace)}</fieldset>
-        {effect.enabled && preview?.(effect)}
-        <div className="panel-tools"><IconButton icon={Trash2} label={t('effectRemove', { name: title })} disabled={readOnly}
-          onClick={() => change(effects.filter((_, i) => i !== index))} /></div>
+        <fieldset className="fields effect-fields" disabled={!updateEffect && (readOnly || !effect.enabled)}>{fields(effect, replace)}</fieldset>
+        {required?.(key)}
+        {effect.enabled && preview?.(effect, key)}
+        {!headerActions && <div className="panel-tools"><IconButton icon={Trash2} label={t('effectRemove', { name: title })}
+          disabled={readOnly} onClick={remove} /></div>}
       </Section>;
     })}
   </Section>;
@@ -503,103 +734,221 @@ const cameraBlurLabels = {
   none: 'cameraBlurNone', gaussian: 'cameraBlurGaussian', kawase: 'cameraBlurKawase', motion: 'cameraBlurMotion',
 } satisfies Record<CameraDepthBlur['filter'], MessageKey>;
 
-function CameraFields({ node, roots, update }: Pick<Props, 'roots' | 'update'> & { node: CameraObject }) {
-  const { camera } = node;
-  function candidates(items: SceneObject[]): SceneObject[] {
-    return items.flatMap(item => item.screenSpace || item.id === node.id ? [] :
-      [item, ...(item.type === 'Container' ? candidates(item.children) : [])]);
-  }
-  const objects = candidates(roots);
-  const change = (patch: Partial<CameraObject['camera']>) => update(object =>
-    object.type === 'Camera2D' ? { ...object, camera: { ...object.camera, ...patch } } : object);
-  const numeric = (property: 'offsetX' | 'offsetY' | 'smoothing' | 'deadzoneWidth' | 'deadzoneHeight',
-    name: DetailKey, min: number, max: number) => <NumberField name={name} value={camera[property]} min={min} max={max}
-      commit={value => change({ [property]: value })} />;
-  return <>
-    <Section name="cameraSettings" icon={Camera} initial>
-      <Field name="cameraViewportRelative" icon={Monitor}><input type="checkbox" checked={camera.viewportRelative ?? false}
-        onChange={event => change({ viewportRelative: event.target.checked })} /></Field>
-      <Field name="cameraRotate" icon={RotateCw}><input type="checkbox" checked={camera.rotate}
-        onChange={event => change({ rotate: event.target.checked })} /></Field>
-      <Field name="cameraTarget" icon={Crosshair}><select value={camera.target} onChange={event => change({ target: event.target.value })}
-        {...dropOne('object', id => id !== camera.target && objects.some(item => item.id === id), target => change({ target }))}>
-        <option value="">{t('cameraNoTarget')}</option>
-        {camera.target && !objects.some(item => item.id === camera.target) && <option value={camera.target}>{t('cameraMissingTarget')}</option>}
-        {objects.map(item => <option key={item.id} value={item.id}>{item.label}</option>)}
-      </select></Field>
-      {camera.target && <>
-        {numeric('offsetX', 'cameraOffsetX', -100000, 100000)}
-        {numeric('offsetY', 'cameraOffsetY', -100000, 100000)}
-        {numeric('smoothing', 'cameraSmoothing', 0, 60)}
-        {numeric('deadzoneWidth', 'cameraDeadzoneWidth', 0, 100000)}
-        {numeric('deadzoneHeight', 'cameraDeadzoneHeight', 0, 100000)}
-        <Field name="cameraKeepInView" icon={Crosshair}><input type="checkbox" checked={camera.keepInView ?? false}
-          onChange={event => change({ keepInView: event.currentTarget.checked })} /></Field>
-        {camera.keepInView && <NumberField name="cameraSafeMargin" value={camera.safeMargin ?? 0} min={0} max={1000}
-          commit={safeMargin => change({ safeMargin })} />}
-      </>}
-    </Section>
-  </>;
+function cameraCandidates(items: SceneObject[], cameraId: string): SceneObject[] {
+  return items.flatMap(item => item.screenSpace || item.id === cameraId ? [] :
+    [item, ...(item.type === 'Container' ? cameraCandidates(item.children, cameraId) : [])]);
 }
 
-function CameraEffects({ node, update, testEffect, stopEffectTest, readOnly }:
-  Pick<Props, 'update' | 'testEffect' | 'stopEffectTest' | 'readOnly'> & { node: CameraObject }) {
-  return <EffectList readOnly={readOnly} effects={node.camera.postFXs ?? []} types={cameraEffectTypes} names={cameraEffectNames}
-      create={type => CameraPostFXSchema.parse({ type })}
-      change={postFXs => update(item => item.type === 'Camera2D' ?
-        { ...item, camera: { ...item.camera, postFXs: postFXs.length ? postFXs : undefined } } : item)}
-      fields={cameraEffectFields} preview={effect => <>
-        {effect.type === 'shake' && testEffect && <EffectTestForm
-          key={JSON.stringify(effect)} stop={stopEffectTest} play={values => testEffect({
-            type: 'shake', id: node.id, amplitude: Number(values.get('amplitude')), duration: Number(values.get('duration')),
-            rotation: Number(values.get('rotation')),
-          })}>
-          <EffectTestNumber name="testShakeStrength" field="amplitude" value={effect.amplitude} min={0} max={500} />
-          <EffectTestNumber name="testEffectDuration" field="duration" value={effect.duration} min={0.05} max={10} />
-          <EffectTestNumber name="testShakeRotation" field="rotation" value={effect.rotation} min={0} max={90} />
-        </EffectTestForm>}
-        {effect.type === 'zoom' && testEffect && (effect.min < effect.max ? <EffectTestForm key={JSON.stringify(effect)} stop={stopEffectTest}
-          play={values => testEffect({ type: 'zoom', id: node.id, zoom: Number(values.get('zoom')), min: effect.min, max: effect.max,
-            duration: Number(values.get('duration')) })}>
-          <EffectTestNumber name="testCameraZoom" field="zoom"
-            value={alternateTestZoom(Math.max(effect.min, Math.min(effect.max, effect.value)), effect.min, effect.max)}
-            min={effect.min} max={effect.max} />
-          <EffectTestNumber name="testEffectDuration" field="duration" value={2} min={0.1} max={10} />
-        </EffectTestForm> : <p className="empty">{t('testZoomFixedRange')}</p>)}
-      </>} />;
-}
-
-function EffectTestNumber({ name, field, value, min, max }: {
-  name: DetailKey; field: string; value: number; min: number; max: number;
+function CameraTargetField({ name, value, objects, change }: {
+  name: DetailKey; value: string; objects: SceneObject[]; change: (target: string) => void;
 }) {
-  return <Field name={name} icon={Gauge}>
-    <input type="number" name={field} defaultValue={value} min={min} max={max} step="any" required />
+  const hasTarget = objects.some(item => item.id === value);
+  return <Field name={name} icon={Crosshair}>
+    <select value={value} onChange={event => change(event.currentTarget.value)}
+      {...dropOne('object', id => id !== value && objects.some(item => item.id === id), change)}>
+      <option value="">{t('cameraNoTarget')}</option>
+      {value && !hasTarget && <option value={value}>{t('cameraMissingTarget')}</option>}
+      {objects.map(item => <option key={item.id} value={item.id}>{item.label}</option>)}
+    </select>
   </Field>;
 }
 
-function EffectTestForm({ children, play, stop }: { children: ReactNode; play: (values: FormData) => void; stop: () => void }) {
-  return <form className="effect-test" aria-label={t('effectTest')} onSubmit={event => {
-    event.preventDefault();
-    play(new FormData(event.currentTarget));
-  }}>
-    <span className="property-label">{t('effectTest')}</span>
-    {children}
-    <div className="panel-tools">
-      <IconButton type="submit" icon={Play} label={t('runEffectTest')} description={t('runEffectTestHint')} />
-      <IconButton icon={Square} label={t('stopEffectTest')} onClick={stop} />
-    </div>
-  </form>;
+function CameraEffects({ node, roots, assets, framingViewport, update, updateEffect, requiredEffects, updateRequiredEffect, previewEffect, previewModes, setPreviewMode, activeEffectPreview, resetEffectTest, stopEffectTest, readOnly }:
+  Pick<Props, 'roots' | 'assets' | 'framingViewport' | 'update' | 'updateEffect' | 'previewEffect' |
+    'requiredEffects' | 'updateRequiredEffect' | 'previewModes' | 'setPreviewMode' | 'activeEffectPreview' | 'resetEffectTest' | 'stopEffectTest' | 'readOnly'> & { node: CameraObject }) {
+  const objects = cameraCandidates(roots, node.id);
+  return <EffectList readOnly={readOnly} effects={node.camera.postFXs ?? []} types={cameraEffectTypes} groups={cameraEffectGroups} names={cameraEffectNames}
+    updateEffect={updateEffect}
+    create={type => CameraPostFXSchema.parse({ type })}
+    change={postFXs => update(item => item.type === 'Camera2D' ?
+      { ...item, camera: { ...item.camera, postFXs: postFXs.length ? postFXs : undefined } } : item)}
+    fields={(effect, replace) => cameraEffectFields(effect, replace, objects, assets, framingViewport)}
+    required={key => <RequiredEffects effects={requiredEffects?.get(key)} path={key} update={updateRequiredEffect}
+      objects={objects} assets={assets} framingViewport={framingViewport} />}
+    preview={(effect, key) => {
+      const duration = previewDuration(effectPreviewFor(node.id, effect));
+      return duration !== undefined && duration > 0 && <Field name="effectPreviewMode" icon={Repeat}>
+        <select value={previewModes.get(key) ?? defaultPreviewMode(effect)} onChange={event => {
+          setPreviewMode(key, event.currentTarget.value === 'loop' ? 'loop' : 'once');
+        }}>
+          <option value="once">{t('effectPreviewOnce')}</option>
+          <option value="loop">{t('effectPreviewLoop')}</option>
+        </select>
+      </Field>;
+    }}
+    headerActions={(effect, key, title, remove) => {
+      const active = activeEffectPreview(key);
+      const missingTarget = 'target' in effect && !objects.some(item => item.id === effect.target);
+      const missingLut = effect.type === 'lut' && !assets.has(String(cameraFilterValue(effect, 'texture')));
+      const unavailable = !previewEffect || missingTarget || missingLut;
+      const hint = missingTarget ? t('testCameraNeedsTarget') : missingLut ? t('cameraFxField_textureHint') : undefined;
+      return <>
+        <IconButton icon={active ? Square : Play} label={t(active ? 'stopCameraEffect' : 'previewCameraEffect', { name: title })}
+          description={hint ?? t('runEffectTestHint')} disabled={!active && unavailable} onClick={event => {
+            event.preventDefault();
+            event.stopPropagation();
+            if (active) stopEffectTest(key);
+            else previewEffect?.(key, effect);
+          }} />
+        <ResetEffectPreview name={title} active={active} reset={() => resetEffectTest(key)} />
+        <IconButton icon={Trash2} label={t('effectRemove', { name: title })} disabled={readOnly}
+          onClick={event => { event.preventDefault(); event.stopPropagation(); if (active) stopEffectTest(key); remove(); }} />
+      </>;
+    }} />;
 }
 
-function cameraEffectFields(effect: CameraPostFXData, replace: (effect: CameraPostFXData) => void) {
+function RequiredEffects({ effects, path, update, objects, assets, framingViewport }: {
+  effects?: RequiredCameraEffect[]; path: string; update: Props['updateRequiredEffect'];
+  objects: SceneObject[]; assets: Map<string, Asset>; framingViewport: Props['framingViewport'];
+}) {
+  if (!effects?.length) return null;
+  return <Section name="requiredEffects" icon={Link2} initial>
+    {effects.map(({ instance, settings, required }, index) => {
+      const key = `${path}:required:${index}`;
+      const replace = (next: CameraPostFXData) => update?.(instance, next);
+      return <Section key={key} name={cameraEffectNames[settings.type]} instance={key} icon={Sparkles}>
+        <fieldset className="fields" disabled={!update}>
+          <Field name="effectEnabled" icon={Eye}>
+            <input type="checkbox" checked={settings.enabled} onChange={event => replace({ ...settings, enabled: event.currentTarget.checked })} />
+          </Field>
+          {cameraEffectFields(settings, replace, objects, assets, framingViewport)}
+        </fieldset>
+        <RequiredEffects effects={required} path={key} update={update} objects={objects} assets={assets} framingViewport={framingViewport} />
+      </Section>;
+    })}
+  </Section>;
+}
+
+function ResetEffectPreview({ name, active, reset }: { name: string; active: boolean; reset: () => void }) {
+  return <IconButton icon={RotateCcw} label={t('resetEffectPreview', { name })} description={t('resetEffectPreviewHint')}
+    disabled={!active} onClick={event => {
+      event.preventDefault();
+      event.stopPropagation();
+      reset();
+    }} />;
+}
+
+function isCameraMotion(effect: CameraPostFXData): effect is CameraMotionData {
+  return effect.type === 'move' || effect.type === 'follow' || effect.type === 'focus' || effect.type === 'rotate';
+}
+
+function cameraMotionUsesEase(effect: CameraMotionData) {
+  return !(effect.type === 'follow' && effect.mode === 'tracking') && !(effect.type === 'rotate' && effect.mode === 'object');
+}
+
+function CameraDepthControls({ effect, replace }: {
+  effect: Extract<CameraPostFXData, { type: 'curve' | 'depth' | 'shake' | 'tiltShift' }> | CameraFilterData; replace: (effect: CameraPostFXData) => void;
+}) {
+  return <>
+    <Field name={effect.type === 'shake' ? 'cameraShakeUseDepth' : 'cameraUseDepth'} icon={Box}>
+      <input type="checkbox" checked={effect.useDepth ?? false}
+      onChange={event => replace({ ...effect, useDepth: event.currentTarget.checked })} /></Field>
+    {effect.useDepth && <>
+      {(effect.type === 'curve' || effect.type === 'depth') && <>
+        <NumberField name="cameraPerspectiveScale" value={effect.scale} min={0} max={100} integer
+          commit={scale => replace({ ...effect, scale })} />
+        <NumberField name="cameraPerspectiveDistance" icon={Move} value={effect.distance} min={0} max={240} integer
+          commit={distance => replace({ ...effect, distance })} />
+      </>}
+      <EaseVisualizer ease={effect.distribution ?? 'none'} distribution
+        apply={distribution => {
+          if (distribution !== (effect.distribution ?? 'none')) replace({ ...effect, distribution });
+        }} />
+    </>}
+  </>;
+}
+
+function CameraFilterFields({ effect, replace, assets }: {
+  effect: CameraFilterData; replace: (effect: CameraPostFXData) => void; assets: Map<string, Asset>;
+}) {
+  const textureId = useId();
+  return <>
+    {Object.entries(cameraFilterControls[effect.type]).map(([key, control]) => {
+      const name = `cameraFxField_${key}` as DetailKey;
+      const value = cameraFilterValue(effect, key);
+      const commit = (value: string | number) => replace({ ...effect, settings: { ...effect.settings, [key]: value } });
+      if (control.kind === 'number') return <NumberField key={key} name={name} value={Number(value)}
+        min={control.min} max={control.max} integer={key === 'slices'} commit={commit} />;
+      if (control.kind === 'color') return <ColorField key={key} name={name} icon={Paintbrush} value={String(value)} commit={commit} />;
+      return <Field key={key} name={name} icon={Image} controlId={textureId}>
+        <TexturePicker id={textureId} value={String(value) || null} assets={assets} choose={alias => commit(alias ?? '')} />
+      </Field>;
+    })}
+    {cameraFilterHasDepth(effect.type) && <CameraDepthControls effect={effect} replace={replace} />}
+  </>;
+}
+
+const framingPresets = [
+  ['cameraFrameDesktopRatios', cameraFrameRatios.desktop],
+  ['cameraFrameTabletRatios', cameraFrameRatios.tablet],
+  ['cameraFramePhoneRatios', cameraFrameRatios.phone],
+  ['cameraFrameFoldableRatios', cameraFrameRatios.foldable],
+] as const;
+const framingRatioValues = Object.values(cameraFrameRatios).flat();
+type FramingRatio = (typeof framingRatioValues)[number];
+
+function fitFramingRatio(ratio: FramingRatio, viewport: { width: number; height: number }) {
+  const [horizontal, vertical] = ratio.split(':').map(Number);
+  const scale = Math.min(Math.min(viewport.width, cameraFrameDimensionMax) / horizontal,
+    Math.min(viewport.height, cameraFrameDimensionMax) / vertical);
+  return { width: Math.max(1, Math.round(horizontal * scale)), height: Math.max(1, Math.round(vertical * scale)) };
+}
+
+function cameraEffectFields(effect: CameraPostFXData, replace: (effect: CameraPostFXData) => void,
+  objects: SceneObject[], assets: Map<string, Asset>, framingViewport: Props['framingViewport']) {
+  if (isCameraFilter(effect)) return <CameraFilterFields effect={effect} replace={replace} assets={assets} />;
+  if (isCameraMotion(effect)) return <>
+    {'target' in effect && <CameraTargetField name={effect.type === 'focus' ? 'cameraFocusTarget' : 'cameraTarget'}
+      value={effect.target} objects={objects} change={target => replace({ ...effect, target })} />}
+    {effect.type === 'move' && <>
+      <NumberField name="cameraMoveX" value={effect.x} min={-1e6} max={1e6} commit={x => replace({ ...effect, x })} />
+      <NumberField name="cameraMoveY" value={effect.y} min={-1e6} max={1e6} commit={y => replace({ ...effect, y })} />
+    </>}
+    {effect.type === 'follow' && <>
+      <Field name="cameraFollowMode" icon={Crosshair}><select value={effect.mode ?? 'eased'} onChange={event =>
+        replace({ ...effect, mode: event.currentTarget.value === 'tracking' ? 'tracking' : 'eased' })}>
+        <option value="eased">{t('cameraFollowEased')}</option>
+        <option value="tracking">{t('cameraFollowTracking')}</option>
+      </select></Field>
+      <NumberField name="cameraOffsetX" value={effect.offsetX} min={-1e6} max={1e6} commit={offsetX => replace({ ...effect, offsetX })} />
+      <NumberField name="cameraOffsetY" value={effect.offsetY} min={-1e6} max={1e6} commit={offsetY => replace({ ...effect, offsetY })} />
+      {effect.mode === 'tracking' && <>
+        {([
+          ['smoothing', 'cameraSmoothing', 60],
+          ['deadzoneWidth', 'cameraDeadzoneWidth', 100000],
+          ['deadzoneHeight', 'cameraDeadzoneHeight', 100000],
+        ] as const).map(([key, name, max]) => <NumberField key={key} name={name} value={effect[key] ?? 0}
+          min={0} max={max} commit={value => replace({ ...effect, [key]: value })} />)}
+        <Field name="cameraKeepInView" icon={Crosshair}><input type="checkbox" checked={effect.keepInView ?? false}
+          onChange={event => replace({ ...effect, keepInView: event.currentTarget.checked })} /></Field>
+        {effect.keepInView && <NumberField name="cameraSafeMargin" value={effect.safeMargin ?? 0} min={0} max={1000}
+          commit={safeMargin => replace({ ...effect, safeMargin })} />}
+      </>}
+    </>}
+    {effect.type === 'focus' && <NumberField name="cameraFocusPadding" value={effect.padding} min={0} max={2000}
+      commit={padding => replace({ ...effect, padding })} />}
+    {effect.type === 'rotate' && <Field name="cameraRotateMode" icon={RotateCw}>
+      <select value={effect.mode ?? 'angle'} onChange={event =>
+        replace({ ...effect, mode: event.currentTarget.value === 'object' ? 'object' : 'angle' })}>
+        <option value="angle">{t('cameraRotateAngle')}</option>
+        <option value="object">{t('cameraRotateObject')}</option>
+      </select>
+    </Field>}
+    {effect.type === 'rotate' && effect.mode !== 'object' && <NumberField name="cameraMotionAngle" value={effect.angle} min={-360} max={360}
+      commit={angle => replace({ ...effect, angle })} />}
+    {cameraMotionUsesEase(effect) && <>
+      <NumberField name="cameraMotionDuration" value={effect.duration} min={0} max={10} commit={duration => replace({ ...effect, duration })} />
+      <EaseEditor visualizer value={effect.ease} change={ease => replace({ ...effect, ease })} />
+    </>}
+  </>;
   switch (effect.type) {
-    case 'perspective': return <>
-      <NumberField name="cameraPerspectiveScale" value={effect.scale} min={0} max={100} integer
-        commit={scale => replace({ ...effect, scale })} />
-      <NumberField name="cameraPerspectiveDistance" icon={Move} value={effect.distance} min={0} max={240} integer
-        commit={distance => replace({ ...effect, distance })} />
-      <NumberField name="cameraPerspectiveZIndex" icon={Box} value={effect.zIndex} min={-32} max={32} integer
-        commit={zIndex => replace({ ...effect, zIndex })} />
+    case 'viewport': return null;
+    case 'tiltShift': return <>
+      <NumberField name="cameraTiltBlur" value={effect.blur} min={0} max={40} commit={blur => replace({ ...effect, blur })} />
+      <NumberField name="cameraTiltGradient" value={effect.gradient} min={1} max={480} commit={gradient => replace({ ...effect, gradient })} />
+      <NumberField name="cameraTiltFocus" value={effect.focus} min={0} max={100} commit={focus => replace({ ...effect, focus })} />
+      <NumberField name="cameraTiltAngle" value={effect.angle} min={-90} max={90} commit={angle => replace({ ...effect, angle })} />
+      <CameraDepthControls effect={effect} replace={replace} />
     </>;
     case 'depth': return <>
       <Field name="cameraDepthFilter" icon={Eye}>
@@ -612,6 +961,7 @@ function cameraEffectFields(effect: CameraPostFXData, replace: (effect: CameraPo
       </Field>
       {effect.filter !== 'none' && <NumberField name="cameraDepthStrength" icon={Gauge} value={effect.strength} min={0} max={100} integer
         commit={strength => replace({ ...effect, strength })} />}
+      <CameraDepthControls effect={effect} replace={replace} />
     </>;
     case 'curve': return <>
       <NumberField name="cameraCurveAngle" icon={RotateCw} value={effect.angle} min={0} max={90} integer
@@ -623,6 +973,7 @@ function cameraEffectFields(effect: CameraPostFXData, replace: (effect: CameraPo
           <option value="convex">{t('cameraCurveConvex')}</option>
         </select>
       </Field>
+      <CameraDepthControls effect={effect} replace={replace} />
     </>;
     case 'shake': return <>
       <NumberField name="cameraShakeAmplitude" value={effect.amplitude} min={0} max={500}
@@ -631,6 +982,8 @@ function cameraEffectFields(effect: CameraPostFXData, replace: (effect: CameraPo
         commit={duration => replace({ ...effect, duration })} />
       <NumberField name="cameraShakeRotation" value={effect.rotation} min={0} max={90}
         commit={rotation => replace({ ...effect, rotation })} />
+      <EaseEditor visualizer value={effect.ease ?? 'none'} change={ease => replace({ ...effect, ease })} />
+      <CameraDepthControls effect={effect} replace={replace} />
     </>;
     case 'zoom': return <>
       <NumberField name="cameraZoom" value={Math.max(effect.min, Math.min(effect.max, effect.value))}
@@ -639,7 +992,34 @@ function cameraEffectFields(effect: CameraPostFXData, replace: (effect: CameraPo
         commit={min => replace({ ...effect, min, value: Math.max(min, effect.value) })} />
       <NumberField name="cameraMaxZoom" value={effect.max} min={effect.min} max={20}
         commit={max => replace({ ...effect, max, value: Math.min(max, effect.value) })} />
+      <NumberField name="cameraMotionDuration" value={effect.duration ?? 0} min={0} max={10} commit={duration => replace({ ...effect, duration })} />
+      <EaseEditor visualizer value={effect.ease ?? defaultCameraEase} change={ease => replace({ ...effect, ease })} />
     </>;
+    case 'framing': {
+      const selectedRatio = effect.aspectRatio === undefined ? framingRatioValues.find(ratio => {
+        const { width, height } = fitFramingRatio(ratio, effect);
+        return effect.width === width && effect.height === height;
+      }) : effect.aspectRatio;
+      return <>
+        <Field name="cameraFrameAspectRatio" icon={Monitor}>
+          <select value={selectedRatio ?? ''} onChange={event => {
+            const value = event.currentTarget.value;
+            const ratio = framingRatioValues.find(candidate => candidate === value);
+            if (ratio) replace({ ...effect, ...fitFramingRatio(ratio, framingViewport()), aspectRatio: ratio });
+          }}>
+            <option value="" disabled>{t('cameraFrameCustomRatio')}</option>
+            {framingPresets.map(([group, ratios]) =>
+              <optgroup key={group} label={t(group)}>
+                {ratios.map(ratio => <option value={ratio} key={ratio}>{ratio}</option>)}
+              </optgroup>)}
+          </select>
+        </Field>
+        <NumberField name="cameraFrameWidth" value={effect.width} min={1} max={cameraFrameDimensionMax} integer
+          commit={width => replace({ ...effect, width, aspectRatio: null })} />
+        <NumberField name="cameraFrameHeight" value={effect.height} min={1} max={cameraFrameDimensionMax} integer
+          commit={height => replace({ ...effect, height, aspectRatio: null })} />
+      </>;
+    }
     case 'limits': return <>
       <Field name="cameraLimitMode" icon={Scaling}>
         <select value={effect.mode} onChange={event => replace({ ...effect,
@@ -757,24 +1137,50 @@ function LayoutItemFields({ node, update }: Pick<Props, 'node' | 'update'>) {
 const objectEffectNames = {
   blend: 'effectBlend', color: 'effectColor', blur: 'effectBlur', outline: 'effectOutline', glow: 'effectGlow',
   shadow: 'effectShadow', pixelate: 'effectPixelate', noise: 'effectNoise',
-  audioGain: 'effectAudioGain', listenerOffset: 'effectListenerOffset', lightPulse: 'effectLightPulse',
+  photoDepth: 'effectPhotoDepth', audioGain: 'effectAudioGain', listenerOffset: 'effectListenerOffset', lightPulse: 'effectLightPulse',
 } satisfies Record<ObjectEffectData['type'], DetailKey>;
 
-function EffectsFields({ node, update, testEffect, stopEffectTest, readOnly }: Pick<Props, 'node' | 'update' | 'testEffect' | 'stopEffectTest' | 'readOnly'>) {
+function EffectsFields({ node, assets, update, updateEffect, previewEffect, activeEffectPreview, resetEffectTest, stopEffectTest, readOnly }:
+  Pick<Props, 'node' | 'assets' | 'update' | 'updateEffect' | 'previewEffect' | 'activeEffectPreview' | 'resetEffectTest' | 'stopEffectTest' | 'readOnly'>) {
   const types = effectTypesFor(node.type);
   return <EffectList readOnly={readOnly} effects={node.effects ?? []} types={types} names={objectEffectNames} create={makeObjectEffect}
+    updateEffect={updateEffect}
     change={effects => update(item => ({ ...item, effects: effects.length ? effects : undefined }))}
-    fields={objectEffectFields} preview={effect => effect.type === 'lightPulse' && testEffect && <EffectTestForm stop={stopEffectTest}
-        play={values => testEffect({ type: 'lightPulse', id: node.id, amount: effect.amount, frequency: effect.frequency,
-          duration: Number(values.get('duration')) })}>
-        <EffectTestNumber name="testEffectDuration" field="duration" value={Math.min(10, Math.max(2, 2 / effect.frequency))}
-          min={0.1} max={10} />
-      </EffectTestForm>} />;
+    fields={(effect, replace) => objectEffectFields(effect, replace, assets)} preview={(effect, key) => {
+      if (effect.type !== 'lightPulse' || !previewEffect) return;
+      const active = activeEffectPreview(key);
+      const name = t('effectLightPulse');
+      return <div className="panel-tools">
+        <IconButton icon={active ? Square : Play}
+          label={t(active ? 'stopCameraEffect' : 'previewCameraEffect', { name })}
+          description={t('runEffectTestHint')}
+          onClick={() => active ? stopEffectTest(key) : previewEffect(key, effect)} />
+        <ResetEffectPreview name={name} active={active} reset={() => resetEffectTest(key)} />
+      </div>;
+    }} />;
 }
 
-function objectEffectFields(effect: ObjectEffectData, replace: (effect: ObjectEffectData) => void) {
+function PhotoDepthFields({ effect, replace, assets }: {
+  effect: Extract<ObjectEffectData, { type: 'photoDepth' }>;
+  replace: (effect: ObjectEffectData) => void;
+  assets: Map<string, Asset>;
+}) {
+  const id = useId();
+  return <>
+    <Field name="effectPhotoDepthMap" icon={Image} controlId={id}>
+      <TexturePicker id={id} value={effect.texture} assets={assets} choose={texture => replace({ ...effect, texture })} />
+    </Field>
+    <NumberField name="effectPhotoDepthX" value={effect.strengthX} min={0} max={180} commit={strengthX => replace({ ...effect, strengthX })} />
+    <NumberField name="effectPhotoDepthY" value={effect.strengthY} min={0} max={180} commit={strengthY => replace({ ...effect, strengthY })} />
+    <Field name="effectPhotoDepthInvert" icon={Contrast}><input type="checkbox" checked={effect.invert}
+      onChange={event => replace({ ...effect, invert: event.currentTarget.checked })} /></Field>
+  </>;
+}
+
+function objectEffectFields(effect: ObjectEffectData, replace: (effect: ObjectEffectData) => void, assets: Map<string, Asset>) {
   if (!('settings' in effect)) {
     switch (effect.type) {
+      case 'photoDepth': return <PhotoDepthFields effect={effect} replace={replace} assets={assets} />;
       case 'audioGain': return <NumberField name="effectGain" value={effect.gain} min={0} max={4}
         commit={gain => replace({ ...effect, gain })} />;
       case 'listenerOffset': return <>
@@ -961,7 +1367,7 @@ export function MultiInspector({ nodes, locked, movableCount, layoutChildren, po
   </div>;
 }
 
-export function Inspector({ node, roots, topLevel, layoutChild, assets, textureErrors, update, restartParticles, sectionHistory, locked, inheritedLock, toggleLock, flip, pivotAt, movementActions, globals, physicsLayers, physicsFit, particlePresets, testEffect, stopEffectTest, readOnly, ...audio }: Props) {
+export function Inspector({ node, roots, topLevel, layoutChild, assets, textureErrors, update, updateEffect, requiredEffects, updateRequiredEffect, restartParticles, addDirectorCue, addRigBone, openRigTimeline, openSpineAnimation, sectionHistory, locked, inheritedLock, toggleLock, flip, pivotAt, movementActions, globals, physicsLayers, physicsFit, particlePresets, previewEffect, previewModes, setPreviewMode, activeEffectPreview, resetEffectTest, stopEffectTest, readOnly, framingViewport, ...audio }: Props) {
   const root = useRef<HTMLDivElement>(null);
   const textureId = useId();
   const { id } = node;
@@ -986,7 +1392,7 @@ export function Inspector({ node, roots, topLevel, layoutChild, assets, textureE
     if (name) sectionHistory.set(id, name);
   };
   const common = (patch: Partial<Pick<SceneObject,
-    'label' | 'position' | 'rotation' | 'scale' | 'pivot' | 'skew' | 'visible' | 'alpha' | 'tint'>>) =>
+    'label' | 'position' | 'rotation' | 'scale' | 'pivot' | 'skew' | 'visible' | 'zIndex' | 'alpha' | 'tint'>>) =>
     update(object => ({ ...object, ...patch }));
   const anchor = (point: Point) => update(object => 'anchor' in object ? { ...object, anchor: point } : object);
   const texture = (alias: string | null) => update(object => 'texture' in object ? { ...object, texture: alias } : object);
@@ -1007,16 +1413,26 @@ export function Inspector({ node, roots, topLevel, layoutChild, assets, textureE
     commit={next => update(object => (object.type === 'MeshPlane' || object.type === 'MeshRope') && name in object ?
       { ...object, [name]: next } : object)} />;
 
+  const rig = node.type === 'Container' ? node.rig : undefined;
+  const typeLabel = t(rig ? rig.kind === 'bone' ? 'rigBone' : 'rigSkeleton' : objectTypeKey[node.type]);
   return <div ref={root} onClickCapture={event => remember(event.target)} onFocusCapture={event => remember(event.target)}>
-    <div className="selection-title selection-actions"><strong>{node.label}</strong><span className="sr-only">{t(objectTypeKey[node.type])}</span>
+    <div className="selection-title selection-actions"><strong>{node.label}</strong><span className="sr-only">{typeLabel}</span>
       <IconButton icon={locked ? LockOpen : Lock} label={t(locked ? 'unlockObjects' : 'lockObjects')}
         description={inheritedLock ? t('inheritedLock') : undefined} disabled={readOnly || inheritedLock} onClick={toggleLock} />
     </div>
     <fieldset disabled={readOnly || locked}>
     <Section name="identity" icon={Fingerprint} initial>
       <Field name="name" icon={Tag}><RequiredText value={node.label} commit={label => common({ label })} /></Field>
-      <Field name="type" icon={Shapes}><input value={t(objectTypeKey[node.type])} readOnly /></Field>
+      <Field name="type" icon={Shapes}><input value={typeLabel} readOnly /></Field>
     </Section>
+    {rig && <Section name="rigSettings" icon={Bone} initial>
+      {rig.kind === 'bone' && <NumberField name="rigBoneLength" icon={Scaling} value={rig.length} min={1} max={1000}
+        commit={length => update(object => object.type === 'Container' && object.rig?.kind === 'bone' ? { ...object, rig: { ...object.rig, length } } : object)} />}
+      <Field name="rigActions" icon={Bone}><div className="tool-group">
+        {addRigBone && <IconButton icon={Plus} label={t('rigAddBone')} onClick={addRigBone} />}
+        {openRigTimeline && <IconButton icon={Clapperboard} label={t('rigAnimate')} onClick={openRigTimeline} />}
+      </div></Field>
+    </Section>}
     <Section name="transform" icon={Move} initial>
       <fieldset className="field-group" disabled={layoutChild}>
         <Coordinates name="position" icon={Move} value={node.position} commit={position => common({ position })} />
@@ -1039,7 +1455,8 @@ export function Inspector({ node, roots, topLevel, layoutChild, assets, textureE
     {node.type !== 'Camera2D' && <ObjectBehavior id={node.id} behavior={node.behavior} />}
     {node.networkPlayer && <NetworkFields player={node.networkPlayer} actions={movementActions} update={update} />}
     {inWorld && node.type !== 'Camera2D' && node.type !== 'AudioListener' && node.type !== 'AudioSource' && node.type !== 'Light2D' &&
-      <Section name="objectPhysics" icon={Box}>
+      <Section name="objectPhysics" icon={Box} actions={addDirectorCue && hasPhysics(node) &&
+        <IconButton icon={Clapperboard} label={t('directorAddCue')} onClick={() => addDirectorCue('physics')} />}>
         <ObjectPhysicsFields value={node.physics} layers={physicsLayers} targets={physicsTargets} fit={physicsFit}
           change={physics => update(object => {
             if (!physics) {
@@ -1064,18 +1481,18 @@ export function Inspector({ node, roots, topLevel, layoutChild, assets, textureE
           </select>
         </Field>
       </Section>}
-    {node.type === 'Camera2D' && <CameraFields node={node} roots={roots} update={update} />}
     {node.type === 'Container' && <LayoutContainerFields node={node} update={update} />}
     {layoutChild && <LayoutItemFields node={node} update={update} />}
     {node.type === 'UIWidget' && <WidgetFields node={node} update={update} globals={globals} />}
     {topLevel && node.type !== 'Camera2D' && node.type !== 'Light2D' && <HUDFields node={node} update={update} />}
-    {node.type === 'AudioSource' && <AudioSourceFields node={node} assets={assets} update={update} {...audio} />}
     {node.type === 'AudioListener' && <Section name="audioListenerSettings" icon={Headphones} initial>
       <Field name="audioEnabled" icon={Eye}><input type="checkbox" checked={node.visible}
         onChange={event => common({ visible: event.target.checked })} /></Field>
     </Section>}
     {node.type !== 'AudioSource' && node.type !== 'AudioListener' && <Section name="appearance" icon={Eye}>
       <Field name="visible" icon={Eye}><input type="checkbox" checked={node.visible} onChange={event => common({ visible: event.target.checked })} /></Field>
+      {node.type !== 'Camera2D' && node.type !== 'Light2D' && <NumberField name="objectZIndex" icon={Layers3}
+        value={node.zIndex ?? 0} integer min={-100000} max={100000} commit={zIndex => common({ zIndex })} />}
       <NumberField name="opacity" icon={Contrast} value={node.alpha} min={0} max={1} commit={alpha => common({ alpha })} />
       {node.type !== 'Light2D' && <ColorField name="tint" icon={Palette} value={node.tint} commit={tint => common({ tint })} />}
     </Section>}
@@ -1114,8 +1531,8 @@ export function Inspector({ node, roots, topLevel, layoutChild, assets, textureE
       {mesh('segments', node.segments, 2, 64, true)}{mesh('bend', node.bend, -1024, 1024)}
     </Section>}
     {node.type === 'Tilemap' && <TilemapFields node={node} update={update} />}
-    {node.type === 'Particles' && <ParticleFields node={node} update={update} restartParticles={restartParticles} particlePresets={particlePresets} assets={assets} />}
-    {isAnimationObject(node) && <AnimationFields node={node} assets={assets} update={update} />}
+    {node.type === 'Particles' && <ParticleFields node={node} update={update} restartParticles={restartParticles} particlePresets={particlePresets} addDirectorCue={addDirectorCue} />}
+    {isAnimationObject(node) && <AnimationFields node={node} assets={assets} update={update} openSpineAnimation={openSpineAnimation} />}
     {alias && (missing || textureErrors.has(alias)) && <p className="error inset" role="status">
       {t(expected === 'audio' ? 'audioMissing' : expected === 'image' ?
         (missing ? 'textureMissing' : 'textureFailed') : (missing ? 'animationMissing' : 'animationFailed'))} · {alias}
@@ -1138,8 +1555,13 @@ export function Inspector({ node, roots, topLevel, layoutChild, assets, textureE
       }}><option value="left">{t('left')}</option><option value="center">{t('center')}</option><option value="right">{t('right')}</option></select></Field>
     </Section>}
     </fieldset>
+    {node.type === 'AudioSource' && <AudioSourceFields node={node} assets={assets} update={update} addDirectorCue={addDirectorCue} readOnly={readOnly || locked} {...audio} />}
+    {node.type === 'Particles' && <ParticlePreviewSection node={node} texture={node.texture ? assets.get(node.texture)?.url : undefined} />}
     {node.type === 'Camera2D' ?
-      <CameraEffects node={node} update={update} readOnly={readOnly || locked} testEffect={testEffect} stopEffectTest={stopEffectTest} /> :
-      <EffectsFields node={node} update={update} readOnly={readOnly || locked} testEffect={testEffect} stopEffectTest={stopEffectTest} />}
+      <CameraEffects node={node} roots={roots} assets={assets} framingViewport={framingViewport} update={update} updateEffect={locked ? undefined : updateEffect} readOnly={readOnly || locked}
+        requiredEffects={requiredEffects} updateRequiredEffect={locked ? undefined : updateRequiredEffect}
+        previewEffect={previewEffect} previewModes={previewModes} setPreviewMode={setPreviewMode} activeEffectPreview={activeEffectPreview} resetEffectTest={resetEffectTest} stopEffectTest={stopEffectTest} /> :
+      <EffectsFields node={node} assets={assets} update={update} updateEffect={locked ? undefined : updateEffect} readOnly={readOnly || locked}
+        previewEffect={previewEffect} activeEffectPreview={activeEffectPreview} resetEffectTest={resetEffectTest} stopEffectTest={stopEffectTest} />}
   </div>;
 }

@@ -108,10 +108,33 @@ export function createGraphPanel(bridge: ({scene: SceneService} | {
     <label className="field"><span>{t('interaction.source')}</span><select aria-label={`${name} ${t('interaction.source')}`} disabled={!editable} value={node.trigger.sourceId} onChange={e => at(n => { const x = n as Extract<GraphNode, {kind: 'event'}>; x.trigger.sourceId = e.target.value; x.trigger.event = refs.find(r => r.id === e.target.value)?.events?.[0]?.id ?? ''; })}>{options(refs, node.trigger.sourceId)}</select></label>
     {events && <label className="field"><span>{t('interaction.event')}</span><select aria-label={`${name} ${t('interaction.event')}`} disabled={!editable} value={node.trigger.event} onChange={e => at(n => { (n as Extract<GraphNode, {kind: 'event'}>).trigger.event = e.target.value; })}>{options(events, node.trigger.event)}</select></label>}
    </>; }
-   if (node.kind === 'action') { const d = actions.find(x => x.type === node.action.type); return <>
-    <label className="field"><span>{t('interaction.action')}</span><select aria-label={`${name} ${t('interaction.action')}`} disabled={!editable} value={node.action.type} onChange={e => at(n => { const x = actions.find(z => z.type === e.target.value)!, a = (n as Extract<GraphNode, {kind: 'action'}>).action; Object.assign(a, {type: x.type, targetId: x.references(catalog)[0]?.id ?? ''}); delete a.to; delete a.amount; delete a.x; delete a.y; })}>{actions.map(x => <option key={x.type} value={x.type}>{t(x.titleKey)}</option>)}</select></label>
-    <label className="field"><span>{t('interaction.target')}</span><select aria-label={`${name} ${t('interaction.target')}`} disabled={!editable} value={node.action.targetId} onChange={e => at(n => { (n as Extract<GraphNode, {kind: 'action'}>).action.targetId = e.target.value; })}>{options(d?.references(catalog) ?? [], node.action.targetId)}</select></label>
-    <ActionValueEditor action={node.action} globals={catalog.globals ?? []} entities={catalog.entities} label={name} disabled={!editable} t={t} edit={fn => at(n => fn((n as Extract<GraphNode, {kind: 'action'}>).action))}/>
+   if (node.kind === 'action') {
+    const refs = actions.find(action => action.type === node.action.type)?.references(catalog) ?? [];
+    const clips = refs.find(item => item.id === node.action.targetId)?.events ?? [];
+    const editAction = (fn: (action: Extract<GraphNode, {kind: 'action'}>['action']) => void) =>
+      at(n => fn((n as Extract<GraphNode, {kind: 'action'}>).action));
+    return <>
+    <label className="field"><span>{t('interaction.action')}</span><select aria-label={`${name} ${t('interaction.action')}`} disabled={!editable} value={node.action.type} onChange={e => editAction(action => {
+      const next = actions.find(item => item.type === e.target.value)!;
+      if (next.type === 'spine.play') action.value = false;
+      else if (action.type === 'spine.play') action.value = true;
+      Object.assign(action, {type: next.type, targetId: next.references(catalog)[0]?.id ?? ''});
+      delete action.to; delete action.amount; delete action.x; delete action.y;
+    })}>{actions.map(x => <option key={x.type} value={x.type}>{t(x.titleKey)}</option>)}</select></label>
+    <label className="field"><span>{t('interaction.target')}</span><select aria-label={`${name} ${t('interaction.target')}`} disabled={!editable} value={node.action.targetId} onChange={e => editAction(action => {
+      action.targetId = e.target.value;
+      if (action.type === 'spine.play' && !refs.find(item => item.id === action.targetId)?.events?.some(clip => clip.id === action.to)) delete action.to;
+    })}>{options(refs, node.action.targetId)}</select></label>
+    {node.action.type === 'spine.play' ? <>
+      <label className="field"><span>{t('assetAnimation')}</span><select aria-label={`${name} ${t('assetAnimation')}`}
+        disabled={!editable || !clips.length} value={typeof node.action.to === 'string' ? node.action.to : ''}
+        onChange={event => editAction(action => { action.to = event.currentTarget.value; })}>
+        {options(clips, typeof node.action.to === 'string' ? node.action.to : '')}
+      </select></label>
+      <label className="field"><span>{t('loopAnimation')}</span><input type="checkbox" checked={node.action.value}
+        aria-label={`${name} ${t('loopAnimation')}`} disabled={!editable}
+        onChange={event => editAction(action => { action.value = event.currentTarget.checked; })} /></label>
+    </> : <ActionValueEditor action={node.action} globals={catalog.globals ?? []} entities={catalog.entities} label={name} disabled={!editable} t={t} edit={editAction}/>}
    </>; }
    if (node.kind === 'branch') return <ConditionEditor condition={node.condition} globals={catalog.globals ?? []} label={name} disabled={!editable} missing={t('interaction.missing')} edit={fn => at(n => fn((n as Extract<GraphNode, {kind: 'branch'}>).condition))}/>;
    if (node.kind !== 'delay') return null;

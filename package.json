@@ -7,9 +7,12 @@
   "scripts": {
     "dev": "pnpm --filter @olivestudio/editor dev",
     "build": "pnpm --filter @olivestudio/editor build && pnpm --filter @olivestudio/editor build:native",
+    "build:vscode": "node apps/vscode/build.mjs",
+    "package:vscode": "node apps/vscode/build.mjs --package",
     "build:engine": "pnpm --filter @olivestudio/engine build",
     "pack:engine": "pnpm build:engine && node scripts/pack-engine.mjs",
     "test:engine": "pnpm pack:engine && node scripts/standalone-engine-smoke.mjs",
+    "test:spine-cli": "pnpm --filter @olivestudio/editor build:native && node scripts/spine-cli-roundtrip.mjs",
     "typecheck": "tsc --noEmit",
     "release:mac:check": "node scripts/release-mac.mjs --check",
     "release:mac": "node scripts/release-mac.mjs",

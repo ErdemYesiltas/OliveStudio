@@ -1,0 +1,149 @@
+{
+  "frames": {
+    "pose-0": {
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 599,
+        "h": 656
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 599,
+        "h": 656
+      },
+      "sourceSize": {
+        "w": 599,
+        "h": 656
+      }
+    },
+    "pose-1": {
+      "frame": {
+        "x": 599,
+        "y": 0,
+        "w": 599,
+        "h": 656
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 599,
+        "h": 656
+      },
+      "sourceSize": {
+        "w": 599,
+        "h": 656
+      }
+    },
+    "pose-2": {
+      "frame": {
+        "x": 0,
+        "y": 656,
+        "w": 599,
+        "h": 656
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 599,
+        "h": 656
+      },
+      "sourceSize": {
+        "w": 599,
+        "h": 656
+      }
+    },
+    "pose-3": {
+      "frame": {
+        "x": 599,
+        "y": 656,
+        "w": 599,
+        "h": 656
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 599,
+        "h": 656
+      },
+      "sourceSize": {
+        "w": 599,
+        "h": 656
+      }
+    }
+  },
+  "animations": {
+    "idle": [
+      "pose-0"
+    ],
+    "idleBlink": [
+      "pose-0",
+      "pose-0",
+      "pose-0",
+      "pose-0",
+      "pose-0",
+      "pose-0",
+      "pose-0",
+      "pose-0",
+      "pose-0",
+      "pose-0",
+      "pose-0",
+      "pose-0",
+      "pose-1",
+      "pose-1",
+      "pose-0",
+      "pose-0",
+      "pose-0",
+      "pose-0",
+      "pose-0",
+      "pose-0",
+      "pose-0",
+      "pose-0",
+      "pose-0",
+      "pose-0",
+      "pose-0",
+      "pose-0",
+      "pose-3",
+      "pose-3",
+      "pose-0",
+      "pose-0"
+    ],
+    "horseReaction": [
+      "pose-0",
+      "pose-0",
+      "pose-1",
+      "pose-1",
+      "pose-0",
+      "pose-2",
+      "pose-2",
+      "pose-2",
+      "pose-2",
+      "pose-2",
+      "pose-3",
+      "pose-3",
+      "pose-3",
+      "pose-3",
+      "pose-1",
+      "pose-1",
+      "pose-0",
+      "pose-0"
+    ]
+  },
+  "meta": {
+    "image": "stallion-v2-poses.webp",
+    "size": {
+      "w": 1198,
+      "h": 1312
+    },
+    "scale": "1"
+  }
+}

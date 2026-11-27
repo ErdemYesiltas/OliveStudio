@@ -1,5 +1,5 @@
-import { useRef, useState, type DragEvent, type MouseEvent, type ReactNode } from 'react';
-import { Bone, Box, Cable, Camera, ChevronDown, ChevronRight, CopyMinus, CopyPlus, Film, FolderTree, Grid2X2, Headphones, Image as ImageIcon, Lightbulb, Lock, PanelsTopLeft, Shapes, Sparkles, Table2, Type, Volume2, Waypoints, Workflow } from 'lucide-react';
+import { useMemo, useRef, useState, type DragEvent, type MouseEvent, type ReactNode } from 'react';
+import { Bone, Box, Cable, Camera, ChevronDown, ChevronRight, CopyMinus, CopyPlus, Eye, EyeOff, Film, FolderTree, Grid2X2, Headphones, Image as ImageIcon, Lightbulb, ListFilter, Lock, PanelsTopLeft, Shapes, Sparkles, Table2, Type, Volume2, Waypoints, Workflow } from 'lucide-react';
 import { hint, IconButton } from './chrome';
 import { objectTypeKey, t } from './i18n';
 import { moveObject, type DropTarget, type SceneObject } from './scene';
@@ -17,26 +17,42 @@ export const objectIcons = {
   UIWidget: PanelsTopLeft,
 };
 
-export function Hierarchy({ nodes, selected, select, locked, closed, toggle, groups, setGroupsExpanded, editable, onMove, assets, assignAsset }: {
+const objectTypes = Object.keys(objectIcons) as SceneObject['type'][];
+
+function filterTree(nodes: SceneObject[], type: SceneObject['type']): SceneObject[] {
+  return nodes.flatMap<SceneObject>(node => {
+    if (node.type !== 'Container') return node.type === type ? [node] : [];
+    const children = filterTree(node.children, type);
+    return node.type === type || children.length ? [{ ...node, children }] : [];
+  });
+}
+
+export function Hierarchy({ nodes, selected, select, locked, closed, toggle, groups, setGroupsExpanded, editable, onMove, assets, assignAsset, setVisible }: {
   nodes: SceneObject[]; selected: readonly string[]; select: (ids: string[]) => void; locked: ReadonlySet<string>;
   closed: ReadonlySet<string>; toggle: (id: string) => void; editable: boolean;
   groups: readonly string[]; setGroupsExpanded: (expanded: boolean) => void;
   onMove: (id: string, destination: DropTarget) => void;
   assets: ReadonlyMap<string, Asset>; assignAsset: (id: string, alias: string) => void;
+  setVisible: (id: string, visible: boolean) => void;
 }) {
   const [dragged, setDragged] = useState<string | null>(null);
   const [target, setTarget] = useState<DropTarget | null>(null);
+  const [type, setType] = useState<SceneObject['type'] | ''>('');
+  const [filterClosed, setFilterClosed] = useState<string[]>([]);
   const anchor = useRef<string | null>(null);
-  const hasExpandedGroups = nodes.some(node => node.type === 'Container' && node.children.length > 0 && !closed.has(node.id));
+  const displayed = useMemo(() => type ? filterTree(nodes, type) : nodes, [nodes, type]);
+  const collapsed = type ? new Set(filterClosed) : closed;
+  const expandableIds = type ? collectGroups(displayed) : groups;
+  const hasExpandedGroups = expandableIds.some(id => !collapsed.has(id));
 
   function visibleIds(items: SceneObject[]): string[] {
-    return items.flatMap(node => [node.id, ...(node.type === 'Container' && !closed.has(node.id) ? visibleIds(node.children) : [])]);
+    return items.flatMap(node => [node.id, ...(node.type === 'Container' && !collapsed.has(node.id) ? visibleIds(node.children) : [])]);
   }
 
   function pick(id: string, event: MouseEvent) {
     const additive = event.metaKey || event.ctrlKey;
     if (event.shiftKey && selected.length) {
-      const ids = visibleIds(nodes);
+      const ids = visibleIds(displayed);
       const start = anchor.current && selected.includes(anchor.current) ? anchor.current : selected.at(-1)!;
       const from = ids.indexOf(start), to = ids.indexOf(id);
       if (from >= 0 && to >= 0) {
@@ -83,18 +99,26 @@ export function Hierarchy({ nodes, selected, select, locked, closed, toggle, gro
   }
 
   const selectedIds = new Set(selected);
-  function tree(items: SceneObject[]): ReactNode {
+  function tree(items: SceneObject[], parentVisible = true): ReactNode {
     return <ul className="object-list">
       {items.map(node => {
-        const Icon = objectIcons[node.type];
+        const rig = node.type === 'Container' ? node.rig : undefined;
+        const Icon = rig?.kind === 'bone' ? Bone : rig ? Workflow : objectIcons[node.type];
         const expandable = node.type === 'Container' && Boolean(node.children.length);
-        const expanded = !closed.has(node.id);
+        const expanded = !collapsed.has(node.id);
+        const visible = parentVisible && node.visible;
+        const visibilityLabel = t(node.visible ? 'hierarchyHideObject' : 'hierarchyShowObject', { name: node.label });
         const expandLabel = t(expanded ? 'collapseGroup' : 'expandGroup', { name: node.label });
         const kind = objectAssetKind(node);
-        const assetDrop = dropOne('asset', alias => editable && !locked.has(node.id) && !!kind && assets.get(alias)?.kind === kind,
+        const assetDrop = dropOne('asset', alias => {
+          const asset = assets.get(alias);
+          return editable && !locked.has(node.id) && !!asset &&
+            (rig ? asset.kind === 'image' || asset.kind === 'sheet' : asset.kind === kind);
+        },
           alias => assignAsset(node.id, alias));
         return <li key={node.id}>
-          <div className="tree-row" data-selected={selectedIds.has(node.id)} data-drop={target?.id === node.id ? target.placement : undefined}
+          <div className="tree-row" data-object-type={node.type} data-visible={visible}
+            data-selected={selectedIds.has(node.id)} data-drop={target?.id === node.id ? target.placement : undefined}
             data-dragging={dragged === node.id} draggable={editable && !locked.has(node.id)}
             onDragStart={event => {
               event.dataTransfer.setData(itemType, node.id);
@@ -105,17 +129,22 @@ export function Hierarchy({ nodes, selected, select, locked, closed, toggle, gro
             onDragLeave={event => { assetDrop.onDragLeave?.(event); leave(event, node.id); }}
             onDrop={event => { assetDrop.onDrop?.(event); drop(event, node.id); }}>
             {expandable ? <button className="tree-toggle" aria-label={expandLabel} {...hint(expandLabel)}
-              aria-expanded={expanded} onClick={() => toggle(node.id)}>
+              aria-expanded={expanded} onClick={() => type
+                ? setFilterClosed(current => toggleSelection(current, node.id)) : toggle(node.id)}>
               {expanded ? <ChevronDown size={13} /> : <ChevronRight size={13} />}
             </button> : <span className="tree-spacer" />}
             <button className="tree-object" aria-pressed={selectedIds.has(node.id)} onClick={event => pick(node.id, event)}
               aria-description={locked.has(node.id) ? t('objectLocked') : undefined}
-              {...hint(node.label, t(objectTypeKey[node.type]))}>
-              <Icon size={15} /><span>{node.label}</span>
+              {...hint(node.label, t(rig ? rig.kind === 'bone' ? 'rigBone' : 'rigSkeleton' : objectTypeKey[node.type]))}>
+              <Icon size={15} aria-hidden="true" /><span>{node.label}</span>
               {locked.has(node.id) && <Lock className="tree-lock" size={12} aria-hidden="true" />}
             </button>
+            <IconButton icon={node.visible ? Eye : EyeOff} className="tree-visibility" label={visibilityLabel}
+              data-hidden={!node.visible}
+              description={!parentVisible ? t('hierarchyHiddenByParent') : undefined}
+              disabled={!editable || locked.has(node.id)} onClick={() => setVisible(node.id, !node.visible)} />
           </div>
-          {node.type === 'Container' && expandable && expanded && tree(node.children)}
+          {node.type === 'Container' && expandable && expanded && tree(node.children, visible)}
         </li>;
       })}
     </ul>;
@@ -128,10 +157,27 @@ export function Hierarchy({ nodes, selected, select, locked, closed, toggle, gro
         aria-description={t('sceneRootHint')} {...hint(t('sceneRoot'), t('sceneRootHint'))} onClick={() => { anchor.current = null; select([]); }}>
         <FolderTree size={16} aria-hidden="true" />
       </button>
+      <label className="hierarchy-filter" {...hint(t('hierarchyTypeFilter'))}>
+        <ListFilter size={14} aria-hidden="true" />
+        <select aria-label={t('hierarchyTypeFilter')} value={type} onChange={event => {
+          const value = objectTypes.find(type => type === event.target.value);
+          setType(value ?? '');
+          setFilterClosed([]);
+        }}>
+          <option value="">{t('hierarchyAllTypes')}</option>
+          {objectTypes.map(type => <option key={type} value={type}>{t(objectTypeKey[type])}</option>)}
+        </select>
+      </label>
       <IconButton icon={hasExpandedGroups ? CopyMinus : CopyPlus}
         label={t(hasExpandedGroups ? 'hierarchyCollapseAll' : 'hierarchyExpandAll')}
-        disabled={!groups.length} onClick={() => setGroupsExpanded(!hasExpandedGroups)} />
+        disabled={!expandableIds.length} onClick={() => type
+          ? setFilterClosed(hasExpandedGroups ? [...expandableIds] : []) : setGroupsExpanded(!hasExpandedGroups)} />
     </div>
-    {nodes.length ? tree(nodes) : <p className="empty">{t('emptyScene')}</p>}
+    {displayed.length ? tree(displayed) : <p className="empty">{t(type ? 'hierarchyNoMatchingObjects' : 'emptyScene')}</p>}
   </div>;
+}
+
+function collectGroups(nodes: SceneObject[]): string[] {
+  return nodes.flatMap(node => node.type === 'Container' && node.children.length
+    ? [node.id, ...collectGroups(node.children)] : []);
 }

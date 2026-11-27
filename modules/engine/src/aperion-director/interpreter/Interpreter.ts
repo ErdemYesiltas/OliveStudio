@@ -1,5 +1,7 @@
 import type { Application } from 'pixi.js';
-import { EMPTY, type Observable, type PartialObserver, ReplaySubject, shareReplay, Subject, type Subscription, take } from 'rxjs';
+import { DirectorEventBus, logger, type DirectorPorts } from '../host.js';
+import { CompositionRegistry } from '../CompositionRegistry.js';
+import { EMPTY, type Observable, type PartialObserver, ReplaySubject, shareReplay, Subject, type Subscription, take, throwError } from 'rxjs';
 
 import type { DirectorControl } from '../DirectorControl.js';
 import type { DirectorEventPayload, DirectorStep, DirectorVars } from '../DirectorTypes.js';
@@ -25,6 +27,9 @@ export class Interpreter {
     constructor(
         private readonly _app: Application,
         private readonly _registry: StepStrategyRegistry,
+        private readonly signals = new DirectorEventBus<DirectorEventPayload>(),
+        private readonly compositions = new CompositionRegistry(),
+        private readonly ports: DirectorPorts = {},
     ) {}
 
     /**
@@ -53,10 +58,14 @@ export class Interpreter {
         vars: DirectorVars,
         event: DirectorEventPayload | null = null,
         onAdvance?: () => void,
+        ticker = this._app.ticker,
     ): DirectorControl {
         const next$ = new Subject<void>();
         const pause$ = new Subject<void>();
         const resume$ = new Subject<void>();
+        let paused = false;
+        pause$.subscribe(() => { paused = true; });
+        resume$.subscribe(() => { paused = false; });
         const skipToEnd$ = new Subject<void>();
         // Latched view: once skipToEnd() fires, sequence children that subscribe
         // later (they were still queued in the concat) must ALSO be skipped — a
@@ -74,15 +83,22 @@ export class Interpreter {
         // payload, children included, before they are compiled on their own.
         const rawKeysOf = (type: string): readonly string[] | undefined => this._registry.get(type)?.rawKeys;
 
-        const compile = (step: DirectorStep): Observable<void> => {
+        const compile = (step: DirectorStep, depth = 0): Observable<void> => {
+            if (depth > 64) return throwError(() => new Error('[Director] composition nesting exceeds 64 steps'));
+            if (!step || typeof step.type !== 'string') return throwError(() => new Error('[Director] step must have a type'));
             const strategy = this._registry.get(step.type) as IStepStrategy<DirectorStep> | undefined;
             if (!strategy) {
-                console.warn(`[Director] no strategy registered for type "${step.type}" — skipping`);
+                logger.warn(`[Director] no strategy registered for type "${step.type}" — skipping`);
                 return EMPTY;
             }
             const resolved = resolveVars(step, varsMap, rawKeysOf) as DirectorStep;
             const ctx: StepContext = {
                 app: this._app,
+                ticker,
+                isPaused: () => paused,
+                signals: this.signals,
+                compositions: this.compositions,
+                ports: this.ports,
                 state,
                 vars: varsMap,
                 setVar,
@@ -91,13 +107,13 @@ export class Interpreter {
                 skipToEnd$: skipSignal$,
                 pause$: pause$.asObservable(),
                 resume$: resume$.asObservable(),
-                compile,
+                compile: child => compile(child, depth + 1),
             };
             try {
                 return strategy.run(resolved, ctx);
             } catch (err) {
-                console.error(`[Director] strategy "${step.type}" threw synchronously`, err);
-                return EMPTY;
+                logger.error(`[Director] strategy "${step.type}" threw synchronously`, err);
+                return throwError(() => err);
             }
         };
 
@@ -219,7 +235,7 @@ function resolveVars(
         const src = value as Record<string, unknown>;
         // A step object keeps its strategy's `rawKeys` — its DSL expressions — uninterpolated.
         const raw = typeof src.type === 'string' ? rawKeysOf(src.type) : undefined;
-        const next: Record<string, unknown> = {};
+        const next: Record<string, unknown> = Object.create(null);
         for (const k of Object.keys(src)) {
             if (raw?.includes(k)) {
                 next[k] = src[k];

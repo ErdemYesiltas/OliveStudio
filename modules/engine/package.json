@@ -26,6 +26,10 @@
     "./lifecycle": "./src/lifecycle.ts",
     "./visuals": "./src/visuals.ts",
     "./particles": "./src/particles/index.ts",
+    "./spine": "./src/spine.ts",
+    "./scene-animation": "./src/scene-animation.ts",
+    "./spine-format": "./src/spine-format.ts",
+    "./spine-paths": "./src/spine-paths.ts",
     "./aperion-director": "./src/aperion-director/index.ts",
     "./scale-layout": "./src/resize/scale-layout.ts"
   },
@@ -33,6 +37,8 @@
     "build": "tsc -p tsconfig.build.json && node build-package.mjs"
   },
   "dependencies": {
+    "@esotericsoftware/spine-core": "4.2.120",
+    "@esotericsoftware/spine-pixi-v8": "4.2.120",
     "@pixi/layout": "3.2.1",
     "@pixi/ui": "2.4.1",
     "gsap": "3.15.1",

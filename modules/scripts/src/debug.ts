@@ -1,6 +1,8 @@
 import type {DebugHit, DebugInstance} from './session';
 
 /** What the running Preview offers the debugger view (absent while editing). */
+export type DebugSettings = { breakpoints: Record<string, number[]>; watches: string[] };
+
 export interface DebugController {resume(): void; step(): void; instances(): DebugInstance[]; watch(expressions: readonly string[]): string[]; paused(): boolean}
 
 /**
@@ -23,6 +25,14 @@ class ScriptDebugger {
   this.version++;
   if (save) try { localStorage.setItem('rewrite:script-debugger', JSON.stringify({breakpoints: Object.fromEntries(this.breakpoints), watches: this.watches})); } catch { /* storage unavailable */ }
   for (const fn of this.listeners) fn();
+ }
+ settings(): DebugSettings { return {breakpoints: Object.fromEntries(this.breakpoints), watches: this.watches}; }
+ setSettings(settings: DebugSettings) {
+  if (JSON.stringify(this.settings()) === JSON.stringify(settings)) return;
+  this.breakpoints.clear();
+  for (const [id, lines] of Object.entries(settings.breakpoints)) this.breakpoints.set(id, lines);
+  this.watches = settings.watches;
+  this.changed(true);
  }
  lines(scriptId: string) { return this.breakpoints.get(scriptId) ?? []; }
  toggle(scriptId: string, line: number) {

@@ -68,7 +68,7 @@ export function onClick(self: GameObject) {
 `;
 
 /** Hooks the runtime calls, in the order the docs list them. */
-export const hookNames = ['start', 'update', 'onClick', 'onCollision', 'onInput', 'onGlobal', 'onCollisionExit', 'onMessage', 'onMarker', 'onComplete', 'onBeat', 'onSoundEnd', 'onPointerDown', 'onPointerMove', 'onPointerUp', 'onTimer', 'onArrive', 'onDialogue', 'onPointerEnter', 'onPointerLeave', 'onDragEnd'] as const;
+export const hookNames = ['start', 'update', 'onClick', 'onCollision', 'onInput', 'onGlobal', 'onCollisionExit', 'onMessage', 'onMarker', 'onComplete', 'onSpineEvent', 'onSpineComplete', 'onBeat', 'onSoundEnd', 'onPointerDown', 'onPointerMove', 'onPointerUp', 'onTimer', 'onArrive', 'onDialogue', 'onPointerEnter', 'onPointerLeave', 'onDragEnd'] as const;
 
 /** Declarations for the editor (Monaco extra lib): the sandbox API, nothing else exists (no DOM, no network, no imports). */
 export const apiDeclarations = `
@@ -126,6 +126,25 @@ interface TimelineHandle {
   readonly time$: Observable<number>;
   readonly markers$: Observable<string>;
   readonly complete$: Observable<GameObject>;
+}
+/** Payload for onSpineComplete(self, signal) on a Spine object. Time is in seconds. */
+interface SpineCompleteSignal {
+  type: 'spine.complete';
+  sourceId: string;
+  animation: string;
+  name: string;
+  track: number;
+  time: number;
+  /** True during a silent frame step. */
+  silent: boolean;
+}
+/** Payload for onSpineEvent(self, signal) on a Spine object. */
+interface SpineEventSignal extends Omit<SpineCompleteSignal, 'type'> {
+  type: 'spine.event';
+  int: number;
+  float: number;
+  text: string;
+  audio?: {path: string; volume: number; balance: number};
 }
 /** An object in the running scene. Changes affect the play session only, never the project. */
 interface GameObject {
@@ -208,6 +227,25 @@ declare const game: {
   readonly navigation: {findPath(x1: number, y1: number, x2: number, y2: number): {x: number; y: number}[] | null; moveTo(target: GameObject, x: number, y: number): boolean; follow(target: GameObject, chase: GameObject | null): void; stop(target: GameObject): void; walkable(x: number, y: number): boolean; rebuild(): void; state(target: GameObject): {moving: boolean; remaining: number; target: {x: number; y: number} | null} | undefined};
   /** The scene camera (Camera 2D object, else the stage centre): follow an object (null stops), shake (px, seconds), zoom (>1 magnifies), look at a world point (stops following). x/y are the world point at the screen centre. */
   readonly camera: {follow(target: GameObject | null): void; stopFollowing(): void; shake(strength?: number, seconds?: number): void; lookAt(x: number, y: number): void; zoom: number; readonly x: number; readonly y: number; readonly rotation: number};
+  /** Spine bone positions, point attachment poses and bounding box polygons in scene world pixels. */
+  readonly spine: {
+    /** Start a Spine clip. Track 0 is the base; higher tracks overlay it. mixDuration is in seconds. */
+    play(target: GameObject | string, clip: string, options?: {track?: number; loop?: boolean; speed?: number; mixDuration?: number; weight?: number}): void;
+    /** Pause a track started by gameplay. Omit the track to address track 0. */
+    pause(target: GameObject | string, track?: number): boolean;
+    /** Resume a track started by gameplay. */
+    resume(target: GameObject | string, track?: number): boolean;
+    /** Clear a track started by gameplay and apply the remaining tracks. */
+    stop(target: GameObject | string, track?: number): boolean;
+    /** Apply a skin and optional ordered overlays. Pass null for the rig's default skin. */
+    setSkin(target: GameObject | string, skin: string | null, layers?: readonly string[]): void;
+    /** Restore the skin and overlays set in the editor without restarting playback. */
+    resetSkin(target: GameObject | string): void;
+    bone(target: GameObject | string, name: string): {x: number; y: number} | null;
+    /** The slot's current point attachment, with its rotation in degrees. */
+    point(target: GameObject | string, slot: string): {name: string; x: number; y: number; rotation: number} | null;
+    boxes(target: GameObject | string, slot?: string): {slot: string; name: string; vertices: {x: number; y: number}[]}[];
+  };
   /** Whether an input action (Input panel) is held down. */
   isDown(action: string): boolean;
   /** Switch to the scene with this name at the end of the frame. */
@@ -244,6 +282,8 @@ declare const game: {
   on(type: 'message', target?: GameObject): Observable<{message: string; data: any}>;
   on(type: 'marker', target?: GameObject): Observable<{object: GameObject; name: string}>;
   on(type: 'complete', target?: GameObject): Observable<GameObject>;
+  on(type: 'spineEvent', target?: GameObject): Observable<SpineEventSignal & {object: GameObject}>;
+  on(type: 'spineComplete', target?: GameObject): Observable<SpineCompleteSignal & {object: GameObject}>;
   on(type: 'beat', target?: GameObject): Observable<{object: GameObject; beat: number; bar: boolean}>;
   on(type: 'soundEnd', target?: GameObject): Observable<GameObject>;
 };

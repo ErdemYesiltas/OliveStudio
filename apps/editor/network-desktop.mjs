@@ -1,9 +1,8 @@
-import { utilityProcess } from 'electron';
 import { mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-export function localNetwork(bundle) {
+export function localNetwork(bundle, startProcess) {
   let active;
   let serial = Promise.resolve();
   let sequence = 0;
@@ -48,7 +47,7 @@ export function localNetwork(bundle) {
     try {
       const file = join(folder, 'rules.json');
       await writeFile(file, key);
-      const proc = utilityProcess.fork(bundle, ['--rules', file, '--port', '0', '--host', '127.0.0.1'], {
+      const proc = startProcess(bundle, ['--rules', file, '--port', '0', '--host', '127.0.0.1'], {
         serviceName: 'OliveStudio Colyseus server', stdio: 'pipe',
       });
       const session = { process: proc, key, endpoint: '', pending: new Map() };

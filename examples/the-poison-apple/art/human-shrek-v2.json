@@ -1,0 +1,321 @@
+{
+  "frames": {
+    "pose-0": {
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 443,
+        "h": 443
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 443,
+        "h": 443
+      },
+      "sourceSize": {
+        "w": 443,
+        "h": 443
+      }
+    },
+    "pose-1": {
+      "frame": {
+        "x": 443,
+        "y": 0,
+        "w": 443,
+        "h": 443
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 443,
+        "h": 443
+      },
+      "sourceSize": {
+        "w": 443,
+        "h": 443
+      }
+    },
+    "pose-2": {
+      "frame": {
+        "x": 886,
+        "y": 0,
+        "w": 443,
+        "h": 443
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 443,
+        "h": 443
+      },
+      "sourceSize": {
+        "w": 443,
+        "h": 443
+      }
+    },
+    "pose-3": {
+      "frame": {
+        "x": 1329,
+        "y": 0,
+        "w": 443,
+        "h": 443
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 443,
+        "h": 443
+      },
+      "sourceSize": {
+        "w": 443,
+        "h": 443
+      }
+    },
+    "pose-4": {
+      "frame": {
+        "x": 0,
+        "y": 443,
+        "w": 443,
+        "h": 443
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 443,
+        "h": 443
+      },
+      "sourceSize": {
+        "w": 443,
+        "h": 443
+      }
+    },
+    "pose-5": {
+      "frame": {
+        "x": 443,
+        "y": 443,
+        "w": 443,
+        "h": 443
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 443,
+        "h": 443
+      },
+      "sourceSize": {
+        "w": 443,
+        "h": 443
+      }
+    },
+    "pose-6": {
+      "frame": {
+        "x": 886,
+        "y": 443,
+        "w": 443,
+        "h": 443
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 443,
+        "h": 443
+      },
+      "sourceSize": {
+        "w": 443,
+        "h": 443
+      }
+    },
+    "pose-7": {
+      "frame": {
+        "x": 1329,
+        "y": 443,
+        "w": 443,
+        "h": 443
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 443,
+        "h": 443
+      },
+      "sourceSize": {
+        "w": 443,
+        "h": 443
+      }
+    }
+  },
+  "animations": {
+    "idle": [
+      "pose-0"
+    ],
+    "watch": [
+      "pose-0",
+      "pose-0",
+      "pose-0",
+      "pose-0",
+      "pose-0",
+      "pose-0",
+      "pose-1",
+      "pose-1",
+      "pose-0",
+      "pose-0",
+      "pose-2",
+      "pose-2",
+      "pose-2",
+      "pose-2",
+      "pose-2"
+    ],
+    "poised": [
+      "pose-2"
+    ],
+    "regret": [
+      "pose-7",
+      "pose-5",
+      "pose-6",
+      "pose-7",
+      "pose-3",
+      "pose-7",
+      "pose-7",
+      "pose-3",
+      "pose-3",
+      "pose-7",
+      "pose-3",
+      "pose-7",
+      "pose-4",
+      "pose-3",
+      "pose-4",
+      "pose-7",
+      "pose-7",
+      "pose-7",
+      "pose-3",
+      "pose-6",
+      "pose-5",
+      "pose-3",
+      "pose-7",
+      "pose-6",
+      "pose-3",
+      "pose-7",
+      "pose-7",
+      "pose-6",
+      "pose-3",
+      "pose-3",
+      "pose-3",
+      "pose-7",
+      "pose-3",
+      "pose-7",
+      "pose-7",
+      "pose-7",
+      "pose-7",
+      "pose-7",
+      "pose-7",
+      "pose-7",
+      "pose-7",
+      "pose-7",
+      "pose-1",
+      "pose-7",
+      "pose-7",
+      "pose-7",
+      "pose-7",
+      "pose-7",
+      "pose-7",
+      "pose-7",
+      "pose-7",
+      "pose-7",
+      "pose-4",
+      "pose-4",
+      "pose-7",
+      "pose-3",
+      "pose-7",
+      "pose-3",
+      "pose-3",
+      "pose-7",
+      "pose-3",
+      "pose-5",
+      "pose-3",
+      "pose-7",
+      "pose-3",
+      "pose-7",
+      "pose-3",
+      "pose-7",
+      "pose-3",
+      "pose-5",
+      "pose-3",
+      "pose-3",
+      "pose-7",
+      "pose-3",
+      "pose-3",
+      "pose-7",
+      "pose-3",
+      "pose-7",
+      "pose-7",
+      "pose-7",
+      "pose-3",
+      "pose-7",
+      "pose-4",
+      "pose-5",
+      "pose-3",
+      "pose-3",
+      "pose-1",
+      "pose-7",
+      "pose-7",
+      "pose-6",
+      "pose-3",
+      "pose-3",
+      "pose-7",
+      "pose-3",
+      "pose-7",
+      "pose-3",
+      "pose-3",
+      "pose-7",
+      "pose-7",
+      "pose-7",
+      "pose-7",
+      "pose-3",
+      "pose-6",
+      "pose-6",
+      "pose-3",
+      "pose-7",
+      "pose-7",
+      "pose-7",
+      "pose-1",
+      "pose-7",
+      "pose-7",
+      "pose-7",
+      "pose-7",
+      "pose-7",
+      "pose-7",
+      "pose-7",
+      "pose-7",
+      "pose-7",
+      "pose-7",
+      "pose-7",
+      "pose-2",
+      "pose-0"
+    ]
+  },
+  "meta": {
+    "image": "human-shrek-v2-poses.webp",
+    "size": {
+      "w": 1772,
+      "h": 886
+    },
+    "scale": "1"
+  }
+}

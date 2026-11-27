@@ -1,5 +1,6 @@
 import { Application, Assets, Texture } from 'pixi.js';
-import { useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { PreviewMode } from './chrome';
 import { t } from './i18n';
 import { SceneParticles } from './sceneParticles';
 import type { ParticleObject } from './scene';
@@ -16,6 +17,11 @@ export function ParticlePreview({ node, texture }: { node: ParticleObject; textu
   const time = useRef(0);
   const play = useRef(false);
   play.current = running;
+  const mode = useContext(PreviewMode);
+  useLayoutEffect(() => {
+    play.current = false;
+    setRunning(false);
+  }, [mode]);
   function seek(value: number) {
     const current = runtime.current;
     if (!current) return;

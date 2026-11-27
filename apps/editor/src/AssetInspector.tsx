@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { AudioLines, Link2, Play, Plus, RefreshCw, Square } from 'lucide-react';
+import { AudioLines, Bone, Download, Link2, Play, Plus, RefreshCw, Square } from 'lucide-react';
 import type { AssetLibrary, CatalogEntry } from './assetLibrary';
 import { type AudioStatus } from './audio';
-import { AnimatedAssetPreview } from './AnimatedAssetPreview';
+import { AnimatedAssetPreview, type AnimationPreviewSelection } from './AnimatedAssetPreview';
 import { IconButton } from './chrome';
 import { t } from './i18n';
 
@@ -20,13 +20,20 @@ function ImagePreview({ asset }: { asset: CatalogEntry }) {
   </>;
 }
 
-export function AssetInspector({ assets, audio, editable, canAssign, onAssignAudio, library, onAssign, onAdd, onBundle, onPlay, onStop, onTags, onReplace, slice }: {
+type SpineExportFormat = 'runtime' | 'project' | 'binary';
+
+export function AssetInspector({ assets, audio, editable, canAssign, onAssignAudio, library, onAssign, onAdd, onBundle, onPlay, onStop, onTags, onReplace, onOpenSpine, onCreateSpine, onExportSpine, onConvertSpine, slice }: {
   assets: CatalogEntry[]; audio: AudioStatus; editable: boolean; canAssign: boolean; library: AssetLibrary;
-  onAssign: (alias: string) => void; onAdd: (asset: CatalogEntry) => void; onBundle: (aliases: string[], id: string | null) => void;
+  onAssign: (alias: string) => void; onAdd: (asset: CatalogEntry, selection?: AnimationPreviewSelection) => void;
+  onBundle: (aliases: string[], id: string | null) => void;
   onAssignAudio?: (alias: string) => void;
   onPlay: (alias: string) => void; onStop: () => void;
   onTags: (aliases: string[], values: string[]) => void;
   onReplace?: (item: CatalogEntry) => void;
+  onOpenSpine?: (asset: CatalogEntry) => void;
+  onCreateSpine?: (images: CatalogEntry[]) => void;
+  onExportSpine?: (alias: string, format: SpineExportFormat) => Promise<string | null>;
+  onConvertSpine?: (item: CatalogEntry) => void;
   slice: (asset: CatalogEntry, options: { cellWidth: number; cellHeight: number; clip: string }) => Promise<void>;
 }) {
   const project = assets.filter(asset => asset.writable);
@@ -36,6 +43,16 @@ export function AssetInspector({ assets, audio, editable, canAssign, onAssignAud
   const [tagError, setTagError] = useState('');
   const [slicing, setSlicing] = useState(false);
   const [sliceError, setSliceError] = useState('');
+  const [spineExport, setSpineExport] = useState<{ alias: string; path?: string; error?: string }>();
+  const [exportingSpine, setExportingSpine] = useState(false);
+  function exportSpine(alias: string, format: SpineExportFormat) {
+    if (!onExportSpine || exportingSpine) return;
+    setExportingSpine(true);
+    setSpineExport(undefined);
+    void onExportSpine(alias, format).then(path => { if (path) setSpineExport({ alias, path }); })
+      .catch(error => setSpineExport({ alias, error: error instanceof Error ? error.message : String(error) }))
+      .finally(() => setExportingSpine(false));
+  }
   return <section className="asset-inspection" aria-label={t('assetPreview')}>
     {item ? <>
       <div className="asset-inspection-title">
@@ -44,7 +61,25 @@ export function AssetInspector({ assets, audio, editable, canAssign, onAssignAud
           item.kind === 'spine' ? 'assetSpine' : 'assetSheet')}</small>
         {item.writable && onReplace && <IconButton icon={RefreshCw} label={t('replaceAssetFile')} description={t('replaceAssetHint')}
           disabled={!editable} onClick={() => onReplace(item)} />}
+        {item.writable && item.kind === 'spine' && /\.json$/i.test(item.path) && onOpenSpine &&
+          <IconButton icon={Bone} label={t('spineStudio')} description={t('spineStudioHint')} disabled={!editable}
+            onClick={() => onOpenSpine(item)} />}
+        {item.writable && item.kind === 'spine' && onExportSpine &&
+          <IconButton icon={Download} label={t('spineExportFiles')} disabled={exportingSpine} onClick={() => exportSpine(item.alias, 'runtime')} />}
+        {item.writable && item.kind === 'spine' && onExportSpine &&
+          <button type="button" className="bundle-command" disabled={exportingSpine}
+            title={t('spineExportProjectHint')}
+            onClick={() => exportSpine(item.alias, 'project')}>{t('spineExportProject')}</button>}
+        {item.writable && item.kind === 'spine' && /\.json$/i.test(item.path) && onExportSpine &&
+          <button type="button" className="bundle-command" disabled={exportingSpine}
+            onClick={() => exportSpine(item.alias, 'binary')}>{t('spineExportBinary')}</button>}
+        {item.writable && item.kind === 'spine' && /\.skel$/i.test(item.path) && onConvertSpine &&
+          <IconButton icon={Bone} label={t('spineConvertBinary')} description={t('spineConvertBinaryHint')}
+            disabled={!editable || exportingSpine} onClick={() => onConvertSpine(item)} />}
       </div>
+      {spineExport?.alias === item.alias && (spineExport.error
+        ? <small className="error" role="alert">{spineExport.error}</small>
+        : <small role="status">{t('spineExportedFiles', { path: spineExport.path ?? '' })}</small>)}
       {item.kind === 'image' ? <>
         <ImagePreview key={item.alias} asset={item} />
         <IconButton icon={Link2} label={t('assignSelectedTexture')} description={t('assignTextureHint')}
@@ -60,9 +95,9 @@ export function AssetInspector({ assets, audio, editable, canAssign, onAssignAud
               clip: String(data.get('clip')) })
               .catch(error => setSliceError(error instanceof Error ? error.message : String(error))).finally(() => setSlicing(false));
           }}>
-            <label>{t('sliceWidth')} <input name="width" type="number" min={1} max={8192} required defaultValue={32} /></label>
-            <label>{t('sliceHeight')} <input name="height" type="number" min={1} max={8192} required defaultValue={32} /></label>
-            <label>{t('sliceClip')} <input name="clip" required pattern="[A-Za-z0-9_\-]+" maxLength={50} defaultValue="default" /></label>
+            <label>{t('sliceWidth')} <input name="width" type="number" min={1} max={8192} required defaultValue={32} disabled={!editable} /></label>
+            <label>{t('sliceHeight')} <input name="height" type="number" min={1} max={8192} required defaultValue={32} disabled={!editable} /></label>
+            <label>{t('sliceClip')} <input name="clip" required pattern="[A-Za-z0-9_\-]+" maxLength={50} defaultValue="default" disabled={!editable} /></label>
             <button type="submit" disabled={!editable || slicing}>{t('sliceCreate')}</button>
             {sliceError && <small role="alert" className="error">{sliceError}</small>}
           </form>
@@ -70,10 +105,10 @@ export function AssetInspector({ assets, audio, editable, canAssign, onAssignAud
       </> : item.kind === 'audio' ? <>
         <div className="asset-audio-controls">
           <AudioLines size={20} aria-hidden="true" />
-          <button type="button" className="bundle-command" disabled={!editable || playing} onClick={() => onPlay(item.alias)}>
+          <button type="button" className="bundle-command" disabled={playing} onClick={() => onPlay(item.alias)}>
             <Play size={15} aria-hidden="true" />{t('playSelectedAudio')}
           </button>
-          <button type="button" className="bundle-command" disabled={!editable || !playing} onClick={onStop}>
+          <button type="button" className="bundle-command" disabled={!playing} onClick={onStop}>
             <Square size={15} aria-hidden="true" />{t('stopSelectedAudio')}
           </button>
         </div>
@@ -84,11 +119,8 @@ export function AssetInspector({ assets, audio, editable, canAssign, onAssignAud
           <IconButton icon={Link2} label={t('audioAssignToSource')} description={t('audioAssignToSourceHint')}
             disabled={!editable || !onAssignAudio} onClick={() => onAssignAudio?.(item.alias)} />
         </div>
-      </> : <>
-        <AnimatedAssetPreview key={item.alias} asset={item} />
-        <IconButton icon={Plus} label={t('addAssetToScene')} description={t('addAssetToSceneHint')}
-          disabled={!editable} onClick={() => onAdd(item)} />
-      </>}
+      </> : <AnimatedAssetPreview key={item.alias} asset={item} scrub={item.kind === 'spine'}
+        addDisabled={!editable} onAddToScene={selection => onAdd(item, selection)} />}
       <dl className="asset-metadata">
         <dt>{t('assetAlias')}</dt><dd>{item.alias}</dd>
         {item.bytes !== undefined && <><dt>{t('assetSize')}</dt><dd>{t('assetSizeBytes', { count: item.bytes.toLocaleString() })}</dd></>}
@@ -97,6 +129,10 @@ export function AssetInspector({ assets, audio, editable, canAssign, onAssignAud
       <strong>{t('assetsSelected', { count: assets.length })}</strong>
       {project.length < assets.length && <small>{t('builtInSelectionReadOnly')}</small>}
     </div>}
+    {!!assets.length && assets.every(asset => asset.kind === 'image') && onCreateSpine &&
+      <button type="button" className="bundle-command" disabled={!editable} onClick={() => onCreateSpine(assets)}>
+        <Bone size={15} aria-hidden="true" />{t('spineCreateRig')}
+      </button>}
     {project.length > 0 && <label className="asset-bundle-picker">{t('assetBundle')}
       <select aria-label={t('assetBundle')} value={membership.size === 1 ? [...membership][0] : 'mixed'}
         disabled={!editable} onChange={event => onBundle(project.map(asset => asset.alias), event.target.value || null)}>

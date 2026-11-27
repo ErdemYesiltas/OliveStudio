@@ -10,3 +10,4 @@ const exports=Object.fromEntries(Object.entries(sourceExports).map(([id,entry])=
 const manifest={name,version,type,description,exports,dependencies,peerDependencies};
 await writeFile(new URL('dist/package.json',source),JSON.stringify(manifest,null,2)+'\n');
 await copyFile(new URL('README.md',source),new URL('dist/README.md',source));
+await copyFile(new URL('../../third-party/SPINE-RUNTIMES-LICENSE.txt',source),new URL('dist/SPINE-RUNTIMES-LICENSE.txt',source));

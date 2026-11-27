@@ -10,7 +10,7 @@ import { behaviorLive, behaviorType } from '@rewrite/behavior';
 import type { Container } from 'pixi.js';
 import { logicEntities, logicTools } from './sceneLogic';
 import type { GameContent } from './gameContent';
-import type { Project } from './project';
+import type { Project, SceneLink } from './project';
 import type { DialogueControls } from '@rewrite/dialogue';
 import type { AchievementControls } from '@rewrite/achievements';
 import type { PreviewGlobals } from './globals';
@@ -30,7 +30,7 @@ export type ScriptPreviewOptions = {
   content?: GameContent;
   production?: Project;
   seed?: number;
-  changeScene: (id: string, mode: 'replace' | 'add' | 'remove' | 'push') => void;
+  changeScene: (id: string, mode: SceneLink['mode'], link?: SceneLink) => void;
   popScene?: () => void;
 };
 
@@ -61,7 +61,7 @@ export class SceneScripts {
       camera?: import('@rewrite/scripts/session').ScriptHost['camera'];
       dialogue?: DialogueControls & ScriptHost['dialogue'];
       achievements?: AchievementControls;
-    } & Pick<ScriptHost, 'language'>,
+    } & Pick<ScriptHost, 'language' | 'spine'>,
   ) {
     this.stop();
     this.ready = Promise.resolve();
@@ -95,7 +95,8 @@ export class SceneScripts {
     let actorControls: import('@rewrite/behavior/contracts').BehaviorControls | undefined;
     const setActive = (id: string, active: boolean) => { const item = host.display(id); if (item) item.visible = active; };
     if (hasLogic) {
-      const { actions } = logicTools(options.content, { dialogue: host.dialogue, achievements: host.achievements, behavior: () => actorControls });
+      const { actions } = logicTools(options.content, { dialogue: host.dialogue, achievements: host.achievements,
+        behavior: () => actorControls, playSpine: host.spine && ((id, clip, loop) => host.spine!.play(id, clip, { loop })) });
       this.logic = new InteractionSession(() => entities, actions, {
         globals: store, time: host.time, physics: host.physics, camera: host.camera,
         setActive, setLanguage: host.language?.set,
@@ -137,6 +138,7 @@ export class SceneScripts {
         globals: store,
         seed: options.seed,
         physics: host.physics,
+        spine: host.spine,
         changeScene: id => changeScene(id, 'replace'),
         pushScene: id => changeScene(id, 'push'),
         popScene: options.popScene,
